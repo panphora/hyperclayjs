@@ -1,5 +1,8 @@
 {
   "rawDependencies": {
+    "build/build-loader.js": [],
+    "build/generate-dependency-graph.js": [],
+    "build/hyperclay.template.js": [],
     "communication/behaviorCollector.js": [],
     "communication/sendMessage.js": [
       "communication/behaviorCollector.js",

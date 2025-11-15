@@ -3,21 +3,23 @@
   "version": "1.0.0",
   "description": "Modular JavaScript library for building interactive HTML applications with Hyperclay",
   "type": "module",
-  "main": "dist/hyperclay.js",
-  "module": "dist/hyperclay.esm.js",
+  "main": "hyperclay.js",
+  "module": "hyperclay.js",
   "exports": {
     ".": {
-      "import": "./dist/hyperclay.esm.js",
-      "require": "./dist/hyperclay.cjs.js"
+      "import": "./hyperclay.js",
+      "default": "./hyperclay.js"
     },
-    "./presets/*": "./presets/*.js",
-    "./features/*": "./features/*.js",
-    "./ui/*": "./ui/*.js",
     "./core/*": "./core/*.js",
-    "./starter-kit": "./hyperclay.js"
+    "./custom-attributes/*": "./custom-attributes/*.js",
+    "./ui/*": "./ui/*.js",
+    "./utilities/*": "./utilities/*.js",
+    "./dom-utilities/*": "./dom-utilities/*.js",
+    "./string-utilities/*": "./string-utilities/*.js",
+    "./communication/*": "./communication/*.js",
+    "./vendor/*": "./vendor/*.js"
   },
   "files": [
-    "dist",
     "core",
     "custom-attributes",
     "ui",
@@ -26,17 +28,14 @@
     "string-utilities",
     "communication",
     "vendor",
-    "presets",
     "hyperclay.js",
     "module-dependency-graph.json"
   ],
   "scripts": {
-    "build": "npm run build:modules && npm run build:presets && npm run build:starter",
-    "build:modules": "node scripts/build-modules.js",
-    "build:presets": "node scripts/build-presets.js",
-    "build:starter": "node scripts/build-starter.js",
-    "dev": "npm run generate:deps && http-server -p 3535 -o /index.html",
-    "generate:deps": "node scripts/generate-dependency-graph.js",
+    "dev": "npm run build && http-server -p 3535 -o /index.html",
+    "build": "npm run generate:deps && npm run build:loader",
+    "generate:deps": "node build/generate-dependency-graph.js",
+    "build:loader": "node build/build-loader.js",
     "test": "jest",
     "lint": "eslint .",
     "format": "prettier --write .",
