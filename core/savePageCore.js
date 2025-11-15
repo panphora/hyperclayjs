@@ -8,7 +8,7 @@
  * For the full save system with conveniences, use savePage.js instead.
  */
 
-import cookie from "../browser/cookie.js";
+import cookie from "../utilities/cookie.js";
 import { isEditMode } from "./isAdminOfCurrentResource.js";
 
 let beforeSaveCallbacks = [];

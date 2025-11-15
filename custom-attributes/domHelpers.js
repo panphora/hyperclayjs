@@ -1,4 +1,4 @@
-import nearest from "../dom/nearest.js";
+import nearest from "../utilities/nearest.js";
 import pipe from "../functions/pipe.js";
 
 export default function init () {

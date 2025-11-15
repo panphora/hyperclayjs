@@ -1,6 +1,6 @@
 import toast from "../ui/toast.js";
-import debounce from "../code/debounce.js";
-import copyToClipboard from "../string/copy-to-clipboard.js";
+import debounce from "../utilities/debounce.js";
+import copyToClipboard from "../string-utilities/copy-to-clipboard.js";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 

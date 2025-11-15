@@ -5,7 +5,7 @@
 // - removed: console.warn("cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation")
 // - auto-inject tailwind-base.css if not present on page
 
-import insertStyleTag from '../dom/insertStyleTag.js';
+import insertStyleTag from '../dom-utilities/insertStyleTag.js';
 insertStyleTag("/tailwind-base.css");
 
 // - removed console.warn("")

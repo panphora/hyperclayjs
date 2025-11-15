@@ -1,5 +1,5 @@
-import cookie from "../browser/cookie.js";
-import query from "../browser/query.js";
+import cookie from "../utilities/cookie.js";
+import query from "../string-utilities/query.js";
 
 const isEditMode = query.editmode 
   ? query.editmode === "true" // takes precedence over cookie

@@ -1,5 +1,5 @@
-import Mutation from "../dom/Mutation.js";
-import onLoad from "../dom/onLoad.js";
+import Mutation from "../utilities/mutation.js";
+import onLoad from "../dom-utilities/onLoad.js";
 
 export default function init() {
   const executeRender = async (element) => {

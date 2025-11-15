@@ -7,8 +7,8 @@
    - e.g. <div sortable></div>
    
 */
-import { isEditMode, isOwner } from "../hyperclay/isAdminOfCurrentResource.js";
-import Mutation from "../dom/Mutation.js";
+import { isEditMode, isOwner } from "../core/isAdminOfCurrentResource.js";
+import Mutation from "../utilities/mutation.js";
 import Sortable from '../vendor/Sortable.js';
 
 function makeSortable (sortableElem) {

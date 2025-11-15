@@ -1,5 +1,5 @@
 import { isEditMode, isOwner } from "./isAdminOfCurrentResource.js";
-import onDomReady from "../dom/onDomReady.js";
+import onDomReady from "../dom-utilities/onDomReady.js";
 import {beforeSave} from "./savePage.js";
 
 export function disableOnClickBeforeSave () {

@@ -1,89 +1,89 @@
 {
   "rawDependencies": {
-    "browser/cookie.js": [],
-    "browser/query.js": [],
-    "code/debounce.js": [],
-    "code/throttle.js": [],
+    "utilities/cookie.js": [],
+    "string-utilities/query.js": [],
+    "utilities/debounce.js": [],
+    "utilities/throttle.js": [],
     "custom-attributes/ajaxElements.js": [],
-    "custom-attributes/domHelpers.js": ["dom/nearest.js"],
+    "custom-attributes/domHelpers.js": ["utilities/nearest.js"],
     "custom-attributes/onclickaway.js": [],
     "custom-attributes/onclone.js": [],
-    "custom-attributes/onpagemutation.js": ["dom/Mutation.js"],
-    "custom-attributes/onrender.js": ["dom/Mutation.js", "dom/onLoad.js"],
+    "custom-attributes/onpagemutation.js": ["utilities/mutation.js"],
+    "custom-attributes/onrender.js": ["utilities/mutation.js", "dom-utilities/onLoad.js"],
     "custom-attributes/prevent.js": [],
-    "custom-attributes/sortable.js": ["dom/Mutation.js", "hyperclay/isAdminOfCurrentResource.js", "vendor/Sortable.js"],
-    "dom/All.js": [],
-    "dom/Mutation.js": [],
-    "dom/insertStyleTag.js": [],
-    "dom/nearest.js": [],
-    "dom/onDomReady.js": [],
-    "dom/onLoad.js": [],
-    "editing/autosize.js": [],
-    "hyperclay/adminContenteditable.js": ["dom/onDomReady.js", "hyperclay/isAdminOfCurrentResource.js", "hyperclay/savePage.js"],
-    "hyperclay/adminInputs.js": ["dom/onDomReady.js", "hyperclay/isAdminOfCurrentResource.js", "hyperclay/savePage.js"],
-    "hyperclay/adminOnClick.js": ["dom/onDomReady.js", "hyperclay/isAdminOfCurrentResource.js", "hyperclay/savePage.js"],
-    "hyperclay/adminResources.js": ["dom/onDomReady.js", "hyperclay/isAdminOfCurrentResource.js", "hyperclay/savePage.js"],
-    "hyperclay/editmode.js": ["hyperclay/isAdminOfCurrentResource.js"],
-    "hyperclay/enablePersistentFormInputValues.js": ["hyperclay/savePage.js"],
-    "hyperclay/isAdminOfCurrentResource.js": ["browser/cookie.js", "browser/query.js"],
-    "hyperclay/optionVisibilityRuleGenerator.js": ["dom/Mutation.js"],
-    "hyperclay/savePage.js": ["code/throttle.js", "dom/Mutation.js", "hyperclay/isAdminOfCurrentResource.js", "hyperclay/savePageCore.js", "ui/toast.js"],
-    "hyperclay/savePageCore.js": ["browser/cookie.js", "hyperclay/isAdminOfCurrentResource.js"],
-    "hyperclay/sendMessage.js": ["ui/toast.js"],
-    "hyperclay/setPageTypeOnDocumentElement.js": ["dom/onDomReady.js", "hyperclay/isAdminOfCurrentResource.js", "hyperclay/savePage.js"],
-    "hyperclay/uploadFile.js": ["code/debounce.js", "string/copy-to-clipboard.js", "ui/toast.js"],
-    "string/copy-to-clipboard.js": [],
-    "string/emmet-html.js": [],
-    "string/slugify.js": [],
-    "ui/info.js": ["dom/onDomReady.js", "ui/theModal.js"],
-    "ui/prompts.js": ["dom/onDomReady.js", "string/copy-to-clipboard.js", "ui/theModal.js", "ui/toast.js"],
+    "custom-attributes/sortable.js": ["utilities/mutation.js", "core/isAdminOfCurrentResource.js", "vendor/Sortable.js"],
+    "custom-attributes/autosize.js": [],
+    "dom-utilities/All.js": [],
+    "utilities/mutation.js": [],
+    "dom-utilities/insertStyleTag.js": [],
+    "utilities/nearest.js": [],
+    "dom-utilities/onDomReady.js": [],
+    "dom-utilities/onLoad.js": [],
+    "core/adminContenteditable.js": ["dom-utilities/onDomReady.js", "core/isAdminOfCurrentResource.js", "core/savePage.js"],
+    "core/adminInputs.js": ["dom-utilities/onDomReady.js", "core/isAdminOfCurrentResource.js", "core/savePage.js"],
+    "core/adminOnClick.js": ["dom-utilities/onDomReady.js", "core/isAdminOfCurrentResource.js", "core/savePage.js"],
+    "core/adminResources.js": ["dom-utilities/onDomReady.js", "core/isAdminOfCurrentResource.js", "core/savePage.js"],
+    "core/editmode.js": ["core/isAdminOfCurrentResource.js"],
+    "core/enablePersistentFormInputValues.js": ["core/savePage.js"],
+    "core/isAdminOfCurrentResource.js": ["utilities/cookie.js", "string-utilities/query.js"],
+    "core/optionVisibilityRuleGenerator.js": ["utilities/mutation.js"],
+    "core/savePage.js": ["utilities/throttle.js", "utilities/mutation.js", "core/isAdminOfCurrentResource.js", "core/savePageCore.js", "ui/toast.js"],
+    "core/savePageCore.js": ["utilities/cookie.js", "core/isAdminOfCurrentResource.js"],
+    "communication/sendMessage.js": ["ui/toast.js"],
+    "core/setPageTypeOnDocumentElement.js": ["dom-utilities/onDomReady.js", "core/isAdminOfCurrentResource.js", "core/savePage.js"],
+    "communication/uploadFile.js": ["utilities/debounce.js", "string-utilities/copy-to-clipboard.js", "ui/toast.js"],
+    "string-utilities/copy-to-clipboard.js": [],
+    "string-utilities/emmet-html.js": [],
+    "string-utilities/slugify.js": [],
+    "ui/info.js": ["dom-utilities/onDomReady.js", "ui/theModal.js"],
+    "ui/prompts.js": ["dom-utilities/onDomReady.js", "string-utilities/copy-to-clipboard.js", "ui/theModal.js", "ui/toast.js"],
     "ui/theModal.js": [],
     "ui/toast.js": [],
     "vendor/Sortable.js": [],
     "vendor/idiomorph.min.js": [],
-    "vendor/tailwind-play.js": ["dom/insertStyleTag.js"]
+    "vendor/tailwind-play.js": ["dom-utilities/insertStyleTag.js"]
   },
   "modules": {
     "save-core": {
       "name": "Save Core",
       "category": "core",
       "size": 4.9,
-      "files": ["hyperclay/savePageCore.js"],
+      "files": ["core/savePageCore.js"],
       "description": "Basic save function only - hyperclay.savePage()"
     },
     "save": {
       "name": "Save System",
       "category": "core",
       "size": 4.4,
-      "files": ["hyperclay/savePage.js"],
+      "files": ["core/savePage.js"],
       "description": "Full save: save button, keyboard shortcut, auto-save, change tracking"
     },
     "admin": {
       "name": "Admin Features",
       "category": "core",
       "size": 4.3,
-      "files": ["hyperclay/adminContenteditable.js", "hyperclay/adminInputs.js", "hyperclay/adminOnClick.js", "hyperclay/adminResources.js"],
+      "files": ["core/adminContenteditable.js", "core/adminInputs.js", "core/adminOnClick.js", "core/adminResources.js"],
       "description": "Hides admin inputs, scripts, contenteditable, onclick for regular viewers"
     },
     "persist": {
       "name": "Form Persistence",
       "category": "core",
       "size": 1.4,
-      "files": ["hyperclay/enablePersistentFormInputValues.js"],
+      "files": ["core/enablePersistentFormInputValues.js"],
       "description": "Persist form values to the DOM with [persist] attribute"
     },
     "options": {
       "name": "Option Visibility",
       "category": "core",
       "size": 4.3,
-      "files": ["hyperclay/optionVisibilityRuleGenerator.js"],
+      "files": ["core/optionVisibilityRuleGenerator.js"],
       "description": "Dynamic show/hide based on page state with option:attribute=\"value\""
     },
     "editmode": {
       "name": "Edit Mode",
       "category": "core",
       "size": 0.9,
-      "files": ["hyperclay/editmode.js", "hyperclay/setPageTypeOnDocumentElement.js"],
+      "files": ["core/editmode.js", "core/setPageTypeOnDocumentElement.js"],
       "description": "Toggle edit mode on/off"
     },
     "events": {
@@ -118,7 +118,7 @@
       "name": "Input Helpers",
       "category": "custom-attributes",
       "size": 0.9,
-      "files": ["custom-attributes/prevent.js", "editing/autosize.js"],
+      "files": ["custom-attributes/prevent.js", "custom-attributes/autosize.js"],
       "description": "[prevent-enter], [autosize] for textareas"
     },
     "prompts": {
@@ -160,63 +160,63 @@
       "name": "Mutation Observer",
       "category": "utilities",
       "size": 12.8,
-      "files": ["dom/Mutation.js"],
+      "files": ["utilities/mutation.js"],
       "description": "DOM mutation observation (often auto-included)"
     },
     "nearest": {
       "name": "Nearest Element",
       "category": "utilities",
       "size": 3.2,
-      "files": ["dom/nearest.js"],
+      "files": ["utilities/nearest.js"],
       "description": "Find nearest elements (often auto-included)"
     },
     "cookie": {
       "name": "Cookie Helper",
       "category": "utilities",
       "size": 1.2,
-      "files": ["browser/cookie.js"],
+      "files": ["utilities/cookie.js"],
       "description": "Cookie management (often auto-included)"
     },
     "throttle": {
       "name": "Throttle",
       "category": "utilities",
       "size": 0.6,
-      "files": ["code/throttle.js"],
+      "files": ["utilities/throttle.js"],
       "description": "Function throttling"
     },
     "debounce": {
       "name": "Debounce",
       "category": "utilities",
       "size": 0.2,
-      "files": ["code/debounce.js"],
+      "files": ["utilities/debounce.js"],
       "description": "Function debouncing"
     },
     "dom-ready": {
       "name": "DOM Ready",
       "category": "dom-utilities",
       "size": 0.2,
-      "files": ["dom/onDomReady.js"],
+      "files": ["dom-utilities/onDomReady.js"],
       "description": "DOM ready callback"
     },
     "window-load": {
       "name": "Window Load",
       "category": "dom-utilities",
       "size": 0.2,
-      "files": ["dom/onLoad.js"],
+      "files": ["dom-utilities/onLoad.js"],
       "description": "Window load callback"
     },
     "jquery-like": {
       "name": "jQuery-like DOM",
       "category": "dom-utilities",
       "size": 12.1,
-      "files": ["dom/All.js"],
+      "files": ["dom-utilities/All.js"],
       "description": "Full DOM manipulation library"
     },
     "style-injection": {
       "name": "Style Injection",
       "category": "dom-utilities",
       "size": 0.8,
-      "files": ["dom/insertStyleTag.js"],
+      "files": ["dom-utilities/insertStyleTag.js"],
       "description": "Dynamic stylesheet injection"
     },
     "dom-morphing": {
@@ -230,42 +230,42 @@
       "name": "Slugify",
       "category": "string-utilities",
       "size": 0.5,
-      "files": ["string/slugify.js"],
+      "files": ["string-utilities/slugify.js"],
       "description": "URL-friendly slug generator"
     },
     "emmet-html": {
       "name": "Emmet HTML",
       "category": "string-utilities",
       "size": 1.4,
-      "files": ["string/emmet-html.js"],
+      "files": ["string-utilities/emmet-html.js"],
       "description": "Emmet-like HTML generation"
     },
     "copy-to-clipboard": {
       "name": "Copy to Clipboard",
       "category": "string-utilities",
       "size": 0.7,
-      "files": ["string/copy-to-clipboard.js"],
+      "files": ["string-utilities/copy-to-clipboard.js"],
       "description": "Clipboard utility"
     },
     "query-parser": {
       "name": "URL Query Parser",
       "category": "string-utilities",
       "size": 0.1,
-      "files": ["browser/query.js"],
+      "files": ["string-utilities/query.js"],
       "description": "Parse URL search params"
     },
     "send-message": {
       "name": "Send Message",
       "category": "communication",
       "size": 1.1,
-      "files": ["hyperclay/sendMessage.js"],
+      "files": ["communication/sendMessage.js"],
       "description": "Message sending utility"
     },
     "file-upload": {
       "name": "File Upload",
       "category": "communication",
       "size": 10.3,
-      "files": ["hyperclay/uploadFile.js"],
+      "files": ["communication/uploadFile.js"],
       "description": "File upload with progress"
     }
   },

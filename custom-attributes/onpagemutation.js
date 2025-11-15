@@ -1,4 +1,4 @@
-import Mutation from "../dom/Mutation.js";
+import Mutation from "../utilities/mutation.js";
 
 export default function init() {
   const executePageMutation = async element => {

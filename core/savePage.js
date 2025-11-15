@@ -8,8 +8,8 @@
  */
 
 import toast from "../ui/toast.js";
-import throttle from "../code/throttle.js";
-import Mutation from "../dom/Mutation.js";
+import throttle from "../utilities/throttle.js";
+import Mutation from "../utilities/mutation.js";
 import { isEditMode, isOwner } from "./isAdminOfCurrentResource.js";
 import {
   savePage as savePageCore,

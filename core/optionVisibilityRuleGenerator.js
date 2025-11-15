@@ -17,7 +17,7 @@
 *  - Hidden if no ancestor has matching attribute
 * 
 */
-import Mutation from "../dom/Mutation.js";
+import Mutation from "../utilities/mutation.js";
 
 const optionVisibilityRuleGenerator = {
   debug: false,
