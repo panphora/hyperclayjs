@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hyperclay Starter Kit Configurator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #3E43EF;
+            --shadow-blue: #F1F2FE;
+            --light-blue: #8A8FEF;
+            --white: #FFFFFF;
+            --red: #DC2626;
+            --green: #10B981;
+            --yellow: #F59E0B;
+            --gray: #6B7280;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Google Sans Code', monospace;
+            background-color: white;
+            color: var(--primary-blue);
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid var(--shadow-blue);
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+            text-shadow: 4px 4px 0 var(--shadow-blue);
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: var(--light-blue);
+        }
+
+        /* Main Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Feature Categories */
+        .feature-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: linear-gradient(90deg, var(--shadow-blue) 0%, transparent 100%);
+            border-left: 4px solid var(--primary-blue);
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--primary-blue);
+        }
+
+        .section-size {
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+
+        /* Feature Grid */
+        .feature-grid {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border: 2px solid var(--primary-blue);
+            background: white;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .feature-item:hover {
+            box-shadow: 4px 4px 0 var(--shadow-blue);
+        }
+
+        .feature-item.selected {
+            background: var(--shadow-blue);
+            box-shadow: 4px 4px 0 var(--primary-blue);
+        }
+
+        .feature-checkbox {
+            appearance: none;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 2px solid var(--primary-blue);
+            background: white;
+            margin-right: 1rem;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .feature-checkbox:checked {
+            background: var(--primary-blue);
+            position: relative;
+        }
+
+        .feature-checkbox:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .feature-info {
+            flex-grow: 1;
+        }
+
+        .feature-name {
+            font-weight: bold;
+            color: var(--primary-blue);
+            margin-bottom: 0.25rem;
+        }
+
+        .feature-description {
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+
+        .feature-size {
+            font-size: 0.875rem;
+            color: var(--primary-blue);
+            font-weight: bold;
+            margin-left: 1rem;
+        }
+
+        .feature-size.large {
+            color: var(--red);
+        }
+
+        /* Preset Buttons */
+        .preset-section {
+            margin-bottom: 2rem;
+        }
+
+        .preset-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .preset-button {
+            padding: 0.75rem 1.5rem;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: bold;
+            border: 2px solid var(--primary-blue);
+            background: white;
+            color: var(--primary-blue);
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 4px 4px 0 var(--shadow-blue);
+        }
+
+        .preset-button:hover {
+            box-shadow: 2px 2px 0 var(--shadow-blue);
+            transform: translate(2px, 2px);
+        }
+
+        .preset-button.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: sticky;
+            top: 2rem;
+            height: fit-content;
+        }
+
+        .summary-box {
+            padding: 1.5rem;
+            border: 2px solid var(--primary-blue);
+            box-shadow: 4px 4px 0 var(--shadow-blue);
+            background: white;
+            margin-bottom: 2rem;
+        }
+
+        .summary-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+        }
+
+        .summary-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--shadow-blue);
+        }
+
+        .summary-stat:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            color: var(--gray);
+        }
+
+        .stat-value {
+            font-weight: bold;
+            color: var(--primary-blue);
+        }
+
+        .stat-value.large {
+            color: var(--red);
+        }
+
+        .stat-value.medium {
+            color: var(--yellow);
+        }
+
+        .stat-value.small {
+            color: var(--green);
+        }
+
+        /* URL Output */
+        .url-output {
+            margin-top: 2rem;
+        }
+
+        .url-label {
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .url-container {
+            position: relative;
+        }
+
+        .url-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--primary-blue);
+            background: white;
+            color: var(--primary-blue);
+            font-family: inherit;
+            font-size: 0.875rem;
+            box-shadow: 4px 4px 0 var(--shadow-blue);
+        }
+
+        .copy-button {
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 0.5rem 1rem;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .copy-button:hover {
+            background: var(--light-blue);
+        }
+
+        .copy-button.copied {
+            background: var(--green);
+        }
+
+        /* Feature List */
+        .selected-features {
+            margin-top: 1.5rem;
+        }
+
+        .feature-list-title {
+            font-size: 0.875rem;
+            font-weight: bold;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-tag {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: var(--shadow-blue);
+            color: var(--primary-blue);
+            font-size: 0.75rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Size Indicator */
+        .size-indicator {
+            width: 100%;
+            height: 20px;
+            background: var(--shadow-blue);
+            border: 2px solid var(--primary-blue);
+            margin-top: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .size-bar {
+            height: 100%;
+            background: var(--primary-blue);
+            transition: width 0.3s ease;
+        }
+
+        .size-bar.large {
+            background: var(--red);
+        }
+
+        .size-bar.medium {
+            background: var(--yellow);
+        }
+
+        .size-bar.small {
+            background: var(--green);
+        }
+
+        /* Info Box */
+        .info-box {
+            padding: 1rem;
+            background: var(--shadow-blue);
+            border-left: 4px solid var(--primary-blue);
+            margin-bottom: 2rem;
+        }
+
+        .info-text {
+            font-size: 0.875rem;
+            color: var(--primary-blue);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Hyperclay Starter Kit Configurator</h1>
+        </div>
+
+        <div class="main-grid">
+            <div class="features-column">
+                <!-- Preset Buttons -->
+                <div class="preset-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Quick Presets</h2>
+                    </div>
+                    <div class="preset-buttons">
+                        <button class="preset-button" data-preset="minimal">Minimal (23KB)</button>
+                        <button class="preset-button" data-preset="standard">Standard (50KB)</button>
+                        <button class="preset-button" data-preset="everything">Everything (220KB)</button>
+                    </div>
+                </div>
+
+                <!-- Core Features -->
+                <div class="feature-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Core Features</h2>
+                        <span class="section-size">Essential functionality</span>
+                    </div>
+                    <div class="feature-grid">
+                        <label class="feature-item">
+                            <input type="checkbox" class="feature-checkbox" data-feature="save-core" data-size="3">
+                            <div class="feature-info">
+                                <div class="feature-name">Save Core</div>
+                                <div class="feature-description">Basic save function only `hyperclay.savePage` - call yourself, handle notifications</div>
+                            </div>
+                            <span class="feature-size">3KB</span>
+                        </label>
+                        <label class="feature-item">
+                            <input type="checkbox" class="feature-checkbox" data-feature="save" data-size="3" data-requires="save-core,toast,mutation">
+                            <div class="feature-info">
+                                <div class="feature-name">Save System</div>
+                                <div class="feature-description">Full save: save button, keyboard shortcut, auto-save, change tracking</div>
+                            </div>
+                            <span class="feature-size">3KB</span>
+                        </label>
+                        <label class="feature-item">
+                            <input type="checkbox" class="feature-checkbox" data-feature="admin" data-size="10" data-requires="cookie">
+                            <div class="feature-info">
+                                <div class="feature-name">Admin Features</div>
+                                <div class="feature-description">Hides admin inputs, admin scripts, admin contenteditable, admin onclick for regular viewers</div>
+                            </div>
+                            <span class="feature-size">10KB</span>
+                        </label>
+                        <label class="feature-item">
+                            <input type="checkbox" class="feature-checkbox" data-feature="persist" data-size="1.4">
+                            <div class="feature-info">
+                                <div class="feature-name">Form Persistence</div>
+                                <div class="feature-description">Persist form values to the DOM with [persist] attribute, so they're saved</div>
+                            </div>
+                            <span class="feature-size">1.4KB</span>
+                        </label>
+                        <label class="feature-item">
+                            <input type="checkbox" class="feature-checkbox" data-feature="options" data-size="4.4" data-requires="mutation">
+                            <div class="feature-info">
+                                <div class="feature-name">Option Visibility</div>
+                                <div class="feature-description">Dynamic show/hide based on page state with `option:attribute="value"`</div>
+                            </div>
+                            <span class="feature-size">4.4KB</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Custom Attributes -->
+                <div class="feature-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Custom Attributes</h2>
+                        <span class="section-size">HTML enhancements</span>
+                    </div>
+                    <div class="feature-grid">
+                        <label class="feature-item">
+                            <input type="checkbox" class="feature-checkbox" data-feature="events" data-size="2.7">
+                            <div class="feature-info">
+                                <div class="feature-name">Event Attributes</div>
+                                <div class="feature-description">[onclickaway], [onclone], [onpagemutation], [onrender]</div>
+                            </div>
+                            <span class="feature-size">2.7KB</span>
+                        </label>
+                        <label class="feature-item">
+                            <input type="checkbox" class="feature-checkbox" data-feature="ajax" data-size="1.8">
+                            <div class="feature-info">
+                                <div class="feature-name">AJAX Elements</div>
+                                <div class="feature-description">[ajax-form], [ajax-button] for async form submissions</div>
+                            </div>
+                            <span class="feature-size">1.8KB</span>
+                        </label>
+                        <label class="feature-item">
+                            <input type="checkbox" class="feature-checkbox" data-feature="sortable" data-size="118" data-requires="mutation">
+                            <div class="feature-info">
+                                <div class="feature-name">Sortable</div>
+                                <div class="feature-description">Drag-drop sorting with [sortable] - includes Sortable.js</div>
+                            </div>
+                            <span class="feature-size large">118KB</span>
+                        </label>
+                        <label class="feature-item">
+                            <input type="checkbox" class="feature-checkbox" data-feature="helpers" data-size="5.3" data-requires="nearest">
+                            <div class="feature-info">
+                                <div class="feature-name">DOM Helpers</div>
+                                <div class="feature-description">el.nearest, el.val, el.text, el.exec, el.cycle</div>
+                            </div>
+                            <span class="feature-size">5.3KB</span>
+                        </label>
+                        <label class="feature-item">
+                            <input type="checkbox" class="feature-checkbox" data-feature="inputs" data-size="1">
+                            <div class="feature-info">
+                                <div class="feature-name">Input Helpers</div>
+                                <div class="feature-description">[prevent-enter], [autosize] for textareas</div>
+                            </div>
+                            <span class="feature-size">1KB</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- UI Components -->
+                <div class="feature-section">
+                    <div class="section-header">
+                        <h2 class="section-title">UI Components</h2>
+                        <span class="section-size">User interface elements</span>
+                    </div>
+                    <div class="feature-grid">
+                        <label class="feature-item">
+                            <input type="checkbox" class="feature-checkbox" data-feature="prompts" data-size="7.5" data-requires="modals,toast">
+                            <div class="feature-info">
+                                <div class="feature-name">Dialog Functions</div>
+                                <div class="feature-description">ask(), consent(), tell(), snippet() functions</div>
+                            </div>
+                            <span class="feature-size">7.5KB</span>
+                        </label>
+                        <label class="feature-item">
+                            <input type="checkbox" class="feature-checkbox" data-feature="toast" data-size="7.3">
+                            <div class="feature-info">
+                                <div class="feature-name">Toast Notifications</div>
+                                <div class="feature-description">Success/error message notifications, `toast(msg, msgType)`</div>
+                            </div>
+                            <span class="feature-size">7.3KB</span>
+                        </label>
+                        <label class="feature-item">
+                            <input type="checkbox" class="feature-checkbox" data-feature="modals" data-size="18.8">
+                            <div class="feature-info">
+                                <div class="feature-name">Modal System</div>
+                                <div class="feature-description">Full modal window creation system, access `window.theModal`</div>
+                            </div>
+                            <span class="feature-size">18.8KB</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Development Tools -->
+                <div class="feature-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Development Tools</h2>
+                        <span class="section-size">Live editing and development features</span>
+                    </div>
+                    <div class="feature-grid">
+                        <label class="feature-item">
+                            <input type="checkbox" class="feature-checkbox" data-feature="tailwind-play" data-size="29">
+                            <div class="feature-info">
+                                <div class="feature-name">Tailwind Play</div>
+                                <div class="feature-description">Live Tailwind CSS editing - updates styles based on classes in your HTML</div>
+                            </div>
+                            <span class="feature-size">29KB</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <!-- Summary Box -->
+                <div class="summary-box">
+                    <h3 class="summary-title">Configuration Summary</h3>
+                    <div class="summary-stat">
+                        <span class="stat-label">Features Selected:</span>
+                        <span class="stat-value" id="feature-count">0</span>
+                    </div>
+                    <div class="summary-stat">
+                        <span class="stat-label">Total Size:</span>
+                        <span class="stat-value" id="total-size">0KB</span>
+                    </div>
+
+                    <div class="size-indicator">
+                        <div class="size-bar" id="size-bar"></div>
+                    </div>
+
+                    <div class="selected-features">
+                        <div class="feature-list-title">Selected Features:</div>
+                        <div id="selected-features-list"></div>
+                    </div>
+                </div>
+
+                <!-- URL Output -->
+                <div class="url-output">
+                    <div class="url-label">Generated URL:</div>
+                    <div class="url-container">
+                        <input type="text" class="url-input" id="generated-url" readonly value="https://hyperclay.com/js/hyperclay-starter-kit.js">
+                        <button class="copy-button" id="copy-button">COPY</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Feature data
+        const features = {
+            'save-core': { name: 'Save Core', size: 3 },
+            save: { name: 'Save System', size: 3 },
+            admin: { name: 'Admin Features', size: 10 },
+            persist: { name: 'Form Persistence', size: 1.4 },
+            options: { name: 'Option Visibility', size: 4.4 },
+            ajax: { name: 'AJAX Elements', size: 1.8 },
+            events: { name: 'Event Attributes', size: 2.7 },
+            sortable: { name: 'Sortable', size: 118 },
+            helpers: { name: 'DOM Helpers', size: 5.3 },
+            inputs: { name: 'Input Helpers', size: 1 },
+            prompts: { name: 'Dialog Functions', size: 7.5 },
+            toast: { name: 'Toast Notifications', size: 7.3 },
+            modals: { name: 'Modal System', size: 18.8 },
+            'tailwind-play': { name: 'Tailwind Play', size: 29 },
+            // Core dependencies (auto-included when needed)
+            mutation: { name: 'Mutation Observer', size: 2 },
+            nearest: { name: 'Nearest Element', size: 1 },
+            cookie: { name: 'Cookie Helper', size: 1 }
+        };
+
+        // Presets (dependencies will be auto-resolved)
+        const presets = {
+            minimal: ['save-core', 'save', 'admin', 'toast'],
+            standard: ['save-core', 'save', 'admin', 'persist', 'ajax', 'events', 'helpers', 'toast'],
+            everything: Object.keys(features).filter(f => !['mutation', 'nearest', 'cookie'].includes(f))
+        };
+
+        const ORIGINAL_SIZE = 2100; // 2.1MB in KB
+
+        // Get all checkboxes and preset buttons
+        const checkboxes = document.querySelectorAll('.feature-checkbox');
+        const presetButtons = document.querySelectorAll('.preset-button');
+        const urlInput = document.getElementById('generated-url');
+        const copyButton = document.getElementById('copy-button');
+        const featureCountEl = document.getElementById('feature-count');
+        const totalSizeEl = document.getElementById('total-size');
+        const selectedFeaturesEl = document.getElementById('selected-features-list');
+        const sizeBar = document.getElementById('size-bar');
+
+        // Initialize
+        let selectedFeatures = new Set();
+        let currentPreset = null;
+
+        // Update UI when features change
+        function updateUI() {
+            // Update feature items visual state
+            checkboxes.forEach(checkbox => {
+                const featureItem = checkbox.closest('.feature-item');
+                if (checkbox.checked) {
+                    featureItem.classList.add('selected');
+                } else {
+                    featureItem.classList.remove('selected');
+                }
+            });
+
+            // Calculate total size
+            let totalSize = 0;
+            selectedFeatures.forEach(feature => {
+                totalSize += features[feature].size;
+            });
+
+            // Update summary
+            featureCountEl.textContent = selectedFeatures.size;
+
+            // Format size display
+            if (totalSize < 1000) {
+                totalSizeEl.textContent = totalSize.toFixed(1) + 'KB';
+            } else {
+                totalSizeEl.textContent = (totalSize / 1000).toFixed(2) + 'MB';
+            }
+
+            // Color code the size
+            if (totalSize > 200) {
+                totalSizeEl.className = 'stat-value large';
+                sizeBar.className = 'size-bar large';
+            } else if (totalSize > 100) {
+                totalSizeEl.className = 'stat-value medium';
+                sizeBar.className = 'size-bar medium';
+            } else {
+                totalSizeEl.className = 'stat-value small';
+                sizeBar.className = 'size-bar small';
+            }
+
+            // Update size bar
+            const barWidth = Math.min((totalSize / 300) * 100, 100);
+            sizeBar.style.width = barWidth + '%';
+
+            // Update selected features list
+            selectedFeaturesEl.innerHTML = '';
+            selectedFeatures.forEach(feature => {
+                const tag = document.createElement('span');
+                tag.className = 'feature-tag';
+                tag.textContent = features[feature].name;
+                selectedFeaturesEl.appendChild(tag);
+            });
+
+            // Generate URL
+            generateURL();
+        }
+
+        // Generate URL based on selected features
+        function generateURL() {
+            const baseURL = 'https://hyperclay.com/js/hyperclay-starter-kit.js';
+
+            if (selectedFeatures.size === 0) {
+                urlInput.value = baseURL;
+                return;
+            }
+
+            // Check if selection matches a preset
+            let urlParams = '';
+            if (currentPreset) {
+                urlParams = `?features=${currentPreset}`;
+            } else if (selectedFeatures.size > 0) {
+                const featuresArray = Array.from(selectedFeatures);
+                urlParams = `?features=${featuresArray.join(',')}`;
+            }
+
+            urlInput.value = baseURL + urlParams;
+        }
+
+        // Handle checkbox changes
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', (e) => {
+                const feature = e.target.dataset.feature;
+                if (e.target.checked) {
+                    selectedFeatures.add(feature);
+
+                    // Check for dependencies
+                    const requires = e.target.dataset.requires;
+                    if (requires) {
+                        const requiredFeatures = requires.split(',');
+                        requiredFeatures.forEach(reqFeature => {
+                            selectedFeatures.add(reqFeature);
+                            const reqCheckbox = document.querySelector(`[data-feature="${reqFeature}"]`);
+                            if (reqCheckbox) reqCheckbox.checked = true;
+                        });
+                    }
+                } else {
+                    selectedFeatures.delete(feature);
+
+                    // Check if this feature is required by others
+                    checkboxes.forEach(cb => {
+                        const requires = cb.dataset.requires;
+                        if (requires && requires.includes(feature) && cb.checked) {
+                            // Uncheck features that depend on this one
+                            cb.checked = false;
+                            selectedFeatures.delete(cb.dataset.feature);
+                        }
+                    });
+                }
+
+                // Check if current selection matches any preset
+                currentPreset = null;
+                for (const [presetName, presetFeatures] of Object.entries(presets)) {
+                    if (presetFeatures.length === selectedFeatures.size &&
+                        presetFeatures.every(f => selectedFeatures.has(f))) {
+                        currentPreset = presetName;
+                        break;
+                    }
+                }
+
+                // Update preset button states
+                presetButtons.forEach(btn => {
+                    if (btn.dataset.preset === currentPreset) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+
+                updateUI();
+            });
+        });
+
+        // Handle preset button clicks
+        presetButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                const preset = e.target.dataset.preset;
+                currentPreset = preset;
+
+                // Update preset button states
+                presetButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                e.target.classList.add('active');
+
+                // Clear all selections
+                selectedFeatures.clear();
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+
+                // Apply preset
+                if (presets[preset]) {
+                    presets[preset].forEach(feature => {
+                        selectedFeatures.add(feature);
+                        const checkbox = document.querySelector(`[data-feature="${feature}"]`);
+                        if (checkbox) checkbox.checked = true;
+                    });
+                }
+
+                updateUI();
+            });
+        });
+
+        // Handle copy button
+        copyButton.addEventListener('click', () => {
+            urlInput.select();
+            document.execCommand('copy');
+
+            // Visual feedback
+            copyButton.textContent = 'COPIED!';
+            copyButton.classList.add('copied');
+
+            setTimeout(() => {
+                copyButton.textContent = 'COPY';
+                copyButton.classList.remove('copied');
+            }, 2000);
+        });
+
+        // Initialize with standard preset
+        document.querySelector('[data-preset="standard"]').click();
+    </script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+{
+  "name": "hyperclayjs",
+  "version": "1.0.0",
+  "description": "Modular JavaScript library for building interactive HTML applications with Hyperclay",
+  "type": "module",
+  "main": "dist/hyperclay.js",
+  "module": "dist/hyperclay.esm.js",
+  "exports": {
+    ".": {
+      "import": "./dist/hyperclay.esm.js",
+      "require": "./dist/hyperclay.cjs.js"
+    },
+    "./presets/*": "./presets/*.js",
+    "./features/*": "./features/*.js",
+    "./ui/*": "./ui/*.js",
+    "./core/*": "./core/*.js",
+    "./starter-kit": "./hyperclay-starter-kit.js"
+  },
+  "files": [
+    "dist",
+    "core",
+    "features",
+    "ui",
+    "dom",
+    "browser",
+    "vendor",
+    "presets",
+    "hyperclay-starter-kit.js",
+    "module-dependency-graph.json"
+  ],
+  "scripts": {
+    "build": "npm run build:modules && npm run build:presets && npm run build:starter",
+    "build:modules": "node scripts/build-modules.js",
+    "build:presets": "node scripts/build-presets.js",
+    "build:starter": "node scripts/build-starter.js",
+    "dev": "npm run build -- --watch",
+    "test": "jest",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hyperclay/hyperclayjs.git"
+  },
+  "keywords": [
+    "hyperclay",
+    "html",
+    "interactive",
+    "save",
+    "admin",
+    "modular",
+    "frontend",
+    "dom",
+    "ui"
+  ],
+  "author": "Hyperclay",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hyperclay/hyperclayjs/issues"
+  },
+  "homepage": "https://github.com/hyperclay/hyperclayjs#readme",
+  "devDependencies": {
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.23.0",
+    "@rollup/plugin-babel": "^6.0.0",
+    "@rollup/plugin-commonjs": "^25.0.0",
+    "@rollup/plugin-json": "^6.0.0",
+    "@rollup/plugin-node-resolve": "^15.2.0",
+    "@rollup/plugin-terser": "^0.4.0",
+    "eslint": "^8.50.0",
+    "jest": "^29.7.0",
+    "prettier": "^3.0.0",
+    "rollup": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "browserslist": [
+    "Chrome >= 90",
+    "Firefox >= 88",
+    "Safari >= 14",
+    "Edge >= 90"
+  ]
+}
