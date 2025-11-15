@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hyperclay Starter Kit Configurator</title>
+    <title>Hyperclay.js Configurator</title>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -382,7 +382,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Hyperclay Starter Kit Configurator</h1>
+            <h1>Hyperclay.js Configurator</h1>
+            <p class="subtitle">Build your custom Hyperclay.js bundle</p>
         </div>
 
         <div class="main-grid">
@@ -579,7 +580,7 @@
                 <div class="url-output">
                     <div class="url-label">Generated URL:</div>
                     <div class="url-container">
-                        <input type="text" class="url-input" id="generated-url" readonly value="https://hyperclay.com/js/hyperclay-starter-kit.js">
+                        <input type="text" class="url-input" id="generated-url" readonly value="https://hyperclay.com/js/hyperclay.js">
                         <button class="copy-button" id="copy-button">COPY</button>
                     </div>
                 </div>
@@ -587,54 +588,163 @@
         </div>
     </div>
 
-    <script>
-        // Feature data
-        const features = {
-            'save-core': { name: 'Save Core', size: 3 },
-            save: { name: 'Save System', size: 3 },
-            admin: { name: 'Admin Features', size: 10 },
-            persist: { name: 'Form Persistence', size: 1.4 },
-            options: { name: 'Option Visibility', size: 4.4 },
-            ajax: { name: 'AJAX Elements', size: 1.8 },
-            events: { name: 'Event Attributes', size: 2.7 },
-            sortable: { name: 'Sortable', size: 118 },
-            helpers: { name: 'DOM Helpers', size: 5.3 },
-            inputs: { name: 'Input Helpers', size: 1 },
-            prompts: { name: 'Dialog Functions', size: 7.5 },
-            toast: { name: 'Toast Notifications', size: 7.3 },
-            modals: { name: 'Modal System', size: 18.8 },
-            'tailwind-play': { name: 'Tailwind Play', size: 29 },
-            // Core dependencies (auto-included when needed)
-            mutation: { name: 'Mutation Observer', size: 2 },
-            nearest: { name: 'Nearest Element', size: 1 },
-            cookie: { name: 'Cookie Helper', size: 1 }
-        };
+    <script type="module">
+        // Load module dependency graph
+        let moduleData = null;
+        let features = {};
+        let presets = {};
+        let categories = {};
 
-        // Presets (dependencies will be auto-resolved)
-        const presets = {
-            minimal: ['save-core', 'save', 'admin', 'toast'],
-            standard: ['save-core', 'save', 'admin', 'persist', 'ajax', 'events', 'helpers', 'toast'],
-            everything: Object.keys(features).filter(f => !['mutation', 'nearest', 'cookie'].includes(f))
-        };
+        async function loadModuleData() {
+            try {
+                const response = await fetch('/module-dependency-graph.json');
+                moduleData = await response.json();
+
+                // Transform modules data to features format
+                features = moduleData.modules;
+                presets = moduleData.presets;
+                categories = moduleData.categories;
+
+                // Render the UI dynamically
+                renderUI();
+                initializeEventListeners();
+
+                // Initialize with standard preset
+                setTimeout(() => {
+                    const standardButton = document.querySelector('[data-preset="standard"]');
+                    if (standardButton) standardButton.click();
+                }, 100);
+            } catch (error) {
+                console.error('Failed to load module data:', error);
+            }
+        }
+
+        function renderUI() {
+            renderPresetButtons();
+            renderFeatureSections();
+        }
+
+        function renderPresetButtons() {
+            const container = document.querySelector('.preset-buttons');
+            if (!container) return;
+
+            container.innerHTML = '';
+
+            for (const [presetId, preset] of Object.entries(presets)) {
+                // Calculate preset size
+                const totalSize = preset.modules.reduce((sum, moduleId) => {
+                    return sum + (features[moduleId]?.size || 0);
+                }, 0);
+
+                const button = document.createElement('button');
+                button.className = 'preset-button';
+                button.dataset.preset = presetId;
+                button.textContent = `${preset.name} (${Math.round(totalSize)}KB)`;
+                container.appendChild(button);
+            }
+        }
+
+        function renderFeatureSections() {
+            const container = document.querySelector('.features-column');
+            if (!container) return;
+
+            // Find the preset section
+            const presetSection = container.querySelector('.preset-section');
+
+            // Remove all existing feature sections
+            const existingSections = container.querySelectorAll('.feature-section');
+            existingSections.forEach(section => section.remove());
+
+            // Render each category
+            for (const [categoryId, category] of Object.entries(categories)) {
+                if (!category.modules || category.modules.length === 0) continue;
+
+                const section = document.createElement('div');
+                section.className = 'feature-section';
+
+                // Calculate category total size
+                const categorySize = category.modules.reduce((sum, moduleId) => {
+                    return sum + (features[moduleId]?.size || 0);
+                }, 0);
+
+                section.innerHTML = `
+                    <div class="section-header">
+                        <h2 class="section-title">${category.name}</h2>
+                        <span class="section-size">${category.description}</span>
+                    </div>
+                    <div class="feature-grid" data-category="${categoryId}">
+                        ${category.modules.map(moduleId => {
+                            const module = features[moduleId];
+                            if (!module) return '';
+
+                            const sizeClass = module.size > 50 ? 'large' : '';
+                            const dependencies = getDependencies(moduleId);
+                            const requiresAttr = dependencies.length > 0 ? `data-requires="${dependencies.join(',')}"` : '';
+
+                            return `
+                                <label class="feature-item">
+                                    <input type="checkbox"
+                                           class="feature-checkbox"
+                                           data-feature="${moduleId}"
+                                           data-size="${module.size}"
+                                           ${requiresAttr}>
+                                    <div class="feature-info">
+                                        <div class="feature-name">${module.name}</div>
+                                        <div class="feature-description">${module.description}</div>
+                                    </div>
+                                    <span class="feature-size ${sizeClass}">${module.size}KB</span>
+                                </label>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+
+                container.appendChild(section);
+            }
+        }
+
+        function getDependencies(moduleId) {
+            const module = features[moduleId];
+            if (!module || !module.files || !module.files[0]) return [];
+
+            const mainFile = module.files[0];
+            const deps = moduleData.rawDependencies[mainFile] || [];
+
+            // Convert file paths to module IDs
+            const depModuleIds = [];
+            for (const dep of deps) {
+                for (const [modId, mod] of Object.entries(features)) {
+                    if (mod.files && mod.files.includes(dep)) {
+                        if (modId !== moduleId) {
+                            depModuleIds.push(modId);
+                        }
+                        break;
+                    }
+                }
+            }
+
+            return [...new Set(depModuleIds)];
+        }
 
         const ORIGINAL_SIZE = 2100; // 2.1MB in KB
 
-        // Get all checkboxes and preset buttons
-        const checkboxes = document.querySelectorAll('.feature-checkbox');
-        const presetButtons = document.querySelectorAll('.preset-button');
-        const urlInput = document.getElementById('generated-url');
-        const copyButton = document.getElementById('copy-button');
-        const featureCountEl = document.getElementById('feature-count');
-        const totalSizeEl = document.getElementById('total-size');
-        const selectedFeaturesEl = document.getElementById('selected-features-list');
-        const sizeBar = document.getElementById('size-bar');
-
-        // Initialize
+        // Initialize state
         let selectedFeatures = new Set();
         let currentPreset = null;
 
-        // Update UI when features change
-        function updateUI() {
+        function initializeEventListeners() {
+            // Get all checkboxes and preset buttons
+            const checkboxes = document.querySelectorAll('.feature-checkbox');
+            const presetButtons = document.querySelectorAll('.preset-button');
+            const urlInput = document.getElementById('generated-url');
+            const copyButton = document.getElementById('copy-button');
+            const featureCountEl = document.getElementById('feature-count');
+            const totalSizeEl = document.getElementById('total-size');
+            const selectedFeaturesEl = document.getElementById('selected-features-list');
+            const sizeBar = document.getElementById('size-bar');
+
+            // Update UI when features change
+            function updateUI() {
             // Update feature items visual state
             checkboxes.forEach(checkbox => {
                 const featureItem = checkbox.closest('.feature-item');
@@ -690,9 +800,9 @@
             generateURL();
         }
 
-        // Generate URL based on selected features
-        function generateURL() {
-            const baseURL = 'https://hyperclay.com/js/hyperclay-starter-kit.js';
+            // Generate URL based on selected features
+            function generateURL() {
+            const baseURL = 'https://hyperclay.com/js/hyperclay.js';
 
             if (selectedFeatures.size === 0) {
                 urlInput.value = baseURL;
@@ -711,8 +821,8 @@
             urlInput.value = baseURL + urlParams;
         }
 
-        // Handle checkbox changes
-        checkboxes.forEach(checkbox => {
+            // Handle checkbox changes
+            checkboxes.forEach(checkbox => {
             checkbox.addEventListener('change', (e) => {
                 const feature = e.target.dataset.feature;
                 if (e.target.checked) {
@@ -744,7 +854,8 @@
 
                 // Check if current selection matches any preset
                 currentPreset = null;
-                for (const [presetName, presetFeatures] of Object.entries(presets)) {
+                for (const [presetName, presetData] of Object.entries(presets)) {
+                    const presetFeatures = presetData.modules || [];
                     if (presetFeatures.length === selectedFeatures.size &&
                         presetFeatures.every(f => selectedFeatures.has(f))) {
                         currentPreset = presetName;
@@ -765,8 +876,8 @@
             });
         });
 
-        // Handle preset button clicks
-        presetButtons.forEach(button => {
+            // Handle preset button clicks
+            presetButtons.forEach(button => {
             button.addEventListener('click', (e) => {
                 const preset = e.target.dataset.preset;
                 currentPreset = preset;
@@ -784,8 +895,8 @@
                 });
 
                 // Apply preset
-                if (presets[preset]) {
-                    presets[preset].forEach(feature => {
+                if (presets[preset] && presets[preset].modules) {
+                    presets[preset].modules.forEach(feature => {
                         selectedFeatures.add(feature);
                         const checkbox = document.querySelector(`[data-feature="${feature}"]`);
                         if (checkbox) checkbox.checked = true;
@@ -796,8 +907,8 @@
             });
         });
 
-        // Handle copy button
-        copyButton.addEventListener('click', () => {
+            // Handle copy button
+            copyButton.addEventListener('click', () => {
             urlInput.select();
             document.execCommand('copy');
 
@@ -811,8 +922,10 @@
             }, 2000);
         });
 
-        // Initialize with standard preset
-        document.querySelector('[data-preset="standard"]').click();
+        }
+
+        // Load data on page load
+        loadModuleData();
     </script>
 </body>
 </html>

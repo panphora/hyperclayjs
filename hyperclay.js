@@ -8,36 +8,74 @@
 
   // Module dependency map
   const moduleDependencies = {
+    // Core Features
     'save-core': {
-      path: './core/save-core.js',
-      dependencies: []
-    },
-    'save': {
-      path: './features/save.js',
-      dependencies: ['save-core', 'toast', 'mutation']
-    },
-    'admin': {
-      path: './features/admin.js',
+      path: './core/savePageCore.js',
       dependencies: ['cookie']
     },
+    'save': {
+      path: './core/savePage.js',
+      dependencies: ['save-core', 'toast', 'mutation', 'throttle']
+    },
+    'admin': {
+      path: './core/adminContenteditable.js',
+      dependencies: ['admin-inputs', 'admin-resources', 'admin-onclick']
+    },
+    'admin-inputs': {
+      path: './core/adminInputs.js',
+      dependencies: ['cookie', 'dom-ready']
+    },
+    'admin-resources': {
+      path: './core/adminResources.js',
+      dependencies: ['cookie', 'dom-ready']
+    },
+    'admin-onclick': {
+      path: './core/adminOnClick.js',
+      dependencies: ['cookie', 'dom-ready']
+    },
+    'admin-contenteditable': {
+      path: './core/adminContenteditable.js',
+      dependencies: ['cookie', 'dom-ready']
+    },
     'persist': {
-      path: './features/persist.js',
+      path: './core/enablePersistentFormInputValues.js',
       dependencies: []
     },
     'options': {
-      path: './features/options.js',
+      path: './core/optionVisibilityRuleGenerator.js',
       dependencies: ['mutation']
     },
+    'editmode': {
+      path: './core/editmode.js',
+      dependencies: ['cookie']
+    },
+    // Custom Attributes
     'ajax': {
-      path: './features/ajax.js',
+      path: './custom-attributes/ajaxElements.js',
       dependencies: []
     },
     'events': {
-      path: './features/events.js',
+      path: './custom-attributes/onclickaway.js',
+      dependencies: ['onclone', 'onpagemutation', 'onrender']
+    },
+    'onclickaway': {
+      path: './custom-attributes/onclickaway.js',
       dependencies: []
     },
+    'onclone': {
+      path: './custom-attributes/onclone.js',
+      dependencies: []
+    },
+    'onpagemutation': {
+      path: './custom-attributes/onpagemutation.js',
+      dependencies: ['mutation']
+    },
+    'onrender': {
+      path: './custom-attributes/onrender.js',
+      dependencies: ['mutation', 'window-load']
+    },
     'sortable': {
-      path: './features/sortable.js',
+      path: './custom-attributes/sortable.js',
       dependencies: ['mutation', 'sortable-vendor']
     },
     'sortable-vendor': {
@@ -45,41 +83,109 @@
       dependencies: []
     },
     'helpers': {
-      path: './features/helpers.js',
-      dependencies: ['nearest']
+      path: './custom-attributes/domHelpers.js',
+      dependencies: ['nearest', 'pipe']
     },
     'inputs': {
-      path: './features/inputs.js',
+      path: './custom-attributes/prevent.js',
+      dependencies: ['autosize']
+    },
+    'autosize': {
+      path: './custom-attributes/autosize.js',
       dependencies: []
     },
+    // UI Components
     'prompts': {
       path: './ui/prompts.js',
-      dependencies: ['modals', 'toast']
+      dependencies: ['modals', 'toast', 'dom-ready', 'copy-to-clipboard']
     },
     'toast': {
       path: './ui/toast.js',
       dependencies: []
     },
     'modals': {
-      path: './ui/modals.js',
+      path: './ui/theModal.js',
       dependencies: []
+    },
+    'info': {
+      path: './ui/info.js',
+      dependencies: ['modals', 'dom-ready']
     },
     'tailwind-play': {
       path: './vendor/tailwind-play.js',
-      dependencies: []
+      dependencies: ['style-injection']
     },
-    // Core dependencies
+    // Utilities (often auto-included)
     'mutation': {
-      path: './core/mutation.js',
+      path: './utilities/mutation.js',
       dependencies: []
     },
     'nearest': {
-      path: './core/nearest.js',
+      path: './utilities/nearest.js',
       dependencies: []
     },
     'cookie': {
-      path: './core/cookie.js',
+      path: './utilities/cookie.js',
       dependencies: []
+    },
+    'throttle': {
+      path: './utilities/throttle.js',
+      dependencies: []
+    },
+    'debounce': {
+      path: './utilities/debounce.js',
+      dependencies: []
+    },
+    'pipe': {
+      path: './utilities/pipe.js',
+      dependencies: []
+    },
+    // DOM Utilities
+    'dom-ready': {
+      path: './dom-utilities/onDomReady.js',
+      dependencies: []
+    },
+    'window-load': {
+      path: './dom-utilities/onLoad.js',
+      dependencies: []
+    },
+    'jquery-like': {
+      path: './dom-utilities/All.js',
+      dependencies: []
+    },
+    'style-injection': {
+      path: './dom-utilities/insertStyleTag.js',
+      dependencies: []
+    },
+    'dom-morphing': {
+      path: './vendor/idiomorph.min.js',
+      dependencies: []
+    },
+    // String Utilities
+    'slugify': {
+      path: './string-utilities/slugify.js',
+      dependencies: []
+    },
+    'emmet-html': {
+      path: './string-utilities/emmet-html.js',
+      dependencies: []
+    },
+    'copy-to-clipboard': {
+      path: './string-utilities/copy-to-clipboard.js',
+      dependencies: []
+    },
+    'query-parser': {
+      path: './string-utilities/query.js',
+      dependencies: []
+    },
+    // Communication
+    'send-message': {
+      path: './communication/sendMessage.js',
+      dependencies: ['toast']
+    },
+    'file-upload': {
+      path: './communication/uploadFile.js',
+      dependencies: ['toast', 'debounce', 'copy-to-clipboard']
     }
   };
 
@@ -88,14 +194,17 @@
     'minimal': ['save-core', 'save', 'admin', 'toast'],
     'standard': ['save-core', 'save', 'admin', 'persist', 'ajax', 'events', 'helpers', 'toast'],
     'everything': Object.keys(moduleDependencies).filter(m =>
-      !['mutation', 'nearest', 'cookie', 'sortable-vendor'].includes(m)
+      !['mutation', 'nearest', 'cookie', 'sortable-vendor', 'throttle', 'debounce',
+        'dom-ready', 'window-load', 'pipe', 'admin-inputs', 'admin-resources',
+        'admin-onclick', 'admin-contenteditable', 'onclickaway', 'onclone',
+        'onpagemutation', 'onrender', 'autosize', 'copy-to-clipboard'].includes(m)
     )
   };
 
   // Find our script tag
   const currentScript = document.currentScript ||
     Array.from(document.scripts).find(s =>
-      s.src && s.src.includes('hyperclay-starter-kit.js')
+      s.src && (s.src.includes('hyperclay.js') || s.src.includes('hyperclay-starter-kit.js'))
     );
 
   if (!currentScript) {
@@ -139,12 +248,17 @@
         continue;
       }
 
-      // Add dependencies first (depth-first)
+      // Add dependencies to queue
       if (module.dependencies && module.dependencies.length > 0) {
-        queue.unshift(...module.dependencies.filter(d => !resolved.has(d)));
-      } else {
-        resolved.add(feature);
+        module.dependencies.forEach(dep => {
+          if (!resolved.has(dep)) {
+            queue.push(dep);
+          }
+        });
       }
+
+      // Mark this feature as resolved
+      resolved.add(feature);
     }
 
     return Array.from(resolved);
@@ -249,11 +363,18 @@
     // Show feature summary
     const totalSize = loadOrder.reduce((sum, feature) => {
       const sizes = {
-        'save-core': 3, 'save': 3, 'admin': 10, 'persist': 1.4,
-        'options': 4.4, 'ajax': 1.8, 'events': 2.7, 'sortable': 118,
-        'helpers': 5.3, 'inputs': 1, 'prompts': 7.5, 'toast': 7.3,
-        'modals': 18.8, 'tailwind-play': 29, 'mutation': 2,
-        'nearest': 1, 'cookie': 1, 'sortable-vendor': 115
+        'save-core': 4.9, 'save': 4.4, 'admin': 1, 'admin-inputs': 1.5,
+        'admin-resources': 1, 'admin-onclick': 0.9, 'admin-contenteditable': 1,
+        'persist': 1.4, 'options': 4.3, 'editmode': 0.3, 'ajax': 1.8,
+        'events': 2.7, 'onclickaway': 0.7, 'onclone': 0.6, 'onpagemutation': 0.6,
+        'onrender': 0.8, 'sortable': 1.7, 'sortable-vendor': 118, 'helpers': 5.2,
+        'inputs': 0.4, 'autosize': 0.5, 'prompts': 7.3, 'toast': 7.3,
+        'modals': 18.8, 'info': 3.3, 'tailwind-play': 362, 'mutation': 12.8,
+        'nearest': 3.2, 'cookie': 1.2, 'throttle': 0.6, 'debounce': 0.2,
+        'pipe': 0.1, 'dom-ready': 0.2, 'window-load': 0.2, 'jquery-like': 12.1,
+        'style-injection': 0.8, 'dom-morphing': 7.9, 'slugify': 0.5,
+        'emmet-html': 1.4, 'copy-to-clipboard': 0.7, 'query-parser': 0.1,
+        'send-message': 1.1, 'file-upload': 10.3
       };
       return sum + (sizes[feature] || 0);
     }, 0);

@@ -1,5 +1,5 @@
 import behaviorCollector from "./behaviorCollector.js";
-import getDataFromForm from "../dom/getDataFromForm.js";
+import getDataFromForm from "../dom-utilities/getDataFromForm.js";
 import toast from "../ui/toast.js";
 
 export default function sendMessage(eventOrObj, successMessage = "Successfully sent", callback) {

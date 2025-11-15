@@ -1,5 +1,5 @@
 import nearest from "../utilities/nearest.js";
-import pipe from "../functions/pipe.js";
+import pipe from "../utilities/pipe.js";
 
 export default function init () {
 
