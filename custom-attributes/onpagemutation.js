@@ -1,6 +1,6 @@
 import Mutation from "../utilities/mutation.js";
 
-export default function init() {
+function init() {
   const executePageMutation = async element => {
     try {
       const code = element.getAttribute('onpagemutation');
@@ -16,3 +16,5 @@ export default function init() {
     omitChangeDetails: true
   }, () => document.querySelectorAll('[onpagemutation]').forEach(executePageMutation));
 }
+export { init };
+export default init;

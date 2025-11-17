@@ -55,11 +55,11 @@ const MODULE_DEFINITIONS = {
     description: 'Toggle edit mode on/off',
     relatedFiles: ['core/setPageTypeOnDocumentElement.js']
   },
-  'custom-attributes/onclickaway.js': {
+  'custom-attributes/events.js': {
     name: 'Event Attributes',
     moduleId: 'events',
     description: '[onclickaway], [onclone], [onpagemutation], [onrender]',
-    relatedFiles: ['custom-attributes/onclone.js', 'custom-attributes/onpagemutation.js', 'custom-attributes/onrender.js']
+    relatedFiles: ['custom-attributes/onclickaway.js', 'custom-attributes/onclone.js', 'custom-attributes/onpagemutation.js', 'custom-attributes/onrender.js']
   },
   'custom-attributes/ajaxElements.js': {
     name: 'AJAX Elements',

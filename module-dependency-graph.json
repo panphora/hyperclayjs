@@ -78,6 +78,12 @@
       "utilities/nearest.js",
       "utilities/pipe.js"
     ],
+    "custom-attributes/events.js": [
+      "custom-attributes/onclickaway.js",
+      "custom-attributes/onclone.js",
+      "custom-attributes/onpagemutation.js",
+      "custom-attributes/onrender.js"
+    ],
     "custom-attributes/onclickaway.js": [],
     "custom-attributes/onclone.js": [],
     "custom-attributes/onpagemutation.js": [
@@ -190,8 +196,9 @@
     "events": {
       "name": "Event Attributes",
       "category": "custom-attributes",
-      "size": 2.9000000000000004,
+      "size": 3.5,
       "files": [
+        "custom-attributes/events.js",
         "custom-attributes/onclickaway.js",
         "custom-attributes/onclone.js",
         "custom-attributes/onpagemutation.js",

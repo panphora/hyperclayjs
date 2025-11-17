@@ -1,4 +1,4 @@
-export default function init() {
+function init() {
   // Bail if already patched (idempotence)
   if (Node.prototype.__hyperclayOnclone) {
     return;
@@ -31,3 +31,5 @@ export default function init() {
     }
   }
 }
+export { init };
+export default init;

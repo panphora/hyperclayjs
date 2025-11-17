@@ -86,7 +86,9 @@ async function callSubmitEvents(elem) {
   }
 }
 
-export default function init () {
+function init () {
   document.addEventListener('submit', handleFormSubmit);
   document.addEventListener('click', handleButtonClick);
 }
+export { init };
+export default init;

@@ -332,9 +332,10 @@
         });
       }
 
+      // FIXED: query.js exports an object, not a function
       if (modules?.['query-parser']) {
-        import('./string-utilities/query.js').then(({ default: query }) => {
-          const params = query();
+        import('./string-utilities/query.js').then(({ default: params }) => {
+          // params is already the parsed query object
           document.getElementById('query-output').innerHTML =
             `<span class="check">✓</span> Parsed: ${JSON.stringify(params)}`;
           markPass('test-query');
@@ -350,10 +351,18 @@
         });
       }
 
+      // Test insertStyleTag by injecting test-style.css
       if (modules?.['style-injection']) {
         import('./dom-utilities/insertStyleTag.js').then(({ default: insertStyleTag }) => {
-          insertStyleTag('.test-style-injected { color: #4caf50; font-weight: bold; }');
-          markPass('test-style-injection');
+          insertStyleTag('./test-style.css');
+
+          // Verify the link tag was created
+          setTimeout(() => {
+            const linkTag = document.querySelector('link[href*="test-style.css"]');
+            if (linkTag) {
+              markPass('test-style-injection', 'CSS file injected via insertStyleTag');
+            }
+          }, 100);
         });
       }
 

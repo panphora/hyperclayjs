@@ -36,7 +36,7 @@ function makeSortable (sortableElem) {
   Sortable.create(sortableElem, options);
 }
 
-export default function init () {
+function init () {
   if (!isEditMode) return;
 
   // Set up sortable on page load
@@ -59,3 +59,6 @@ export default function init () {
 
 
 
+
+export { init };
+export default init;

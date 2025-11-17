@@ -1,7 +1,7 @@
 import Mutation from "../utilities/mutation.js";
 import onLoad from "../dom-utilities/onLoad.js";
 
-export default function init() {
+function init() {
   const executeRender = async (element) => {
     try {
       const code = element.getAttribute('onrender');
@@ -25,3 +25,6 @@ export default function init() {
     changes.forEach(({ element }) => executeRender(element));
   });
 }
+
+export { init };
+export default init;

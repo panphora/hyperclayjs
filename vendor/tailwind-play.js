@@ -6,7 +6,7 @@
 // - auto-inject tailwind-base.css if not present on page
 
 import insertStyleTag from '../dom-utilities/insertStyleTag.js';
-insertStyleTag("/tailwind-base.css");
+insertStyleTag("./vendor/tailwind-base.css");
 
 // - removed console.warn("")
 // - removed "experimental features" console.warn

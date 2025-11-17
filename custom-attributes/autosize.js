@@ -1,4 +1,4 @@
-export default function init () {
+function init () {
   document.addEventListener('input', event => {
     const target = event.target;
     if (target.matches('textarea[autosize]')) {
@@ -13,3 +13,5 @@ export default function init () {
     textarea.style.height = textarea.scrollHeight + 'px';
   });
 }
+export { init };
+export default init;

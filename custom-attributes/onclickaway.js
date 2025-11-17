@@ -1,5 +1,4 @@
-
-export default function init () {
+function init () {
 
   // the code inside `onclickaway` attributes will be executed whenever that element is NOT clicked
   document.addEventListener('click', function(event) {
@@ -23,3 +22,6 @@ export default function init () {
   });
 
 }
+
+export { init };
+export default init;

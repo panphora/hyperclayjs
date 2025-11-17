@@ -1,7 +1,7 @@
 import nearest from "../utilities/nearest.js";
 import pipe from "../utilities/pipe.js";
 
-export default function init () {
+function init () {
 
   // Bail if already initialized
   if (HTMLElement.prototype.hasOwnProperty('nearest')) {
@@ -171,3 +171,5 @@ export default function init () {
   };
 
 }
+export { init };
+export default init;

@@ -1,0 +1,5 @@
+/* Test CSS file for insertStyleTag test */
+.test-style-injected {
+  color: #4caf50;
+  font-weight: bold;
+}

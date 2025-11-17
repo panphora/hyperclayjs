@@ -53,7 +53,7 @@
     ]
   },
   "events": {
-    "path": "./custom-attributes/onclickaway.js",
+    "path": "./custom-attributes/events.js",
     "dependencies": [
       "mutation",
       "window-load"
@@ -414,7 +414,7 @@
   "persist": 2.2,
   "options": 4.4,
   "editmode": 1,
-  "events": 2.9000000000000004,
+  "events": 3.5,
   "ajax": 2.7,
   "sortable": 117.3,
   "helpers": 5.4,
