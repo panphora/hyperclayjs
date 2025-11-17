@@ -16,7 +16,7 @@ export function disableAdminResourcesBeforeSave () {
 
 export function enableAdminResourcesOnPageLoad () {
   if (!isEditMode) return;
-  
+
   onDomReady(() => {
     document.querySelectorAll('[edit-mode-resource]:is(style, link, script)[type^="inert/"]').forEach(resource => {
       // works for js and css
@@ -24,4 +24,10 @@ export function enableAdminResourcesOnPageLoad () {
       resource.replaceWith(resource.cloneNode(true));
     });
   });
+}
+
+// Auto-initialize
+export function init() {
+  disableAdminResourcesBeforeSave();
+  enableAdminResourcesOnPageLoad();
 }

@@ -15,3 +15,9 @@ export function setPageTypeOnPageLoad () {
     document.documentElement.setAttribute("pageowner", isOwner ? "true" : "false");
   });
 }
+
+// Auto-initialize
+export function init() {
+  setViewerPageTypeBeforeSave();
+  setPageTypeOnPageLoad();
+}

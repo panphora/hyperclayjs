@@ -28,3 +28,9 @@ export function enableContentEditableForAdminOnPageLoad () {
     });
   });
 }
+
+// Auto-initialize
+export function init() {
+  disableContentEditableBeforeSave();
+  enableContentEditableForAdminOnPageLoad();
+}

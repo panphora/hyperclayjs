@@ -41,7 +41,8 @@ const behaviorCollector = (() => {
     data.timing.lastInteraction = now;
   }
 
-  document.addEventListener('mousemove', (e) => {
+  function setupListeners() {
+    document.addEventListener('mousemove', (e) => {
     const now = Date.now();
     if (now - lastMouseMove < THROTTLE_MS) return;
     lastMouseMove = now;
@@ -72,7 +73,7 @@ const behaviorCollector = (() => {
     passive: true
   });
 
-  document.addEventListener('scroll', (e) => {
+  window.addEventListener('scroll', (e) => {
     const now = Date.now();
     if (now - lastScroll < THROTTLE_MS) return;
     lastScroll = now;
@@ -108,6 +109,21 @@ const behaviorCollector = (() => {
     }
   }, {
     passive: true
+  });
+
+  // Capture blur events
+  document.addEventListener('blur', (e) => {
+    data.interactions.blurEvents.push({
+      target: e.target.tagName,
+      timestamp: Date.now(),
+      isTrusted: e.isTrusted
+    });
+
+    if (data.interactions.blurEvents.length > 20) {
+      data.interactions.blurEvents.shift();
+    }
+  }, {
+    capture: true
   });
 
   document.addEventListener('keydown', (e) => {
@@ -175,16 +191,18 @@ const behaviorCollector = (() => {
     capture: true
   });
 
-  document.addEventListener('visibilitychange', () => {
-    data.interactions.tabSwitches.push({
-      state: document.visibilityState,
-      timestamp: Date.now()
+    document.addEventListener('visibilitychange', () => {
+      data.interactions.tabSwitches.push({
+        state: document.visibilityState,
+        timestamp: Date.now()
+      });
+    }, {
+      passive: true
     });
-  }, {
-    passive: true
-  });
+  }
 
   return {
+    init: setupListeners,
     getData: () => ({
       ...data,
       timeSpent: Date.now() - data.startTime,
@@ -197,3 +215,8 @@ const behaviorCollector = (() => {
 })();
 
 export default behaviorCollector;
+
+// Auto-initialize - start collecting behavior data
+export function init() {
+  behaviorCollector.init();
+}

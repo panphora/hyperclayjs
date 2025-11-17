@@ -50,3 +50,9 @@ function supportsReadonly(element) {
   // Default to disabled for unknown elements
   return false;
 }
+
+// Auto-initialize
+export function init() {
+  disableAdminInputsBeforeSave();
+  enableAdminInputsOnPageLoad();
+}

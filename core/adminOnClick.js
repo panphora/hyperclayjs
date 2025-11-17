@@ -23,3 +23,9 @@ export function enableOnClickForAdminOnPageLoad () {
     });
   });
 }
+
+// Auto-initialize
+export function init() {
+  disableOnClickBeforeSave();
+  enableOnClickForAdminOnPageLoad();
+}

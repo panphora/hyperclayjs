@@ -1,3 +1,9 @@
+// Helper to check if an array contains DOM nodes
+const isElementArray = (arr) => {
+  if (!Array.isArray(arr) || arr.length === 0) return false;
+  return arr.every(item => item instanceof Element || item instanceof Node || item instanceof Document);
+};
+
 const createMethodHandler = (elements, plugins, methods) => ({
   get(target, prop) {
     // Handle array-like numeric access and length
@@ -16,9 +22,12 @@ const createMethodHandler = (elements, plugins, methods) => ({
       const arrayMethod = Array.prototype[prop];
       return (...args) => {
         const result = arrayMethod.apply(elements, args);
-        // For methods that return arrays, wrap in proxy
+        // For methods that return arrays, only wrap if they contain DOM nodes
+        // Otherwise return plain array (jQuery-like behavior for primitives)
         if (Array.isArray(result)) {
-          return createElementProxy(result, plugins, methods);
+          return isElementArray(result)
+            ? createElementProxy(result, plugins, methods)
+            : result;  // Return plain array for primitives
         }
         // For single element returns (like find), return raw value
         if (result instanceof Element) {
@@ -92,7 +101,10 @@ const createMethodHandler = (elements, plugins, methods) => ({
       const method = methods[prop];
       return (...args) => {
         const result = method.apply(createElementProxy(elements, plugins, methods), args);
-        return result instanceof Array ? createElementProxy(result, plugins, methods) : result;
+        // Only wrap arrays that contain DOM nodes, return plain arrays for primitives
+        return (result instanceof Array && isElementArray(result))
+          ? createElementProxy(result, plugins, methods)
+          : result;
       };
     }
 

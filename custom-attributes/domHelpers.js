@@ -3,17 +3,23 @@ import pipe from "../utilities/pipe.js";
 
 export default function init () {
 
+  // Bail if already initialized
+  if (HTMLElement.prototype.hasOwnProperty('nearest')) {
+    return;
+  }
+
   // elem.nearest.project returns nearest element with a "project" attribute
   Object.defineProperty(HTMLElement.prototype, 'nearest', {
+    configurable: true,
     get: function() {
       let element = this;
-      
+
       const handler = {
         get(target, prop) {
           return nearest(element, `[${prop}], .${prop}`);
         }
       };
-      
+
       return new Proxy({}, handler);
     }
   });
@@ -21,9 +27,10 @@ export default function init () {
   // elem.val.project returns the value of the nearest "project" attribute
   // elem.val.project = "hello world" sets the value of the nearest "project" attribute
   Object.defineProperty(HTMLElement.prototype, 'val', {
+    configurable: true,
     get: function() {
       let element = this;
-      
+
       const handler = {
         get(target, prop) {
           return nearest(element, `[${prop}], .${prop}`, elem => elem.getAttribute(prop));
@@ -31,12 +38,14 @@ export default function init () {
         set(target, prop, value) {
           const foundElem = nearest(element, `[${prop}], .${prop}`);
 
-          foundElem.setAttribute(prop, value);
+          if (foundElem) {
+            foundElem.setAttribute(prop, value);
+          }
 
           return true;
         }
       };
-      
+
       return new Proxy({}, handler);
     }
   });
@@ -44,9 +53,10 @@ export default function init () {
   // elem.text.project returns the innerText of the nearest element with the "project" attribute
   // elem.text.project = "hello world" sets the innerText of the nearest element with the "project" attribute
   Object.defineProperty(HTMLElement.prototype, 'text', {
+    configurable: true,
     get: function() {
       let element = this;
-      
+
       const handler = {
         get(target, prop) {
           return nearest(element, `[${prop}], .${prop}`, elem => elem.innerText);
@@ -54,18 +64,21 @@ export default function init () {
         set(target, prop, value) {
           const foundElem = nearest(element, `[${prop}], .${prop}`);
 
-          foundElem.innerText = value;
+          if (foundElem) {
+            foundElem.innerText = value;
+          }
 
           return true;
         }
       };
-      
+
       return new Proxy({}, handler);
     }
   });
 
   // elem.exec.sync_out() executes the code in the nearest "sync_out" attribute, using elem as the `this`
   Object.defineProperty(HTMLElement.prototype, 'exec', {
+    configurable: true,
     get: function() {
       let element = this;
       

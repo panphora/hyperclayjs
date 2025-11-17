@@ -50,9 +50,11 @@ export function savePage(callback = () => {}) {
 
   const currentContents = getPageContents();
 
+  // Track whether there are unsaved changes
+  unsavedChanges = (currentContents !== lastSavedContents);
+
   // Skip if content hasn't changed
-  if (currentContents === lastSavedContents) {
-    unsavedChanges = false;
+  if (!unsavedChanges) {
     return;
   }
 

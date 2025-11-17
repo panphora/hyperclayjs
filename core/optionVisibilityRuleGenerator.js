@@ -153,3 +153,8 @@ const optionVisibilityRuleGenerator = {
 };
 
 export default optionVisibilityRuleGenerator;
+
+// Auto-initialize
+export function init() {
+  optionVisibilityRuleGenerator.start();
+}

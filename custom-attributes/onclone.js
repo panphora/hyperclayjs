@@ -1,16 +1,25 @@
 export default function init() {
+  // Bail if already patched (idempotence)
+  if (Node.prototype.__hyperclayOnclone) {
+    return;
+  }
+
   const originalCloneNode = Node.prototype.cloneNode;
-  
+
+  // Store original for idempotence check
+  Node.prototype.__hyperclayOnclone = originalCloneNode;
+
   Node.prototype.cloneNode = function(deep) {
     const clonedNode = originalCloneNode.call(this, deep);
-    
+
     if (clonedNode.nodeType === Node.ELEMENT_NODE) {
+      // Process only the top-level cloned element
       processOnclone(clonedNode);
     }
-    
+
     return clonedNode;
   };
-  
+
   function processOnclone(element) {
     const oncloneCode = element.getAttribute('onclone');
     if (oncloneCode) {

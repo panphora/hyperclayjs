@@ -1,4 +1,4 @@
-import getDataFromForm from "../dom/getDataFromForm.js";
+import getDataFromForm from "../dom-utilities/getDataFromForm.js";
 
 function handleFormSubmit(event) {
   const form = event.target;
@@ -18,10 +18,37 @@ function handleButtonClick(event) {
 
 function submitAjax(elem) {
   callSubmitEvents(elem).then(() => {
-    const url = elem.getAttribute('action');
-    const method = elem.getAttribute('method');
-    const data = getDataFromForm(elem);
-    
+    // Ajax buttons can have their own action/method or inherit from parent form
+    const isButton = elem.hasAttribute('ajax-button');
+    const parentForm = elem.closest('form');
+
+    // Get URL - prioritize element's own action attribute
+    let url = elem.getAttribute('action');
+    if (!url && parentForm) {
+      url = parentForm.getAttribute('action');
+    }
+    if (!url) {
+      url = window.location.href;
+    }
+
+    // Get method - prioritize element's own method attribute
+    let method = elem.getAttribute('method');
+    if (!method && parentForm) {
+      method = parentForm.getAttribute('method');
+    }
+    method = (method || 'POST').toUpperCase();
+
+    // Get data - for buttons, only use form data if button is inside a form
+    let data = {};
+    if (isButton && parentForm) {
+      // Button inside form: use form data
+      data = getDataFromForm(parentForm);
+    } else if (!isButton) {
+      // It's a form element itself
+      data = getDataFromForm(elem);
+    }
+    // For standalone buttons with no form, data remains empty object
+
     fetch(url, {
       method: method,
       headers: {

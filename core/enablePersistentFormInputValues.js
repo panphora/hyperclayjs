@@ -18,11 +18,30 @@ export default function enablePersistentFormInputValues(filterBySelector = "[per
 
   document.addEventListener('change', (event) => {
     const elem = event.target;
-    if (elem.matches(selector) && (elem.type === 'checkbox' || elem.type === 'radio')) {
-      if (elem.checked) {
-        elem.setAttribute('checked', '');
-      } else {
-        elem.removeAttribute('checked');
+    if (elem.matches(selector)) {
+      // Handle checkboxes and radios
+      if (elem.type === 'checkbox' || elem.type === 'radio') {
+        if (elem.checked) {
+          elem.setAttribute('checked', '');
+        } else {
+          elem.removeAttribute('checked');
+        }
+      }
+      // Handle select elements
+      else if (elem.tagName.toLowerCase() === 'select') {
+        // Remove selected from all options
+        const options = elem.querySelectorAll('option');
+        options.forEach(option => option.removeAttribute('selected'));
+
+        // Add selected to currently selected option(s)
+        if (elem.multiple) {
+          const selectedOptions = elem.selectedOptions;
+          Array.from(selectedOptions).forEach(option => {
+            option.setAttribute('selected', '');
+          });
+        } else if (elem.selectedIndex >= 0) {
+          options[elem.selectedIndex].setAttribute('selected', '');
+        }
       }
     }
   });
@@ -35,4 +54,9 @@ export default function enablePersistentFormInputValues(filterBySelector = "[per
       textarea.removeAttribute('value');
     });
   });
+}
+
+// Auto-initialize with default selector
+export function init() {
+  enablePersistentFormInputValues("[persist]");
 }

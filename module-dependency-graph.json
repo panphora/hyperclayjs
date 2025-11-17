@@ -63,7 +63,9 @@
       "core/savePage.js",
       "dom-utilities/onDomReady.js"
     ],
-    "custom-attributes/ajaxElements.js": [],
+    "custom-attributes/ajaxElements.js": [
+      "dom-utilities/getDataFromForm.js"
+    ],
     "custom-attributes/autosize.js": [],
     "custom-attributes/domHelpers.js": [
       "utilities/nearest.js",
@@ -131,7 +133,7 @@
     "save": {
       "name": "Save System",
       "category": "core",
-      "size": 4.4,
+      "size": 4.5,
       "files": [
         "core/savePage.js"
       ],
@@ -140,7 +142,7 @@
     "admin": {
       "name": "Admin Features",
       "category": "core",
-      "size": 4.3,
+      "size": 4.9,
       "files": [
         "core/adminContenteditable.js",
         "core/adminInputs.js",
@@ -152,7 +154,7 @@
     "persist": {
       "name": "Form Persistence",
       "category": "core",
-      "size": 1.4,
+      "size": 2.2,
       "files": [
         "core/enablePersistentFormInputValues.js"
       ],
@@ -161,7 +163,7 @@
     "options": {
       "name": "Option Visibility",
       "category": "core",
-      "size": 4.3,
+      "size": 4.4,
       "files": [
         "core/optionVisibilityRuleGenerator.js"
       ],
@@ -170,7 +172,7 @@
     "editmode": {
       "name": "Edit Mode",
       "category": "core",
-      "size": 0.8999999999999999,
+      "size": 1,
       "files": [
         "core/editmode.js",
         "core/setPageTypeOnDocumentElement.js"
@@ -180,7 +182,7 @@
     "events": {
       "name": "Event Attributes",
       "category": "custom-attributes",
-      "size": 2.7,
+      "size": 2.9000000000000004,
       "files": [
         "custom-attributes/onclickaway.js",
         "custom-attributes/onclone.js",
@@ -192,7 +194,7 @@
     "ajax": {
       "name": "AJAX Elements",
       "category": "custom-attributes",
-      "size": 1.8,
+      "size": 2.7,
       "files": [
         "custom-attributes/ajaxElements.js"
       ],
@@ -211,7 +213,7 @@
     "helpers": {
       "name": "DOM Helpers",
       "category": "custom-attributes",
-      "size": 5.2,
+      "size": 5.4,
       "files": [
         "custom-attributes/domHelpers.js"
       ],
@@ -230,7 +232,7 @@
     "prompts": {
       "name": "Dialog Functions",
       "category": "ui",
-      "size": 7.3,
+      "size": 7.4,
       "files": [
         "ui/prompts.js"
       ],
@@ -338,7 +340,7 @@
     "jquery-like": {
       "name": "jQuery-like DOM",
       "category": "dom-utilities",
-      "size": 12.1,
+      "size": 12.6,
       "files": [
         "dom-utilities/All.js"
       ],
@@ -401,7 +403,7 @@
     "send-message": {
       "name": "Send Message",
       "category": "communication",
-      "size": 1.1,
+      "size": 1.2,
       "files": [
         "communication/sendMessage.js"
       ],

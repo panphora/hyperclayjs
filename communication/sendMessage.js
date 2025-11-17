@@ -9,6 +9,12 @@ export default function sendMessage(eventOrObj, successMessage = "Successfully s
   if (eventOrObj instanceof Event) {
     eventOrObj.preventDefault();
     form = eventOrObj.target.closest('form');
+
+    if (!form) {
+      toast('No form found for this element', 'error');
+      return Promise.reject('No form found');
+    }
+
     data = getDataFromForm(form);
   } else {
     data = eventOrObj;
