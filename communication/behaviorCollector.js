@@ -186,6 +186,10 @@ const behaviorCollector = (() => {
       isTrusted: e.isTrusted
     });
     updateTiming();
+
+    if (data.interactions.focusEvents.length > 20) {
+      data.interactions.focusEvents.shift();
+    }
   }, {
     passive: true,
     capture: true
@@ -196,6 +200,10 @@ const behaviorCollector = (() => {
         state: document.visibilityState,
         timestamp: Date.now()
       });
+
+      if (data.interactions.tabSwitches.length > 20) {
+        data.interactions.tabSwitches.shift();
+      }
     }, {
       passive: true
     });

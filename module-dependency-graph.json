@@ -1,5 +1,9 @@
 {
   "rawDependencies": {
+    "__tests__/All.test.js": [
+      "dom-utilities/All.js"
+    ],
+    "babel.config.js": [],
     "build/build-loader.js": [],
     "build/generate-dependency-graph.js": [],
     "build/hyperclay.template.js": [],
@@ -63,6 +67,9 @@
       "core/savePage.js",
       "dom-utilities/onDomReady.js"
     ],
+    "coverage/lcov-report/block-navigation.js": [],
+    "coverage/lcov-report/prettify.js": [],
+    "coverage/lcov-report/sorter.js": [],
     "custom-attributes/ajaxElements.js": [
       "dom-utilities/getDataFromForm.js"
     ],
@@ -92,6 +99,7 @@
     "dom-utilities/onDomReady.js": [],
     "dom-utilities/onLoad.js": [],
     "hyperclay.js": [],
+    "jest.config.js": [],
     "string-utilities/copy-to-clipboard.js": [],
     "string-utilities/emmet-html.js": [],
     "string-utilities/query.js": [],
@@ -340,7 +348,7 @@
     "jquery-like": {
       "name": "jQuery-like DOM",
       "category": "dom-utilities",
-      "size": 12.6,
+      "size": 13.6,
       "files": [
         "dom-utilities/All.js"
       ],

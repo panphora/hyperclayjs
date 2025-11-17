@@ -35,14 +35,14 @@
   let requestedFeatures = [];
 
   if (presetParam && presets[presetParam]) {
-    requestedFeatures = presets[presetParam];
+    requestedFeatures = presets[presetParam].modules;
     console.log(`HyperclayJS: Loading preset "${presetParam}"`);
   } else if (featuresParam) {
     requestedFeatures = featuresParam.split(',').map(f => f.trim());
     console.log(`HyperclayJS: Loading features:`, requestedFeatures);
   } else {
     // Default to minimal preset
-    requestedFeatures = presets.minimal;
+    requestedFeatures = presets.minimal.modules;
     console.log('HyperclayJS: No features specified, loading minimal preset');
   }
 

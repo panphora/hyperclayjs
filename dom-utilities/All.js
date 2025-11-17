@@ -1,6 +1,8 @@
 // Helper to check if an array contains DOM nodes
 const isElementArray = (arr) => {
-  if (!Array.isArray(arr) || arr.length === 0) return false;
+  if (!Array.isArray(arr)) return false;
+  // Empty arrays from element operations should stay wrapped for chainability
+  if (arr.length === 0) return true;
   return arr.every(item => item instanceof Element || item instanceof Node || item instanceof Document);
 };
 
@@ -12,6 +14,11 @@ const createMethodHandler = (elements, plugins, methods) => ({
     // Handle Symbol.iterator BEFORE number check
     if (prop === Symbol.iterator) {
       return elements[Symbol.iterator].bind(elements);
+    }
+
+    // Handle other Symbols (toStringTag, etc.) - return undefined to avoid Symbol-to-number conversion
+    if (typeof prop === 'symbol') {
+      return undefined;
     }
 
     // Handle numeric indices
@@ -334,20 +341,37 @@ const defaultPlugins = {
 };
 
 const All = new Proxy(function (selectorOrElements, contextSelector) {
-  // First normalize the elements from the first argument
-  let elements = toElementArray(selectorOrElements);
-
-  // If there's a context selector, filter by matching elements and their descendants
+  // If there's a context selector, search within that context
   if (arguments.length === 2) {
     if (typeof contextSelector !== 'string') {
       throw new TypeError('Context selector must be a string');
     }
-    elements = elements.flatMap(el => [
-      ...(el.matches?.(contextSelector) ? [el] : []),
-      ...Array.from(el.querySelectorAll(contextSelector))
-    ]);
+
+    // Get the context element(s)
+    const contextElements = Array.from(document.querySelectorAll(contextSelector));
+
+    // If first arg is a string selector, search within each context
+    if (typeof selectorOrElements === 'string') {
+      const elements = contextElements.flatMap(context => {
+        // Include context itself if it matches the selector
+        const matches = context.matches(selectorOrElements) ? [context] : [];
+        // Plus all descendants that match
+        const descendants = Array.from(context.querySelectorAll(selectorOrElements));
+        return [...matches, ...descendants];
+      });
+      return createElementProxy(elements);
+    }
+
+    // If first arg is elements, filter to those within context
+    const searchElements = toElementArray(selectorOrElements);
+    const elements = searchElements.filter(el =>
+      contextElements.some(context => context.contains(el))
+    );
+    return createElementProxy(elements);
   }
 
+  // Single argument - normalize and return
+  const elements = toElementArray(selectorOrElements);
   return createElementProxy(elements);
 }, {
   get(target, prop) {

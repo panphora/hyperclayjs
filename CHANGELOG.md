@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - RELEASE.md with comprehensive npm publication process
 - Auto-generated dependency graph with accurate file sizes and dependencies
 - Support for 32 modular features across 7 categories
+- BUG_FIXES_REPORT.md documenting all critical bug fixes with effects and side effects
+- FIXES_PLAN.md with implementation plans and pseudo code for remaining issues
+- TOP_ISSUES.md tracking resolved critical issues
+- NEXT_TOP_ISSES.md tracking upcoming issues to address
 
 ### Changed
 - Reorganized entire codebase into category-based folder structure:
@@ -54,6 +58,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Incorrect module mappings (ui/modals.js → ui/theModal.js, etc.)
 - Template path reference in build-loader.js
 - File list in package.json to include all new category folders
+- Preset loading bug: presets are now correctly accessed via `.modules` property instead of being used as arrays directly
+
+#### Critical Bug Fixes (10 issues resolved)
+1. **Module initialization** - Modules with default exports now initialize correctly (`build/hyperclay.template.js`)
+   - Added fallback to call `loaded.default()` when `loaded.init()` doesn't exist
+2. **Admin feature activation** - Admin features now activate when loaded (`core/adminContenteditable.js`)
+   - Added missing `init()` function that wires up before-save hooks and DOM-ready logic
+3. **Ajax button handling** - Ajax buttons properly support their own action/method attributes (`custom-attributes/ajaxElements.js`)
+   - Fixed to prioritize button's own attributes, fallback to parent form, support standalone buttons
+   - Fixed import path from non-existent `../dom/` to `../dom-utilities/`
+4. **sendMessage null safety** - No longer crashes when element isn't in a form (`communication/sendMessage.js`)
+   - Added null guard with user-friendly error toast and rejected promise
+5. **Select element persistence** - Select dropdowns now persist correctly after save (`core/enablePersistentFormInputValues.js`)
+   - Added logic to toggle `selected` attribute on option elements for both single and multi-select
+6. **Unsaved changes tracking** - beforeunload warning now fires correctly (`core/savePage.js`)
+   - Set `unsavedChanges` flag based on content comparison in main savePage function
+7. **Prototype extensions safety** - DOM prototype extensions are now idempotent and safe (`custom-attributes/domHelpers.js`)
+   - Added idempotence check, `configurable: true`, and null guards in setters
+8. **onclone handler completeness** - Now processes all descendants with [onclone] attribute (`custom-attributes/onclone.js`)
+   - Made patch idempotent using `__hyperclayOnclone` marker
+   - Process entire subtree, not just top-level element
+9. **Behavior data collection** - Scroll and blur events now captured correctly (`communication/behaviorCollector.js`)
+   - Changed scroll listener from `document` to `window`
+   - Added blur event listener with capture
+10. **All.js proxy chaining and context selectors** - Array methods return plain arrays for primitives, enabling native method chaining (`dom-utilities/All.js`)
+    - Added `isElementArray()` helper to distinguish DOM nodes from primitives
+    - jQuery-like behavior where `.map(el => el.id)` returns unwrapped array
+    - Fixed empty array handling: empty results from element operations now maintain proxy wrapping for chainability
+    - Fixed Symbol property handling: added type guard to prevent "Cannot convert Symbol to number" errors
+    - Fixed context selector logic: `All(selector, context)` now correctly searches for selector WITHIN context (jQuery-style)
+
+#### Remaining Issues (documented in FIXES_PLAN.md)
+5 additional issues have been analyzed with implementation plans:
+- Issue #11: File upload helpers crash on edge cases
+- Issue #14: onclickaway stops processing other targets
+- Issue #16: Save-button clicks bubble into native submissions
+- Issue #17: Style injection dedupes by filename substring
+- Issue #20: Autosize ignores dynamically added textareas
+
+See `FIXES_PLAN.md` for detailed pseudo code and implementation strategy.
 
 ## [1.0.0] - 2025-11-14
 
