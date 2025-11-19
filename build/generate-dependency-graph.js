@@ -185,7 +185,7 @@ const MODULE_DEFINITIONS = {
     description: 'Tracks user interactions (mouse, scroll, keyboard)'
   },
   'communication/sendMessage.js': {
-    name: 'Send Message to HTML App Owner',
+    name: 'Send Message to App Owner',
     moduleId: 'send-message',
     description: 'Message sending utility'
   },
