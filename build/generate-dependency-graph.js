@@ -179,13 +179,18 @@ const MODULE_DEFINITIONS = {
     moduleId: 'query-parser',
     description: 'Parse URL search params'
   },
+  'communication/behaviorCollector.js': {
+    name: 'Behavior Collector',
+    moduleId: 'behavior-collector',
+    description: 'Tracks user interactions (mouse, scroll, keyboard)'
+  },
   'communication/sendMessage.js': {
-    name: 'Send Message',
+    name: 'Send Message to HTML App Owner',
     moduleId: 'send-message',
     description: 'Message sending utility'
   },
   'communication/uploadFile.js': {
-    name: 'File Upload',
+    name: 'File Upload to App Owner',
     moduleId: 'file-upload',
     description: 'File upload with progress'
   }

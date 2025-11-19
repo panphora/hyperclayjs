@@ -435,7 +435,7 @@
     "behavior-collector": {
       "name": "Behavior Collector",
       "category": "communication",
-      "size": 3.5,
+      "size": 5.2,
       "files": [
         "communication/behaviorCollector.js"
       ],

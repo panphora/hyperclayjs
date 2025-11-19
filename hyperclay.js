@@ -444,7 +444,7 @@
   "emmet-html": 1.4,
   "copy-to-clipboard": 0.9,
   "query-parser": 0.1,
-  "behavior-collector": 3.5,
+  "behavior-collector": 5.2,
   "send-message": 1.2,
   "file-upload": 10.4
 };
