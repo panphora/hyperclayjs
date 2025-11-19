@@ -1,6 +1,22 @@
 /**
- * Hyperclay Starter Kit - Self-detecting module loader
+ * HyperclayJS - Self-detecting module loader
  * Automatically loads requested features with dependency resolution
+ *
+ * USAGE:
+ *
+ * <!-- Load with a preset -->
+ * <script src="https://cdn.jsdelivr.net/npm/hyperclayjs@1/hyperclay.js?preset=minimal" type="module"></script>
+ * <script src="https://cdn.jsdelivr.net/npm/hyperclayjs@1/hyperclay.js?preset=standard" type="module"></script>
+ * <script src="https://cdn.jsdelivr.net/npm/hyperclayjs@1/hyperclay.js?preset=everything" type="module"></script>
+ *
+ * <!-- Load specific features -->
+ * <script src="https://cdn.jsdelivr.net/npm/hyperclayjs@1/hyperclay.js?features=save,admin,toast" type="module"></script>
+ *
+ * <!-- Combine presets and features -->
+ * <script src="https://cdn.jsdelivr.net/npm/hyperclayjs@1/hyperclay.js?preset=minimal&features=modals,ajax" type="module"></script>
+ *
+ * Available presets: minimal, standard, everything
+ * See https://github.com/hyperclay/hyperclayjs for full list of features
  *
  * AUTO-GENERATED FILE - Do not edit directly
  * Generated from module-dependency-graph.json

@@ -235,7 +235,7 @@
     "sortable": {
       "name": "Sortable",
       "category": "custom-attributes",
-      "size": 117.3,
+      "size": 117.89999999999999,
       "files": [
         "custom-attributes/sortable.js",
         "vendor/Sortable.js"

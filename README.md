@@ -67,7 +67,7 @@ import 'hyperclayjs/presets/standard.js';
 | DOM Helpers | 5.4KB | el.nearest, el.val, el.text, el.exec, el.cycle |
 | Event Attributes | 3.5KB | [onclickaway], [onclone], [onpagemutation], [onrender] |
 | Input Helpers | 1.2KB | [prevent-enter], [autosize] for textareas |
-| Sortable | 117.3KB | Drag-drop sorting with [sortable] - includes Sortable.js vendor library |
+| Sortable | 117.9KB | Drag-drop sorting with [sortable] - includes Sortable.js vendor library |
 
 ### UI Components (User interface elements)
 
@@ -133,7 +133,7 @@ Standard feature set for most use cases
 
 **Modules:** `save-core`, `save`, `admin`, `persist`, `ajax`, `events`, `helpers`, `toast`
 
-### Everything (~614KB)
+### Everything (~614.6KB)
 All available features
 
 Includes all available modules across all categories.
