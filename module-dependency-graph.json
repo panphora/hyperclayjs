@@ -443,7 +443,7 @@
       "description": "Tracks user interactions (mouse, scroll, keyboard)"
     },
     "send-message": {
-      "name": "Send Message to HTML App Owner",
+      "name": "Send Message to App Owner",
       "category": "communication",
       "size": 1.2,
       "files": [

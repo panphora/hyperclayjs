@@ -113,7 +113,7 @@ import 'hyperclayjs/presets/standard.js';
 |--------|------|-------------|
 | Behavior Collector | 5.2KB | Tracks user interactions (mouse, scroll, keyboard) |
 | File Upload to App Owner | 10.4KB | File upload with progress |
-| Send Message to HTML App Owner | 1.2KB | Message sending utility |
+| Send Message to App Owner | 1.2KB | Message sending utility |
 
 ### Vendor Libraries (Third-party libraries)
 
