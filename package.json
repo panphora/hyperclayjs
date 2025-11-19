@@ -33,14 +33,16 @@
   ],
   "scripts": {
     "dev": "npm run build && http-server -p 3535 -o /index.html",
-    "build": "npm run generate:deps && npm run build:loader && npm run build:readme",
+    "build": "npm run generate:deps && npm run build:loader && npm run build:readme && npm run build:load-jsdelivr",
     "generate:deps": "node build/generate-dependency-graph.js",
     "build:loader": "node build/build-loader.js",
     "build:readme": "node build/generate-readme.js",
+    "build:load-jsdelivr": "node build/generate-load-jsdelivr.js",
     "test": "jest",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "prepublishOnly": "npm run build && npm test"
+    "prepublishOnly": "npm run build && npm test",
+    "postpublish": "open http://127.0.0.1:3535/load-jsdelivr.html"
   },
   "repository": {
     "type": "git",
