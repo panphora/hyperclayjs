@@ -33,11 +33,11 @@ const MODULE_DEFINITIONS = {
     moduleId: 'save',
     description: 'Full save: save button, keyboard shortcut, auto-save, change tracking'
   },
-  'core/adminContenteditable.js': {
+  'core/adminSystem.js': {
     name: 'Admin Features',
     moduleId: 'admin',
     description: 'Hides admin inputs, scripts, contenteditable, onclick for regular viewers',
-    relatedFiles: ['core/adminInputs.js', 'core/adminOnClick.js', 'core/adminResources.js']
+    relatedFiles: ['core/adminContenteditable.js', 'core/adminInputs.js', 'core/adminOnClick.js', 'core/adminResources.js']
   },
   'core/enablePersistentFormInputValues.js': {
     name: 'Form Persistence',
@@ -49,11 +49,11 @@ const MODULE_DEFINITIONS = {
     moduleId: 'options',
     description: 'Dynamic show/hide based on page state with option:attribute="value"'
   },
-  'core/editmode.js': {
+  'core/editmodeSystem.js': {
     name: 'Edit Mode',
     moduleId: 'editmode',
     description: 'Toggle edit mode on/off',
-    relatedFiles: ['core/setPageTypeOnDocumentElement.js']
+    relatedFiles: ['core/editmode.js', 'core/setPageTypeOnDocumentElement.js']
   },
   'custom-attributes/events.js': {
     name: 'Event Attributes',
@@ -77,11 +77,11 @@ const MODULE_DEFINITIONS = {
     moduleId: 'helpers',
     description: 'el.nearest, el.val, el.text, el.exec, el.cycle'
   },
-  'custom-attributes/prevent.js': {
+  'custom-attributes/inputHelpers.js': {
     name: 'Input Helpers',
     moduleId: 'inputs',
     description: '[prevent-enter], [autosize] for textareas',
-    relatedFiles: ['custom-attributes/autosize.js']
+    relatedFiles: ['custom-attributes/preventEnter.js', 'custom-attributes/autosize.js']
   },
   'ui/prompts.js': {
     name: 'Dialog Functions',

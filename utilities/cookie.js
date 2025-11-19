@@ -29,7 +29,17 @@ function remove(name) {
   }
 }
 
-export default {
+const cookie = {
   get,
   remove
 };
+
+// Export to window for global access
+export function exportToWindow() {
+  if (!window.hyperclay) {
+    window.hyperclay = {};
+  }
+  window.hyperclay.cookie = cookie;
+}
+
+export default cookie;

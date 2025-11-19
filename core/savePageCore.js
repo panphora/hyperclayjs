@@ -80,6 +80,17 @@ export function savePage(callback = () => {}) {
   const currentContents = getPageContents();
   saveInProgress = true;
 
+  // Test mode: skip network request, return mock success
+  if (window.hyperclay?.testMode) {
+    setTimeout(() => {
+      saveInProgress = false;
+      if (typeof callback === 'function') {
+        callback({msg: "Test mode: save skipped", msgType: "success"});
+      }
+    }, 0);
+    return;
+  }
+
   fetch(saveEndpoint, {
     method: 'POST',
     credentials: 'include',
@@ -131,6 +142,17 @@ export function saveHtml(html, callback = () => {}) {
   }
 
   saveInProgress = true;
+
+  // Test mode: skip network request, return mock success
+  if (window.hyperclay?.testMode) {
+    setTimeout(() => {
+      saveInProgress = false;
+      if (typeof callback === 'function') {
+        callback(null, {msg: "Test mode: save skipped", msgType: "success"});
+      }
+    }, 0);
+    return;
+  }
 
   fetch(saveEndpoint, {
     method: 'POST',
@@ -196,4 +218,19 @@ export function replacePageWith(url, callback = () => {}) {
         callback(err);
       }
     });
+}
+
+/**
+ * Export save functions to window.hyperclay
+ */
+export function exportToWindow() {
+  if (!window.hyperclay) {
+    window.hyperclay = {};
+  }
+
+  window.hyperclay.savePage = savePage;
+  window.hyperclay.saveHtml = saveHtml;
+  window.hyperclay.replacePageWith = replacePageWith;
+  window.hyperclay.beforeSave = beforeSave;
+  window.hyperclay.getPageContents = getPageContents;
 }

@@ -1,5 +1,5 @@
 // e.g. "Hello there" → "hello-there"
-export default function slugify (text) {
+function slugify (text) {
   return text.toString().toLowerCase()
     .normalize('NFD') // separate accents from letters
     .replace(/[\u0300-\u036f]/g, '') // remove accents
@@ -9,3 +9,13 @@ export default function slugify (text) {
     .replace(/^-+/, '') // trim - from start of text
     .replace(/-+$/, ''); // trim - from end of text
 }
+
+// Export to window for global access
+export function exportToWindow() {
+  if (!window.hyperclay) {
+    window.hyperclay = {};
+  }
+  window.hyperclay.slugify = slugify;
+}
+
+export default slugify;

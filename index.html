@@ -692,7 +692,7 @@
                                         <div class="feature-name">${module.name}</div>
                                         <div class="feature-description">${module.description}</div>
                                     </div>
-                                    <span class="feature-size ${sizeClass}">${module.size}KB</span>
+                                    <span class="feature-size ${sizeClass}">${module.size.toFixed(1)}KB</span>
                                 </label>
                             `;
                         }).join('')}

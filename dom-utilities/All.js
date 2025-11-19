@@ -401,4 +401,12 @@ const All = new Proxy(function (selectorOrElements, contextSelector) {
 // Install default plugins
 All.use(defaultPlugins);
 
+// Export to window for global access
+export function exportToWindow() {
+  if (!window.hyperclay) {
+    window.hyperclay = {};
+  }
+  window.hyperclay.All = All;
+}
+
 export default All;

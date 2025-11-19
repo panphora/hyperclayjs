@@ -164,3 +164,16 @@ export function init() {
     }
   });
 }
+
+// Export to window for global access
+export function exportToWindow() {
+  if (!window.hyperclay) {
+    window.hyperclay = {};
+  }
+
+  window.hyperclay.ask = ask;
+  window.hyperclay.consent = consent;
+  window.hyperclay.tell = tell;
+  window.hyperclay.snippet = snippet;
+  window.hyperclay.showApiKey = showApiKey;
+}

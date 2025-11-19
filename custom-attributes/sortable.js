@@ -57,8 +57,5 @@ function init () {
   // ❌ onElementAdded(newElem => makeSortable(newElem.closest('[sortable]')))
 }
 
-
-
-
 export { init };
 export default init;

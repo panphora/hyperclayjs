@@ -669,6 +669,9 @@ const themodal = (() => {
   return themodalMain;
 })();
 
-window.themodal = themodal;
+// Export to window for global access
+export function exportToWindow() {
+  window.themodal = themodal;
+}
 
 export default themodal;

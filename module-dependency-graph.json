@@ -38,8 +38,18 @@
       "core/savePage.js",
       "dom-utilities/onDomReady.js"
     ],
+    "core/adminSystem.js": [
+      "core/adminContenteditable.js",
+      "core/adminInputs.js",
+      "core/adminOnClick.js",
+      "core/adminResources.js"
+    ],
     "core/editmode.js": [
       "core/isAdminOfCurrentResource.js"
+    ],
+    "core/editmodeSystem.js": [
+      "core/editmode.js",
+      "core/setPageTypeOnDocumentElement.js"
     ],
     "core/enablePersistentFormInputValues.js": [
       "core/savePage.js"
@@ -84,6 +94,10 @@
       "custom-attributes/onpagemutation.js",
       "custom-attributes/onrender.js"
     ],
+    "custom-attributes/inputHelpers.js": [
+      "custom-attributes/autosize.js",
+      "custom-attributes/preventEnter.js"
+    ],
     "custom-attributes/onclickaway.js": [],
     "custom-attributes/onclone.js": [],
     "custom-attributes/onpagemutation.js": [
@@ -93,7 +107,7 @@
       "dom-utilities/onLoad.js",
       "utilities/mutation.js"
     ],
-    "custom-attributes/prevent.js": [],
+    "custom-attributes/preventEnter.js": [],
     "custom-attributes/sortable.js": [
       "core/isAdminOfCurrentResource.js",
       "utilities/mutation.js",
@@ -138,7 +152,7 @@
     "save-core": {
       "name": "Save Core",
       "category": "core",
-      "size": 4.9,
+      "size": 5.9,
       "files": [
         "core/savePageCore.js"
       ],
@@ -147,7 +161,7 @@
     "save": {
       "name": "Save System",
       "category": "core",
-      "size": 4.5,
+      "size": 4.9,
       "files": [
         "core/savePage.js"
       ],
@@ -156,8 +170,9 @@
     "admin": {
       "name": "Admin Features",
       "category": "core",
-      "size": 4.9,
+      "size": 5.300000000000001,
       "files": [
+        "core/adminSystem.js",
         "core/adminContenteditable.js",
         "core/adminInputs.js",
         "core/adminOnClick.js",
@@ -186,8 +201,9 @@
     "editmode": {
       "name": "Edit Mode",
       "category": "core",
-      "size": 1,
+      "size": 1.4,
       "files": [
+        "core/editmodeSystem.js",
         "core/editmode.js",
         "core/setPageTypeOnDocumentElement.js"
       ],
@@ -237,9 +253,10 @@
     "inputs": {
       "name": "Input Helpers",
       "category": "custom-attributes",
-      "size": 0.9,
+      "size": 1.2,
       "files": [
-        "custom-attributes/prevent.js",
+        "custom-attributes/inputHelpers.js",
+        "custom-attributes/preventEnter.js",
         "custom-attributes/autosize.js"
       ],
       "description": "[prevent-enter], [autosize] for textareas"
@@ -247,7 +264,7 @@
     "prompts": {
       "name": "Dialog Functions",
       "category": "ui",
-      "size": 7.4,
+      "size": 7.7,
       "files": [
         "ui/prompts.js"
       ],
@@ -256,7 +273,7 @@
     "toast": {
       "name": "Toast Notifications",
       "category": "ui",
-      "size": 7.1,
+      "size": 7.3,
       "files": [
         "ui/toast.js"
       ],
@@ -310,7 +327,7 @@
     "cookie": {
       "name": "Cookie Helper",
       "category": "utilities",
-      "size": 1.2,
+      "size": 1.3,
       "files": [
         "utilities/cookie.js"
       ],
@@ -355,7 +372,7 @@
     "jquery-like": {
       "name": "jQuery-like DOM",
       "category": "dom-utilities",
-      "size": 13.6,
+      "size": 13.8,
       "files": [
         "dom-utilities/All.js"
       ],
@@ -382,7 +399,7 @@
     "slugify": {
       "name": "Slugify",
       "category": "string-utilities",
-      "size": 0.5,
+      "size": 0.7,
       "files": [
         "string-utilities/slugify.js"
       ],
@@ -400,7 +417,7 @@
     "copy-to-clipboard": {
       "name": "Copy to Clipboard",
       "category": "string-utilities",
-      "size": 0.7,
+      "size": 0.9,
       "files": [
         "string-utilities/copy-to-clipboard.js"
       ],
@@ -415,8 +432,17 @@
       ],
       "description": "Parse URL search params"
     },
+    "behavior-collector": {
+      "name": "Behavior Collector",
+      "category": "communication",
+      "size": 3.5,
+      "files": [
+        "communication/behaviorCollector.js"
+      ],
+      "description": "Tracks user interactions (mouse, scroll, keyboard)"
+    },
     "send-message": {
-      "name": "Send Message",
+      "name": "Send Message to HTML App Owner",
       "category": "communication",
       "size": 1.2,
       "files": [
@@ -425,7 +451,7 @@
       "description": "Message sending utility"
     },
     "file-upload": {
-      "name": "File Upload",
+      "name": "File Upload to App Owner",
       "category": "communication",
       "size": 10.4,
       "files": [
@@ -504,6 +530,7 @@
       "name": "Communication & Files",
       "description": "File handling and messaging",
       "modules": [
+        "behavior-collector",
         "send-message",
         "file-upload"
       ]
@@ -568,6 +595,7 @@
         "emmet-html",
         "copy-to-clipboard",
         "query-parser",
+        "behavior-collector",
         "send-message",
         "file-upload"
       ]

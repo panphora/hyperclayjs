@@ -27,7 +27,7 @@
     ]
   },
   "admin": {
-    "path": "./core/adminContenteditable.js",
+    "path": "./core/adminSystem.js",
     "dependencies": [
       "save",
       "dom-ready"
@@ -46,7 +46,7 @@
     ]
   },
   "editmode": {
-    "path": "./core/editmode.js",
+    "path": "./core/editmodeSystem.js",
     "dependencies": [
       "save",
       "dom-ready"
@@ -76,7 +76,7 @@
     ]
   },
   "inputs": {
-    "path": "./custom-attributes/prevent.js",
+    "path": "./custom-attributes/inputHelpers.js",
     "dependencies": []
   },
   "prompts": {
@@ -165,9 +165,14 @@
     "path": "./string-utilities/query.js",
     "dependencies": []
   },
+  "behavior-collector": {
+    "path": "./communication/behaviorCollector.js",
+    "dependencies": []
+  },
   "send-message": {
     "path": "./communication/sendMessage.js",
     "dependencies": [
+      "behavior-collector",
       "toast"
     ]
   },
@@ -241,6 +246,7 @@
       "emmet-html",
       "copy-to-clipboard",
       "query-parser",
+      "behavior-collector",
       "send-message",
       "file-upload"
     ]
@@ -408,36 +414,37 @@
 
     // Show feature summary - AUTO-GENERATED
     const sizes = {
-  "save-core": 4.9,
-  "save": 4.5,
-  "admin": 4.9,
+  "save-core": 5.9,
+  "save": 4.9,
+  "admin": 5.300000000000001,
   "persist": 2.2,
   "options": 4.4,
-  "editmode": 1,
+  "editmode": 1.4,
   "events": 3.5,
   "ajax": 2.7,
   "sortable": 117.3,
   "helpers": 5.4,
-  "inputs": 0.9,
-  "prompts": 7.4,
-  "toast": 7.1,
+  "inputs": 1.2,
+  "prompts": 7.7,
+  "toast": 7.3,
   "modals": 18.4,
   "info": 3.2,
   "tailwind-play": 362.3,
   "mutation": 12.8,
   "nearest": 3.2,
-  "cookie": 1.2,
+  "cookie": 1.3,
   "throttle": 0.6,
   "debounce": 0.2,
   "dom-ready": 0.2,
   "window-load": 0.2,
-  "jquery-like": 13.6,
+  "jquery-like": 13.8,
   "style-injection": 0.8,
   "dom-morphing": 7.9,
-  "slugify": 0.5,
+  "slugify": 0.7,
   "emmet-html": 1.4,
-  "copy-to-clipboard": 0.7,
+  "copy-to-clipboard": 0.9,
   "query-parser": 0.1,
+  "behavior-collector": 3.5,
   "send-message": 1.2,
   "file-upload": 10.4
 };

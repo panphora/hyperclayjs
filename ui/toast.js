@@ -260,6 +260,14 @@ toast.useLegacy = function() {
 // Initialize with default styles when script loads
 injectStyles(defaultStyles);
 
+// Export to window for global access
+export function exportToWindow() {
+  if (!window.hyperclay) {
+    window.hyperclay = {};
+  }
+  window.hyperclay.toast = toast;
+}
+
 // toast("Site copied");
 // toast("Site name taken", "error");
 export default toast;

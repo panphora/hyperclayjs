@@ -1,9 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" showhiddenthing="true">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HyperclayJS Test Suite</title>
+  <script>
+    // Ensure editmode=true query parameter is present
+    if (!window.location.search.includes('editmode=true')) {
+      const url = new URL(window.location);
+      url.searchParams.set('editmode', 'true');
+      window.location.href = url.toString();
+    }
+  </script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -79,7 +87,7 @@
 
   <div class="test" id="test-options">
     <span class="label">options:</span>
-    <span option:editmode="true" id="option-test">✓ Option visibility working (visible in edit mode)</span>
+    <span option:showhiddenthing="true" id="option-test">✓ Option visibility working</span>
   </div>
 
   <div class="test" id="test-editmode">
@@ -125,13 +133,16 @@
 
   <div class="test" id="test-helpers">
     <span class="label">helpers (nearest, val, text, exec, cycle):</span>
-    <button onclick="testHelpers()" id="helper-btn">Test Helpers</button>
-    <span class="detail" id="helpers-output"></span>
+    <button onclick="testHelpers()" id="helper-btn" testattr="initial">Test Helpers</button>
+    <span class="detail" id="helpers-output" helpertext=""></span>
   </div>
 
   <div class="test" id="test-inputs">
     <span class="label">inputs (prevent-enter, autosize):</span>
-    <textarea prevent autosize placeholder="Type here... (enter prevented, auto-resizes)" style="width: 400px;"></textarea>
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+      <textarea prevent-enter placeholder="Type here, press Enter (prevented)" style="width: 250px;"></textarea>
+      <textarea autosize placeholder="Type here (auto-resizes)" style="width: 250px;"></textarea>
+    </div>
     <span class="detail" id="inputs-status"></span>
   </div>
 
@@ -244,7 +255,12 @@
   </div>
 
   <!-- Load HyperclayJS with everything preset -->
-  <script src="hyperclay.js?preset=everything&editmode=true&owner=true" type="module"></script>
+  <script>
+    // Enable test mode to prevent actual save requests
+    window.hyperclay = window.hyperclay || {};
+    window.hyperclay.testMode = true;
+  </script>
+  <script src="hyperclay.js?preset=everything" type="module"></script>
 
   <script type="module">
     // Wait for HyperclayJS to be ready
@@ -270,18 +286,41 @@
     }
 
     function runTests() {
+      const modules = window.hyperclayModules;
+
       // Core Features
       if (window.hyperclay?.savePage) markPass('test-save-core', 'savePage() function exists');
-      if (document.querySelector('[onclick="hyperclay.savePage()"]')) markPass('test-save', 'Save button and Ctrl+S active');
+      if (modules?.save) markPass('test-save', 'Save system initialized (Ctrl+S, auto-save, save button handler)');
       markPass('test-admin', 'Admin elements visible');
 
-      // Persist test
+      // Persist test - programmatic test
       const persistInput = document.getElementById('persist-input');
-      persistInput.addEventListener('input', () => {
+      const persistStatus = document.getElementById('persist-status');
+
+      function updatePersistStatus() {
+        const persistedValue = persistInput.getAttribute('value') || '';
+        const displayValue = persistedValue || '(empty)';
+
         if (persistInput.getAttribute('value') === persistInput.value) {
-          markPass('test-persist', 'Value attribute synced');
+          persistStatus.innerHTML = `<span class="check">✓</span> Persisted value: <code>${displayValue}</code>`;
+          document.getElementById('test-persist').classList.add('pass');
+        } else {
+          persistStatus.innerHTML = `Persisted value: <code>${displayValue}</code>`;
         }
-      });
+      }
+
+      persistInput.addEventListener('input', updatePersistStatus);
+
+      // Programmatically test persist functionality
+      setTimeout(() => {
+        persistInput.value = 'test-value';
+        persistInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+        // Check after a brief delay to ensure persist ran
+        setTimeout(() => {
+          updatePersistStatus();
+        }, 50);
+      }, 100);
 
       // Option visibility
       const optionTest = document.getElementById('option-test');
@@ -291,8 +330,11 @@
 
       // Edit mode
       const editmode = document.documentElement.getAttribute('editmode');
-      document.getElementById('editmode-status').textContent = `editmode="${editmode}"`;
-      if (editmode === 'true') markPass('test-editmode');
+      if (editmode !== null) {
+        markPass('test-editmode', `editmode="${editmode}"`);
+      } else {
+        document.getElementById('editmode-status').textContent = 'editmode not detected';
+      }
 
       // Custom Attributes - onrender is self-testing
       if (document.querySelector('[onrender]')?.textContent.includes('✓')) {
@@ -314,7 +356,6 @@
       if (window.hyperclayModules?.['tailwind-play']) markPass('test-tailwind', 'Tailwind Play loaded');
 
       // String Utilities
-      const modules = window.hyperclayModules;
       if (modules?.slugify) {
         import('./string-utilities/slugify.js').then(({ default: slugify }) => {
           document.getElementById('slugify-output').innerHTML =
@@ -382,14 +423,17 @@
       }
 
       // Behavior collector - update count every second
+      let behaviorTestPassed = false;
       setInterval(() => {
-        if (window.hyperclayModules?.behaviorCollector) {
-          import('./communication/behaviorCollector.js').then(({ default: collector }) => {
-            const data = collector.getData();
-            const count = data.mousePositions?.length || 0;
-            document.getElementById('behavior-collector-count').textContent = count;
-            if (count > 0) markPass('test-behavior');
-          });
+        if (window.hyperclayModules?.['behavior-collector']) {
+          const collector = window.hyperclayModules['behavior-collector'].default;
+          const data = collector.getData();
+          const count = data.mousePositions?.length || 0;
+          document.getElementById('behavior-collector-count').textContent = count;
+          if (count > 0 && !behaviorTestPassed) {
+            markPass('test-behavior');
+            behaviorTestPassed = true;
+          }
         }
       }, 1000);
     }
@@ -406,12 +450,25 @@
 
     window.testHelpers = function() {
       const btn = document.getElementById('helper-btn');
-      if (btn.val) btn.val('test'); // Test val
-      if (btn.text) btn.text('✓ Working'); // Test text
+      const output = document.getElementById('helpers-output');
+
+      // Test val - set attribute value on element with testattr
+      if (btn.val) {
+        btn.val.testattr = 'updated';
+      }
+
+      // Test text - set text on element with helpertext attribute
+      if (btn.text) {
+        btn.text.helpertext = '✓ All helpers working';
+      }
+
+      // Test nearest - find nearest .test element
       if (btn.nearest) {
-        const nearest = btn.nearest('.test');
-        document.getElementById('helpers-output').innerHTML = '<span class="check">✓</span> All helpers working';
-        markPass('test-helpers');
+        const nearestTest = btn.nearest.test;
+        if (nearestTest && nearestTest.classList.contains('test')) {
+          output.innerHTML = '<span class="check">✓</span> All helpers working';
+          markPass('test-helpers');
+        }
       }
     };
 

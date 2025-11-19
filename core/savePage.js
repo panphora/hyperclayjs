@@ -171,3 +171,26 @@ window.addEventListener('beforeunload', (event) => {
     event.returnValue = '';
   }
 });
+
+/**
+ * Initialize the full save system
+ */
+export function init() {
+  if (!isEditMode) return;
+
+  initSaveKeyboardShortcut();
+  initHyperclaySaveButton();
+  initSavePageOnChange();
+}
+
+/**
+ * Export save functions to window.hyperclay
+ */
+export function exportToWindow() {
+  if (!window.hyperclay) {
+    window.hyperclay = {};
+  }
+
+  window.hyperclay.savePage = savePage;
+  window.hyperclay.replacePageWith = replacePageWith;
+}
