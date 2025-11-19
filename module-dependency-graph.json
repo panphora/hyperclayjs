@@ -6,6 +6,7 @@
     "babel.config.js": [],
     "build/build-loader.js": [],
     "build/generate-dependency-graph.js": [],
+    "build/generate-readme.js": [],
     "build/hyperclay.template.js": [],
     "communication/behaviorCollector.js": [],
     "communication/sendMessage.js": [
@@ -370,7 +371,7 @@
       "description": "Window load callback"
     },
     "jquery-like": {
-      "name": "jQuery-like DOM",
+      "name": "All.js (jQuery-like)",
       "category": "dom-utilities",
       "size": 13.8,
       "files": [
@@ -533,6 +534,13 @@
         "behavior-collector",
         "send-message",
         "file-upload"
+      ]
+    },
+    "vendor": {
+      "name": "Vendor Libraries",
+      "description": "Third-party libraries",
+      "modules": [
+        "dom-morphing"
       ]
     }
   },

@@ -145,7 +145,7 @@ const MODULE_DEFINITIONS = {
     description: 'Window load callback'
   },
   'dom-utilities/All.js': {
-    name: 'jQuery-like DOM',
+    name: 'All.js (jQuery-like)',
     moduleId: 'jquery-like',
     description: 'Full DOM manipulation library'
   },
@@ -231,6 +231,11 @@ const CATEGORIES = {
   'communication': {
     name: 'Communication & Files',
     description: 'File handling and messaging',
+    modules: []
+  },
+  'vendor': {
+    name: 'Vendor Libraries',
+    description: 'Third-party libraries',
     modules: []
   }
 };

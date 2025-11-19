@@ -48,95 +48,11 @@ import 'hyperclayjs/presets/standard.js';
 
 ## Available Modules
 
-### Core Features (Essential functionality)
-
-| Module | Size | Description |
-|--------|------|-------------|
-| Admin Features | 5.3KB | Hides admin inputs, scripts, contenteditable, onclick for regular viewers |
-| Edit Mode | 1.4KB | Toggle edit mode on/off |
-| Form Persistence | 2.2KB | Persist form values to the DOM with [persist] attribute |
-| Option Visibility | 4.4KB | Dynamic show/hide based on page state with option:attribute="value" |
-| Save Core | 5.9KB | Basic save function only - hyperclay.savePage() |
-| Save System | 4.9KB | Full save: save button, keyboard shortcut, auto-save, change tracking |
-
-### Custom Attributes (HTML enhancements)
-
-| Module | Size | Description |
-|--------|------|-------------|
-| AJAX Elements | 2.7KB | [ajax-form], [ajax-button] for async form submissions |
-| DOM Helpers | 5.4KB | el.nearest, el.val, el.text, el.exec, el.cycle |
-| Event Attributes | 3.5KB | [onclickaway], [onclone], [onpagemutation], [onrender] |
-| Input Helpers | 1.2KB | [prevent-enter], [autosize] for textareas |
-| Sortable | 117.3KB | Drag-drop sorting with [sortable] - includes Sortable.js vendor library |
-
-### UI Components (User interface elements)
-
-| Module | Size | Description |
-|--------|------|-------------|
-| Dialog Functions | 7.7KB | ask(), consent(), tell(), snippet() functions |
-| Info Dialog | 3.2KB | Info dialog component |
-| Modal System | 18.4KB | Full modal window creation system - window.theModal |
-| Tailwind Play | 362.3KB | Live Tailwind CSS editing - updates styles based on classes in your HTML |
-| Toast Notifications | 7.3KB | Success/error message notifications - toast(msg, msgType) |
-
-### Utilities (Core utilities (often auto-included))
-
-| Module | Size | Description |
-|--------|------|-------------|
-| Cookie Helper | 1.3KB | Cookie management (often auto-included) |
-| Debounce | 0.2KB | Function debouncing |
-| Mutation Observer | 12.8KB | DOM mutation observation (often auto-included) |
-| Nearest Element | 3.2KB | Find nearest elements (often auto-included) |
-| Throttle | 0.6KB | Function throttling |
-
-### DOM Utilities (DOM manipulation helpers)
-
-| Module | Size | Description |
-|--------|------|-------------|
-| All.js (jQuery-like) | 13.8KB | Full DOM manipulation library |
-| DOM Ready | 0.2KB | DOM ready callback |
-| Style Injection | 0.8KB | Dynamic stylesheet injection |
-| Window Load | 0.2KB | Window load callback |
-
-### String Utilities (String manipulation helpers)
-
-| Module | Size | Description |
-|--------|------|-------------|
-| Copy to Clipboard | 0.9KB | Clipboard utility |
-| Emmet HTML | 1.4KB | Emmet-like HTML generation |
-| Slugify | 0.7KB | URL-friendly slug generator |
-| URL Query Parser | 0.1KB | Parse URL search params |
-
-### Communication & Files (File handling and messaging)
-
-| Module | Size | Description |
-|--------|------|-------------|
-| Behavior Collector | 5.2KB | Tracks user interactions (mouse, scroll, keyboard) |
-| File Upload to App Owner | 10.4KB | File upload with progress |
-| Send Message to HTML App Owner | 1.2KB | Message sending utility |
-
-### Vendor Libraries (Third-party libraries)
-
-| Module | Size | Description |
-|--------|------|-------------|
-| DOM Morphing | 7.9KB | Efficient DOM updates |
+{{MODULE_TABLES}}
 
 ## Presets
 
-### Minimal (~23.4KB)
-Essential features for basic editing
-
-**Modules:** `save-core`, `save`, `admin`, `toast`
-
-### Standard (~37.2KB)
-Standard feature set for most use cases
-
-**Modules:** `save-core`, `save`, `admin`, `persist`, `ajax`, `events`, `helpers`, `toast`
-
-### Everything (~614KB)
-All available features
-
-Includes all available modules across all categories.
+{{PRESET_DESCRIPTIONS}}
 
 ## Visual Configurator
 
