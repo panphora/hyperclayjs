@@ -112,7 +112,7 @@
 
   <div class="test" id="test-onclickaway">
     <span class="label">onclickaway:</span>
-    <div class="interactive-zone" onclickaway="this.textContent='✓ onclickaway fired'" style="cursor: pointer;">
+    <div class="interactive-zone" onclickaway="this.textContent='✓ onclickaway fired'; markPass('test-onclickaway', 'onclickaway fired')" style="cursor: pointer;">
       Click outside this box to test onclickaway
     </div>
   </div>
@@ -124,7 +124,7 @@
 
   <div class="test" id="test-sortable">
     <span class="label">sortable:</span>
-    <ul class="sortable-list" sortable>
+    <ul class="sortable-list" sortable onsorted="markPass('test-sortable', 'Item sorted')">
       <li>✓ Drag me (1)</li>
       <li>✓ Drag me (2)</li>
       <li>✓ Drag me (3)</li>
@@ -269,7 +269,7 @@
       runTests();
     });
 
-    function markPass(id, message = '') {
+    window.markPass = function(id, message = '') {
       const el = document.getElementById(id);
       el.classList.add('pass');
       const detail = el.querySelector('.detail');
@@ -283,7 +283,7 @@
         check.textContent = '✓';
         el.prepend(check);
       }
-    }
+    };
 
     function runTests() {
       const modules = window.hyperclayModules;
@@ -474,7 +474,7 @@
 
     window.testToast = function() {
       import('./ui/toast.js').then(({ default: toast }) => {
-        toast('✓ Toast notification working!', 'success');
+        toast('Toast notification working!', 'success');
         markPass('test-toast');
       });
     };
@@ -513,7 +513,7 @@
       import('./string-utilities/copy-to-clipboard.js').then(({ default: copy }) => {
         copy('HyperclayJS Test');
         import('./ui/toast.js').then(({ default: toast }) => {
-          toast('✓ Copied to clipboard!', 'success');
+          toast('Copied to clipboard!', 'success');
           markPass('test-clipboard');
         });
       });
