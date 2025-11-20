@@ -374,7 +374,7 @@ fi
 
 # Publish to npm
 info "Publishing to npm..."
-npm publish --tag "$NPM_TAG"
+SKIP_POSTPUBLISH=1 npm publish --tag "$NPM_TAG"
 success "Published to npm!"
 
 # Push to git
