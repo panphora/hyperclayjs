@@ -274,19 +274,30 @@ $BREAKING_ITEMS
 
 # Insert into CHANGELOG.md
 if [ -f "CHANGELOG.md" ]; then
-    # Insert after header (assumes "# Changelog" or similar header exists)
+    # Insert after header - use a temp file approach instead of awk -v
     TEMP_FILE=$(mktemp)
-    awk -v entry="$CHANGELOG_ENTRY" '
+    TEMP_ENTRY=$(mktemp)
+
+    # Write changelog entry to temp file
+    echo "$CHANGELOG_ENTRY" > "$TEMP_ENTRY"
+
+    # Insert after first header line
+    awk -v entry_file="$TEMP_ENTRY" '
         /^# / && !inserted {
             print $0
             print ""
-            print entry
+            while ((getline line < entry_file) > 0) {
+                print line
+            }
+            close(entry_file)
             inserted=1
             next
         }
         {print}
     ' CHANGELOG.md > "$TEMP_FILE"
+
     mv "$TEMP_FILE" CHANGELOG.md
+    rm -f "$TEMP_ENTRY"
     success "CHANGELOG.md updated"
 else
     # Create new CHANGELOG.md
