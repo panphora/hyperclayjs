@@ -41,6 +41,7 @@
     "test": "jest",
     "lint": "eslint .",
     "format": "prettier --write .",
+    "release": "./scripts/release.sh",
     "prepublishOnly": "npm run build && npm test",
     "postpublish": "open http://127.0.0.1:3535/load-jsdelivr.html"
   },

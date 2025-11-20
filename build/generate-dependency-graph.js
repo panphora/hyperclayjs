@@ -21,178 +21,302 @@ const CATEGORY_MAP = {
   'vendor': 'vendor'
 };
 
-// Module definitions with human-readable names and descriptions
+/**
+ * Module Definitions with Export Configuration
+ *
+ * exports: {
+ *   functionName: ['window', 'hyperclay']  // Exported to both window.functionName and window.hyperclay.functionName
+ *   functionName: ['hyperclay']            // Only namespaced: window.hyperclay.functionName
+ *   functionName: ['window']               // Only top-level: window.functionName
+ * }
+ *
+ * Common patterns:
+ * - Frequently used utilities (ask, toast, etc.): ['window', 'hyperclay']
+ * - Core features (savePage, admin): ['hyperclay']
+ * - Special cases (themodal): ['window'] with custom name
+ * - Internal/side-effect only modules: no exports field
+ */
 const MODULE_DEFINITIONS = {
   'core/savePageCore.js': {
     name: 'Save Core',
     moduleId: 'save-core',
-    description: 'Basic save function only - hyperclay.savePage()'
+    description: 'Basic save function only - hyperclay.savePage()',
+    exports: {
+      savePage: ['hyperclay']
+    }
   },
   'core/savePage.js': {
     name: 'Save System',
     moduleId: 'save',
-    description: 'Full save: save button, keyboard shortcut, auto-save, change tracking'
+    description: 'Full save: save button, keyboard shortcut, auto-save, change tracking',
+    exports: {
+      beforeSave: ['hyperclay'],
+      savePage: ['hyperclay'],
+      replacePageWith: ['hyperclay'],
+      initHyperclaySaveButton: ['hyperclay'],
+      initSaveKeyboardShortcut: ['hyperclay'],
+      initSavePageOnChange: ['hyperclay']
+    }
   },
   'core/adminSystem.js': {
     name: 'Admin Features',
     moduleId: 'admin',
     description: 'Hides admin inputs, scripts, contenteditable, onclick for regular viewers',
     relatedFiles: ['core/adminContenteditable.js', 'core/adminInputs.js', 'core/adminOnClick.js', 'core/adminResources.js']
+    // No exports - side effects only (init function)
   },
   'core/enablePersistentFormInputValues.js': {
     name: 'Form Persistence',
     moduleId: 'persist',
-    description: 'Persist form values to the DOM with [persist] attribute'
+    description: 'Persist form values to the DOM with [persist] attribute',
+    exports: {
+      enablePersistentFormInputValues: ['hyperclay']
+    }
   },
   'core/optionVisibilityRuleGenerator.js': {
     name: 'Option Visibility',
     moduleId: 'options',
-    description: 'Dynamic show/hide based on page state with option:attribute="value"'
+    description: 'Dynamic show/hide based on page state with option:attribute="value"',
+    exports: {
+      optionVisibilityRuleGenerator: ['window', 'hyperclay']
+    }
   },
   'core/editmodeSystem.js': {
     name: 'Edit Mode',
     moduleId: 'editmode',
     description: 'Toggle edit mode on/off',
-    relatedFiles: ['core/editmode.js', 'core/setPageTypeOnDocumentElement.js']
+    relatedFiles: ['core/editmode.js', 'core/setPageTypeOnDocumentElement.js'],
+    exports: {
+      toggleEditMode: ['hyperclay'],
+      isEditMode: ['hyperclay'],
+      isOwner: ['hyperclay']
+    }
   },
   'custom-attributes/events.js': {
     name: 'Event Attributes',
     moduleId: 'events',
     description: '[onclickaway], [onclone], [onpagemutation], [onrender]',
     relatedFiles: ['custom-attributes/onclickaway.js', 'custom-attributes/onclone.js', 'custom-attributes/onpagemutation.js', 'custom-attributes/onrender.js']
+    // No exports - side effects only (init function)
   },
   'custom-attributes/ajaxElements.js': {
     name: 'AJAX Elements',
     moduleId: 'ajax',
     description: '[ajax-form], [ajax-button] for async form submissions'
+    // No exports - side effects only (init function)
   },
   'custom-attributes/sortable.js': {
     name: 'Sortable',
     moduleId: 'sortable',
     description: 'Drag-drop sorting with [sortable] - includes Sortable.js vendor library',
-    relatedFiles: ['vendor/Sortable.js']
+    relatedFiles: ['vendor/Sortable.js'],
+    exports: {
+      Sortable: ['window', 'hyperclay']
+    }
   },
   'custom-attributes/domHelpers.js': {
     name: 'DOM Helpers',
     moduleId: 'helpers',
-    description: 'el.nearest, el.val, el.text, el.exec, el.cycle'
+    description: 'el.nearest, el.val, el.text, el.exec, el.cycle',
+    exports: {
+      initCustomAttributes: ['window', 'hyperclay']
+    }
   },
   'custom-attributes/inputHelpers.js': {
     name: 'Input Helpers',
     moduleId: 'inputs',
     description: '[prevent-enter], [autosize] for textareas',
     relatedFiles: ['custom-attributes/preventEnter.js', 'custom-attributes/autosize.js']
+    // No exports - side effects only (init function)
   },
   'ui/prompts.js': {
     name: 'Dialog Functions',
     moduleId: 'prompts',
-    description: 'ask(), consent(), tell(), snippet() functions'
+    description: 'ask(), consent(), tell(), snippet() functions',
+    exports: {
+      ask: ['window', 'hyperclay'],
+      consent: ['window', 'hyperclay'],
+      tell: ['window', 'hyperclay'],
+      snippet: ['hyperclay'],
+      showApiKey: ['hyperclay']
+    }
   },
   'ui/toast.js': {
     name: 'Toast Notifications',
     moduleId: 'toast',
-    description: 'Success/error message notifications - toast(msg, msgType)'
+    description: 'Success/error message notifications - toast(msg, msgType)',
+    exports: {
+      toast: ['window', 'hyperclay']
+    }
   },
   'ui/theModal.js': {
     name: 'Modal System',
     moduleId: 'modals',
-    description: 'Full modal window creation system - window.theModal'
+    description: 'Full modal window creation system - window.theModal',
+    exports: {
+      themodal: ['window', 'hyperclay']
+    }
   },
   'ui/info.js': {
     name: 'Info Dialog',
     moduleId: 'info',
-    description: 'Info dialog component'
+    description: 'Info dialog component',
+    exports: {
+      info: ['window', 'hyperclay']
+    }
   },
   'vendor/tailwind-play.js': {
     name: 'Tailwind Play',
     moduleId: 'tailwind-play',
     description: 'Live Tailwind CSS editing - updates styles based on classes in your HTML',
     category: 'ui' // Override - this is a UI feature even though file is in vendor/
+    // No exports - side effects only
   },
   'utilities/mutation.js': {
     name: 'Mutation Observer',
     moduleId: 'mutation',
-    description: 'DOM mutation observation (often auto-included)'
+    description: 'DOM mutation observation (often auto-included)',
+    exports: {
+      Mutation: ['window', 'hyperclay']
+    }
   },
   'utilities/nearest.js': {
     name: 'Nearest Element',
     moduleId: 'nearest',
-    description: 'Find nearest elements (often auto-included)'
+    description: 'Find nearest elements (often auto-included)',
+    exports: {
+      nearest: ['window', 'hyperclay']
+    }
   },
   'utilities/cookie.js': {
     name: 'Cookie Helper',
     moduleId: 'cookie',
-    description: 'Cookie management (often auto-included)'
+    description: 'Cookie management (often auto-included)',
+    exports: {
+      cookie: ['window', 'hyperclay']
+    }
   },
   'utilities/throttle.js': {
     name: 'Throttle',
     moduleId: 'throttle',
-    description: 'Function throttling'
+    description: 'Function throttling',
+    exports: {
+      throttle: ['hyperclay']
+    }
   },
   'utilities/debounce.js': {
     name: 'Debounce',
     moduleId: 'debounce',
-    description: 'Function debouncing'
+    description: 'Function debouncing',
+    exports: {
+      debounce: ['hyperclay']
+    }
   },
   'dom-utilities/onDomReady.js': {
     name: 'DOM Ready',
     moduleId: 'dom-ready',
-    description: 'DOM ready callback'
+    description: 'DOM ready callback',
+    exports: {
+      onDomReady: ['hyperclay']
+    }
   },
   'dom-utilities/onLoad.js': {
     name: 'Window Load',
     moduleId: 'window-load',
-    description: 'Window load callback'
+    description: 'Window load callback',
+    exports: {
+      onLoad: ['hyperclay']
+    }
   },
   'dom-utilities/All.js': {
     name: 'All.js (jQuery-like)',
     moduleId: 'jquery-like',
-    description: 'Full DOM manipulation library'
+    description: 'Full DOM manipulation library',
+    exports: {
+      All: ['window', 'hyperclay']
+    }
   },
   'dom-utilities/insertStyleTag.js': {
     name: 'Style Injection',
     moduleId: 'style-injection',
-    description: 'Dynamic stylesheet injection'
+    description: 'Dynamic stylesheet injection',
+    exports: {
+      insertStyleTag: ['window', 'hyperclay']
+    }
+  },
+  'dom-utilities/getDataFromForm.js': {
+    name: 'Get Data From Form',
+    moduleId: 'get-data-from-form',
+    description: 'Extract form data as an object',
+    exports: {
+      getDataFromForm: ['window', 'hyperclay']
+    }
   },
   'vendor/idiomorph.min.js': {
     name: 'DOM Morphing',
     moduleId: 'dom-morphing',
-    description: 'Efficient DOM updates'
+    description: 'Efficient DOM updates',
+    exports: {
+      Idiomorph: ['hyperclay']
+    }
   },
   'string-utilities/slugify.js': {
     name: 'Slugify',
     moduleId: 'slugify',
-    description: 'URL-friendly slug generator'
+    description: 'URL-friendly slug generator',
+    exports: {
+      slugify: ['window', 'hyperclay']
+    }
   },
   'string-utilities/emmet-html.js': {
     name: 'Emmet HTML',
     moduleId: 'emmet-html',
-    description: 'Emmet-like HTML generation'
+    description: 'Emmet-like HTML generation',
+    exports: {
+      emmet: ['hyperclay']  // Available as h (since window.h = emmet + namespace)
+    }
   },
   'string-utilities/copy-to-clipboard.js': {
     name: 'Copy to Clipboard',
     moduleId: 'copy-to-clipboard',
-    description: 'Clipboard utility'
+    description: 'Clipboard utility',
+    exports: {
+      copyToClipboard: ['hyperclay']
+    }
   },
   'string-utilities/query.js': {
     name: 'URL Query Parser',
     moduleId: 'query-parser',
-    description: 'Parse URL search params'
+    description: 'Parse URL search params',
+    exports: {
+      query: ['window', 'hyperclay']
+    }
   },
   'communication/behaviorCollector.js': {
     name: 'Behavior Collector',
     moduleId: 'behavior-collector',
-    description: 'Tracks user interactions (mouse, scroll, keyboard)'
+    description: 'Tracks user interactions (mouse, scroll, keyboard)',
+    exports: {
+      behaviorCollector: ['hyperclay']
+    }
   },
   'communication/sendMessage.js': {
     name: 'Send Message to App Owner',
     moduleId: 'send-message',
-    description: 'Message sending utility'
+    description: 'Message sending utility',
+    exports: {
+      sendMessage: ['hyperclay']
+    }
   },
   'communication/uploadFile.js': {
     name: 'File Upload to App Owner',
     moduleId: 'file-upload',
-    description: 'File upload with progress'
+    description: 'File upload with progress',
+    exports: {
+      uploadFile: ['hyperclay'],
+      createFile: ['hyperclay'],
+      uploadFileBasic: ['hyperclay']
+    }
   }
 };
 
@@ -322,7 +446,8 @@ async function generateDependencyGraph() {
       category: category,
       size: totalSize,
       files: files,
-      description: definition.description
+      description: definition.description,
+      exports: definition.exports || {}
     };
 
     // Mark files as processed
