@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.2] - 2025-11-19
+
+### Added
+- `window.hyperclayReady` promise that resolves when HyperclayJS is fully loaded
+- `window.hyperclay` namespace with all exported module functions
+- `window.h` as a shorter alias for `window.hyperclay`
+- Automatic aggregation of all module exports into the global namespace
+
+## [1.0.1] - 2025-11-18
+
 ### Added
 - Build system that auto-generates `hyperclay.js` from `module-dependency-graph.json`
 - Build script (`build/build-loader.js`) to generate loader from dependency graph

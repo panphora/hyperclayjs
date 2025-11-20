@@ -6,6 +6,7 @@
     "babel.config.js": [],
     "build/build-loader.js": [],
     "build/generate-dependency-graph.js": [],
+    "build/generate-load-jsdelivr.js": [],
     "build/generate-readme.js": [],
     "build/hyperclay.template.js": [],
     "communication/behaviorCollector.js": [],
