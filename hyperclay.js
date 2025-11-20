@@ -25,13 +25,27 @@
 (async function() {
   'use strict';
 
+  // Create a promise that resolves when hyperclay is ready
+  let hyperclayReadyResolve;
+  window.hyperclayReady = new Promise(resolve => {
+    hyperclayReadyResolve = resolve;
+  });
+
+  // Initialize namespaces
+  window.hyperclay = window.hyperclay || {};
+
   // Module dependency map - AUTO-GENERATED
   const moduleDependencies = {
   "save-core": {
     "path": "./core/savePageCore.js",
     "dependencies": [
       "cookie"
-    ]
+    ],
+    "exports": {
+      "savePage": [
+        "hyperclay"
+      ]
+    }
   },
   "save": {
     "path": "./core/savePage.js",
@@ -40,62 +54,120 @@
       "toast",
       "mutation",
       "throttle"
-    ]
+    ],
+    "exports": {
+      "beforeSave": [
+        "hyperclay"
+      ],
+      "savePage": [
+        "hyperclay"
+      ],
+      "replacePageWith": [
+        "hyperclay"
+      ],
+      "initHyperclaySaveButton": [
+        "hyperclay"
+      ],
+      "initSaveKeyboardShortcut": [
+        "hyperclay"
+      ],
+      "initSavePageOnChange": [
+        "hyperclay"
+      ]
+    }
   },
   "admin": {
     "path": "./core/adminSystem.js",
     "dependencies": [
       "save",
       "dom-ready"
-    ]
+    ],
+    "exports": {}
   },
   "persist": {
     "path": "./core/enablePersistentFormInputValues.js",
     "dependencies": [
       "save"
-    ]
+    ],
+    "exports": {
+      "enablePersistentFormInputValues": [
+        "hyperclay"
+      ]
+    }
   },
   "options": {
     "path": "./core/optionVisibilityRuleGenerator.js",
     "dependencies": [
       "mutation"
-    ]
+    ],
+    "exports": {
+      "optionVisibilityRuleGenerator": [
+        "window",
+        "hyperclay"
+      ]
+    }
   },
   "editmode": {
     "path": "./core/editmodeSystem.js",
     "dependencies": [
       "save",
       "dom-ready"
-    ]
+    ],
+    "exports": {
+      "toggleEditMode": [
+        "hyperclay"
+      ],
+      "isEditMode": [
+        "hyperclay"
+      ],
+      "isOwner": [
+        "hyperclay"
+      ]
+    }
   },
   "events": {
     "path": "./custom-attributes/events.js",
     "dependencies": [
       "mutation",
       "window-load"
-    ]
+    ],
+    "exports": {}
   },
   "ajax": {
     "path": "./custom-attributes/ajaxElements.js",
     "dependencies": [
       "get-data-from-form"
-    ]
+    ],
+    "exports": {}
   },
   "sortable": {
     "path": "./custom-attributes/sortable.js",
     "dependencies": [
       "mutation"
-    ]
+    ],
+    "exports": {
+      "Sortable": [
+        "window",
+        "hyperclay"
+      ]
+    }
   },
   "helpers": {
     "path": "./custom-attributes/domHelpers.js",
     "dependencies": [
       "nearest"
-    ]
+    ],
+    "exports": {
+      "initCustomAttributes": [
+        "window",
+        "hyperclay"
+      ]
+    }
   },
   "inputs": {
     "path": "./custom-attributes/inputHelpers.js",
-    "dependencies": []
+    "dependencies": [],
+    "exports": {}
   },
   "prompts": {
     "path": "./ui/prompts.js",
@@ -104,92 +176,219 @@
       "copy-to-clipboard",
       "modals",
       "toast"
-    ]
+    ],
+    "exports": {
+      "ask": [
+        "window",
+        "hyperclay"
+      ],
+      "consent": [
+        "window",
+        "hyperclay"
+      ],
+      "tell": [
+        "window",
+        "hyperclay"
+      ],
+      "snippet": [
+        "hyperclay"
+      ],
+      "showApiKey": [
+        "hyperclay"
+      ]
+    }
   },
   "toast": {
     "path": "./ui/toast.js",
-    "dependencies": []
+    "dependencies": [],
+    "exports": {
+      "toast": [
+        "window",
+        "hyperclay"
+      ]
+    }
   },
   "modals": {
     "path": "./ui/theModal.js",
-    "dependencies": []
+    "dependencies": [],
+    "exports": {
+      "themodal": [
+        "window",
+        "hyperclay"
+      ]
+    }
   },
   "info": {
     "path": "./ui/info.js",
     "dependencies": [
       "dom-ready",
       "modals"
-    ]
+    ],
+    "exports": {
+      "info": [
+        "window",
+        "hyperclay"
+      ]
+    }
   },
   "tailwind-play": {
     "path": "./vendor/tailwind-play.js",
     "dependencies": [
       "style-injection"
-    ]
+    ],
+    "exports": {}
   },
   "mutation": {
     "path": "./utilities/mutation.js",
-    "dependencies": []
+    "dependencies": [],
+    "exports": {
+      "Mutation": [
+        "window",
+        "hyperclay"
+      ]
+    }
   },
   "nearest": {
     "path": "./utilities/nearest.js",
-    "dependencies": []
+    "dependencies": [],
+    "exports": {
+      "nearest": [
+        "window",
+        "hyperclay"
+      ]
+    }
   },
   "cookie": {
     "path": "./utilities/cookie.js",
-    "dependencies": []
+    "dependencies": [],
+    "exports": {
+      "cookie": [
+        "window",
+        "hyperclay"
+      ]
+    }
   },
   "throttle": {
     "path": "./utilities/throttle.js",
-    "dependencies": []
+    "dependencies": [],
+    "exports": {
+      "throttle": [
+        "hyperclay"
+      ]
+    }
   },
   "debounce": {
     "path": "./utilities/debounce.js",
-    "dependencies": []
+    "dependencies": [],
+    "exports": {
+      "debounce": [
+        "hyperclay"
+      ]
+    }
   },
   "dom-ready": {
     "path": "./dom-utilities/onDomReady.js",
-    "dependencies": []
+    "dependencies": [],
+    "exports": {
+      "onDomReady": [
+        "hyperclay"
+      ]
+    }
   },
   "window-load": {
     "path": "./dom-utilities/onLoad.js",
-    "dependencies": []
+    "dependencies": [],
+    "exports": {
+      "onLoad": [
+        "hyperclay"
+      ]
+    }
   },
   "jquery-like": {
     "path": "./dom-utilities/All.js",
-    "dependencies": []
+    "dependencies": [],
+    "exports": {
+      "All": [
+        "window",
+        "hyperclay"
+      ]
+    }
   },
   "style-injection": {
     "path": "./dom-utilities/insertStyleTag.js",
-    "dependencies": []
+    "dependencies": [],
+    "exports": {
+      "insertStyleTag": [
+        "window",
+        "hyperclay"
+      ]
+    }
   },
   "get-data-from-form": {
     "path": "./dom-utilities/getDataFromForm.js",
-    "dependencies": []
+    "dependencies": [],
+    "exports": {
+      "getDataFromForm": [
+        "window",
+        "hyperclay"
+      ]
+    }
   },
   "dom-morphing": {
     "path": "./vendor/idiomorph.min.js",
-    "dependencies": []
+    "dependencies": [],
+    "exports": {
+      "Idiomorph": [
+        "hyperclay"
+      ]
+    }
   },
   "slugify": {
     "path": "./string-utilities/slugify.js",
-    "dependencies": []
+    "dependencies": [],
+    "exports": {
+      "slugify": [
+        "window",
+        "hyperclay"
+      ]
+    }
   },
   "emmet-html": {
     "path": "./string-utilities/emmet-html.js",
-    "dependencies": []
+    "dependencies": [],
+    "exports": {
+      "emmet": [
+        "hyperclay"
+      ]
+    }
   },
   "copy-to-clipboard": {
     "path": "./string-utilities/copy-to-clipboard.js",
-    "dependencies": []
+    "dependencies": [],
+    "exports": {
+      "copyToClipboard": [
+        "hyperclay"
+      ]
+    }
   },
   "query-parser": {
     "path": "./string-utilities/query.js",
-    "dependencies": []
+    "dependencies": [],
+    "exports": {
+      "query": [
+        "window",
+        "hyperclay"
+      ]
+    }
   },
   "behavior-collector": {
     "path": "./communication/behaviorCollector.js",
-    "dependencies": []
+    "dependencies": [],
+    "exports": {
+      "behaviorCollector": [
+        "hyperclay"
+      ]
+    }
   },
   "send-message": {
     "path": "./communication/sendMessage.js",
@@ -197,7 +396,12 @@
       "behavior-collector",
       "get-data-from-form",
       "toast"
-    ]
+    ],
+    "exports": {
+      "sendMessage": [
+        "hyperclay"
+      ]
+    }
   },
   "file-upload": {
     "path": "./communication/uploadFile.js",
@@ -205,7 +409,18 @@
       "copy-to-clipboard",
       "toast",
       "debounce"
-    ]
+    ],
+    "exports": {
+      "uploadFile": [
+        "hyperclay"
+      ],
+      "createFile": [
+        "hyperclay"
+      ],
+      "uploadFileBasic": [
+        "hyperclay"
+      ]
+    }
   }
 };
 
@@ -387,11 +602,6 @@
         loaded.init();
       }
 
-      // Make module available globally if it exports to window
-      if (loaded.exportToWindow && typeof loaded.exportToWindow === 'function') {
-        loaded.exportToWindow();
-      }
-
       return loaded;
     } catch (error) {
       console.error(`HyperclayJS: Failed to load ${feature}:`, error);
@@ -426,6 +636,39 @@
     // Store loaded modules globally for access
     window.hyperclayModules = loadedModules;
 
+    // Attach exports to window based on module configuration
+    for (const feature of loadOrder) {
+      const module = loadedModules[feature];
+      const moduleConfig = moduleDependencies[feature];
+
+      if (!module || !moduleConfig.exports) continue;
+
+      // For each export in the module's configuration
+      for (const [exportName, locations] of Object.entries(moduleConfig.exports)) {
+        // Try to get the export - check both named export and default export
+        let exportValue = module[exportName];
+
+        // If not found as named export, try default export
+        if (!exportValue && module.default) {
+          exportValue = module.default;
+        }
+
+        if (!exportValue) continue;
+
+        // Attach to each configured location
+        locations.forEach(location => {
+          if (location === 'window') {
+            window[exportName] = exportValue;
+          } else if (location === 'hyperclay') {
+            window.hyperclay[exportName] = exportValue;
+          }
+        });
+      }
+    }
+
+    // Create window.h alias
+    window.h = window.hyperclay;
+
     // Fire custom event when loading is complete
     window.dispatchEvent(new CustomEvent('hyperclayReady', {
       detail: {
@@ -433,6 +676,11 @@
         modules: loadedModules
       }
     }));
+
+    // Resolve the ready promise
+    if (hyperclayReadyResolve) {
+      hyperclayReadyResolve(window.hyperclay);
+    }
 
     console.log('HyperclayJS: All modules loaded successfully');
 

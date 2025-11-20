@@ -44,7 +44,8 @@ function buildModuleDependencies() {
 
     moduleDeps[moduleName] = {
       path: `./${primaryFile}`,
-      dependencies: Array.from(deps)
+      dependencies: Array.from(deps),
+      exports: moduleData.exports || {}
     };
   }
 

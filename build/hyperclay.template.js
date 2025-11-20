@@ -25,6 +25,15 @@
 (async function() {
   'use strict';
 
+  // Create a promise that resolves when hyperclay is ready
+  let hyperclayReadyResolve;
+  window.hyperclayReady = new Promise(resolve => {
+    hyperclayReadyResolve = resolve;
+  });
+
+  // Initialize namespaces
+  window.hyperclay = window.hyperclay || {};
+
   // Module dependency map - AUTO-GENERATED
   const moduleDependencies = __MODULE_DEPENDENCIES__;
 
@@ -141,11 +150,6 @@
         loaded.init();
       }
 
-      // Make module available globally if it exports to window
-      if (loaded.exportToWindow && typeof loaded.exportToWindow === 'function') {
-        loaded.exportToWindow();
-      }
-
       return loaded;
     } catch (error) {
       console.error(`HyperclayJS: Failed to load ${feature}:`, error);
@@ -180,6 +184,39 @@
     // Store loaded modules globally for access
     window.hyperclayModules = loadedModules;
 
+    // Attach exports to window based on module configuration
+    for (const feature of loadOrder) {
+      const module = loadedModules[feature];
+      const moduleConfig = moduleDependencies[feature];
+
+      if (!module || !moduleConfig.exports) continue;
+
+      // For each export in the module's configuration
+      for (const [exportName, locations] of Object.entries(moduleConfig.exports)) {
+        // Try to get the export - check both named export and default export
+        let exportValue = module[exportName];
+
+        // If not found as named export, try default export
+        if (!exportValue && module.default) {
+          exportValue = module.default;
+        }
+
+        if (!exportValue) continue;
+
+        // Attach to each configured location
+        locations.forEach(location => {
+          if (location === 'window') {
+            window[exportName] = exportValue;
+          } else if (location === 'hyperclay') {
+            window.hyperclay[exportName] = exportValue;
+          }
+        });
+      }
+    }
+
+    // Create window.h alias
+    window.h = window.hyperclay;
+
     // Fire custom event when loading is complete
     window.dispatchEvent(new CustomEvent('hyperclayReady', {
       detail: {
@@ -187,6 +224,11 @@
         modules: loadedModules
       }
     }));
+
+    // Resolve the ready promise
+    if (hyperclayReadyResolve) {
+      hyperclayReadyResolve(window.hyperclay);
+    }
 
     console.log('HyperclayJS: All modules loaded successfully');
 
