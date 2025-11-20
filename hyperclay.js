@@ -391,6 +391,12 @@
     }
   }
 
+  // Create a promise that resolves when hyperclay is ready
+  let hyperclayReadyResolve;
+  window.hyperclayReady = new Promise(resolve => {
+    hyperclayReadyResolve = resolve;
+  });
+
   // Main execution
   try {
     // Resolve all dependencies
@@ -418,6 +424,28 @@
     // Store loaded modules globally for access
     window.hyperclayModules = loadedModules;
 
+    // Create hyperclay namespace with all exported functions
+    window.hyperclay = window.hyperclay || {};
+
+    // Aggregate all exports from loaded modules into window.hyperclay
+    for (const [feature, module] of Object.entries(loadedModules)) {
+      if (module && module.default) {
+        // If module has default export, add it
+        if (typeof module.default === 'object') {
+          Object.assign(window.hyperclay, module.default);
+        }
+      }
+      // Also add named exports
+      for (const [key, value] of Object.entries(module)) {
+        if (key !== 'default' && key !== 'init' && key !== 'exportToWindow') {
+          window.hyperclay[key] = value;
+        }
+      }
+    }
+
+    // Add shorter alias
+    window.h = window.hyperclay;
+
     // Fire custom event when loading is complete
     window.dispatchEvent(new CustomEvent('hyperclayReady', {
       detail: {
@@ -425,6 +453,9 @@
         modules: loadedModules
       }
     }));
+
+    // Resolve the promise
+    hyperclayReadyResolve(window.hyperclay);
 
     console.log('HyperclayJS: All modules loaded successfully');
 
