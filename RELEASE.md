@@ -134,6 +134,8 @@ git tag -f v1.2.3
 
 ### 8. Push to GitHub
 
+**Note:** We do not create formal GitHub releases at https://github.com/hyperclay/hyperclayjs/releases. The git tags and CHANGELOG.md serve as our release documentation.
+
 ```bash
 # Push commits
 git push origin main
@@ -142,17 +144,7 @@ git push origin main
 git push origin --tags
 ```
 
-### 9. Create GitHub Release
-
-1. Go to https://github.com/hyperclay/hyperclayjs/releases
-2. Click "Draft a new release"
-3. Select the tag (e.g., `v1.2.3`)
-4. Release title: `v1.2.3`
-5. Copy the CHANGELOG.md section for this version into the description
-6. Attach any additional files if needed
-7. Click "Publish release"
-
-### 10. Publish to npm
+### 9. Publish to npm
 
 **IMPORTANT:** This is the point of no return. Once published, you cannot unpublish (only deprecate).
 
@@ -173,7 +165,7 @@ npm publish --tag beta
 npm publish --tag alpha
 ```
 
-### 11. Verify Publication
+### 10. Verify Publication
 
 ```bash
 # Check on npm
@@ -189,7 +181,7 @@ npm install hyperclayjs
 node -e "console.log(require('hyperclayjs'))"
 ```
 
-### 12. Update CDN (if applicable)
+### 11. Update CDN (if applicable)
 
 If you maintain a CDN version:
 
@@ -202,7 +194,7 @@ If you maintain a CDN version:
 curl https://hyperclay.com/js/hyperclay.js?preset=minimal
 ```
 
-### 13. Announce Release
+### 12. Announce Release
 
 - [ ] Post on Twitter/X
 - [ ] Update documentation site
