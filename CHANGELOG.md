@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1.1] - 2025-11-19
+
+### Changed
+- improved module exports
+
+### Fixed
+- post-publish script issues
+
+
+
 ## [1.1.0] - 2025-11-19
 
 ### Changed
