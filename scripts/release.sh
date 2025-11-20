@@ -60,18 +60,64 @@ case $version_choice in
         ;;
 esac
 
-# Get changelog entries
+# Get changelog entries - auto-generate from commits since last tag
 echo ""
-info "Enter changelog entries (Ctrl+D when done):"
-echo "Format: Type: Description"
-echo "Types: Added, Changed, Fixed, Breaking"
-echo ""
-echo "Examples:"
-echo "  Added: New toast animation system"
-echo "  Fixed: Memory leak in mutation observer"
-echo "  Breaking: Renamed savePage to save"
-echo ""
-CHANGELOG_ENTRIES=$(cat)
+info "Generating changelog from commits since last release..."
+
+# Get the last tag
+LAST_TAG=$(git tag --sort=-version:refname | head -1)
+
+if [ -n "$LAST_TAG" ]; then
+    info "Last release: $LAST_TAG"
+
+    # Get commit range
+    COMMIT_RANGE="${LAST_TAG}..HEAD"
+
+    # Get the git log
+    GIT_LOG=$(git log "$COMMIT_RANGE" --pretty=format:"%s")
+
+    if [ -z "$GIT_LOG" ]; then
+        warn "No commits since last tag"
+        echo ""
+        info "Enter changelog entries manually (Ctrl+D when done):"
+        echo "Format: Type: Description"
+        echo "Types: Added, Changed, Fixed, Breaking"
+        echo ""
+        CHANGELOG_ENTRIES=$(cat)
+    else
+        echo ""
+        echo "Commits since $LAST_TAG:"
+        echo "$GIT_LOG"
+        echo ""
+
+        # Use claude CLI to generate changelog
+        info "Analyzing commits with Claude..."
+        CHANGELOG_ENTRIES=$(echo "$GIT_LOG" | claude -p "Analyze these git commit messages and generate changelog entries. Format each entry as one of: 'Added: description', 'Changed: description', 'Fixed: description', or 'Breaking: description'. Only output the formatted changelog entries, nothing else. One entry per line.")
+
+        echo ""
+        echo "Generated changelog:"
+        echo "$CHANGELOG_ENTRIES"
+        echo ""
+
+        read -p "Accept this changelog? [Y/n]: " accept_changelog
+        if [[ $accept_changelog =~ ^[Nn]$ ]]; then
+            echo ""
+            info "Enter changelog entries manually (Ctrl+D when done):"
+            echo "Format: Type: Description"
+            echo "Types: Added, Changed, Fixed, Breaking"
+            echo ""
+            CHANGELOG_ENTRIES=$(cat)
+        fi
+    fi
+else
+    warn "No previous tags found"
+    echo ""
+    info "Enter changelog entries manually (Ctrl+D when done):"
+    echo "Format: Type: Description"
+    echo "Types: Added, Changed, Fixed, Breaking"
+    echo ""
+    CHANGELOG_ENTRIES=$(cat)
+fi
 
 # Publish tag (latest, beta, alpha)
 echo ""
