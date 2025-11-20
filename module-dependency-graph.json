@@ -158,7 +158,12 @@
       "files": [
         "core/savePageCore.js"
       ],
-      "description": "Basic save function only - hyperclay.savePage()"
+      "description": "Basic save function only - hyperclay.savePage()",
+      "exports": {
+        "savePage": [
+          "hyperclay"
+        ]
+      }
     },
     "save": {
       "name": "Save System",
@@ -167,7 +172,27 @@
       "files": [
         "core/savePage.js"
       ],
-      "description": "Full save: save button, keyboard shortcut, auto-save, change tracking"
+      "description": "Full save: save button, keyboard shortcut, auto-save, change tracking",
+      "exports": {
+        "beforeSave": [
+          "hyperclay"
+        ],
+        "savePage": [
+          "hyperclay"
+        ],
+        "replacePageWith": [
+          "hyperclay"
+        ],
+        "initHyperclaySaveButton": [
+          "hyperclay"
+        ],
+        "initSaveKeyboardShortcut": [
+          "hyperclay"
+        ],
+        "initSavePageOnChange": [
+          "hyperclay"
+        ]
+      }
     },
     "admin": {
       "name": "Admin Features",
@@ -180,7 +205,8 @@
         "core/adminOnClick.js",
         "core/adminResources.js"
       ],
-      "description": "Hides admin inputs, scripts, contenteditable, onclick for regular viewers"
+      "description": "Hides admin inputs, scripts, contenteditable, onclick for regular viewers",
+      "exports": {}
     },
     "persist": {
       "name": "Form Persistence",
@@ -189,7 +215,12 @@
       "files": [
         "core/enablePersistentFormInputValues.js"
       ],
-      "description": "Persist form values to the DOM with [persist] attribute"
+      "description": "Persist form values to the DOM with [persist] attribute",
+      "exports": {
+        "enablePersistentFormInputValues": [
+          "hyperclay"
+        ]
+      }
     },
     "options": {
       "name": "Option Visibility",
@@ -198,7 +229,13 @@
       "files": [
         "core/optionVisibilityRuleGenerator.js"
       ],
-      "description": "Dynamic show/hide based on page state with option:attribute=\"value\""
+      "description": "Dynamic show/hide based on page state with option:attribute=\"value\"",
+      "exports": {
+        "optionVisibilityRuleGenerator": [
+          "window",
+          "hyperclay"
+        ]
+      }
     },
     "editmode": {
       "name": "Edit Mode",
@@ -209,7 +246,18 @@
         "core/editmode.js",
         "core/setPageTypeOnDocumentElement.js"
       ],
-      "description": "Toggle edit mode on/off"
+      "description": "Toggle edit mode on/off",
+      "exports": {
+        "toggleEditMode": [
+          "hyperclay"
+        ],
+        "isEditMode": [
+          "hyperclay"
+        ],
+        "isOwner": [
+          "hyperclay"
+        ]
+      }
     },
     "events": {
       "name": "Event Attributes",
@@ -222,7 +270,8 @@
         "custom-attributes/onpagemutation.js",
         "custom-attributes/onrender.js"
       ],
-      "description": "[onclickaway], [onclone], [onpagemutation], [onrender]"
+      "description": "[onclickaway], [onclone], [onpagemutation], [onrender]",
+      "exports": {}
     },
     "ajax": {
       "name": "AJAX Elements",
@@ -231,7 +280,8 @@
       "files": [
         "custom-attributes/ajaxElements.js"
       ],
-      "description": "[ajax-form], [ajax-button] for async form submissions"
+      "description": "[ajax-form], [ajax-button] for async form submissions",
+      "exports": {}
     },
     "sortable": {
       "name": "Sortable",
@@ -241,7 +291,13 @@
         "custom-attributes/sortable.js",
         "vendor/Sortable.js"
       ],
-      "description": "Drag-drop sorting with [sortable] - includes Sortable.js vendor library"
+      "description": "Drag-drop sorting with [sortable] - includes Sortable.js vendor library",
+      "exports": {
+        "Sortable": [
+          "window",
+          "hyperclay"
+        ]
+      }
     },
     "helpers": {
       "name": "DOM Helpers",
@@ -250,7 +306,13 @@
       "files": [
         "custom-attributes/domHelpers.js"
       ],
-      "description": "el.nearest, el.val, el.text, el.exec, el.cycle"
+      "description": "el.nearest, el.val, el.text, el.exec, el.cycle",
+      "exports": {
+        "initCustomAttributes": [
+          "window",
+          "hyperclay"
+        ]
+      }
     },
     "inputs": {
       "name": "Input Helpers",
@@ -261,7 +323,8 @@
         "custom-attributes/preventEnter.js",
         "custom-attributes/autosize.js"
       ],
-      "description": "[prevent-enter], [autosize] for textareas"
+      "description": "[prevent-enter], [autosize] for textareas",
+      "exports": {}
     },
     "prompts": {
       "name": "Dialog Functions",
@@ -270,7 +333,27 @@
       "files": [
         "ui/prompts.js"
       ],
-      "description": "ask(), consent(), tell(), snippet() functions"
+      "description": "ask(), consent(), tell(), snippet() functions",
+      "exports": {
+        "ask": [
+          "window",
+          "hyperclay"
+        ],
+        "consent": [
+          "window",
+          "hyperclay"
+        ],
+        "tell": [
+          "window",
+          "hyperclay"
+        ],
+        "snippet": [
+          "hyperclay"
+        ],
+        "showApiKey": [
+          "hyperclay"
+        ]
+      }
     },
     "toast": {
       "name": "Toast Notifications",
@@ -279,7 +362,13 @@
       "files": [
         "ui/toast.js"
       ],
-      "description": "Success/error message notifications - toast(msg, msgType)"
+      "description": "Success/error message notifications - toast(msg, msgType)",
+      "exports": {
+        "toast": [
+          "window",
+          "hyperclay"
+        ]
+      }
     },
     "modals": {
       "name": "Modal System",
@@ -288,7 +377,13 @@
       "files": [
         "ui/theModal.js"
       ],
-      "description": "Full modal window creation system - window.theModal"
+      "description": "Full modal window creation system - window.theModal",
+      "exports": {
+        "themodal": [
+          "window",
+          "hyperclay"
+        ]
+      }
     },
     "info": {
       "name": "Info Dialog",
@@ -297,7 +392,13 @@
       "files": [
         "ui/info.js"
       ],
-      "description": "Info dialog component"
+      "description": "Info dialog component",
+      "exports": {
+        "info": [
+          "window",
+          "hyperclay"
+        ]
+      }
     },
     "tailwind-play": {
       "name": "Tailwind Play",
@@ -306,7 +407,8 @@
       "files": [
         "vendor/tailwind-play.js"
       ],
-      "description": "Live Tailwind CSS editing - updates styles based on classes in your HTML"
+      "description": "Live Tailwind CSS editing - updates styles based on classes in your HTML",
+      "exports": {}
     },
     "mutation": {
       "name": "Mutation Observer",
@@ -315,7 +417,13 @@
       "files": [
         "utilities/mutation.js"
       ],
-      "description": "DOM mutation observation (often auto-included)"
+      "description": "DOM mutation observation (often auto-included)",
+      "exports": {
+        "Mutation": [
+          "window",
+          "hyperclay"
+        ]
+      }
     },
     "nearest": {
       "name": "Nearest Element",
@@ -324,7 +432,13 @@
       "files": [
         "utilities/nearest.js"
       ],
-      "description": "Find nearest elements (often auto-included)"
+      "description": "Find nearest elements (often auto-included)",
+      "exports": {
+        "nearest": [
+          "window",
+          "hyperclay"
+        ]
+      }
     },
     "cookie": {
       "name": "Cookie Helper",
@@ -333,7 +447,13 @@
       "files": [
         "utilities/cookie.js"
       ],
-      "description": "Cookie management (often auto-included)"
+      "description": "Cookie management (often auto-included)",
+      "exports": {
+        "cookie": [
+          "window",
+          "hyperclay"
+        ]
+      }
     },
     "throttle": {
       "name": "Throttle",
@@ -342,7 +462,12 @@
       "files": [
         "utilities/throttle.js"
       ],
-      "description": "Function throttling"
+      "description": "Function throttling",
+      "exports": {
+        "throttle": [
+          "hyperclay"
+        ]
+      }
     },
     "debounce": {
       "name": "Debounce",
@@ -351,7 +476,12 @@
       "files": [
         "utilities/debounce.js"
       ],
-      "description": "Function debouncing"
+      "description": "Function debouncing",
+      "exports": {
+        "debounce": [
+          "hyperclay"
+        ]
+      }
     },
     "dom-ready": {
       "name": "DOM Ready",
@@ -360,7 +490,12 @@
       "files": [
         "dom-utilities/onDomReady.js"
       ],
-      "description": "DOM ready callback"
+      "description": "DOM ready callback",
+      "exports": {
+        "onDomReady": [
+          "hyperclay"
+        ]
+      }
     },
     "window-load": {
       "name": "Window Load",
@@ -369,7 +504,12 @@
       "files": [
         "dom-utilities/onLoad.js"
       ],
-      "description": "Window load callback"
+      "description": "Window load callback",
+      "exports": {
+        "onLoad": [
+          "hyperclay"
+        ]
+      }
     },
     "jquery-like": {
       "name": "All.js (jQuery-like)",
@@ -378,7 +518,13 @@
       "files": [
         "dom-utilities/All.js"
       ],
-      "description": "Full DOM manipulation library"
+      "description": "Full DOM manipulation library",
+      "exports": {
+        "All": [
+          "window",
+          "hyperclay"
+        ]
+      }
     },
     "style-injection": {
       "name": "Style Injection",
@@ -387,7 +533,28 @@
       "files": [
         "dom-utilities/insertStyleTag.js"
       ],
-      "description": "Dynamic stylesheet injection"
+      "description": "Dynamic stylesheet injection",
+      "exports": {
+        "insertStyleTag": [
+          "window",
+          "hyperclay"
+        ]
+      }
+    },
+    "get-data-from-form": {
+      "name": "Get Data From Form",
+      "category": "dom-utilities",
+      "size": 1.7,
+      "files": [
+        "dom-utilities/getDataFromForm.js"
+      ],
+      "description": "Extract form data as an object",
+      "exports": {
+        "getDataFromForm": [
+          "window",
+          "hyperclay"
+        ]
+      }
     },
     "dom-morphing": {
       "name": "DOM Morphing",
@@ -396,7 +563,12 @@
       "files": [
         "vendor/idiomorph.min.js"
       ],
-      "description": "Efficient DOM updates"
+      "description": "Efficient DOM updates",
+      "exports": {
+        "Idiomorph": [
+          "hyperclay"
+        ]
+      }
     },
     "slugify": {
       "name": "Slugify",
@@ -405,7 +577,13 @@
       "files": [
         "string-utilities/slugify.js"
       ],
-      "description": "URL-friendly slug generator"
+      "description": "URL-friendly slug generator",
+      "exports": {
+        "slugify": [
+          "window",
+          "hyperclay"
+        ]
+      }
     },
     "emmet-html": {
       "name": "Emmet HTML",
@@ -414,7 +592,12 @@
       "files": [
         "string-utilities/emmet-html.js"
       ],
-      "description": "Emmet-like HTML generation"
+      "description": "Emmet-like HTML generation",
+      "exports": {
+        "emmet": [
+          "hyperclay"
+        ]
+      }
     },
     "copy-to-clipboard": {
       "name": "Copy to Clipboard",
@@ -423,7 +606,12 @@
       "files": [
         "string-utilities/copy-to-clipboard.js"
       ],
-      "description": "Clipboard utility"
+      "description": "Clipboard utility",
+      "exports": {
+        "copyToClipboard": [
+          "hyperclay"
+        ]
+      }
     },
     "query-parser": {
       "name": "URL Query Parser",
@@ -432,7 +620,13 @@
       "files": [
         "string-utilities/query.js"
       ],
-      "description": "Parse URL search params"
+      "description": "Parse URL search params",
+      "exports": {
+        "query": [
+          "window",
+          "hyperclay"
+        ]
+      }
     },
     "behavior-collector": {
       "name": "Behavior Collector",
@@ -441,7 +635,12 @@
       "files": [
         "communication/behaviorCollector.js"
       ],
-      "description": "Tracks user interactions (mouse, scroll, keyboard)"
+      "description": "Tracks user interactions (mouse, scroll, keyboard)",
+      "exports": {
+        "behaviorCollector": [
+          "hyperclay"
+        ]
+      }
     },
     "send-message": {
       "name": "Send Message to App Owner",
@@ -450,7 +649,12 @@
       "files": [
         "communication/sendMessage.js"
       ],
-      "description": "Message sending utility"
+      "description": "Message sending utility",
+      "exports": {
+        "sendMessage": [
+          "hyperclay"
+        ]
+      }
     },
     "file-upload": {
       "name": "File Upload to App Owner",
@@ -459,7 +663,18 @@
       "files": [
         "communication/uploadFile.js"
       ],
-      "description": "File upload with progress"
+      "description": "File upload with progress",
+      "exports": {
+        "uploadFile": [
+          "hyperclay"
+        ],
+        "createFile": [
+          "hyperclay"
+        ],
+        "uploadFileBasic": [
+          "hyperclay"
+        ]
+      }
     }
   },
   "categories": {
@@ -515,7 +730,8 @@
         "dom-ready",
         "window-load",
         "jquery-like",
-        "style-injection"
+        "style-injection",
+        "get-data-from-form"
       ]
     },
     "string-utilities": {
@@ -599,6 +815,7 @@
         "window-load",
         "jquery-like",
         "style-injection",
+        "get-data-from-form",
         "dom-morphing",
         "slugify",
         "emmet-html",

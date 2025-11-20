@@ -77,7 +77,9 @@
   },
   "ajax": {
     "path": "./custom-attributes/ajaxElements.js",
-    "dependencies": []
+    "dependencies": [
+      "get-data-from-form"
+    ]
   },
   "sortable": {
     "path": "./custom-attributes/sortable.js",
@@ -161,6 +163,10 @@
     "path": "./dom-utilities/insertStyleTag.js",
     "dependencies": []
   },
+  "get-data-from-form": {
+    "path": "./dom-utilities/getDataFromForm.js",
+    "dependencies": []
+  },
   "dom-morphing": {
     "path": "./vendor/idiomorph.min.js",
     "dependencies": []
@@ -189,6 +195,7 @@
     "path": "./communication/sendMessage.js",
     "dependencies": [
       "behavior-collector",
+      "get-data-from-form",
       "toast"
     ]
   },
@@ -257,6 +264,7 @@
       "window-load",
       "jquery-like",
       "style-injection",
+      "get-data-from-form",
       "dom-morphing",
       "slugify",
       "emmet-html",
@@ -455,6 +463,7 @@
   "window-load": 0.2,
   "jquery-like": 13.8,
   "style-injection": 0.8,
+  "get-data-from-form": 1.7,
   "dom-morphing": 7.9,
   "slugify": 0.7,
   "emmet-html": 1.4,
