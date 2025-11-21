@@ -10,6 +10,11 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Read package.json for version
+const packagePath = path.join(__dirname, '../package.json');
+const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
+const version = packageJson.version;
+
 // Read module dependency graph
 const depGraphPath = path.join(__dirname, '../module-dependency-graph.json');
 const depGraph = JSON.parse(fs.readFileSync(depGraphPath, 'utf8'));
@@ -81,6 +86,7 @@ function generateLoader() {
 
   // Replace placeholders in template
   let output = template;
+  output = output.replace('__VERSION__', version);
   output = output.replace('__MODULE_DEPENDENCIES__', moduleDepsStr);
   output = output.replace('__PRESETS__', presetsStr);
   output = output.replace('__FILE_SIZES__', fileSizesStr);

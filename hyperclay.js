@@ -1,5 +1,5 @@
 /**
- * HyperclayJS - Self-detecting module loader
+ * HyperclayJS v1.1.2 - Self-detecting module loader
  * Automatically loads requested features with dependency resolution
  *
  * USAGE:
@@ -524,20 +524,21 @@
   const scriptUrl = new URL(currentScript.src);
   const featuresParam = scriptUrl.searchParams.get('features');
   const presetParam = scriptUrl.searchParams.get('preset');
+  const debugMode = scriptUrl.searchParams.get('debug') === 'true';
 
   // Determine requested features
   let requestedFeatures = [];
 
   if (presetParam && presets[presetParam]) {
     requestedFeatures = presets[presetParam].modules;
-    console.log(`HyperclayJS: Loading preset "${presetParam}"`);
+    if (debugMode) console.log(`HyperclayJS: Loading preset "${presetParam}"`);
   } else if (featuresParam) {
     requestedFeatures = featuresParam.split(',').map(f => f.trim());
-    console.log(`HyperclayJS: Loading features:`, requestedFeatures);
+    if (debugMode) console.log(`HyperclayJS: Loading features:`, requestedFeatures);
   } else {
     // Default to minimal preset
     requestedFeatures = presets.minimal.modules;
-    console.log('HyperclayJS: No features specified, loading minimal preset');
+    if (debugMode) console.log('HyperclayJS: No features specified, loading minimal preset');
   }
 
   // Resolve all dependencies
@@ -611,7 +612,7 @@
     const modulePath = `${baseUrl}/${module.path}`;
 
     try {
-      console.log(`HyperclayJS: Loading ${feature}...`);
+      if (debugMode) console.log(`HyperclayJS: Loading ${feature}...`);
       const loaded = await import(modulePath);
 
       // Auto-initialize if the module exports an init function
@@ -634,7 +635,7 @@
     // Sort in correct load order
     const loadOrder = topologicalSort(allFeatures);
 
-    console.log('HyperclayJS: Load order:', loadOrder);
+    if (debugMode) console.log('HyperclayJS: Load order:', loadOrder);
 
     // Get base URL
     const baseUrl = getBaseUrl();
@@ -699,10 +700,11 @@
       hyperclayReadyResolve(window.hyperclay);
     }
 
-    console.log('HyperclayJS: All modules loaded successfully');
+    if (debugMode) {
+      console.log('HyperclayJS: All modules loaded successfully');
 
-    // Show feature summary - AUTO-GENERATED
-    const sizes = {
+      // Show feature summary - AUTO-GENERATED
+      const sizes = {
   "save-core": 5.9,
   "save": 4.9,
   "admin": 5.300000000000001,
@@ -739,11 +741,12 @@
   "send-message": 1.2,
   "file-upload": 10.4
 };
-    const totalSize = loadOrder.reduce((sum, feature) => {
-      return sum + (sizes[feature] || 0);
-    }, 0);
+      const totalSize = loadOrder.reduce((sum, feature) => {
+        return sum + (sizes[feature] || 0);
+      }, 0);
 
-    console.log(`HyperclayJS: Loaded ${loadOrder.length} modules (~${totalSize.toFixed(1)}KB)`);
+      console.log(`HyperclayJS: Loaded ${loadOrder.length} modules (~${totalSize.toFixed(1)}KB)`);
+    }
 
   } catch (error) {
     console.error('HyperclayJS: Fatal error during initialization:', error);
