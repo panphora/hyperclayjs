@@ -93,7 +93,7 @@ import 'hyperclayjs/presets/standard.js';
 
 | Module | Size | Description |
 |--------|------|-------------|
-| All.js (jQuery-like) | 13.8KB | Full DOM manipulation library |
+| All.js (jQuery-like) | 13.9KB | Full DOM manipulation library |
 | DOM Ready | 0.2KB | DOM ready callback |
 | Get Data From Form | 1.7KB | Extract form data as an object |
 | Style Injection | 0.8KB | Dynamic stylesheet injection |
@@ -134,7 +134,7 @@ Standard feature set for most use cases
 
 **Modules:** `save-core`, `save`, `admin`, `persist`, `ajax`, `events`, `helpers`, `toast`
 
-### Everything (~616.3KB)
+### Everything (~616.4KB)
 All available features
 
 Includes all available modules across all categories.

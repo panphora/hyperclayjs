@@ -515,7 +515,7 @@
     "alljs": {
       "name": "All.js (jQuery-like)",
       "category": "dom-utilities",
-      "size": 13.8,
+      "size": 13.9,
       "files": [
         "dom-utilities/All.js"
       ],

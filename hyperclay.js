@@ -709,7 +709,7 @@
   "debounce": 0.2,
   "dom-ready": 0.2,
   "window-load": 0.2,
-  "alljs": 13.8,
+  "alljs": 13.9,
   "style-injection": 0.8,
   "get-data-from-form": 1.7,
   "dom-morphing": 7.9,

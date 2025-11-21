@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1.2] - 2025-11-20
+
+### Changed
+- Update load-jsdelivr.html
+
+### Fixed
+- Allow elements as context in All.js
+
+
+
 ## [1.1.1] - 2025-11-19
 
 ### Changed
