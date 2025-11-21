@@ -76,7 +76,7 @@ const MODULE_DEFINITIONS = {
   'core/optionVisibilityRuleGenerator.js': {
     name: 'Option Visibility',
     moduleId: 'options',
-    description: 'Dynamic show/hide based on page state with option:attribute="value"',
+    description: 'Dynamic show/hide based on ancestor state with option:attribute="value"',
     exports: {
       optionVisibilityRuleGenerator: ['window', 'hyperclay']
     }
@@ -149,6 +149,16 @@ const MODULE_DEFINITIONS = {
       toast: ['window', 'hyperclay']
     }
   },
+  'ui/toast-hyperclay.js': {
+    name: 'Toast Hyperclay (Legacy)',
+    moduleId: 'toast-hyperclay',
+    description: 'Toast with legacy Hyperclay platform styling (hidden feature)',
+    relatedFiles: ['ui/toast.js'],
+    hidden: true,
+    exports: {
+      toast: ['window', 'hyperclay']
+    }
+  },
   'ui/theModal.js': {
     name: 'Modal System',
     moduleId: 'modals',
@@ -168,7 +178,7 @@ const MODULE_DEFINITIONS = {
   'vendor/tailwind-play.js': {
     name: 'Tailwind Play',
     moduleId: 'tailwind-play',
-    description: 'Live Tailwind CSS editing - updates styles based on classes in your HTML',
+    description: 'Live Tailwind CSS editing - no need for a build system',
     category: 'ui' // Override - this is a UI feature even though file is in vendor/
     // No exports - side effects only
   },
@@ -224,6 +234,7 @@ const MODULE_DEFINITIONS = {
     name: 'Window Load',
     moduleId: 'window-load',
     description: 'Window load callback',
+    hidden: true,
     exports: {
       onLoad: ['hyperclay']
     }
@@ -253,9 +264,9 @@ const MODULE_DEFINITIONS = {
     }
   },
   'vendor/idiomorph.min.js': {
-    name: 'DOM Morphing',
-    moduleId: 'dom-morphing',
-    description: 'Efficient DOM updates',
+    name: 'Idiomorph',
+    moduleId: 'idiomorph',
+    description: 'Efficient DOM morphing library',
     exports: {
       Idiomorph: ['hyperclay']
     }
@@ -296,6 +307,7 @@ const MODULE_DEFINITIONS = {
     name: 'Behavior Collector',
     moduleId: 'behavior-collector',
     description: 'Tracks user interactions (mouse, scroll, keyboard)',
+    hidden: true,
     exports: {
       behaviorCollector: ['hyperclay']
     }
@@ -453,8 +465,8 @@ async function generateDependencyGraph() {
     // Mark files as processed
     files.forEach(f => processedFiles.add(f));
 
-    // Add to category modules list
-    if (CATEGORIES[category]) {
+    // Add to category modules list (unless hidden)
+    if (CATEGORIES[category] && !definition.hidden) {
       CATEGORIES[category].modules.push(moduleId);
     }
   }

@@ -55,7 +55,7 @@ import 'hyperclayjs/presets/standard.js';
 | Admin Features | 5.3KB | Hides admin inputs, scripts, contenteditable, onclick for regular viewers |
 | Edit Mode | 1.4KB | Toggle edit mode on/off |
 | Form Persistence | 2.2KB | Persist form values to the DOM with [persist] attribute |
-| Option Visibility | 4.4KB | Dynamic show/hide based on page state with option:attribute="value" |
+| Option Visibility | 4.4KB | Dynamic show/hide based on ancestor state with option:attribute="value" |
 | Save Core | 5.9KB | Basic save function only - hyperclay.savePage() |
 | Save System | 4.9KB | Full save: save button, keyboard shortcut, auto-save, change tracking |
 
@@ -76,7 +76,7 @@ import 'hyperclayjs/presets/standard.js';
 | Dialog Functions | 7.7KB | ask(), consent(), tell(), snippet() functions |
 | Info Dialog | 3.2KB | Info dialog component |
 | Modal System | 18.4KB | Full modal window creation system - window.theModal |
-| Tailwind Play | 362.3KB | Live Tailwind CSS editing - updates styles based on classes in your HTML |
+| Tailwind Play | 362.3KB | Live Tailwind CSS editing - no need for a build system |
 | Toast Notifications | 7.3KB | Success/error message notifications - toast(msg, msgType) |
 
 ### Utilities (Core utilities (often auto-included))
@@ -97,7 +97,6 @@ import 'hyperclayjs/presets/standard.js';
 | DOM Ready | 0.2KB | DOM ready callback |
 | Get Data From Form | 1.7KB | Extract form data as an object |
 | Style Injection | 0.8KB | Dynamic stylesheet injection |
-| Window Load | 0.2KB | Window load callback |
 
 ### String Utilities (String manipulation helpers)
 
@@ -112,7 +111,6 @@ import 'hyperclayjs/presets/standard.js';
 
 | Module | Size | Description |
 |--------|------|-------------|
-| Behavior Collector | 5.2KB | Tracks user interactions (mouse, scroll, keyboard) |
 | File Upload to App Owner | 10.4KB | File upload with progress |
 | Send Message to App Owner | 1.2KB | Message sending utility |
 
@@ -120,7 +118,7 @@ import 'hyperclayjs/presets/standard.js';
 
 | Module | Size | Description |
 |--------|------|-------------|
-| DOM Morphing | 7.9KB | Efficient DOM updates |
+| Idiomorph | 7.9KB | Efficient DOM morphing library |
 
 ## Presets
 
@@ -134,7 +132,7 @@ Standard feature set for most use cases
 
 **Modules:** `save-core`, `save`, `admin`, `persist`, `ajax`, `events`, `helpers`, `toast`
 
-### Everything (~616.4KB)
+### Everything (~624.4KB)
 All available features
 
 Includes all available modules across all categories.

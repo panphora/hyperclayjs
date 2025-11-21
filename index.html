@@ -139,14 +139,16 @@
         }
 
         .feature-checkbox:checked::after {
-            content: '✓';
+            content: '';
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            color: white;
-            font-size: 1rem;
-            font-weight: bold;
+            width: 14px;
+            height: 14px;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 8L6 12L14 4' stroke='white' stroke-width='3' stroke-linecap='square' stroke-linejoin='miter'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
         }
 
         .feature-info {
@@ -162,6 +164,13 @@
         .feature-description {
             font-size: 0.875rem;
             color: var(--gray);
+        }
+
+        .feature-dependencies {
+            font-size: 0.75rem;
+            color: var(--light-blue);
+            margin-top: 0.25rem;
+            font-style: italic;
         }
 
         .feature-size {
@@ -680,6 +689,12 @@
                             const dependencies = getDependencies(moduleId);
                             const requiresAttr = dependencies.length > 0 ? `data-requires="${dependencies.join(',')}"` : '';
 
+                            // Filter out hidden dependencies (not in any category)
+                            const visibleDependencies = dependencies.filter(depId => isVisibleModule(depId));
+                            const dependenciesText = visibleDependencies.length > 0
+                                ? `<div class="feature-dependencies">Requires: ${visibleDependencies.map(d => features[d]?.name || d).join(', ')}</div>`
+                                : '';
+
                             return `
                                 <label class="feature-item">
                                     <input type="checkbox"
@@ -690,6 +705,7 @@
                                     <div class="feature-info">
                                         <div class="feature-name">${module.name}</div>
                                         <div class="feature-description">${module.description}</div>
+                                        ${dependenciesText}
                                     </div>
                                     <span class="feature-size ${sizeClass}">${module.size.toFixed(1)}KB</span>
                                 </label>
@@ -700,6 +716,16 @@
 
                 container.appendChild(section);
             }
+        }
+
+        function isVisibleModule(moduleId) {
+            // Check if module is in any category (visible modules)
+            for (const category of Object.values(categories)) {
+                if (category.modules && category.modules.includes(moduleId)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         function getDependencies(moduleId) {
@@ -786,9 +812,12 @@
             const barWidth = Math.min((totalSize / 300) * 100, 100);
             sizeBar.style.width = barWidth + '%';
 
-            // Update selected features list
+            // Update selected features list (only show visible modules)
             selectedFeaturesEl.innerHTML = '';
             selectedFeatures.forEach(feature => {
+                // Skip hidden modules in the display
+                if (!isVisibleModule(feature)) return;
+
                 const tag = document.createElement('span');
                 tag.className = 'feature-tag';
                 tag.textContent = features[feature].name;
@@ -801,7 +830,7 @@
 
             // Generate URL based on selected features
             function generateURL() {
-            const baseURL = 'https://cdn.jsdelivr.net/npm/hyperclayjs@1.1.1/hyperclay.js';
+            const baseURL = 'https://cdn.jsdelivr.net/npm/hyperclayjs@1.1.2/hyperclay.js';
 
             if (selectedFeatures.size === 0) {
                 urlInput.value = baseURL;
@@ -813,7 +842,8 @@
             if (currentPreset) {
                 urlParams = `?features=${currentPreset}`;
             } else if (selectedFeatures.size > 0) {
-                const featuresArray = Array.from(selectedFeatures);
+                // Filter out hidden modules from the URL
+                const featuresArray = Array.from(selectedFeatures).filter(f => isVisibleModule(f));
                 urlParams = `?features=${featuresArray.join(',')}`;
             }
 

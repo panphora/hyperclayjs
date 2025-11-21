@@ -138,6 +138,9 @@
       "ui/toast.js"
     ],
     "ui/theModal.js": [],
+    "ui/toast-hyperclay.js": [
+      "ui/toast.js"
+    ],
     "ui/toast.js": [],
     "utilities/cookie.js": [],
     "utilities/debounce.js": [],
@@ -230,7 +233,7 @@
       "files": [
         "core/optionVisibilityRuleGenerator.js"
       ],
-      "description": "Dynamic show/hide based on page state with option:attribute=\"value\"",
+      "description": "Dynamic show/hide based on ancestor state with option:attribute=\"value\"",
       "exports": {
         "optionVisibilityRuleGenerator": [
           "window",
@@ -371,6 +374,22 @@
         ]
       }
     },
+    "toast-hyperclay": {
+      "name": "Toast Hyperclay (Legacy)",
+      "category": "ui",
+      "size": 8,
+      "files": [
+        "ui/toast-hyperclay.js",
+        "ui/toast.js"
+      ],
+      "description": "Toast with legacy Hyperclay platform styling (hidden feature)",
+      "exports": {
+        "toast": [
+          "window",
+          "hyperclay"
+        ]
+      }
+    },
     "modals": {
       "name": "Modal System",
       "category": "ui",
@@ -408,7 +427,7 @@
       "files": [
         "vendor/tailwind-play.js"
       ],
-      "description": "Live Tailwind CSS editing - updates styles based on classes in your HTML",
+      "description": "Live Tailwind CSS editing - no need for a build system",
       "exports": {}
     },
     "mutation": {
@@ -557,14 +576,14 @@
         ]
       }
     },
-    "dom-morphing": {
-      "name": "DOM Morphing",
+    "idiomorph": {
+      "name": "Idiomorph",
       "category": "vendor",
       "size": 7.9,
       "files": [
         "vendor/idiomorph.min.js"
       ],
-      "description": "Efficient DOM updates",
+      "description": "Efficient DOM morphing library",
       "exports": {
         "Idiomorph": [
           "hyperclay"
@@ -729,7 +748,6 @@
       "description": "DOM manipulation helpers",
       "modules": [
         "dom-ready",
-        "window-load",
         "alljs",
         "style-injection",
         "get-data-from-form"
@@ -749,7 +767,6 @@
       "name": "Communication & Files",
       "description": "File handling and messaging",
       "modules": [
-        "behavior-collector",
         "send-message",
         "file-upload"
       ]
@@ -758,7 +775,7 @@
       "name": "Vendor Libraries",
       "description": "Third-party libraries",
       "modules": [
-        "dom-morphing"
+        "idiomorph"
       ]
     }
   },
@@ -804,6 +821,7 @@
         "inputs",
         "prompts",
         "toast",
+        "toast-hyperclay",
         "modals",
         "info",
         "tailwind-play",
@@ -817,7 +835,7 @@
         "alljs",
         "style-injection",
         "get-data-from-form",
-        "dom-morphing",
+        "idiomorph",
         "slugify",
         "emmet-html",
         "copy-to-clipboard",

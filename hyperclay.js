@@ -52,6 +52,7 @@
     "dependencies": [
       "save-core",
       "toast",
+      "toast-hyperclay",
       "mutation",
       "throttle"
     ],
@@ -175,7 +176,8 @@
       "dom-ready",
       "copy-to-clipboard",
       "modals",
-      "toast"
+      "toast",
+      "toast-hyperclay"
     ],
     "exports": {
       "ask": [
@@ -201,6 +203,18 @@
   "toast": {
     "path": "./ui/toast.js",
     "dependencies": [],
+    "exports": {
+      "toast": [
+        "window",
+        "hyperclay"
+      ]
+    }
+  },
+  "toast-hyperclay": {
+    "path": "./ui/toast-hyperclay.js",
+    "dependencies": [
+      "toast"
+    ],
     "exports": {
       "toast": [
         "window",
@@ -334,7 +348,7 @@
       ]
     }
   },
-  "dom-morphing": {
+  "idiomorph": {
     "path": "./vendor/idiomorph.min.js",
     "dependencies": [],
     "exports": {
@@ -395,7 +409,8 @@
     "dependencies": [
       "behavior-collector",
       "get-data-from-form",
-      "toast"
+      "toast",
+      "toast-hyperclay"
     ],
     "exports": {
       "sendMessage": [
@@ -408,6 +423,7 @@
     "dependencies": [
       "copy-to-clipboard",
       "toast",
+      "toast-hyperclay",
       "debounce"
     ],
     "exports": {
@@ -467,6 +483,7 @@
       "inputs",
       "prompts",
       "toast",
+      "toast-hyperclay",
       "modals",
       "info",
       "tailwind-play",
@@ -480,7 +497,7 @@
       "alljs",
       "style-injection",
       "get-data-from-form",
-      "dom-morphing",
+      "idiomorph",
       "slugify",
       "emmet-html",
       "copy-to-clipboard",
@@ -699,6 +716,7 @@
   "inputs": 1.2,
   "prompts": 7.7,
   "toast": 7.3,
+  "toast-hyperclay": 8,
   "modals": 18.4,
   "info": 3.2,
   "tailwind-play": 362.3,
@@ -712,7 +730,7 @@
   "alljs": 13.9,
   "style-injection": 0.8,
   "get-data-from-form": 1.7,
-  "dom-morphing": 7.9,
+  "idiomorph": 7.9,
   "slugify": 0.7,
   "emmet-html": 1.4,
   "copy-to-clipboard": 0.9,
