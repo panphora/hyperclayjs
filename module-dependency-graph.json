@@ -9,6 +9,7 @@
     "build/generate-load-jsdelivr.js": [],
     "build/generate-readme.js": [],
     "build/hyperclay.template.js": [],
+    "build/update-index-url.js": [],
     "communication/behaviorCollector.js": [],
     "communication/sendMessage.js": [
       "communication/behaviorCollector.js",
@@ -511,7 +512,7 @@
         ]
       }
     },
-    "jquery-like": {
+    "alljs": {
       "name": "All.js (jQuery-like)",
       "category": "dom-utilities",
       "size": 13.8,
@@ -729,7 +730,7 @@
       "modules": [
         "dom-ready",
         "window-load",
-        "jquery-like",
+        "alljs",
         "style-injection",
         "get-data-from-form"
       ]
@@ -813,7 +814,7 @@
         "debounce",
         "dom-ready",
         "window-load",
-        "jquery-like",
+        "alljs",
         "style-injection",
         "get-data-from-form",
         "dom-morphing",

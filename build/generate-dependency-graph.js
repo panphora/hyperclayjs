@@ -230,7 +230,7 @@ const MODULE_DEFINITIONS = {
   },
   'dom-utilities/All.js': {
     name: 'All.js (jQuery-like)',
-    moduleId: 'jquery-like',
+    moduleId: 'alljs',
     description: 'Full DOM manipulation library',
     exports: {
       All: ['window', 'hyperclay']

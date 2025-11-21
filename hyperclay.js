@@ -304,7 +304,7 @@
       ]
     }
   },
-  "jquery-like": {
+  "alljs": {
     "path": "./dom-utilities/All.js",
     "dependencies": [],
     "exports": {
@@ -477,7 +477,7 @@
       "debounce",
       "dom-ready",
       "window-load",
-      "jquery-like",
+      "alljs",
       "style-injection",
       "get-data-from-form",
       "dom-morphing",
@@ -709,7 +709,7 @@
   "debounce": 0.2,
   "dom-ready": 0.2,
   "window-load": 0.2,
-  "jquery-like": 13.8,
+  "alljs": 13.8,
   "style-injection": 0.8,
   "get-data-from-form": 1.7,
   "dom-morphing": 7.9,

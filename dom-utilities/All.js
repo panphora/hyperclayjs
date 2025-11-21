@@ -343,12 +343,14 @@ const defaultPlugins = {
 const All = new Proxy(function (selectorOrElements, contextSelector) {
   // If there's a context selector, search within that context
   if (arguments.length === 2) {
-    if (typeof contextSelector !== 'string') {
-      throw new TypeError('Context selector must be a string');
+    // Support both string selectors and element references as context
+    let contextElements;
+    if (typeof contextSelector === 'string') {
+      contextElements = Array.from(document.querySelectorAll(contextSelector));
+    } else {
+      // Convert element/array/document to element array
+      contextElements = toElementArray(contextSelector);
     }
-
-    // Get the context element(s)
-    const contextElements = Array.from(document.querySelectorAll(contextSelector));
 
     // If first arg is a string selector, search within each context
     if (typeof selectorOrElements === 'string') {
