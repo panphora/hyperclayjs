@@ -104,29 +104,43 @@
     return Array.from(resolved);
   }
 
-  // Topological sort for correct load order
-  function topologicalSort(features) {
-    const visited = new Set();
-    const result = [];
+  // Group modules by dependency level for parallel loading
+  function groupByDependencyLevel(features) {
+    const levels = [];
+    const featureToLevel = new Map();
 
-    function visit(feature) {
-      if (visited.has(feature)) return;
-      visited.add(feature);
-
-      const module = moduleDependencies[feature];
-      if (module && module.dependencies) {
-        module.dependencies.forEach(dep => {
-          if (features.includes(dep)) {
-            visit(dep);
-          }
-        });
+    function getLevel(feature) {
+      if (featureToLevel.has(feature)) {
+        return featureToLevel.get(feature);
       }
 
-      result.push(feature);
+      const module = moduleDependencies[feature];
+      if (!module || !module.dependencies || module.dependencies.length === 0) {
+        featureToLevel.set(feature, 0);
+        return 0;
+      }
+
+      // Level is max(dependency levels) + 1
+      let maxDepLevel = -1;
+      for (const dep of module.dependencies) {
+        if (features.includes(dep)) {
+          maxDepLevel = Math.max(maxDepLevel, getLevel(dep));
+        }
+      }
+
+      const level = maxDepLevel + 1;
+      featureToLevel.set(feature, level);
+      return level;
     }
 
-    features.forEach(feature => visit(feature));
-    return result;
+    // Calculate levels for all features
+    features.forEach(feature => {
+      const level = getLevel(feature);
+      if (!levels[level]) levels[level] = [];
+      levels[level].push(feature);
+    });
+
+    return levels;
   }
 
   // Get base URL for module imports
@@ -163,10 +177,12 @@
     // Resolve all dependencies
     const allFeatures = resolveDependencies(requestedFeatures);
 
-    // Sort in correct load order
-    const loadOrder = topologicalSort(allFeatures);
+    // Group by dependency level for parallel loading
+    const levels = groupByDependencyLevel(allFeatures);
 
-    if (debugMode) console.log('HyperclayJS: Load order:', loadOrder);
+    if (debugMode) {
+      console.log('HyperclayJS: Load levels:', levels.map((level, i) => `Level ${i}: ${level.join(', ')}`));
+    }
 
     // Get base URL
     const baseUrl = getBaseUrl();
@@ -174,13 +190,24 @@
     // Track loaded modules
     const loadedModules = {};
 
-    // Load modules in order
-    for (const feature of loadOrder) {
-      const module = await loadModule(feature, baseUrl);
-      if (module) {
-        loadedModules[feature] = module;
-      }
+    // Load modules level by level (parallel within each level)
+    for (const level of levels) {
+      if (debugMode) console.log(`HyperclayJS: Loading level with ${level.length} module(s)...`);
+
+      // Load all modules in this level in parallel
+      const modulePromises = level.map(feature => loadModule(feature, baseUrl));
+      const modules = await Promise.all(modulePromises);
+
+      // Store loaded modules
+      level.forEach((feature, index) => {
+        if (modules[index]) {
+          loadedModules[feature] = modules[index];
+        }
+      });
     }
+
+    // Create flat load order for compatibility
+    const loadOrder = levels.flat();
 
     // Store loaded modules globally for access
     window.hyperclayModules = loadedModules;
