@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.0] - 2025-11-20
+
+### Added
+- Debug mode functionality
+- Toast-hyperclay integration with idiomorph
+
+
+
 ## [1.1.2] - 2025-11-20
 
 ### Changed
