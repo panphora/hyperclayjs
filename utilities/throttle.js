@@ -1,4 +1,4 @@
-export default function throttle(callback, delay, executeFirst = true) {
+function throttle(callback, delay, executeFirst = true) {
   let lastCall = executeFirst ? 0 : Date.now();
   let timeoutId = null;
 
@@ -19,3 +19,9 @@ export default function throttle(callback, delay, executeFirst = true) {
     }
   };
 }
+
+// Self-export to hyperclay only
+window.hyperclay = window.hyperclay || {};
+window.hyperclay.throttle = throttle;
+
+export default throttle;

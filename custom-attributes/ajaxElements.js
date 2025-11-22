@@ -90,5 +90,9 @@ function init () {
   document.addEventListener('submit', handleFormSubmit);
   document.addEventListener('click', handleButtonClick);
 }
+
+// Auto-init when module is imported
+init();
+
 export { init };
 export default init;

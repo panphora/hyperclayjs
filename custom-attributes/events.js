@@ -11,5 +11,8 @@ function init() {
   initOnrender();
 }
 
+// Auto-init when module is imported
+init();
+
 export { init };
 export default init;

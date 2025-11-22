@@ -322,7 +322,7 @@ function detectContentType(content) {
     // CSV pattern
     { type: "csv", mime: "text/csv", regex: /^[^,\n]+(,[^,\n]+)+/ },
     // Markdown pattern
-    { 
+    {
       type: "md",
       mime: "text/markdown",
       regex: /#\S+\s+\S+|```[\s\S]*```/
@@ -346,3 +346,9 @@ function detectContentType(content) {
   // Default to plain text
   return { type: "txt", mime: "text/plain", extension: ".txt" };
 }
+
+// Self-export to hyperclay only
+window.hyperclay = window.hyperclay || {};
+window.hyperclay.uploadFile = uploadFile;
+window.hyperclay.createFile = createFile;
+window.hyperclay.uploadFileBasic = uploadFileBasic;

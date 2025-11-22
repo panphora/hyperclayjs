@@ -318,7 +318,7 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 
 # Stage changes
-git add package.json CHANGELOG.md module-dependency-graph.json hyperclay.js README.md load-jsdelivr.html
+git add package.json CHANGELOG.md module-dependency-graph.json hyperclay.js README.md build/load-jsdelivr.html
 
 # Commit
 COMMIT_MSG="chore: release v$NEW_VERSION"

@@ -1,4 +1,4 @@
-export default function insertStyleTag(href) {
+function insertStyleTag(href) {
   // First check if there's already a link with this exact href
   if (document.querySelector(`link[href="${href}"]`)) {
     return;
@@ -26,3 +26,10 @@ export default function insertStyleTag(href) {
   link.href = href;
   document.head.appendChild(link);
 }
+
+// Self-export to window and hyperclay
+window.insertStyleTag = insertStyleTag;
+window.hyperclay = window.hyperclay || {};
+window.hyperclay.insertStyleTag = insertStyleTag;
+
+export default insertStyleTag;

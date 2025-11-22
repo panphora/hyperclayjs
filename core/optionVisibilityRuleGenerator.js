@@ -152,9 +152,17 @@ const optionVisibilityRuleGenerator = {
   },
 };
 
+// Self-export to window and hyperclay
+window.optionVisibilityRuleGenerator = optionVisibilityRuleGenerator;
+window.hyperclay = window.hyperclay || {};
+window.hyperclay.optionVisibilityRuleGenerator = optionVisibilityRuleGenerator;
+
 export default optionVisibilityRuleGenerator;
 
 // Auto-initialize
 export function init() {
   optionVisibilityRuleGenerator.start();
 }
+
+// Auto-init when module is imported
+init();

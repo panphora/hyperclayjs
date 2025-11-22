@@ -183,14 +183,14 @@ export function init() {
   initSavePageOnChange();
 }
 
-/**
- * Export save functions to window.hyperclay
- */
-export function exportToWindow() {
-  if (!window.hyperclay) {
-    window.hyperclay = {};
-  }
+// Self-export to hyperclay only
+window.hyperclay = window.hyperclay || {};
+window.hyperclay.savePage = savePage;
+window.hyperclay.beforeSave = beforeSave;
+window.hyperclay.replacePageWith = replacePageWith;
+window.hyperclay.initHyperclaySaveButton = initHyperclaySaveButton;
+window.hyperclay.initSaveKeyboardShortcut = initSaveKeyboardShortcut;
+window.hyperclay.initSavePageOnChange = initSavePageOnChange;
 
-  window.hyperclay.savePage = savePage;
-  window.hyperclay.replacePageWith = replacePageWith;
-}
+// Auto-init when module is imported
+init();

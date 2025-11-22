@@ -418,6 +418,18 @@ function getCategory(filePath) {
 }
 
 /**
+ * Generate module paths for the simplified loader
+ */
+function generateModulePaths(modules) {
+  const paths = {};
+  for (const [moduleId, module] of Object.entries(modules)) {
+    // Use the first file in the files array as the main module path
+    paths[moduleId] = `./${module.files[0]}`;
+  }
+  return paths;
+}
+
+/**
  * Generate dependency graph
  */
 async function generateDependencyGraph() {
@@ -474,10 +486,14 @@ async function generateDependencyGraph() {
   // Populate "everything" preset with all module IDs
   PRESETS.everything.modules = Object.keys(modules);
 
+  // Generate module paths for the simplified loader
+  const modulePaths = generateModulePaths(modules);
+
   // Build final object
   const graph = {
     rawDependencies,
     modules,
+    modulePaths, // NEW: Add module paths for simplified loader
     categories: CATEGORIES,
     presets: PRESETS
   };
@@ -490,6 +506,7 @@ async function generateDependencyGraph() {
   console.log(`📊 Total modules: ${Object.keys(modules).length}`);
   console.log(`📂 Categories: ${Object.keys(CATEGORIES).length}`);
   console.log(`🎯 Presets: ${Object.keys(PRESETS).length}`);
+  console.log(`🗺️ Module paths: ${Object.keys(modulePaths).length}`);
 }
 
 // Run the generator

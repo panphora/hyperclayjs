@@ -60,3 +60,10 @@ export default function enablePersistentFormInputValues(filterBySelector = "[per
 export function init() {
   enablePersistentFormInputValues("[persist]");
 }
+
+// Self-export to hyperclay only
+window.hyperclay = window.hyperclay || {};
+window.hyperclay.enablePersistentFormInputValues = enablePersistentFormInputValues;
+
+// Auto-init when module is imported
+init();

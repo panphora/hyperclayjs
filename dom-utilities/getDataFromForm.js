@@ -1,5 +1,5 @@
 // easily convert a form into a JS object
-export default function getDataFromForm(container) {
+function getDataFromForm(container) {
   const formData = {};
   
   // Helper function to process a single element
@@ -58,3 +58,10 @@ export default function getDataFromForm(container) {
 
   return formData;
 }
+
+// Self-export to window and hyperclay
+window.getDataFromForm = getDataFromForm;
+window.hyperclay = window.hyperclay || {};
+window.hyperclay.getDataFromForm = getDataFromForm;
+
+export default getDataFromForm;

@@ -171,5 +171,14 @@ function init () {
   };
 
 }
+
+// Self-export to window and hyperclay
+window.initCustomAttributes = init;
+window.hyperclay = window.hyperclay || {};
+window.hyperclay.initCustomAttributes = init;
+
+// Auto-init when module is imported
+init();
+
 export { init };
 export default init;

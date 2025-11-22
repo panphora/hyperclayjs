@@ -15,7 +15,7 @@ async function generateReadme() {
   console.log('📝 Generating README.md...');
 
   // Read template
-  const templatePath = path.join(ROOT_DIR, 'README.template.md');
+  const templatePath = path.join(__dirname, 'README.template.md');
   const template = fs.readFileSync(templatePath, 'utf-8');
 
   // Read module dependency graph

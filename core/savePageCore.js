@@ -220,17 +220,10 @@ export function replacePageWith(url, callback = () => {}) {
     });
 }
 
-/**
- * Export save functions to window.hyperclay
- */
-export function exportToWindow() {
-  if (!window.hyperclay) {
-    window.hyperclay = {};
-  }
-
-  window.hyperclay.savePage = savePage;
-  window.hyperclay.saveHtml = saveHtml;
-  window.hyperclay.replacePageWith = replacePageWith;
-  window.hyperclay.beforeSave = beforeSave;
-  window.hyperclay.getPageContents = getPageContents;
-}
+// Self-export to hyperclay only
+window.hyperclay = window.hyperclay || {};
+window.hyperclay.savePage = savePage;
+window.hyperclay.saveHtml = saveHtml;
+window.hyperclay.replacePageWith = replacePageWith;
+window.hyperclay.beforeSave = beforeSave;
+window.hyperclay.getPageContents = getPageContents;

@@ -1,4 +1,4 @@
-export default function emmet(strings, ...values) {
+function emmet(strings, ...values) {
     // Extract the Emmet syntax from the first string
     let emmetSyntax = strings[0];
 
@@ -52,3 +52,9 @@ export default function emmet(strings, ...values) {
 
     return html;
 }
+
+// Self-export to hyperclay only
+window.hyperclay = window.hyperclay || {};
+window.hyperclay.emmet = emmet;
+
+export default emmet;

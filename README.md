@@ -306,18 +306,8 @@ export default function myFeature() {
   // Feature implementation
 }
 
-// Export initialization function
-export function init() {
-  if (typeof window !== 'undefined') {
-    // Auto-initialize on import
-    myFeature();
-  }
-}
-
-// Auto-run if needed
-if (typeof window !== 'undefined') {
-  init();
-}
+// Auto-init when module is imported
+myFeature();
 ```
 
 ## Migration from Monolithic Script

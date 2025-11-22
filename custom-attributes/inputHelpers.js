@@ -7,5 +7,8 @@ function init() {
   initAutosize();
 }
 
+// Auto-init when module is imported
+init();
+
 export { init };
 export default init;

@@ -222,9 +222,16 @@ const behaviorCollector = (() => {
   };
 })();
 
+// Self-export to hyperclay only
+window.hyperclay = window.hyperclay || {};
+window.hyperclay.behaviorCollector = behaviorCollector;
+
 export default behaviorCollector;
 
 // Auto-initialize - start collecting behavior data
 export function init() {
   behaviorCollector.init();
 }
+
+// Auto-init when module is imported
+init();

@@ -20,7 +20,7 @@ function generateLoadJsdelivr() {
   const version = packageJson.version;
 
   // Read the HTML file
-  const htmlPath = path.join(ROOT_DIR, 'load-jsdelivr.html');
+  const htmlPath = path.join(__dirname, 'load-jsdelivr.html');
   let html = fs.readFileSync(htmlPath, 'utf-8');
 
   // Replace version in jsdelivr URLs

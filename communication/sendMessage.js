@@ -2,7 +2,7 @@ import behaviorCollector from "./behaviorCollector.js";
 import getDataFromForm from "../dom-utilities/getDataFromForm.js";
 import toast from "../ui/toast.js";
 
-export default function sendMessage(eventOrObj, successMessage = "Successfully sent", callback) {
+function sendMessage(eventOrObj, successMessage = "Successfully sent", callback) {
   let form;
   let data;
   
@@ -46,3 +46,9 @@ export default function sendMessage(eventOrObj, successMessage = "Successfully s
       throw error;
     });
 }
+
+// Self-export to hyperclay only
+window.hyperclay = window.hyperclay || {};
+window.hyperclay.sendMessage = sendMessage;
+
+export default sendMessage;
