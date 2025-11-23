@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.3.0] - 2025-11-22
+
+### Changed
+- Simplified and cleaned up parallel module loading
+- Optimized module loading to happen in parallel
+
+### Breaking Changes
+- Renamed module IDs, removed hyperclayReady, merged info into dialogs
+
+
+
 ## [1.2.0] - 2025-11-20
 
 ### Added
