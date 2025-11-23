@@ -1,5 +1,5 @@
 /**
- * HyperclayJS v1.2.0 - Minimal Browser-Native Loader
+ * HyperclayJS v1.3.0 - Minimal Browser-Native Loader
  *
  * Modules self-export to window.hyperclay when imported.
  * Modules auto-init when imported (no separate init call needed).
