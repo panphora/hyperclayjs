@@ -1,15 +1,15 @@
 /**
- * Full save system for Hyperclay
+ * Save system for Hyperclay
  *
- * This includes all the conveniences: change detection, toast notifications,
- * auto-save, keyboard shortcuts, and more.
+ * Manual save with change detection, toast notifications,
+ * keyboard shortcuts, and save button support.
+ *
+ * For auto-save on DOM changes, also load the 'autosave' module.
  *
  * Built on top of savePageCore.js
  */
 
 import toast from "../ui/toast.js";
-import throttle from "../utilities/throttle.js";
-import Mutation from "../utilities/mutation.js";
 import { isEditMode, isOwner } from "./isAdminOfCurrentResource.js";
 import {
   savePage as savePageCore,
@@ -20,9 +20,17 @@ import {
 // Re-export beforeSave from core for backward compatibility
 export { beforeSave } from "./savePageCore.js";
 
+// Re-export getPageContents for autosave module
+export { getPageContents } from "./savePageCore.js";
+
 let unsavedChanges = false;
 let lastSavedContents = '';
-let baselineContents = ''; // State after initial setup, used to prevent autosave from setup mutations
+
+// State accessors for autosave module
+export function getUnsavedChanges() { return unsavedChanges; }
+export function setUnsavedChanges(val) { unsavedChanges = val; }
+export function getLastSavedContents() { return lastSavedContents; }
+export function setLastSavedContents(val) { lastSavedContents = val; }
 
 // Initialize lastSavedContents on page load to match what's on disk
 // This prevents unnecessary save attempts when content hasn't changed
@@ -30,11 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (isEditMode) {
     // Capture initial state immediately for comparison
     lastSavedContents = getPageContents();
-
-    // Also capture baseline after setup for autosave detection
-    setTimeout(() => {
-      baselineContents = getPageContents();
-    }, 1500);
   }
 });
 
@@ -70,29 +73,6 @@ export function savePage(callback = () => {}) {
       callback({msg, msgType});
     }
   });
-}
-
-/**
- * Throttled version of savePage for auto-save
- */
-const throttledSave = throttle(savePage, 1200);
-
-/**
- * Save the page with throttling, for use with auto-save
- * Checks both baseline and last saved content to prevent saves from initial setup
- *
- * @param {Function} callback - Optional callback
- */
-export function savePageThrottled(callback = () => {}) {
-  if (!isEditMode) return;
-
-  const currentContents = getPageContents();
-  // For autosave: check both that content changed from baseline AND from last save
-  // This prevents saves from initial setup mutations
-  if (currentContents !== baselineContents && currentContents !== lastSavedContents) {
-    unsavedChanges = true;
-    throttledSave(callback);
-  }
 }
 
 /**
@@ -148,39 +128,14 @@ export function initHyperclaySaveButton() {
 }
 
 /**
- * Initialize auto-save on DOM changes
- * Uses debounced mutation observer
- */
-export function initSavePageOnChange() {
-  Mutation.onAnyChange({
-    debounce: 3333,
-    omitChangeDetails: true
-  }, () => {
-    savePageThrottled(({msg, msgType} = {}) => {
-      if (msg) toast(msg, msgType);
-    });
-  });
-}
-
-/**
- * Warn before leaving page with unsaved changes
- */
-window.addEventListener('beforeunload', (event) => {
-  if (unsavedChanges && isOwner) {
-    event.preventDefault();
-    event.returnValue = '';
-  }
-});
-
-/**
- * Initialize the full save system
+ * Initialize the save system (keyboard shortcut and save button)
+ * For auto-save, also load the 'autosave' module
  */
 export function init() {
   if (!isEditMode) return;
 
   initSaveKeyboardShortcut();
   initHyperclaySaveButton();
-  initSavePageOnChange();
 }
 
 // Self-export to hyperclay only
@@ -190,7 +145,9 @@ window.hyperclay.beforeSave = beforeSave;
 window.hyperclay.replacePageWith = replacePageWith;
 window.hyperclay.initHyperclaySaveButton = initHyperclaySaveButton;
 window.hyperclay.initSaveKeyboardShortcut = initSaveKeyboardShortcut;
-window.hyperclay.initSavePageOnChange = initSavePageOnChange;
 
 // Auto-init when module is imported
 init();
+
+export { savePage, replacePageWith, initSaveKeyboardShortcut, initHyperclaySaveButton, init };
+export default savePage;

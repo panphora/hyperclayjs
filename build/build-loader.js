@@ -22,8 +22,8 @@ const version = packageJson.version;
 const depGraphPath = path.join(__dirname, '../module-dependency-graph.json');
 const depGraph = JSON.parse(fs.readFileSync(depGraphPath, 'utf8'));
 
-// Read template - using the new minimal template
-const templatePath = path.join(__dirname, 'hyperclay-minimal.template.js');
+// Read template
+const templatePath = path.join(__dirname, 'hyperclay.template.js');
 const template = fs.readFileSync(templatePath, 'utf8');
 
 // Generate the loader

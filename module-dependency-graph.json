@@ -47,11 +47,13 @@
       "core/adminOnClick.js",
       "core/adminResources.js"
     ],
+    "core/autosave.js": [],
     "core/editmode.js": [
       "core/isAdminOfCurrentResource.js"
     ],
     "core/editmodeSystem.js": [
       "core/editmode.js",
+      "core/isAdminOfCurrentResource.js",
       "core/setPageTypeOnDocumentElement.js"
     ],
     "core/enablePersistentFormInputValues.js": [
@@ -64,13 +66,7 @@
     "core/optionVisibilityRuleGenerator.js": [
       "utilities/mutation.js"
     ],
-    "core/savePage.js": [
-      "core/isAdminOfCurrentResource.js",
-      "core/savePageCore.js",
-      "ui/toast.js",
-      "utilities/mutation.js",
-      "utilities/throttle.js"
-    ],
+    "core/savePage.js": [],
     "core/savePageCore.js": [
       "core/isAdminOfCurrentResource.js",
       "utilities/cookie.js"
@@ -134,6 +130,7 @@
     "ui/prompts.js": [
       "dom-utilities/onDomReady.js",
       "string-utilities/copy-to-clipboard.js",
+      "ui/info.js",
       "ui/theModal.js",
       "ui/toast.js"
     ],
@@ -156,9 +153,9 @@
   },
   "modules": {
     "save-core": {
-      "name": "Save Core",
+      "name": "save-core",
       "category": "core",
-      "size": 5.9,
+      "size": 5.8,
       "files": [
         "core/savePageCore.js"
       ],
@@ -169,14 +166,14 @@
         ]
       }
     },
-    "save": {
-      "name": "Save System",
+    "save-system": {
+      "name": "save-system",
       "category": "core",
-      "size": 4.9,
+      "size": 4.1,
       "files": [
         "core/savePage.js"
       ],
-      "description": "Full save: save button, keyboard shortcut, auto-save, change tracking",
+      "description": "Manual save: keyboard shortcut (CMD+S), save button, change tracking",
       "exports": {
         "beforeSave": [
           "hyperclay"
@@ -192,6 +189,20 @@
         ],
         "initSaveKeyboardShortcut": [
           "hyperclay"
+        ]
+      }
+    },
+    "autosave": {
+      "name": "autosave",
+      "category": "core",
+      "size": 2.4,
+      "files": [
+        "core/autosave.js"
+      ],
+      "description": "Auto-save on DOM changes, unsaved changes warning",
+      "exports": {
+        "savePageThrottled": [
+          "hyperclay"
         ],
         "initSavePageOnChange": [
           "hyperclay"
@@ -199,9 +210,9 @@
       }
     },
     "admin": {
-      "name": "Admin Features",
+      "name": "admin",
       "category": "core",
-      "size": 5.300000000000001,
+      "size": 5.4,
       "files": [
         "core/adminSystem.js",
         "core/adminContenteditable.js",
@@ -213,9 +224,9 @@
       "exports": {}
     },
     "persist": {
-      "name": "Form Persistence",
+      "name": "persist",
       "category": "core",
-      "size": 2.2,
+      "size": 2.4,
       "files": [
         "core/enablePersistentFormInputValues.js"
       ],
@@ -226,10 +237,10 @@
         ]
       }
     },
-    "options": {
-      "name": "Option Visibility",
+    "option-visibility": {
+      "name": "option-visibility",
       "category": "core",
-      "size": 4.4,
+      "size": 4.7,
       "files": [
         "core/optionVisibilityRuleGenerator.js"
       ],
@@ -241,10 +252,10 @@
         ]
       }
     },
-    "editmode": {
-      "name": "Edit Mode",
+    "edit-mode": {
+      "name": "edit-mode",
       "category": "core",
-      "size": 1.4,
+      "size": 1.7,
       "files": [
         "core/editmodeSystem.js",
         "core/editmode.js",
@@ -263,10 +274,10 @@
         ]
       }
     },
-    "events": {
-      "name": "Event Attributes",
+    "event-attrs": {
+      "name": "event-attrs",
       "category": "custom-attributes",
-      "size": 3.5,
+      "size": 3.6000000000000005,
       "files": [
         "custom-attributes/events.js",
         "custom-attributes/onclickaway.js",
@@ -277,10 +288,10 @@
       "description": "[onclickaway], [onclone], [onpagemutation], [onrender]",
       "exports": {}
     },
-    "ajax": {
-      "name": "AJAX Elements",
+    "ajax-elements": {
+      "name": "ajax-elements",
       "category": "custom-attributes",
-      "size": 2.7,
+      "size": 2.8,
       "files": [
         "custom-attributes/ajaxElements.js"
       ],
@@ -288,9 +299,9 @@
       "exports": {}
     },
     "sortable": {
-      "name": "Sortable",
+      "name": "sortable",
       "category": "custom-attributes",
-      "size": 117.89999999999999,
+      "size": 118.1,
       "files": [
         "custom-attributes/sortable.js",
         "vendor/Sortable.js"
@@ -303,10 +314,10 @@
         ]
       }
     },
-    "helpers": {
-      "name": "DOM Helpers",
+    "dom-helpers": {
+      "name": "dom-helpers",
       "category": "custom-attributes",
-      "size": 5.4,
+      "size": 5.6,
       "files": [
         "custom-attributes/domHelpers.js"
       ],
@@ -318,8 +329,8 @@
         ]
       }
     },
-    "inputs": {
-      "name": "Input Helpers",
+    "input-helpers": {
+      "name": "input-helpers",
       "category": "custom-attributes",
       "size": 1.2,
       "files": [
@@ -330,14 +341,15 @@
       "description": "[prevent-enter], [autosize] for textareas",
       "exports": {}
     },
-    "prompts": {
-      "name": "Dialog Functions",
+    "dialogs": {
+      "name": "dialogs",
       "category": "ui",
-      "size": 7.7,
+      "size": 11.2,
       "files": [
-        "ui/prompts.js"
+        "ui/prompts.js",
+        "ui/info.js"
       ],
-      "description": "ask(), consent(), tell(), snippet() functions",
+      "description": "ask(), consent(), tell(), info(), snippet() functions",
       "exports": {
         "ask": [
           "window",
@@ -351,6 +363,10 @@
           "window",
           "hyperclay"
         ],
+        "info": [
+          "window",
+          "hyperclay"
+        ],
         "snippet": [
           "hyperclay"
         ],
@@ -360,7 +376,7 @@
       }
     },
     "toast": {
-      "name": "Toast Notifications",
+      "name": "toast",
       "category": "ui",
       "size": 7.3,
       "files": [
@@ -375,9 +391,9 @@
       }
     },
     "toast-hyperclay": {
-      "name": "Toast Hyperclay (Legacy)",
+      "name": "toast-hyperclay",
       "category": "ui",
-      "size": 8,
+      "size": 7.8999999999999995,
       "files": [
         "ui/toast-hyperclay.js",
         "ui/toast.js"
@@ -390,10 +406,10 @@
         ]
       }
     },
-    "modals": {
-      "name": "Modal System",
+    "modal": {
+      "name": "modal",
       "category": "ui",
-      "size": 18.4,
+      "size": 18.5,
       "files": [
         "ui/theModal.js"
       ],
@@ -405,23 +421,8 @@
         ]
       }
     },
-    "info": {
-      "name": "Info Dialog",
-      "category": "ui",
-      "size": 3.2,
-      "files": [
-        "ui/info.js"
-      ],
-      "description": "Info dialog component",
-      "exports": {
-        "info": [
-          "window",
-          "hyperclay"
-        ]
-      }
-    },
     "tailwind-play": {
-      "name": "Tailwind Play",
+      "name": "tailwind-play",
       "category": "ui",
       "size": 362.3,
       "files": [
@@ -431,9 +432,9 @@
       "exports": {}
     },
     "mutation": {
-      "name": "Mutation Observer",
+      "name": "mutation",
       "category": "utilities",
-      "size": 12.8,
+      "size": 12.9,
       "files": [
         "utilities/mutation.js"
       ],
@@ -446,9 +447,9 @@
       }
     },
     "nearest": {
-      "name": "Nearest Element",
+      "name": "nearest",
       "category": "utilities",
-      "size": 3.2,
+      "size": 3.3,
       "files": [
         "utilities/nearest.js"
       ],
@@ -461,7 +462,7 @@
       }
     },
     "cookie": {
-      "name": "Cookie Helper",
+      "name": "cookie",
       "category": "utilities",
       "size": 1.3,
       "files": [
@@ -476,9 +477,9 @@
       }
     },
     "throttle": {
-      "name": "Throttle",
+      "name": "throttle",
       "category": "utilities",
-      "size": 0.6,
+      "size": 0.7,
       "files": [
         "utilities/throttle.js"
       ],
@@ -490,9 +491,9 @@
       }
     },
     "debounce": {
-      "name": "Debounce",
+      "name": "debounce",
       "category": "utilities",
-      "size": 0.2,
+      "size": 0.4,
       "files": [
         "utilities/debounce.js"
       ],
@@ -504,9 +505,9 @@
       }
     },
     "dom-ready": {
-      "name": "DOM Ready",
+      "name": "dom-ready",
       "category": "dom-utilities",
-      "size": 0.2,
+      "size": 0.3,
       "files": [
         "dom-utilities/onDomReady.js"
       ],
@@ -518,9 +519,9 @@
       }
     },
     "window-load": {
-      "name": "Window Load",
+      "name": "window-load",
       "category": "dom-utilities",
-      "size": 0.2,
+      "size": 0.3,
       "files": [
         "dom-utilities/onLoad.js"
       ],
@@ -531,8 +532,8 @@
         ]
       }
     },
-    "alljs": {
-      "name": "All.js (jQuery-like)",
+    "all-js": {
+      "name": "all-js",
       "category": "dom-utilities",
       "size": 13.9,
       "files": [
@@ -547,9 +548,9 @@
       }
     },
     "style-injection": {
-      "name": "Style Injection",
+      "name": "style-injection",
       "category": "dom-utilities",
-      "size": 0.8,
+      "size": 1,
       "files": [
         "dom-utilities/insertStyleTag.js"
       ],
@@ -561,10 +562,10 @@
         ]
       }
     },
-    "get-data-from-form": {
-      "name": "Get Data From Form",
+    "form-data": {
+      "name": "form-data",
       "category": "dom-utilities",
-      "size": 1.7,
+      "size": 1.9,
       "files": [
         "dom-utilities/getDataFromForm.js"
       ],
@@ -577,9 +578,9 @@
       }
     },
     "idiomorph": {
-      "name": "Idiomorph",
+      "name": "idiomorph",
       "category": "vendor",
-      "size": 7.9,
+      "size": 8.1,
       "files": [
         "vendor/idiomorph.min.js"
       ],
@@ -591,9 +592,9 @@
       }
     },
     "slugify": {
-      "name": "Slugify",
+      "name": "slugify",
       "category": "string-utilities",
-      "size": 0.7,
+      "size": 0.6,
       "files": [
         "string-utilities/slugify.js"
       ],
@@ -605,10 +606,10 @@
         ]
       }
     },
-    "emmet-html": {
-      "name": "Emmet HTML",
+    "emmet": {
+      "name": "emmet",
       "category": "string-utilities",
-      "size": 1.4,
+      "size": 1.5,
       "files": [
         "string-utilities/emmet-html.js"
       ],
@@ -619,10 +620,10 @@
         ]
       }
     },
-    "copy-to-clipboard": {
-      "name": "Copy to Clipboard",
+    "clipboard": {
+      "name": "clipboard",
       "category": "string-utilities",
-      "size": 0.9,
+      "size": 0.8,
       "files": [
         "string-utilities/copy-to-clipboard.js"
       ],
@@ -633,10 +634,10 @@
         ]
       }
     },
-    "query-parser": {
-      "name": "URL Query Parser",
+    "query-params": {
+      "name": "query-params",
       "category": "string-utilities",
-      "size": 0.1,
+      "size": 0.2,
       "files": [
         "string-utilities/query.js"
       ],
@@ -649,9 +650,9 @@
       }
     },
     "behavior-collector": {
-      "name": "Behavior Collector",
+      "name": "behavior-collector",
       "category": "communication",
-      "size": 5.2,
+      "size": 5.4,
       "files": [
         "communication/behaviorCollector.js"
       ],
@@ -663,9 +664,9 @@
       }
     },
     "send-message": {
-      "name": "Send Message to App Owner",
+      "name": "send-message",
       "category": "communication",
-      "size": 1.2,
+      "size": 1.3,
       "files": [
         "communication/sendMessage.js"
       ],
@@ -677,9 +678,9 @@
       }
     },
     "file-upload": {
-      "name": "File Upload to App Owner",
+      "name": "file-upload",
       "category": "communication",
-      "size": 10.4,
+      "size": 10.6,
       "files": [
         "communication/uploadFile.js"
       ],
@@ -699,21 +700,21 @@
   },
   "modulePaths": {
     "save-core": "./core/savePageCore.js",
-    "save": "./core/savePage.js",
+    "save-system": "./core/savePage.js",
+    "autosave": "./core/autosave.js",
     "admin": "./core/adminSystem.js",
     "persist": "./core/enablePersistentFormInputValues.js",
-    "options": "./core/optionVisibilityRuleGenerator.js",
-    "editmode": "./core/editmodeSystem.js",
-    "events": "./custom-attributes/events.js",
-    "ajax": "./custom-attributes/ajaxElements.js",
+    "option-visibility": "./core/optionVisibilityRuleGenerator.js",
+    "edit-mode": "./core/editmodeSystem.js",
+    "event-attrs": "./custom-attributes/events.js",
+    "ajax-elements": "./custom-attributes/ajaxElements.js",
     "sortable": "./custom-attributes/sortable.js",
-    "helpers": "./custom-attributes/domHelpers.js",
-    "inputs": "./custom-attributes/inputHelpers.js",
-    "prompts": "./ui/prompts.js",
+    "dom-helpers": "./custom-attributes/domHelpers.js",
+    "input-helpers": "./custom-attributes/inputHelpers.js",
+    "dialogs": "./ui/prompts.js",
     "toast": "./ui/toast.js",
     "toast-hyperclay": "./ui/toast-hyperclay.js",
-    "modals": "./ui/theModal.js",
-    "info": "./ui/info.js",
+    "modal": "./ui/theModal.js",
     "tailwind-play": "./vendor/tailwind-play.js",
     "mutation": "./utilities/mutation.js",
     "nearest": "./utilities/nearest.js",
@@ -722,14 +723,14 @@
     "debounce": "./utilities/debounce.js",
     "dom-ready": "./dom-utilities/onDomReady.js",
     "window-load": "./dom-utilities/onLoad.js",
-    "alljs": "./dom-utilities/All.js",
+    "all-js": "./dom-utilities/All.js",
     "style-injection": "./dom-utilities/insertStyleTag.js",
-    "get-data-from-form": "./dom-utilities/getDataFromForm.js",
+    "form-data": "./dom-utilities/getDataFromForm.js",
     "idiomorph": "./vendor/idiomorph.min.js",
     "slugify": "./string-utilities/slugify.js",
-    "emmet-html": "./string-utilities/emmet-html.js",
-    "copy-to-clipboard": "./string-utilities/copy-to-clipboard.js",
-    "query-parser": "./string-utilities/query.js",
+    "emmet": "./string-utilities/emmet-html.js",
+    "clipboard": "./string-utilities/copy-to-clipboard.js",
+    "query-params": "./string-utilities/query.js",
     "behavior-collector": "./communication/behaviorCollector.js",
     "send-message": "./communication/sendMessage.js",
     "file-upload": "./communication/uploadFile.js"
@@ -740,32 +741,32 @@
       "description": "Essential functionality",
       "modules": [
         "save-core",
-        "save",
+        "save-system",
+        "autosave",
         "admin",
         "persist",
-        "options",
-        "editmode"
+        "option-visibility",
+        "edit-mode"
       ]
     },
     "custom-attributes": {
       "name": "Custom Attributes",
       "description": "HTML enhancements",
       "modules": [
-        "events",
-        "ajax",
+        "event-attrs",
+        "ajax-elements",
         "sortable",
-        "helpers",
-        "inputs"
+        "dom-helpers",
+        "input-helpers"
       ]
     },
     "ui": {
       "name": "UI Components",
       "description": "User interface elements",
       "modules": [
-        "prompts",
+        "dialogs",
         "toast",
-        "modals",
-        "info",
+        "modal",
         "tailwind-play"
       ]
     },
@@ -785,9 +786,9 @@
       "description": "DOM manipulation helpers",
       "modules": [
         "dom-ready",
-        "alljs",
+        "all-js",
         "style-injection",
-        "get-data-from-form"
+        "form-data"
       ]
     },
     "string-utilities": {
@@ -795,9 +796,9 @@
       "description": "String manipulation helpers",
       "modules": [
         "slugify",
-        "emmet-html",
-        "copy-to-clipboard",
-        "query-parser"
+        "emmet",
+        "clipboard",
+        "query-params"
       ]
     },
     "communication": {
@@ -822,7 +823,7 @@
       "description": "Essential features for basic editing",
       "modules": [
         "save-core",
-        "save",
+        "save-system",
         "admin",
         "toast"
       ]
@@ -832,12 +833,12 @@
       "description": "Standard feature set for most use cases",
       "modules": [
         "save-core",
-        "save",
+        "save-system",
         "admin",
         "persist",
-        "ajax",
-        "events",
-        "helpers",
+        "option-visibility",
+        "event-attrs",
+        "dom-helpers",
         "toast"
       ]
     },
@@ -846,21 +847,21 @@
       "description": "All available features",
       "modules": [
         "save-core",
-        "save",
+        "save-system",
+        "autosave",
         "admin",
         "persist",
-        "options",
-        "editmode",
-        "events",
-        "ajax",
+        "option-visibility",
+        "edit-mode",
+        "event-attrs",
+        "ajax-elements",
         "sortable",
-        "helpers",
-        "inputs",
-        "prompts",
+        "dom-helpers",
+        "input-helpers",
+        "dialogs",
         "toast",
         "toast-hyperclay",
-        "modals",
-        "info",
+        "modal",
         "tailwind-play",
         "mutation",
         "nearest",
@@ -869,14 +870,14 @@
         "debounce",
         "dom-ready",
         "window-load",
-        "alljs",
+        "all-js",
         "style-injection",
-        "get-data-from-form",
+        "form-data",
         "idiomorph",
         "slugify",
-        "emmet-html",
-        "copy-to-clipboard",
-        "query-parser",
+        "emmet",
+        "clipboard",
+        "query-params",
         "behavior-collector",
         "send-message",
         "file-upload"

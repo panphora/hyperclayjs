@@ -263,11 +263,10 @@
   <script src="hyperclay.js?preset=everything" type="module"></script>
 
   <script type="module">
-    // Wait for HyperclayJS to be ready
-    window.addEventListener('hyperclayReady', ({ detail }) => {
-      console.log('HyperclayJS loaded:', detail);
-      runTests();
-    });
+    // Top-level await in hyperclay.js means this script waits automatically
+    const features = Object.keys(window.hyperclayModules || {});
+    console.log('HyperclayJS loaded:', features);
+    runTests();
 
     window.markPass = function(id, message = '') {
       const el = document.getElementById(id);

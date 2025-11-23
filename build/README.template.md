@@ -129,12 +129,12 @@ The configurator dynamically loads this file to always show accurate information
 
 ## Browser Support
 
-- Chrome 90+
-- Firefox 88+
-- Safari 14+
-- Edge 90+
+- Chrome 89+
+- Firefox 89+
+- Safari 15.4+
+- Edge 89+
 
-All features use modern JavaScript (ES2020+). For older browser support, use a transpiler.
+The loader uses top-level await, which means any `<script type="module">` placed after it will automatically wait for HyperclayJS to finish loading. No ready events or promises needed.
 
 ## API Examples
 
@@ -143,9 +143,6 @@ All features use modern JavaScript (ES2020+). For older browser support, use a t
 ```javascript
 // Manually save the page
 hyperclay.savePage();
-
-// Initialize auto-save
-hyperclay.initSavePageOnChange();
 
 // Add save button
 hyperclay.initHyperclaySaveButton(); // Looks for [trigger-save]

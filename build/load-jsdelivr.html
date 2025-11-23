@@ -44,16 +44,16 @@
   <script src="https://cdn.jsdelivr.net/npm/hyperclayjs@1.2.0/hyperclay.js?preset=everything" type="module"></script>
 
   <script type="module">
-    window.addEventListener('hyperclayReady', ({ detail }) => {
-      const status = document.getElementById('status');
-      status.className = 'status success';
-      status.innerHTML = `
-        ✓ Successfully loaded from jsDelivr!<br>
-        <strong>Modules loaded:</strong> ${detail.features.length}<br>
-        <strong>Features:</strong> ${detail.features.join(', ')}
-      `;
-      console.log('HyperclayJS loaded from jsDelivr:', detail);
-    });
+    // Top-level await in hyperclay.js means this script waits automatically
+    const status = document.getElementById('status');
+    const features = Object.keys(window.hyperclayModules || {});
+    status.className = 'status success';
+    status.innerHTML = `
+      ✓ Successfully loaded from jsDelivr!<br>
+      <strong>Modules loaded:</strong> ${features.length}<br>
+      <strong>Features:</strong> ${features.join(', ')}
+    `;
+    console.log('HyperclayJS loaded from jsDelivr:', features);
   </script>
 </body>
 </html>

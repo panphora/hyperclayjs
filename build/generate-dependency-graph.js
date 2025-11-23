@@ -38,7 +38,7 @@ const CATEGORY_MAP = {
  */
 const MODULE_DEFINITIONS = {
   'core/savePageCore.js': {
-    name: 'Save Core',
+    name: 'save-core',
     moduleId: 'save-core',
     description: 'Basic save function only - hyperclay.savePage()',
     exports: {
@@ -46,27 +46,35 @@ const MODULE_DEFINITIONS = {
     }
   },
   'core/savePage.js': {
-    name: 'Save System',
-    moduleId: 'save',
-    description: 'Full save: save button, keyboard shortcut, auto-save, change tracking',
+    name: 'save-system',
+    moduleId: 'save-system',
+    description: 'Manual save: keyboard shortcut (CMD+S), save button, change tracking',
     exports: {
       beforeSave: ['hyperclay'],
       savePage: ['hyperclay'],
       replacePageWith: ['hyperclay'],
       initHyperclaySaveButton: ['hyperclay'],
-      initSaveKeyboardShortcut: ['hyperclay'],
+      initSaveKeyboardShortcut: ['hyperclay']
+    }
+  },
+  'core/autosave.js': {
+    name: 'autosave',
+    moduleId: 'autosave',
+    description: 'Auto-save on DOM changes, unsaved changes warning',
+    exports: {
+      savePageThrottled: ['hyperclay'],
       initSavePageOnChange: ['hyperclay']
     }
   },
   'core/adminSystem.js': {
-    name: 'Admin Features',
+    name: 'admin',
     moduleId: 'admin',
     description: 'Hides admin inputs, scripts, contenteditable, onclick for regular viewers',
     relatedFiles: ['core/adminContenteditable.js', 'core/adminInputs.js', 'core/adminOnClick.js', 'core/adminResources.js']
     // No exports - side effects only (init function)
   },
   'core/enablePersistentFormInputValues.js': {
-    name: 'Form Persistence',
+    name: 'persist',
     moduleId: 'persist',
     description: 'Persist form values to the DOM with [persist] attribute',
     exports: {
@@ -74,16 +82,16 @@ const MODULE_DEFINITIONS = {
     }
   },
   'core/optionVisibilityRuleGenerator.js': {
-    name: 'Option Visibility',
-    moduleId: 'options',
+    name: 'option-visibility',
+    moduleId: 'option-visibility',
     description: 'Dynamic show/hide based on ancestor state with option:attribute="value"',
     exports: {
       optionVisibilityRuleGenerator: ['window', 'hyperclay']
     }
   },
   'core/editmodeSystem.js': {
-    name: 'Edit Mode',
-    moduleId: 'editmode',
+    name: 'edit-mode',
+    moduleId: 'edit-mode',
     description: 'Toggle edit mode on/off',
     relatedFiles: ['core/editmode.js', 'core/setPageTypeOnDocumentElement.js'],
     exports: {
@@ -93,20 +101,20 @@ const MODULE_DEFINITIONS = {
     }
   },
   'custom-attributes/events.js': {
-    name: 'Event Attributes',
-    moduleId: 'events',
+    name: 'event-attrs',
+    moduleId: 'event-attrs',
     description: '[onclickaway], [onclone], [onpagemutation], [onrender]',
     relatedFiles: ['custom-attributes/onclickaway.js', 'custom-attributes/onclone.js', 'custom-attributes/onpagemutation.js', 'custom-attributes/onrender.js']
     // No exports - side effects only (init function)
   },
   'custom-attributes/ajaxElements.js': {
-    name: 'AJAX Elements',
-    moduleId: 'ajax',
+    name: 'ajax-elements',
+    moduleId: 'ajax-elements',
     description: '[ajax-form], [ajax-button] for async form submissions'
     // No exports - side effects only (init function)
   },
   'custom-attributes/sortable.js': {
-    name: 'Sortable',
+    name: 'sortable',
     moduleId: 'sortable',
     description: 'Drag-drop sorting with [sortable] - includes Sortable.js vendor library',
     relatedFiles: ['vendor/Sortable.js'],
@@ -115,34 +123,36 @@ const MODULE_DEFINITIONS = {
     }
   },
   'custom-attributes/domHelpers.js': {
-    name: 'DOM Helpers',
-    moduleId: 'helpers',
+    name: 'dom-helpers',
+    moduleId: 'dom-helpers',
     description: 'el.nearest, el.val, el.text, el.exec, el.cycle',
     exports: {
       initCustomAttributes: ['window', 'hyperclay']
     }
   },
   'custom-attributes/inputHelpers.js': {
-    name: 'Input Helpers',
-    moduleId: 'inputs',
+    name: 'input-helpers',
+    moduleId: 'input-helpers',
     description: '[prevent-enter], [autosize] for textareas',
     relatedFiles: ['custom-attributes/preventEnter.js', 'custom-attributes/autosize.js']
     // No exports - side effects only (init function)
   },
   'ui/prompts.js': {
-    name: 'Dialog Functions',
-    moduleId: 'prompts',
-    description: 'ask(), consent(), tell(), snippet() functions',
+    name: 'dialogs',
+    moduleId: 'dialogs',
+    description: 'ask(), consent(), tell(), info(), snippet() functions',
+    relatedFiles: ['ui/info.js'],
     exports: {
       ask: ['window', 'hyperclay'],
       consent: ['window', 'hyperclay'],
       tell: ['window', 'hyperclay'],
+      info: ['window', 'hyperclay'],
       snippet: ['hyperclay'],
       showApiKey: ['hyperclay']
     }
   },
   'ui/toast.js': {
-    name: 'Toast Notifications',
+    name: 'toast',
     moduleId: 'toast',
     description: 'Success/error message notifications - toast(msg, msgType)',
     exports: {
@@ -150,7 +160,7 @@ const MODULE_DEFINITIONS = {
     }
   },
   'ui/toast-hyperclay.js': {
-    name: 'Toast Hyperclay (Legacy)',
+    name: 'toast-hyperclay',
     moduleId: 'toast-hyperclay',
     description: 'Toast with legacy Hyperclay platform styling (hidden feature)',
     relatedFiles: ['ui/toast.js'],
@@ -160,30 +170,22 @@ const MODULE_DEFINITIONS = {
     }
   },
   'ui/theModal.js': {
-    name: 'Modal System',
-    moduleId: 'modals',
+    name: 'modal',
+    moduleId: 'modal',
     description: 'Full modal window creation system - window.theModal',
     exports: {
       themodal: ['window', 'hyperclay']
     }
   },
-  'ui/info.js': {
-    name: 'Info Dialog',
-    moduleId: 'info',
-    description: 'Info dialog component',
-    exports: {
-      info: ['window', 'hyperclay']
-    }
-  },
   'vendor/tailwind-play.js': {
-    name: 'Tailwind Play',
+    name: 'tailwind-play',
     moduleId: 'tailwind-play',
     description: 'Live Tailwind CSS editing - no need for a build system',
     category: 'ui' // Override - this is a UI feature even though file is in vendor/
     // No exports - side effects only
   },
   'utilities/mutation.js': {
-    name: 'Mutation Observer',
+    name: 'mutation',
     moduleId: 'mutation',
     description: 'DOM mutation observation (often auto-included)',
     exports: {
@@ -191,7 +193,7 @@ const MODULE_DEFINITIONS = {
     }
   },
   'utilities/nearest.js': {
-    name: 'Nearest Element',
+    name: 'nearest',
     moduleId: 'nearest',
     description: 'Find nearest elements (often auto-included)',
     exports: {
@@ -199,7 +201,7 @@ const MODULE_DEFINITIONS = {
     }
   },
   'utilities/cookie.js': {
-    name: 'Cookie Helper',
+    name: 'cookie',
     moduleId: 'cookie',
     description: 'Cookie management (often auto-included)',
     exports: {
@@ -207,7 +209,7 @@ const MODULE_DEFINITIONS = {
     }
   },
   'utilities/throttle.js': {
-    name: 'Throttle',
+    name: 'throttle',
     moduleId: 'throttle',
     description: 'Function throttling',
     exports: {
@@ -215,7 +217,7 @@ const MODULE_DEFINITIONS = {
     }
   },
   'utilities/debounce.js': {
-    name: 'Debounce',
+    name: 'debounce',
     moduleId: 'debounce',
     description: 'Function debouncing',
     exports: {
@@ -223,7 +225,7 @@ const MODULE_DEFINITIONS = {
     }
   },
   'dom-utilities/onDomReady.js': {
-    name: 'DOM Ready',
+    name: 'dom-ready',
     moduleId: 'dom-ready',
     description: 'DOM ready callback',
     exports: {
@@ -231,7 +233,7 @@ const MODULE_DEFINITIONS = {
     }
   },
   'dom-utilities/onLoad.js': {
-    name: 'Window Load',
+    name: 'window-load',
     moduleId: 'window-load',
     description: 'Window load callback',
     hidden: true,
@@ -240,15 +242,15 @@ const MODULE_DEFINITIONS = {
     }
   },
   'dom-utilities/All.js': {
-    name: 'All.js (jQuery-like)',
-    moduleId: 'alljs',
+    name: 'all-js',
+    moduleId: 'all-js',
     description: 'Full DOM manipulation library',
     exports: {
       All: ['window', 'hyperclay']
     }
   },
   'dom-utilities/insertStyleTag.js': {
-    name: 'Style Injection',
+    name: 'style-injection',
     moduleId: 'style-injection',
     description: 'Dynamic stylesheet injection',
     exports: {
@@ -256,15 +258,15 @@ const MODULE_DEFINITIONS = {
     }
   },
   'dom-utilities/getDataFromForm.js': {
-    name: 'Get Data From Form',
-    moduleId: 'get-data-from-form',
+    name: 'form-data',
+    moduleId: 'form-data',
     description: 'Extract form data as an object',
     exports: {
       getDataFromForm: ['window', 'hyperclay']
     }
   },
   'vendor/idiomorph.min.js': {
-    name: 'Idiomorph',
+    name: 'idiomorph',
     moduleId: 'idiomorph',
     description: 'Efficient DOM morphing library',
     exports: {
@@ -272,7 +274,7 @@ const MODULE_DEFINITIONS = {
     }
   },
   'string-utilities/slugify.js': {
-    name: 'Slugify',
+    name: 'slugify',
     moduleId: 'slugify',
     description: 'URL-friendly slug generator',
     exports: {
@@ -280,31 +282,31 @@ const MODULE_DEFINITIONS = {
     }
   },
   'string-utilities/emmet-html.js': {
-    name: 'Emmet HTML',
-    moduleId: 'emmet-html',
+    name: 'emmet',
+    moduleId: 'emmet',
     description: 'Emmet-like HTML generation',
     exports: {
       emmet: ['hyperclay']  // Available as h (since window.h = emmet + namespace)
     }
   },
   'string-utilities/copy-to-clipboard.js': {
-    name: 'Copy to Clipboard',
-    moduleId: 'copy-to-clipboard',
+    name: 'clipboard',
+    moduleId: 'clipboard',
     description: 'Clipboard utility',
     exports: {
       copyToClipboard: ['hyperclay']
     }
   },
   'string-utilities/query.js': {
-    name: 'URL Query Parser',
-    moduleId: 'query-parser',
+    name: 'query-params',
+    moduleId: 'query-params',
     description: 'Parse URL search params',
     exports: {
       query: ['window', 'hyperclay']
     }
   },
   'communication/behaviorCollector.js': {
-    name: 'Behavior Collector',
+    name: 'behavior-collector',
     moduleId: 'behavior-collector',
     description: 'Tracks user interactions (mouse, scroll, keyboard)',
     hidden: true,
@@ -313,7 +315,7 @@ const MODULE_DEFINITIONS = {
     }
   },
   'communication/sendMessage.js': {
-    name: 'Send Message to App Owner',
+    name: 'send-message',
     moduleId: 'send-message',
     description: 'Message sending utility',
     exports: {
@@ -321,7 +323,7 @@ const MODULE_DEFINITIONS = {
     }
   },
   'communication/uploadFile.js': {
-    name: 'File Upload to App Owner',
+    name: 'file-upload',
     moduleId: 'file-upload',
     description: 'File upload with progress',
     exports: {
@@ -381,12 +383,12 @@ const PRESETS = {
   'minimal': {
     name: 'Minimal',
     description: 'Essential features for basic editing',
-    modules: ['save-core', 'save', 'admin', 'toast']
+    modules: ['save-core', 'save-system', 'admin', 'toast']
   },
   'standard': {
     name: 'Standard',
     description: 'Standard feature set for most use cases',
-    modules: ['save-core', 'save', 'admin', 'persist', 'ajax', 'events', 'helpers', 'toast']
+    modules: ['save-core', 'save-system', 'admin', 'persist', 'option-visibility', 'event-attrs', 'dom-helpers', 'toast']
   },
   'everything': {
     name: 'Everything',

@@ -52,87 +52,87 @@ import 'hyperclayjs/presets/standard.js';
 
 | Module | Size | Description |
 |--------|------|-------------|
-| Admin Features | 5.3KB | Hides admin inputs, scripts, contenteditable, onclick for regular viewers |
-| Edit Mode | 1.4KB | Toggle edit mode on/off |
-| Form Persistence | 2.2KB | Persist form values to the DOM with [persist] attribute |
-| Option Visibility | 4.4KB | Dynamic show/hide based on ancestor state with option:attribute="value" |
-| Save Core | 5.9KB | Basic save function only - hyperclay.savePage() |
-| Save System | 4.9KB | Full save: save button, keyboard shortcut, auto-save, change tracking |
+| admin | 5.4KB | Hides admin inputs, scripts, contenteditable, onclick for regular viewers |
+| autosave | 2.4KB | Auto-save on DOM changes, unsaved changes warning |
+| edit-mode | 1.7KB | Toggle edit mode on/off |
+| option-visibility | 4.7KB | Dynamic show/hide based on ancestor state with option:attribute="value" |
+| persist | 2.4KB | Persist form values to the DOM with [persist] attribute |
+| save-core | 5.8KB | Basic save function only - hyperclay.savePage() |
+| save-system | 4.1KB | Manual save: keyboard shortcut (CMD+S), save button, change tracking |
 
 ### Custom Attributes (HTML enhancements)
 
 | Module | Size | Description |
 |--------|------|-------------|
-| AJAX Elements | 2.7KB | [ajax-form], [ajax-button] for async form submissions |
-| DOM Helpers | 5.4KB | el.nearest, el.val, el.text, el.exec, el.cycle |
-| Event Attributes | 3.5KB | [onclickaway], [onclone], [onpagemutation], [onrender] |
-| Input Helpers | 1.2KB | [prevent-enter], [autosize] for textareas |
-| Sortable | 117.9KB | Drag-drop sorting with [sortable] - includes Sortable.js vendor library |
+| ajax-elements | 2.8KB | [ajax-form], [ajax-button] for async form submissions |
+| dom-helpers | 5.6KB | el.nearest, el.val, el.text, el.exec, el.cycle |
+| event-attrs | 3.6KB | [onclickaway], [onclone], [onpagemutation], [onrender] |
+| input-helpers | 1.2KB | [prevent-enter], [autosize] for textareas |
+| sortable | 118.1KB | Drag-drop sorting with [sortable] - includes Sortable.js vendor library |
 
 ### UI Components (User interface elements)
 
 | Module | Size | Description |
 |--------|------|-------------|
-| Dialog Functions | 7.7KB | ask(), consent(), tell(), snippet() functions |
-| Info Dialog | 3.2KB | Info dialog component |
-| Modal System | 18.4KB | Full modal window creation system - window.theModal |
-| Tailwind Play | 362.3KB | Live Tailwind CSS editing - no need for a build system |
-| Toast Notifications | 7.3KB | Success/error message notifications - toast(msg, msgType) |
+| dialogs | 11.2KB | ask(), consent(), tell(), info(), snippet() functions |
+| modal | 18.5KB | Full modal window creation system - window.theModal |
+| tailwind-play | 362.3KB | Live Tailwind CSS editing - no need for a build system |
+| toast | 7.3KB | Success/error message notifications - toast(msg, msgType) |
 
 ### Utilities (Core utilities (often auto-included))
 
 | Module | Size | Description |
 |--------|------|-------------|
-| Cookie Helper | 1.3KB | Cookie management (often auto-included) |
-| Debounce | 0.2KB | Function debouncing |
-| Mutation Observer | 12.8KB | DOM mutation observation (often auto-included) |
-| Nearest Element | 3.2KB | Find nearest elements (often auto-included) |
-| Throttle | 0.6KB | Function throttling |
+| cookie | 1.3KB | Cookie management (often auto-included) |
+| debounce | 0.4KB | Function debouncing |
+| mutation | 12.9KB | DOM mutation observation (often auto-included) |
+| nearest | 3.3KB | Find nearest elements (often auto-included) |
+| throttle | 0.7KB | Function throttling |
 
 ### DOM Utilities (DOM manipulation helpers)
 
 | Module | Size | Description |
 |--------|------|-------------|
-| All.js (jQuery-like) | 13.9KB | Full DOM manipulation library |
-| DOM Ready | 0.2KB | DOM ready callback |
-| Get Data From Form | 1.7KB | Extract form data as an object |
-| Style Injection | 0.8KB | Dynamic stylesheet injection |
+| all-js | 13.9KB | Full DOM manipulation library |
+| dom-ready | 0.3KB | DOM ready callback |
+| form-data | 1.9KB | Extract form data as an object |
+| style-injection | 1KB | Dynamic stylesheet injection |
 
 ### String Utilities (String manipulation helpers)
 
 | Module | Size | Description |
 |--------|------|-------------|
-| Copy to Clipboard | 0.9KB | Clipboard utility |
-| Emmet HTML | 1.4KB | Emmet-like HTML generation |
-| Slugify | 0.7KB | URL-friendly slug generator |
-| URL Query Parser | 0.1KB | Parse URL search params |
+| clipboard | 0.8KB | Clipboard utility |
+| emmet | 1.5KB | Emmet-like HTML generation |
+| query-params | 0.2KB | Parse URL search params |
+| slugify | 0.6KB | URL-friendly slug generator |
 
 ### Communication & Files (File handling and messaging)
 
 | Module | Size | Description |
 |--------|------|-------------|
-| File Upload to App Owner | 10.4KB | File upload with progress |
-| Send Message to App Owner | 1.2KB | Message sending utility |
+| file-upload | 10.6KB | File upload with progress |
+| send-message | 1.3KB | Message sending utility |
 
 ### Vendor Libraries (Third-party libraries)
 
 | Module | Size | Description |
 |--------|------|-------------|
-| Idiomorph | 7.9KB | Efficient DOM morphing library |
+| idiomorph | 8.1KB | Efficient DOM morphing library |
 
 ## Presets
 
-### Minimal (~23.4KB)
+### Minimal (~22.6KB)
 Essential features for basic editing
 
-**Modules:** `save-core`, `save`, `admin`, `toast`
+**Modules:** `save-core`, `save-system`, `admin`, `toast`
 
-### Standard (~37.2KB)
+### Standard (~38.9KB)
 Standard feature set for most use cases
 
-**Modules:** `save-core`, `save`, `admin`, `persist`, `ajax`, `events`, `helpers`, `toast`
+**Modules:** `save-core`, `save-system`, `admin`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`
 
-### Everything (~624.4KB)
+### Everything (~629.5KB)
 All available features
 
 Includes all available modules across all categories.
@@ -212,12 +212,12 @@ The configurator dynamically loads this file to always show accurate information
 
 ## Browser Support
 
-- Chrome 90+
-- Firefox 88+
-- Safari 14+
-- Edge 90+
+- Chrome 89+
+- Firefox 89+
+- Safari 15.4+
+- Edge 89+
 
-All features use modern JavaScript (ES2020+). For older browser support, use a transpiler.
+The loader uses top-level await, which means any `<script type="module">` placed after it will automatically wait for HyperclayJS to finish loading. No ready events or promises needed.
 
 ## API Examples
 
@@ -226,9 +226,6 @@ All features use modern JavaScript (ES2020+). For older browser support, use a t
 ```javascript
 // Manually save the page
 hyperclay.savePage();
-
-// Initialize auto-save
-hyperclay.initSavePageOnChange();
 
 // Add save button
 hyperclay.initHyperclaySaveButton(); // Looks for [trigger-save]
