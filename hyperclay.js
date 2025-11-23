@@ -123,9 +123,8 @@ const PRESETS = {
   }
 };
 
-// Parse URL
-const script = document.currentScript;
-const url = new URL(script.src);
+// Parse URL (use import.meta.url for ES modules since document.currentScript is null)
+const url = new URL(import.meta.url);
 const preset = url.searchParams.get('preset');
 const features = url.searchParams.get('features');
 const exclude = url.searchParams.get('exclude');

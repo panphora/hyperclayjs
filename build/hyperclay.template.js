@@ -21,9 +21,8 @@ window.hyperclayModules = window.hyperclayModules || {};
 const MODULE_PATHS = __MODULE_PATHS__;
 const PRESETS = __PRESETS__;
 
-// Parse URL
-const script = document.currentScript;
-const url = new URL(script.src);
+// Parse URL (use import.meta.url for ES modules since document.currentScript is null)
+const url = new URL(import.meta.url);
 const preset = url.searchParams.get('preset');
 const features = url.searchParams.get('features');
 const exclude = url.searchParams.get('exclude');
