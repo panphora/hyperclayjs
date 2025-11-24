@@ -32,8 +32,8 @@ const CATEGORY_MAP = {
  *
  * Common patterns:
  * - Frequently used utilities (ask, toast, etc.): ['window', 'hyperclay']
- * - Core features (savePage, admin): ['hyperclay']
- * - Special cases (themodal): ['window'] with custom name
+ * - Core features (savePage, edit-mode-helpers): ['hyperclay']
+ * - Special cases (the-modal): ['window'] with custom name
  * - Internal/side-effect only modules: no exports field
  */
 const MODULE_DEFINITIONS = {
@@ -67,16 +67,16 @@ const MODULE_DEFINITIONS = {
     }
   },
   'core/adminSystem.js': {
-    name: 'admin',
-    moduleId: 'admin',
-    description: 'Hides/disables admin inputs, scripts, onclick for regular viewers',
+    name: 'edit-mode-helpers',
+    moduleId: 'edit-mode-helpers',
+    description: 'Admin-only functionality: [edit-mode-input], [edit-mode-resource], [edit-mode-onclick]',
     relatedFiles: ['core/adminContenteditable.js', 'core/adminInputs.js', 'core/adminOnClick.js', 'core/adminResources.js']
     // No exports - side effects only (init function)
   },
   'core/enablePersistentFormInputValues.js': {
     name: 'persist',
     moduleId: 'persist',
-    description: 'Persist form values to the DOM with [persist] attribute',
+    description: 'Persist input/select/textarea values to the DOM with [persist] attribute',
     exports: {
       enablePersistentFormInputValues: ['hyperclay']
     }
@@ -116,7 +116,7 @@ const MODULE_DEFINITIONS = {
   'custom-attributes/sortable.js': {
     name: 'sortable',
     moduleId: 'sortable',
-    description: 'Drag-drop sorting with [sortable] - includes Sortable.js vendor library',
+    description: 'Drag-drop sorting with [sortable], includes Sortable.js',
     relatedFiles: ['vendor/Sortable.js'],
     exports: {
       Sortable: ['window', 'hyperclay']
@@ -125,10 +125,8 @@ const MODULE_DEFINITIONS = {
   'custom-attributes/domHelpers.js': {
     name: 'dom-helpers',
     moduleId: 'dom-helpers',
-    description: 'el.nearest, el.val, el.text, el.exec, el.cycle',
-    exports: {
-      initCustomAttributes: ['window', 'hyperclay']
-    }
+    description: 'el.nearest, el.val, el.text, el.exec, el.cycle'
+    // No exports - side effects only (extends Element.prototype)
   },
   'custom-attributes/inputHelpers.js': {
     name: 'input-helpers',
@@ -147,14 +145,13 @@ const MODULE_DEFINITIONS = {
       consent: ['window', 'hyperclay'],
       tell: ['window', 'hyperclay'],
       info: ['window', 'hyperclay'],
-      snippet: ['hyperclay'],
-      showApiKey: ['hyperclay']
+      snippet: ['hyperclay']
     }
   },
   'ui/toast.js': {
     name: 'toast',
     moduleId: 'toast',
-    description: 'Success/error message notifications - toast(msg, msgType)',
+    description: 'Success/error message notifications, toast(msg, msgType)',
     exports: {
       toast: ['window', 'hyperclay']
     }
@@ -170,8 +167,8 @@ const MODULE_DEFINITIONS = {
     }
   },
   'ui/theModal.js': {
-    name: 'modal',
-    moduleId: 'modal',
+    name: 'the-modal',
+    moduleId: 'the-modal',
     description: 'Full modal window creation system - window.theModal',
     exports: {
       themodal: ['window', 'hyperclay']
@@ -180,7 +177,7 @@ const MODULE_DEFINITIONS = {
   'vendor/tailwind-play.js': {
     name: 'tailwind-play',
     moduleId: 'tailwind-play',
-    description: 'Live Tailwind CSS editing - no need for a build system',
+    description: 'Live Tailwind CSS editing in hyperclay, should use with [edit-mode-resource]',
     category: 'ui' // Override - this is a UI feature even though file is in vendor/
     // No exports - side effects only
   },
@@ -282,16 +279,16 @@ const MODULE_DEFINITIONS = {
     }
   },
   'string-utilities/emmet-html.js': {
-    name: 'emmet',
-    moduleId: 'emmet',
+    name: 'emmet-mini',
+    moduleId: 'emmet-mini',
     description: 'Emmet-like HTML generation',
     exports: {
       emmet: ['hyperclay']  // Available as h (since window.h = emmet + namespace)
     }
   },
   'string-utilities/copy-to-clipboard.js': {
-    name: 'clipboard',
-    moduleId: 'clipboard',
+    name: 'copy-to-clipboard',
+    moduleId: 'copy-to-clipboard',
     description: 'Clipboard utility',
     exports: {
       copyToClipboard: ['hyperclay']
@@ -390,12 +387,12 @@ const PRESETS = {
   'minimal': {
     name: 'Minimal',
     description: 'Essential features for basic editing',
-    modules: ['save-core', 'save-system', 'admin', 'toast', 'export-to-window']
+    modules: ['save-core', 'save-system', 'edit-mode-helpers', 'toast', 'export-to-window']
   },
   'standard': {
     name: 'Standard',
     description: 'Standard feature set for most use cases',
-    modules: ['save-core', 'save-system', 'admin', 'persist', 'option-visibility', 'event-attrs', 'dom-helpers', 'toast', 'export-to-window']
+    modules: ['save-core', 'save-system', 'edit-mode-helpers', 'persist', 'option-visibility', 'event-attrs', 'dom-helpers', 'toast', 'export-to-window']
   },
   'everything': {
     name: 'Everything',

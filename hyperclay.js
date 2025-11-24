@@ -28,7 +28,7 @@ const MODULE_PATHS = {
   "save-core": "./core/savePageCore.js",
   "save-system": "./core/savePage.js",
   "autosave": "./core/autosave.js",
-  "admin": "./core/adminSystem.js",
+  "edit-mode-helpers": "./core/adminSystem.js",
   "persist": "./core/enablePersistentFormInputValues.js",
   "option-visibility": "./core/optionVisibilityRuleGenerator.js",
   "edit-mode": "./core/editmodeSystem.js",
@@ -40,7 +40,7 @@ const MODULE_PATHS = {
   "dialogs": "./ui/prompts.js",
   "toast": "./ui/toast.js",
   "toast-hyperclay": "./ui/toast-hyperclay.js",
-  "modal": "./ui/theModal.js",
+  "the-modal": "./ui/theModal.js",
   "tailwind-play": "./vendor/tailwind-play.js",
   "mutation": "./utilities/mutation.js",
   "nearest": "./utilities/nearest.js",
@@ -54,8 +54,8 @@ const MODULE_PATHS = {
   "form-data": "./dom-utilities/getDataFromForm.js",
   "idiomorph": "./vendor/idiomorph.min.js",
   "slugify": "./string-utilities/slugify.js",
-  "emmet": "./string-utilities/emmet-html.js",
-  "clipboard": "./string-utilities/copy-to-clipboard.js",
+  "emmet-mini": "./string-utilities/emmet-html.js",
+  "copy-to-clipboard": "./string-utilities/copy-to-clipboard.js",
   "query-params": "./string-utilities/query.js",
   "behavior-collector": "./communication/behaviorCollector.js",
   "send-message": "./communication/sendMessage.js",
@@ -69,7 +69,7 @@ const PRESETS = {
     "modules": [
       "save-core",
       "save-system",
-      "admin",
+      "edit-mode-helpers",
       "toast",
       "export-to-window"
     ]
@@ -80,7 +80,7 @@ const PRESETS = {
     "modules": [
       "save-core",
       "save-system",
-      "admin",
+      "edit-mode-helpers",
       "persist",
       "option-visibility",
       "event-attrs",
@@ -96,7 +96,7 @@ const PRESETS = {
       "save-core",
       "save-system",
       "autosave",
-      "admin",
+      "edit-mode-helpers",
       "persist",
       "option-visibility",
       "edit-mode",
@@ -107,7 +107,7 @@ const PRESETS = {
       "input-helpers",
       "dialogs",
       "toast",
-      "modal",
+      "the-modal",
       "tailwind-play",
       "mutation",
       "nearest",
@@ -121,8 +121,8 @@ const PRESETS = {
       "form-data",
       "idiomorph",
       "slugify",
-      "emmet",
-      "clipboard",
+      "emmet-mini",
+      "copy-to-clipboard",
       "query-params",
       "behavior-collector",
       "send-message",
@@ -211,15 +211,13 @@ export const toggleEditMode = window.hyperclayModules['edit-mode']?.toggleEditMo
 export const isEditMode = window.hyperclayModules['edit-mode']?.isEditMode ?? window.hyperclayModules['edit-mode']?.default;
 export const isOwner = window.hyperclayModules['edit-mode']?.isOwner ?? window.hyperclayModules['edit-mode']?.default;
 export const Sortable = window.hyperclayModules['sortable']?.Sortable ?? window.hyperclayModules['sortable']?.default;
-export const initCustomAttributes = window.hyperclayModules['dom-helpers']?.initCustomAttributes ?? window.hyperclayModules['dom-helpers']?.default;
 export const ask = window.hyperclayModules['dialogs']?.ask ?? window.hyperclayModules['dialogs']?.default;
 export const consent = window.hyperclayModules['dialogs']?.consent ?? window.hyperclayModules['dialogs']?.default;
 export const tell = window.hyperclayModules['dialogs']?.tell ?? window.hyperclayModules['dialogs']?.default;
 export const info = window.hyperclayModules['dialogs']?.info ?? window.hyperclayModules['dialogs']?.default;
 export const snippet = window.hyperclayModules['dialogs']?.snippet ?? window.hyperclayModules['dialogs']?.default;
-export const showApiKey = window.hyperclayModules['dialogs']?.showApiKey ?? window.hyperclayModules['dialogs']?.default;
 export const toast = window.hyperclayModules['toast']?.toast ?? window.hyperclayModules['toast']?.default;
-export const themodal = window.hyperclayModules['modal']?.themodal ?? window.hyperclayModules['modal']?.default;
+export const themodal = window.hyperclayModules['the-modal']?.themodal ?? window.hyperclayModules['the-modal']?.default;
 export const Mutation = window.hyperclayModules['mutation']?.Mutation ?? window.hyperclayModules['mutation']?.default;
 export const nearest = window.hyperclayModules['nearest']?.nearest ?? window.hyperclayModules['nearest']?.default;
 export const cookie = window.hyperclayModules['cookie']?.cookie ?? window.hyperclayModules['cookie']?.default;
@@ -232,8 +230,8 @@ export const insertStyleTag = window.hyperclayModules['style-injection']?.insert
 export const getDataFromForm = window.hyperclayModules['form-data']?.getDataFromForm ?? window.hyperclayModules['form-data']?.default;
 export const Idiomorph = window.hyperclayModules['idiomorph']?.Idiomorph ?? window.hyperclayModules['idiomorph']?.default;
 export const slugify = window.hyperclayModules['slugify']?.slugify ?? window.hyperclayModules['slugify']?.default;
-export const emmet = window.hyperclayModules['emmet']?.emmet ?? window.hyperclayModules['emmet']?.default;
-export const copyToClipboard = window.hyperclayModules['clipboard']?.copyToClipboard ?? window.hyperclayModules['clipboard']?.default;
+export const emmet = window.hyperclayModules['emmet-mini']?.emmet ?? window.hyperclayModules['emmet-mini']?.default;
+export const copyToClipboard = window.hyperclayModules['copy-to-clipboard']?.copyToClipboard ?? window.hyperclayModules['copy-to-clipboard']?.default;
 export const query = window.hyperclayModules['query-params']?.query ?? window.hyperclayModules['query-params']?.default;
 export const behaviorCollector = window.hyperclayModules['behavior-collector']?.behaviorCollector ?? window.hyperclayModules['behavior-collector']?.default;
 export const sendMessage = window.hyperclayModules['send-message']?.sendMessage ?? window.hyperclayModules['send-message']?.default;

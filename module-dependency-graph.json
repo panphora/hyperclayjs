@@ -221,8 +221,8 @@
         ]
       }
     },
-    "admin": {
-      "name": "admin",
+    "edit-mode-helpers": {
+      "name": "edit-mode-helpers",
       "category": "core",
       "size": 5.4,
       "files": [
@@ -232,7 +232,7 @@
         "core/adminOnClick.js",
         "core/adminResources.js"
       ],
-      "description": "Hides/disables admin inputs, scripts, onclick for regular viewers",
+      "description": "Admin-only resources: [edit-mode-input], [edit-mode-resource], [edit-mode-onclick]",
       "exports": {}
     },
     "persist": {
@@ -242,7 +242,7 @@
       "files": [
         "core/enablePersistentFormInputValues.js"
       ],
-      "description": "Persist form values to the DOM with [persist] attribute",
+      "description": "Persist input/select/textarea values to the DOM with [persist] attribute",
       "exports": {
         "enablePersistentFormInputValues": [
           "hyperclay"
@@ -318,7 +318,7 @@
         "custom-attributes/sortable.js",
         "vendor/Sortable.js"
       ],
-      "description": "Drag-drop sorting with [sortable] - includes Sortable.js vendor library",
+      "description": "Drag-drop sorting with [sortable], includes Sortable.js",
       "exports": {
         "Sortable": [
           "window",
@@ -334,12 +334,7 @@
         "custom-attributes/domHelpers.js"
       ],
       "description": "el.nearest, el.val, el.text, el.exec, el.cycle",
-      "exports": {
-        "initCustomAttributes": [
-          "window",
-          "hyperclay"
-        ]
-      }
+      "exports": {}
     },
     "input-helpers": {
       "name": "input-helpers",
@@ -356,7 +351,7 @@
     "dialogs": {
       "name": "dialogs",
       "category": "ui",
-      "size": 11.5,
+      "size": 11.2,
       "files": [
         "ui/prompts.js",
         "ui/info.js"
@@ -381,9 +376,6 @@
         ],
         "snippet": [
           "hyperclay"
-        ],
-        "showApiKey": [
-          "hyperclay"
         ]
       }
     },
@@ -394,7 +386,7 @@
       "files": [
         "ui/toast.js"
       ],
-      "description": "Success/error message notifications - toast(msg, msgType)",
+      "description": "Success/error message notifications, toast(msg, msgType)",
       "exports": {
         "toast": [
           "window",
@@ -418,8 +410,8 @@
         ]
       }
     },
-    "modal": {
-      "name": "modal",
+    "the-modal": {
+      "name": "the-modal",
       "category": "ui",
       "size": 18.6,
       "files": [
@@ -440,7 +432,7 @@
       "files": [
         "vendor/tailwind-play.js"
       ],
-      "description": "Live Tailwind CSS editing - no need for a build system",
+      "description": "Live Tailwind CSS editing in hyperclay, should use with [edit-mode-resource]",
       "exports": {}
     },
     "mutation": {
@@ -618,8 +610,8 @@
         ]
       }
     },
-    "emmet": {
-      "name": "emmet",
+    "emmet-mini": {
+      "name": "emmet-mini",
       "category": "string-utilities",
       "size": 1.6,
       "files": [
@@ -632,8 +624,8 @@
         ]
       }
     },
-    "clipboard": {
-      "name": "clipboard",
+    "copy-to-clipboard": {
+      "name": "copy-to-clipboard",
       "category": "string-utilities",
       "size": 0.9,
       "files": [
@@ -724,7 +716,7 @@
     "save-core": "./core/savePageCore.js",
     "save-system": "./core/savePage.js",
     "autosave": "./core/autosave.js",
-    "admin": "./core/adminSystem.js",
+    "edit-mode-helpers": "./core/adminSystem.js",
     "persist": "./core/enablePersistentFormInputValues.js",
     "option-visibility": "./core/optionVisibilityRuleGenerator.js",
     "edit-mode": "./core/editmodeSystem.js",
@@ -736,7 +728,7 @@
     "dialogs": "./ui/prompts.js",
     "toast": "./ui/toast.js",
     "toast-hyperclay": "./ui/toast-hyperclay.js",
-    "modal": "./ui/theModal.js",
+    "the-modal": "./ui/theModal.js",
     "tailwind-play": "./vendor/tailwind-play.js",
     "mutation": "./utilities/mutation.js",
     "nearest": "./utilities/nearest.js",
@@ -750,8 +742,8 @@
     "form-data": "./dom-utilities/getDataFromForm.js",
     "idiomorph": "./vendor/idiomorph.min.js",
     "slugify": "./string-utilities/slugify.js",
-    "emmet": "./string-utilities/emmet-html.js",
-    "clipboard": "./string-utilities/copy-to-clipboard.js",
+    "emmet-mini": "./string-utilities/emmet-html.js",
+    "copy-to-clipboard": "./string-utilities/copy-to-clipboard.js",
     "query-params": "./string-utilities/query.js",
     "behavior-collector": "./communication/behaviorCollector.js",
     "send-message": "./communication/sendMessage.js",
@@ -766,7 +758,7 @@
         "save-core",
         "save-system",
         "autosave",
-        "admin",
+        "edit-mode-helpers",
         "persist",
         "option-visibility",
         "edit-mode"
@@ -789,7 +781,7 @@
       "modules": [
         "dialogs",
         "toast",
-        "modal",
+        "the-modal",
         "tailwind-play"
       ]
     },
@@ -819,8 +811,8 @@
       "description": "String manipulation helpers",
       "modules": [
         "slugify",
-        "emmet",
-        "clipboard",
+        "emmet-mini",
+        "copy-to-clipboard",
         "query-params"
       ]
     },
@@ -847,7 +839,7 @@
       "modules": [
         "save-core",
         "save-system",
-        "admin",
+        "edit-mode-helpers",
         "toast",
         "export-to-window"
       ]
@@ -858,7 +850,7 @@
       "modules": [
         "save-core",
         "save-system",
-        "admin",
+        "edit-mode-helpers",
         "persist",
         "option-visibility",
         "event-attrs",
@@ -874,7 +866,7 @@
         "save-core",
         "save-system",
         "autosave",
-        "admin",
+        "edit-mode-helpers",
         "persist",
         "option-visibility",
         "edit-mode",
@@ -885,7 +877,7 @@
         "input-helpers",
         "dialogs",
         "toast",
-        "modal",
+        "the-modal",
         "tailwind-play",
         "mutation",
         "nearest",
@@ -899,8 +891,8 @@
         "form-data",
         "idiomorph",
         "slugify",
-        "emmet",
-        "clipboard",
+        "emmet-mini",
+        "copy-to-clipboard",
         "query-params",
         "behavior-collector",
         "send-message",

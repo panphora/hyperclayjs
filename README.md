@@ -57,11 +57,11 @@ import 'hyperclayjs/presets/standard.js';
 
 | Module | Size | Description |
 |--------|------|-------------|
-| admin | 5.4KB | Hides/disables admin inputs, scripts, onclick for regular viewers |
 | autosave | 2.5KB | Auto-save on DOM changes, unsaved changes warning |
 | edit-mode | 1.8KB | Toggle edit mode on hyperclay on/off |
+| edit-mode-helpers | 5.4KB | Admin-only resources: [edit-mode-input], [edit-mode-resource], [edit-mode-onclick] |
 | option-visibility | 4.7KB | Dynamic show/hide based on ancestor state with option:attribute="value" |
-| persist | 2.5KB | Persist form values to the DOM with [persist] attribute |
+| persist | 2.5KB | Persist input/select/textarea values to the DOM with [persist] attribute |
 | save-core | 5.9KB | Basic save function only - hyperclay.savePage() |
 | save-system | 4KB | Manual save: keyboard shortcut (CMD+S), save button, change tracking |
 
@@ -73,16 +73,16 @@ import 'hyperclayjs/presets/standard.js';
 | dom-helpers | 5.7KB | el.nearest, el.val, el.text, el.exec, el.cycle |
 | event-attrs | 3.6KB | [onclickaway], [onclone], [onpagemutation], [onrender] |
 | input-helpers | 1.2KB | [prevent-enter], [autosize] for textareas |
-| sortable | 118.1KB | Drag-drop sorting with [sortable] - includes Sortable.js vendor library |
+| sortable | 118.1KB | Drag-drop sorting with [sortable], includes Sortable.js |
 
 ### UI Components (User interface elements)
 
 | Module | Size | Description |
 |--------|------|-------------|
-| dialogs | 11.5KB | ask(), consent(), tell(), info(), snippet() functions |
-| modal | 18.6KB | Full modal window creation system - window.theModal |
-| tailwind-play | 362.3KB | Live Tailwind CSS editing - no need for a build system |
-| toast | 7.3KB | Success/error message notifications - toast(msg, msgType) |
+| dialogs | 11.2KB | ask(), consent(), tell(), info(), snippet() functions |
+| tailwind-play | 362.3KB | Live Tailwind CSS editing in hyperclay, should use with [edit-mode-resource] |
+| the-modal | 18.6KB | Full modal window creation system - window.theModal |
+| toast | 7.3KB | Success/error message notifications, toast(msg, msgType) |
 
 ### Utilities (Core utilities (often auto-included))
 
@@ -107,8 +107,8 @@ import 'hyperclayjs/presets/standard.js';
 
 | Module | Size | Description |
 |--------|------|-------------|
-| clipboard | 0.9KB | Clipboard utility |
-| emmet | 1.6KB | Emmet-like HTML generation |
+| copy-to-clipboard | 0.9KB | Clipboard utility |
+| emmet-mini | 1.6KB | Emmet-like HTML generation |
 | query-params | 0.3KB | Parse URL search params |
 | slugify | 0.7KB | URL-friendly slug generator |
 
@@ -130,14 +130,14 @@ import 'hyperclayjs/presets/standard.js';
 ### Minimal (~23KB)
 Essential features for basic editing
 
-**Modules:** `save-core`, `save-system`, `admin`, `toast`, `export-to-window`
+**Modules:** `save-core`, `save-system`, `edit-mode-helpers`, `toast`, `export-to-window`
 
 ### Standard (~39.5KB)
 Standard feature set for most use cases
 
-**Modules:** `save-core`, `save-system`, `admin`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `export-to-window`
+**Modules:** `save-core`, `save-system`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `export-to-window`
 
-### Everything (~624.5KB)
+### Everything (~624.2KB)
 All available features
 
 Includes all available modules across all categories.
@@ -283,7 +283,7 @@ tell("Welcome to Hyperclay!");
   Click outside this div
 </div>
 
-<!-- Persist form values -->
+<!-- Persist input/select/textarea values -->
 <input type="text" name="username" persist>
 ```
 
@@ -325,7 +325,7 @@ myFeature();
 <script src="/js/hyperclay.js?preset=standard" type="module"></script>
 
 <!-- Or specific features -->
-<script src="/js/hyperclay.js?features=save,admin,toast" type="module"></script>
+<script src="/js/hyperclay.js?features=save,edit-mode-helpers,toast" type="module"></script>
 ```
 
 ## Contributing
@@ -342,6 +342,14 @@ myFeature();
 ## License
 
 MIT © Hyperclay
+
+### Third-Party Credits
+
+This project includes the following open-source libraries:
+
+- **[Idiomorph](https://github.com/bigskysoftware/idiomorph)** - DOM morphing library by Big Sky Software (0BSD)
+- **[Tailwind CSS](https://github.com/tailwindlabs/tailwindcss)** - Utility-first CSS framework by Tailwind Labs (MIT)
+- **[Sortable.js](https://github.com/SortableJS/Sortable)** - Drag-and-drop library (MIT)
 
 ## Links
 

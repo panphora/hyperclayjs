@@ -200,7 +200,7 @@ tell("Welcome to Hyperclay!");
   Click outside this div
 </div>
 
-<!-- Persist form values -->
+<!-- Persist input/select/textarea values -->
 <input type="text" name="username" persist>
 ```
 
@@ -242,7 +242,7 @@ myFeature();
 <script src="/js/hyperclay.js?preset=standard" type="module"></script>
 
 <!-- Or specific features -->
-<script src="/js/hyperclay.js?features=save,admin,toast" type="module"></script>
+<script src="/js/hyperclay.js?features=save,edit-mode-helpers,toast" type="module"></script>
 ```
 
 ## Contributing
@@ -259,6 +259,14 @@ myFeature();
 ## License
 
 MIT © Hyperclay
+
+### Third-Party Credits
+
+This project includes the following open-source libraries:
+
+- **[Idiomorph](https://github.com/bigskysoftware/idiomorph)** - DOM morphing library by Big Sky Software (0BSD)
+- **[Tailwind CSS](https://github.com/tailwindlabs/tailwindcss)** - Utility-first CSS framework by Tailwind Labs (MIT)
+- **[Sortable.js](https://github.com/SortableJS/Sortable)** - Drag-and-drop library (MIT)
 
 ## Links
 

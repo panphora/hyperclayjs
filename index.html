@@ -29,6 +29,7 @@
             color: var(--primary-blue);
             padding: 2rem;
             line-height: 1.6;
+            text-wrap: pretty;
         }
 
         .container {
@@ -166,9 +167,15 @@
             color: var(--gray);
         }
 
+        .feature-exports {
+            font-size: 0.75rem;
+            color: var(--medium-gray);
+            margin-top: 0.25rem;
+        }
+
         .feature-dependencies {
             font-size: 0.75rem;
-            color: var(--light-blue);
+            color: var(--green);
             margin-top: 0.25rem;
             font-style: italic;
         }
@@ -518,7 +525,7 @@
                             <input type="checkbox" class="feature-checkbox" data-feature="persist" data-size="1.4">
                             <div class="feature-info">
                                 <div class="feature-name">Form Persistence</div>
-                                <div class="feature-description">Persist form values to the DOM with [persist] attribute, so they're saved</div>
+                                <div class="feature-description">Persist input/select/textarea values to the DOM with [persist] attribute, so they're saved</div>
                             </div>
                             <span class="feature-size">1.4KB</span>
                         </label>
@@ -560,7 +567,7 @@
                             <input type="checkbox" class="feature-checkbox" data-feature="sortable" data-size="118" data-requires="mutation">
                             <div class="feature-info">
                                 <div class="feature-name">Sortable</div>
-                                <div class="feature-description">Drag-drop sorting with [sortable] - includes Sortable.js</div>
+                                <div class="feature-description">Drag-drop sorting with [sortable], includes Sortable.js</div>
                             </div>
                             <span class="feature-size large">118KB</span>
                         </label>
@@ -780,6 +787,16 @@
                                 ? `<div class="feature-dependencies">Requires: ${visibleDependencies.map(d => features[d]?.name || d).join(', ')}</div>`
                                 : '';
 
+                            // Generate exports text (will be updated dynamically based on export-to-window toggle)
+                            const exports = module.exports || {};
+                            const exportEntries = Object.entries(exports);
+                            let exportsText = '';
+                            if (exportEntries.length > 0) {
+                                const exportData = JSON.stringify(exports);
+                                const exportNames = exportEntries.map(([fnName]) => fnName);
+                                exportsText = `<div class="feature-exports" data-exports='${exportData}'>${exportNames.join(', ')}</div>`;
+                            }
+
                             return `
                                 <label class="feature-item">
                                     <input type="checkbox"
@@ -790,6 +807,7 @@
                                     <div class="feature-info">
                                         <div class="feature-name">${module.name}</div>
                                         <div class="feature-description">${module.description}</div>
+                                        ${exportsText}
                                         ${dependenciesText}
                                     </div>
                                     <span class="feature-size ${sizeClass}">${module.size.toFixed(1)}KB</span>
@@ -839,7 +857,7 @@
         const ORIGINAL_SIZE = 2100; // 2.1MB in KB
 
         // Initialize state
-        let selectedFeatures = new Set();
+        let selectedFeatures = new Set(['export-to-window']);
         let currentPreset = null;
 
         function initializeEventListeners() {
@@ -868,6 +886,22 @@
             // Sync export-to-window toggle
             const exportToggle = document.getElementById('export-to-window-toggle');
             exportToggle.checked = selectedFeatures.has('export-to-window');
+
+            // Update exports text based on toggle state
+            const hasExportToWindow = selectedFeatures.has('export-to-window');
+            document.querySelectorAll('.feature-exports[data-exports]').forEach(el => {
+                const exports = JSON.parse(el.dataset.exports);
+                const allExports = [];
+                for (const [fnName, targets] of Object.entries(exports)) {
+                    if (hasExportToWindow) {
+                        if (targets.includes('window')) allExports.push(`window.${fnName}`);
+                        if (targets.includes('hyperclay')) allExports.push(`hyperclay.${fnName}`);
+                    } else {
+                        allExports.push(fnName);
+                    }
+                }
+                el.textContent = allExports.join(', ');
+            });
 
             // Calculate total size
             let totalSize = 0;
@@ -925,8 +959,8 @@
             if (currentPreset) {
                 urlParams = `?preset=${currentPreset}`;
             } else if (selectedFeatures.size > 0) {
-                // Filter out hidden modules from the URL
-                const featuresArray = Array.from(selectedFeatures).filter(f => isVisibleModule(f));
+                // Filter out hidden modules from the URL, but keep export-to-window
+                const featuresArray = Array.from(selectedFeatures).filter(f => isVisibleModule(f) || f === 'export-to-window');
                 urlParams = `?features=${featuresArray.join(',')}`;
             }
 

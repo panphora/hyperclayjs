@@ -146,15 +146,6 @@ export function snippet(title, content, options = {}) {
   return promise;
 }
 
-/**
- * Show API key with standard warning
- */
-export function showApiKey(apiKey, username, expiresAt) {
-  return snippet('Sync API Key', apiKey, {
-    extraContent: `This key won't be shown again. Save it. Expires in 1 year.`
-  });
-}
-
 // Auto-initialize - cleanup any leftover modal elements
 export function init() {
   onDomReady(() => {
@@ -178,7 +169,6 @@ if (!window.__hyperclayNoAutoExport) {
   window.hyperclay.tell = tell;
   window.hyperclay.info = info;
   window.hyperclay.snippet = snippet;
-  window.hyperclay.showApiKey = showApiKey;
   window.h = window.hyperclay;
 }
 
