@@ -8,12 +8,16 @@
    - add `onsorted` attribute to execute code when items are sorted
    - e.g. <ul sortable onsorted="console.log('Items reordered!')"></ul>
 
-*/
-import { isEditMode, isOwner } from "../core/isAdminOfCurrentResource.js";
-import Mutation from "../utilities/mutation.js";
-import Sortable from '../vendor/Sortable.js';
+   This wrapper conditionally loads the full Sortable.js vendor script (~118KB)
+   only when in edit mode. The script is injected with save-ignore so it's
+   stripped from the page before saving.
 
-function makeSortable (sortableElem) {
+*/
+import { isEditMode } from "../core/isAdminOfCurrentResource.js";
+import Mutation from "../utilities/mutation.js";
+import { loadVendorScript, getVendorUrl } from "../utilities/loadVendorScript.js";
+
+function makeSortable(sortableElem, Sortable) {
   let options = {};
 
   // Check if Sortable instance already exists
@@ -51,11 +55,23 @@ function makeSortable (sortableElem) {
   Sortable.create(sortableElem, options);
 }
 
-function init () {
+async function init() {
   if (!isEditMode) return;
 
+  // Load the vendor script
+  const vendorUrl = getVendorUrl(import.meta.url, '../vendor/Sortable.vendor.js');
+  const Sortable = await loadVendorScript(vendorUrl, 'Sortable');
+
+  // Auto-export to window unless suppressed by loader
+  if (!window.__hyperclayNoAutoExport) {
+    window.Sortable = Sortable;
+    window.hyperclay = window.hyperclay || {};
+    window.hyperclay.Sortable = Sortable;
+    window.h = window.hyperclay;
+  }
+
   // Set up sortable on page load
-  document.querySelectorAll('[sortable]').forEach(makeSortable);
+  document.querySelectorAll('[sortable]').forEach(el => makeSortable(el, Sortable));
 
   // Set up listener for dynamically added elements
   Mutation.onAddElement({
@@ -63,25 +79,13 @@ function init () {
     debounce: 200
   }, (changes) => {
     changes.forEach(({ element }) => {
-      makeSortable(element);
+      makeSortable(element, Sortable);
     });
   });
-
-  // ❗️re-initializing sortable on parent elements isn't necessary
-  // sortable.js handles this automatically
-  // ❌ onElementAdded(newElem => makeSortable(newElem.closest('[sortable]')))
-}
-
-// Auto-export to window unless suppressed by loader
-if (!window.__hyperclayNoAutoExport) {
-  window.Sortable = Sortable;
-  window.hyperclay = window.hyperclay || {};
-  window.hyperclay.Sortable = Sortable;
-  window.h = window.hyperclay;
 }
 
 // Auto-init when module is imported
 init();
 
-export { init, Sortable };
+export { init };
 export default init;

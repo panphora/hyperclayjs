@@ -59,6 +59,26 @@ import 'hyperclayjs/presets/standard.js';
 
 {{PRESET_DESCRIPTIONS}}
 
+## Lazy-Loaded Modules
+
+Some modules with large vendor dependencies are **lazy-loaded** to optimize page performance:
+
+| Module | Wrapper Size | Vendor Size | Loaded When |
+|--------|-------------|-------------|-------------|
+| `sortable` | ~3KB | ~118KB | Edit mode only |
+| `tailwind-play` | ~1KB | ~370KB | Edit mode only |
+
+**How it works:**
+- The wrapper module checks if the page is in edit mode (`isEditMode`)
+- If true, it injects a `<script save-ignore>` tag that loads the vendor script
+- If false, nothing is loaded - viewers don't download the heavy scripts
+- The `save-ignore` attribute strips the script tag when the page is saved
+
+This means:
+- **Editors** get full functionality when needed
+- **Viewers** never download ~500KB of vendor scripts
+- **Saved pages** stay clean with no leftover script tags
+
 ## Visual Configurator
 
 Explore features and build your custom bundle with our interactive configurator:

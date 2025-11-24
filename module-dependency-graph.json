@@ -50,10 +50,8 @@
     "core/autosave.js": [
       "core/isAdminOfCurrentResource.js",
       "core/savePage.js",
-      "core/savePageCore.js",
       "ui/toast.js",
-      "utilities/mutation.js",
-      "utilities/throttle.js"
+      "utilities/mutation.js"
     ],
     "core/editmode.js": [
       "core/isAdminOfCurrentResource.js"
@@ -77,7 +75,8 @@
     "core/savePage.js": [
       "core/isAdminOfCurrentResource.js",
       "core/savePageCore.js",
-      "ui/toast.js"
+      "ui/toast.js",
+      "utilities/throttle.js"
     ],
     "core/savePageCore.js": [
       "core/isAdminOfCurrentResource.js",
@@ -121,8 +120,8 @@
     "custom-attributes/preventEnter.js": [],
     "custom-attributes/sortable.js": [
       "core/isAdminOfCurrentResource.js",
-      "utilities/mutation.js",
-      "vendor/Sortable.js"
+      "utilities/loadVendorScript.js",
+      "utilities/mutation.js"
     ],
     "dom-utilities/All.js": [],
     "dom-utilities/getDataFromForm.js": [],
@@ -153,13 +152,18 @@
     "ui/toast.js": [],
     "utilities/cookie.js": [],
     "utilities/debounce.js": [],
+    "utilities/loadVendorScript.js": [],
     "utilities/mutation.js": [],
     "utilities/nearest.js": [],
     "utilities/pipe.js": [],
     "utilities/throttle.js": [],
-    "vendor/Sortable.js": [],
+    "vendor/Sortable.vendor.js": [],
     "vendor/idiomorph.min.js": [],
     "vendor/tailwind-play.js": [
+      "core/isAdminOfCurrentResource.js",
+      "utilities/loadVendorScript.js"
+    ],
+    "vendor/tailwind-play.vendor.js": [
       "dom-utilities/insertStyleTag.js"
     ]
   },
@@ -181,7 +185,7 @@
     "save-system": {
       "name": "save-system",
       "category": "core",
-      "size": 4,
+      "size": 4.9,
       "files": [
         "core/savePage.js"
       ],
@@ -193,13 +197,10 @@
         "savePage": [
           "hyperclay"
         ],
+        "savePageThrottled": [
+          "hyperclay"
+        ],
         "replacePageWith": [
-          "hyperclay"
-        ],
-        "initHyperclaySaveButton": [
-          "hyperclay"
-        ],
-        "initSaveKeyboardShortcut": [
           "hyperclay"
         ]
       }
@@ -207,19 +208,12 @@
     "autosave": {
       "name": "autosave",
       "category": "core",
-      "size": 2.5,
+      "size": 1.2,
       "files": [
         "core/autosave.js"
       ],
       "description": "Auto-save on DOM changes, unsaved changes warning",
-      "exports": {
-        "savePageThrottled": [
-          "hyperclay"
-        ],
-        "initSavePageOnChange": [
-          "hyperclay"
-        ]
-      }
+      "exports": {}
     },
     "edit-mode-helpers": {
       "name": "edit-mode-helpers",
@@ -232,7 +226,7 @@
         "core/adminOnClick.js",
         "core/adminResources.js"
       ],
-      "description": "Admin-only resources: [edit-mode-input], [edit-mode-resource], [edit-mode-onclick]",
+      "description": "Admin-only functionality: [edit-mode-input], [edit-mode-resource], [edit-mode-onclick]",
       "exports": {}
     },
     "persist": {
@@ -243,11 +237,7 @@
         "core/enablePersistentFormInputValues.js"
       ],
       "description": "Persist input/select/textarea values to the DOM with [persist] attribute",
-      "exports": {
-        "enablePersistentFormInputValues": [
-          "hyperclay"
-        ]
-      }
+      "exports": {}
     },
     "option-visibility": {
       "name": "option-visibility",
@@ -257,12 +247,7 @@
         "core/optionVisibilityRuleGenerator.js"
       ],
       "description": "Dynamic show/hide based on ancestor state with option:attribute=\"value\"",
-      "exports": {
-        "optionVisibilityRuleGenerator": [
-          "window",
-          "hyperclay"
-        ]
-      }
+      "exports": {}
     },
     "edit-mode": {
       "name": "edit-mode",
@@ -313,18 +298,12 @@
     "sortable": {
       "name": "sortable",
       "category": "custom-attributes",
-      "size": 118.1,
+      "size": 2.8,
       "files": [
-        "custom-attributes/sortable.js",
-        "vendor/Sortable.js"
+        "custom-attributes/sortable.js"
       ],
-      "description": "Drag-drop sorting with [sortable], includes Sortable.js",
-      "exports": {
-        "Sortable": [
-          "window",
-          "hyperclay"
-        ]
-      }
+      "description": "Drag-drop sorting with [sortable], lazy-loads ~118KB Sortable.js in edit mode",
+      "exports": {}
     },
     "dom-helpers": {
       "name": "dom-helpers",
@@ -428,11 +407,11 @@
     "tailwind-play": {
       "name": "tailwind-play",
       "category": "ui",
-      "size": 362.3,
+      "size": 0.7,
       "files": [
         "vendor/tailwind-play.js"
       ],
-      "description": "Live Tailwind CSS editing in hyperclay, should use with [edit-mode-resource]",
+      "description": "Live Tailwind CSS editing, lazy-loads ~370KB script in edit mode only",
       "exports": {}
     },
     "mutation": {
