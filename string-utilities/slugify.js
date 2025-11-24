@@ -10,11 +10,12 @@ function slugify (text) {
     .replace(/-+$/, ''); // trim - from end of text
 }
 
-// Export to window (called by export-to-window module)
-export function exportToWindow() {
+// Auto-export to window unless suppressed by loader
+if (!window.__hyperclayNoAutoExport) {
   window.slugify = slugify;
   window.hyperclay = window.hyperclay || {};
   window.hyperclay.slugify = slugify;
+  window.h = window.hyperclay;
 }
 
 export default slugify;

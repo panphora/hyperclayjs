@@ -669,11 +669,12 @@ const themodal = (() => {
   return themodalMain;
 })();
 
-// Export to window (called by export-to-window module)
-export function exportToWindow() {
+// Auto-export to window unless suppressed by loader
+if (!window.__hyperclayNoAutoExport) {
   window.themodal = themodal;
   window.hyperclay = window.hyperclay || {};
   window.hyperclay.themodal = themodal;
+  window.h = window.hyperclay;
 }
 
 export default themodal;

@@ -26,6 +26,29 @@ const depGraph = JSON.parse(fs.readFileSync(depGraphPath, 'utf8'));
 const templatePath = path.join(__dirname, 'hyperclay.template.js');
 const template = fs.readFileSync(templatePath, 'utf8');
 
+// Generate ES module export lines from module exports definitions
+function generateExports() {
+  const modules = depGraph.modules || {};
+  const exportLines = [];
+  const seenExports = new Set();
+
+  for (const [moduleId, module] of Object.entries(modules)) {
+    if (!module.exports) continue;
+
+    for (const exportName of Object.keys(module.exports)) {
+      // Skip duplicates - first module wins
+      if (seenExports.has(exportName)) continue;
+      seenExports.add(exportName);
+
+      // Use optional chaining since module may not be loaded
+      // Try named export first, fall back to default
+      exportLines.push(`export const ${exportName} = window.hyperclayModules['${moduleId}']?.${exportName} ?? window.hyperclayModules['${moduleId}']?.default;`);
+    }
+  }
+
+  return exportLines.join('\n');
+}
+
 // Generate the loader
 function generateLoader() {
   const modulePaths = depGraph.modulePaths || {};
@@ -35,6 +58,7 @@ function generateLoader() {
   output = output.replace('__VERSION__', version);
   output = output.replace('__MODULE_PATHS__', JSON.stringify(modulePaths, null, 2));
   output = output.replace('__PRESETS__', JSON.stringify(presets, null, 2));
+  output = output.replace('__EXPORTS__', generateExports());
 
   return output;
 }

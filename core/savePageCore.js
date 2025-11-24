@@ -220,12 +220,13 @@ export function replacePageWith(url, callback = () => {}) {
     });
 }
 
-// Export to window (called by export-to-window module)
-export function exportToWindow() {
+// Auto-export to window unless suppressed by loader
+if (!window.__hyperclayNoAutoExport) {
   window.hyperclay = window.hyperclay || {};
   window.hyperclay.savePage = savePage;
   window.hyperclay.saveHtml = saveHtml;
   window.hyperclay.replacePageWith = replacePageWith;
   window.hyperclay.beforeSave = beforeSave;
   window.hyperclay.getPageContents = getPageContents;
+  window.h = window.hyperclay;
 }

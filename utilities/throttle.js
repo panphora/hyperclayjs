@@ -20,10 +20,11 @@ function throttle(callback, delay, executeFirst = true) {
   };
 }
 
-// Export to window (called by export-to-window module)
-export function exportToWindow() {
+// Auto-export to window unless suppressed by loader
+if (!window.__hyperclayNoAutoExport) {
   window.hyperclay = window.hyperclay || {};
   window.hyperclay.throttle = throttle;
+  window.h = window.hyperclay;
 }
 
 export default throttle;

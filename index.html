@@ -861,14 +861,11 @@
             let code;
             if (hasExportToWindow) {
                 code = `<script type="module">
-  await import('${fullUrl}');
-  const { toast, savePage } = window.hyperclay;
+  const { toast, savePage } = await import('${fullUrl}');
 <\/script>`;
             } else {
                 code = `<script type="module">
-  await import('${fullUrl}');
-  // No window.hyperclay - use window.hyperclayModules for ES module exports
-  const { default: toast } = window.hyperclayModules['toast'];
+  const { toast } = await import('${fullUrl}');
 <\/script>`;
             }
 

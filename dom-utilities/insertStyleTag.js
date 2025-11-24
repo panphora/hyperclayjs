@@ -27,11 +27,12 @@ function insertStyleTag(href) {
   document.head.appendChild(link);
 }
 
-// Export to window (called by export-to-window module)
-export function exportToWindow() {
+// Auto-export to window unless suppressed by loader
+if (!window.__hyperclayNoAutoExport) {
   window.insertStyleTag = insertStyleTag;
   window.hyperclay = window.hyperclay || {};
   window.hyperclay.insertStyleTag = insertStyleTag;
+  window.h = window.hyperclay;
 }
 
 export default insertStyleTag;

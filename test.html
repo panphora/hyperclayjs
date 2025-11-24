@@ -343,7 +343,7 @@
       }
 
       // AJAX
-      if (window.hyperclayModules?.ajax) markPass('test-ajax', 'AJAX handlers registered');
+      if (window.hyperclayModules?.['ajax-elements']) markPass('test-ajax', 'AJAX handlers registered');
 
       // Helpers
       if (typeof Element.prototype.nearest === 'function') {
@@ -365,7 +365,7 @@
         });
       }
 
-      if (modules?.['emmet-html']) {
+      if (modules?.['emmet']) {
         import('./string-utilities/emmet-html.js').then(({ default: emmet }) => {
           const html = emmet('div>span');
           document.getElementById('emmet-output').innerHTML =
@@ -375,7 +375,7 @@
       }
 
       // FIXED: query.js exports an object, not a function
-      if (modules?.['query-parser']) {
+      if (modules?.['query-params']) {
         import('./string-utilities/query.js').then(({ default: params }) => {
           // params is already the parsed query object
           document.getElementById('query-output').innerHTML =
@@ -385,7 +385,7 @@
       }
 
       // DOM Utilities
-      if (modules?.['jquery-like']) {
+      if (modules?.['all-js']) {
         import('./dom-utilities/All.js').then(({ default: All }) => {
           document.getElementById('all-output').innerHTML =
             `<span class="check">✓</span> All('div').length = ${All('div').length}`;

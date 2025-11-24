@@ -47,10 +47,11 @@ function sendMessage(eventOrObj, successMessage = "Successfully sent", callback)
     });
 }
 
-// Export to window (called by export-to-window module)
-export function exportToWindow() {
+// Auto-export to window unless suppressed by loader
+if (!window.__hyperclayNoAutoExport) {
   window.hyperclay = window.hyperclay || {};
   window.hyperclay.sendMessage = sendMessage;
+  window.h = window.hyperclay;
 }
 
 export default sendMessage;

@@ -222,10 +222,11 @@ const behaviorCollector = (() => {
   };
 })();
 
-// Export to window (called by export-to-window module)
-export function exportToWindow() {
+// Auto-export to window unless suppressed by loader
+if (!window.__hyperclayNoAutoExport) {
   window.hyperclay = window.hyperclay || {};
   window.hyperclay.behaviorCollector = behaviorCollector;
+  window.h = window.hyperclay;
 }
 
 export default behaviorCollector;

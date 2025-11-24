@@ -152,11 +152,12 @@ const optionVisibilityRuleGenerator = {
   },
 };
 
-// Export to window (called by export-to-window module)
-export function exportToWindow() {
+// Auto-export to window unless suppressed by loader
+if (!window.__hyperclayNoAutoExport) {
   window.optionVisibilityRuleGenerator = optionVisibilityRuleGenerator;
   window.hyperclay = window.hyperclay || {};
   window.hyperclay.optionVisibilityRuleGenerator = optionVisibilityRuleGenerator;
+  window.h = window.hyperclay;
 }
 
 export default optionVisibilityRuleGenerator;

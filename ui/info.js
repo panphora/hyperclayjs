@@ -38,11 +38,12 @@ export function init() {
   });
 }
 
-// Export to window (called by export-to-window module)
-export function exportToWindow() {
+// Auto-export to window unless suppressed by loader
+if (!window.__hyperclayNoAutoExport) {
   window.info = info;
   window.hyperclay = window.hyperclay || {};
   window.hyperclay.info = info;
+  window.h = window.hyperclay;
 }
 
 // Auto-init when module is imported

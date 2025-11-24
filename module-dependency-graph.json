@@ -207,7 +207,7 @@
     "autosave": {
       "name": "autosave",
       "category": "core",
-      "size": 2.4,
+      "size": 2.5,
       "files": [
         "core/autosave.js"
       ],
@@ -267,7 +267,7 @@
     "edit-mode": {
       "name": "edit-mode",
       "category": "core",
-      "size": 1.7,
+      "size": 1.8,
       "files": [
         "core/editmodeSystem.js",
         "core/editmode.js",
@@ -356,7 +356,7 @@
     "dialogs": {
       "name": "dialogs",
       "category": "ui",
-      "size": 11.4,
+      "size": 11.5,
       "files": [
         "ui/prompts.js",
         "ui/info.js"
@@ -421,7 +421,7 @@
     "modal": {
       "name": "modal",
       "category": "ui",
-      "size": 18.5,
+      "size": 18.6,
       "files": [
         "ui/theModal.js"
       ],
@@ -491,7 +491,7 @@
     "throttle": {
       "name": "throttle",
       "category": "utilities",
-      "size": 0.7,
+      "size": 0.8,
       "files": [
         "utilities/throttle.js"
       ],
@@ -533,7 +533,7 @@
     "window-load": {
       "name": "window-load",
       "category": "dom-utilities",
-      "size": 0.3,
+      "size": 0.4,
       "files": [
         "dom-utilities/onLoad.js"
       ],
@@ -547,7 +547,7 @@
     "all-js": {
       "name": "all-js",
       "category": "dom-utilities",
-      "size": 13.9,
+      "size": 14,
       "files": [
         "dom-utilities/All.js"
       ],
@@ -692,7 +692,7 @@
     "file-upload": {
       "name": "file-upload",
       "category": "communication",
-      "size": 10.6,
+      "size": 10.7,
       "files": [
         "communication/uploadFile.js"
       ],
@@ -712,7 +712,7 @@
     "export-to-window": {
       "name": "export-to-window",
       "category": "core",
-      "size": 0.8,
+      "size": 0.4,
       "files": [
         "core/exportToWindow.js"
       ],

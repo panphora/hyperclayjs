@@ -17,29 +17,24 @@ A modular JavaScript library for building interactive HTML applications with Hyp
 
 The self-detecting loader reads URL parameters and automatically loads the requested features with all dependencies.
 
-Use `await import()` to ensure modules finish loading before your code runs:
+Destructure directly from the import:
 
 ```html
-<!-- Standard setup with window.hyperclay (presets include export-to-window) -->
 <script type="module">
-  await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/hyperclay.js?preset=standard');
-  const { toast, savePage } = window.hyperclay;
-</script>
-
-<!-- Custom features with window.hyperclay (include export-to-window explicitly) -->
-<script type="module">
-  await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/hyperclay.js?features=save-core,toast,export-to-window');
-  const { toast, savePage } = window.hyperclay;
-</script>
-
-<!-- ES modules only (omit export-to-window) -->
-<script type="module">
-  await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/hyperclay.js?features=save-core,toast');
-  const { default: toast } = window.hyperclayModules['toast'];
+  const { toast, savePage } = await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/hyperclay.js?preset=standard');
+  toast('Hello!');
 </script>
 ```
 
-**Note:** Presets (`?preset=...`) include `export-to-window` by default. Custom features (`?features=...`) require explicitly adding `export-to-window` if you want `window.hyperclay` access.
+Or with custom features:
+
+```html
+<script type="module">
+  const { toast, ask } = await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/hyperclay.js?features=toast,dialogs');
+</script>
+```
+
+**Note:** Presets include `export-to-window` by default, which also exports to `window.hyperclay`. Omit it from custom features if you only want ES module exports.
 
 ### Using NPM
 

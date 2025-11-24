@@ -166,8 +166,8 @@ export function init() {
   });
 }
 
-// Export to window (called by export-to-window module)
-export function exportToWindow() {
+// Auto-export to window unless suppressed by loader
+if (!window.__hyperclayNoAutoExport) {
   window.ask = ask;
   window.consent = consent;
   window.tell = tell;
@@ -179,6 +179,7 @@ export function exportToWindow() {
   window.hyperclay.info = info;
   window.hyperclay.snippet = snippet;
   window.hyperclay.showApiKey = showApiKey;
+  window.h = window.hyperclay;
 }
 
 // Re-export info

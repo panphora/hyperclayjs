@@ -17,29 +17,24 @@ A modular JavaScript library for building interactive HTML applications with Hyp
 
 The self-detecting loader reads URL parameters and automatically loads the requested features with all dependencies.
 
-Use `await import()` to ensure modules finish loading before your code runs:
+Destructure directly from the import:
 
 ```html
-<!-- Standard setup with window.hyperclay (presets include export-to-window) -->
 <script type="module">
-  await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/hyperclay.js?preset=standard');
-  const { toast, savePage } = window.hyperclay;
-</script>
-
-<!-- Custom features with window.hyperclay (include export-to-window explicitly) -->
-<script type="module">
-  await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/hyperclay.js?features=save-core,toast,export-to-window');
-  const { toast, savePage } = window.hyperclay;
-</script>
-
-<!-- ES modules only (omit export-to-window) -->
-<script type="module">
-  await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/hyperclay.js?features=save-core,toast');
-  const { default: toast } = window.hyperclayModules['toast'];
+  const { toast, savePage } = await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/hyperclay.js?preset=standard');
+  toast('Hello!');
 </script>
 ```
 
-**Note:** Presets (`?preset=...`) include `export-to-window` by default. Custom features (`?features=...`) require explicitly adding `export-to-window` if you want `window.hyperclay` access.
+Or with custom features:
+
+```html
+<script type="module">
+  const { toast, ask } = await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/hyperclay.js?features=toast,dialogs');
+</script>
+```
+
+**Note:** Presets include `export-to-window` by default, which also exports to `window.hyperclay`. Omit it from custom features if you only want ES module exports.
 
 ### Using NPM
 
@@ -63,9 +58,9 @@ import 'hyperclayjs/presets/standard.js';
 | Module | Size | Description |
 |--------|------|-------------|
 | admin | 5.4KB | Hides admin inputs, scripts, contenteditable, onclick for regular viewers |
-| autosave | 2.4KB | Auto-save on DOM changes, unsaved changes warning |
-| edit-mode | 1.7KB | Toggle edit mode on/off |
-| export-to-window | 0.8KB | Export all modules to window.hyperclay and window globals |
+| autosave | 2.5KB | Auto-save on DOM changes, unsaved changes warning |
+| edit-mode | 1.8KB | Toggle edit mode on/off |
+| export-to-window | 0.4KB | Export all modules to window.hyperclay and window globals |
 | option-visibility | 4.7KB | Dynamic show/hide based on ancestor state with option:attribute="value" |
 | persist | 2.5KB | Persist form values to the DOM with [persist] attribute |
 | save-core | 5.9KB | Basic save function only - hyperclay.savePage() |
@@ -85,8 +80,8 @@ import 'hyperclayjs/presets/standard.js';
 
 | Module | Size | Description |
 |--------|------|-------------|
-| dialogs | 11.4KB | ask(), consent(), tell(), info(), snippet() functions |
-| modal | 18.5KB | Full modal window creation system - window.theModal |
+| dialogs | 11.5KB | ask(), consent(), tell(), info(), snippet() functions |
+| modal | 18.6KB | Full modal window creation system - window.theModal |
 | tailwind-play | 362.3KB | Live Tailwind CSS editing - no need for a build system |
 | toast | 7.3KB | Success/error message notifications - toast(msg, msgType) |
 
@@ -98,13 +93,13 @@ import 'hyperclayjs/presets/standard.js';
 | debounce | 0.4KB | Function debouncing |
 | mutation | 13KB | DOM mutation observation (often auto-included) |
 | nearest | 3.4KB | Find nearest elements (often auto-included) |
-| throttle | 0.7KB | Function throttling |
+| throttle | 0.8KB | Function throttling |
 
 ### DOM Utilities (DOM manipulation helpers)
 
 | Module | Size | Description |
 |--------|------|-------------|
-| all-js | 13.9KB | Full DOM manipulation library |
+| all-js | 14KB | Full DOM manipulation library |
 | dom-ready | 0.4KB | DOM ready callback |
 | form-data | 2KB | Extract form data as an object |
 | style-injection | 1.1KB | Dynamic stylesheet injection |
@@ -122,7 +117,7 @@ import 'hyperclayjs/presets/standard.js';
 
 | Module | Size | Description |
 |--------|------|-------------|
-| file-upload | 10.6KB | File upload with progress |
+| file-upload | 10.7KB | File upload with progress |
 | send-message | 1.4KB | Message sending utility |
 
 ### Vendor Libraries (Third-party libraries)
@@ -133,17 +128,17 @@ import 'hyperclayjs/presets/standard.js';
 
 ## Presets
 
-### Minimal (~23.4KB)
+### Minimal (~23KB)
 Essential features for basic editing
 
 **Modules:** `save-core`, `save-system`, `admin`, `toast`, `export-to-window`
 
-### Standard (~39.9KB)
+### Standard (~39.5KB)
 Standard feature set for most use cases
 
 **Modules:** `save-core`, `save-system`, `admin`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `export-to-window`
 
-### Everything (~624.1KB)
+### Everything (~624.5KB)
 All available features
 
 Includes all available modules across all categories.

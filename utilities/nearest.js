@@ -96,9 +96,10 @@ export default function nearest (startElem, selector, elementFoundReturnValue = 
   return null;
 }
 
-// Export to window (called by export-to-window module)
-export function exportToWindow() {
+// Auto-export to window unless suppressed by loader
+if (!window.__hyperclayNoAutoExport) {
   window.nearest = nearest;
   window.hyperclay = window.hyperclay || {};
   window.hyperclay.nearest = nearest;
+  window.h = window.hyperclay;
 }

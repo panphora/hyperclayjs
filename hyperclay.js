@@ -21,6 +21,9 @@
 
 window.hyperclayModules = window.hyperclayModules || {};
 
+// Suppress auto-export in modules - export-to-window will flip this to false
+window.__hyperclayNoAutoExport = true;
+
 const MODULE_PATHS = {
   "save-core": "./core/savePageCore.js",
   "save-system": "./core/savePage.js",
@@ -156,8 +159,8 @@ if (exclude) {
 // Modules that extend prototypes must load before modules that execute user code
 const LOAD_FIRST = new Set(['dom-helpers', 'all-js']);
 
-// export-to-window must run AFTER all other modules are loaded
-const LOAD_LAST = 'export-to-window';
+// export-to-window flips the flag, so it must load before other modules
+const LOAD_BEFORE_ALL = 'export-to-window';
 
 const loadModules = (modules) => Promise.all(modules.map(async feature => {
   const path = MODULE_PATHS[feature];
@@ -169,27 +172,71 @@ const loadModules = (modules) => Promise.all(modules.map(async feature => {
 
 if (debug) console.log('HyperclayJS: Loading features:', requested);
 
-// Separate export-to-window from other modules - it must run last
-const shouldExportToWindow = requested.includes(LOAD_LAST);
-const modulesToLoad = requested.filter(f => f !== LOAD_LAST);
+// Separate export-to-window - it must load FIRST to flip the flag
+const shouldExportToWindow = requested.includes(LOAD_BEFORE_ALL);
+const modulesToLoad = requested.filter(f => f !== LOAD_BEFORE_ALL);
 
-// Load in waves: prototype extenders first, then everything else
+// Load in waves: export-to-window first, then prototype extenders, then everything else
 const first = modulesToLoad.filter(f => LOAD_FIRST.has(f));
 const rest = modulesToLoad.filter(f => !LOAD_FIRST.has(f));
 
 try {
+  // Load export-to-window FIRST to flip the flag before other modules load
+  if (shouldExportToWindow) {
+    if (debug) console.log('HyperclayJS: Enabling window exports...');
+    const exportModule = await import(`${baseUrl}/${MODULE_PATHS[LOAD_BEFORE_ALL]}`);
+    window.hyperclayModules[LOAD_BEFORE_ALL] = exportModule;
+  }
+
   if (first.length) await loadModules(first);
   if (rest.length) await loadModules(rest);
-
-  // Load export-to-window LAST, after all modules are registered
-  if (shouldExportToWindow) {
-    if (debug) console.log('HyperclayJS: Exporting to window...');
-    const exportModule = await import(`${baseUrl}/${MODULE_PATHS[LOAD_LAST]}`);
-    window.hyperclayModules[LOAD_LAST] = exportModule;
-  }
 } catch (err) {
   console.error('HyperclayJS: Failed to load modules:', err);
   throw err;
 }
 
 if (debug) console.log('HyperclayJS: Ready');
+
+// ES module exports - allows destructuring from import()
+export const savePage = window.hyperclayModules['save-core']?.savePage ?? window.hyperclayModules['save-core']?.default;
+export const beforeSave = window.hyperclayModules['save-system']?.beforeSave ?? window.hyperclayModules['save-system']?.default;
+export const replacePageWith = window.hyperclayModules['save-system']?.replacePageWith ?? window.hyperclayModules['save-system']?.default;
+export const initHyperclaySaveButton = window.hyperclayModules['save-system']?.initHyperclaySaveButton ?? window.hyperclayModules['save-system']?.default;
+export const initSaveKeyboardShortcut = window.hyperclayModules['save-system']?.initSaveKeyboardShortcut ?? window.hyperclayModules['save-system']?.default;
+export const savePageThrottled = window.hyperclayModules['autosave']?.savePageThrottled ?? window.hyperclayModules['autosave']?.default;
+export const initSavePageOnChange = window.hyperclayModules['autosave']?.initSavePageOnChange ?? window.hyperclayModules['autosave']?.default;
+export const enablePersistentFormInputValues = window.hyperclayModules['persist']?.enablePersistentFormInputValues ?? window.hyperclayModules['persist']?.default;
+export const optionVisibilityRuleGenerator = window.hyperclayModules['option-visibility']?.optionVisibilityRuleGenerator ?? window.hyperclayModules['option-visibility']?.default;
+export const toggleEditMode = window.hyperclayModules['edit-mode']?.toggleEditMode ?? window.hyperclayModules['edit-mode']?.default;
+export const isEditMode = window.hyperclayModules['edit-mode']?.isEditMode ?? window.hyperclayModules['edit-mode']?.default;
+export const isOwner = window.hyperclayModules['edit-mode']?.isOwner ?? window.hyperclayModules['edit-mode']?.default;
+export const Sortable = window.hyperclayModules['sortable']?.Sortable ?? window.hyperclayModules['sortable']?.default;
+export const initCustomAttributes = window.hyperclayModules['dom-helpers']?.initCustomAttributes ?? window.hyperclayModules['dom-helpers']?.default;
+export const ask = window.hyperclayModules['dialogs']?.ask ?? window.hyperclayModules['dialogs']?.default;
+export const consent = window.hyperclayModules['dialogs']?.consent ?? window.hyperclayModules['dialogs']?.default;
+export const tell = window.hyperclayModules['dialogs']?.tell ?? window.hyperclayModules['dialogs']?.default;
+export const info = window.hyperclayModules['dialogs']?.info ?? window.hyperclayModules['dialogs']?.default;
+export const snippet = window.hyperclayModules['dialogs']?.snippet ?? window.hyperclayModules['dialogs']?.default;
+export const showApiKey = window.hyperclayModules['dialogs']?.showApiKey ?? window.hyperclayModules['dialogs']?.default;
+export const toast = window.hyperclayModules['toast']?.toast ?? window.hyperclayModules['toast']?.default;
+export const themodal = window.hyperclayModules['modal']?.themodal ?? window.hyperclayModules['modal']?.default;
+export const Mutation = window.hyperclayModules['mutation']?.Mutation ?? window.hyperclayModules['mutation']?.default;
+export const nearest = window.hyperclayModules['nearest']?.nearest ?? window.hyperclayModules['nearest']?.default;
+export const cookie = window.hyperclayModules['cookie']?.cookie ?? window.hyperclayModules['cookie']?.default;
+export const throttle = window.hyperclayModules['throttle']?.throttle ?? window.hyperclayModules['throttle']?.default;
+export const debounce = window.hyperclayModules['debounce']?.debounce ?? window.hyperclayModules['debounce']?.default;
+export const onDomReady = window.hyperclayModules['dom-ready']?.onDomReady ?? window.hyperclayModules['dom-ready']?.default;
+export const onLoad = window.hyperclayModules['window-load']?.onLoad ?? window.hyperclayModules['window-load']?.default;
+export const All = window.hyperclayModules['all-js']?.All ?? window.hyperclayModules['all-js']?.default;
+export const insertStyleTag = window.hyperclayModules['style-injection']?.insertStyleTag ?? window.hyperclayModules['style-injection']?.default;
+export const getDataFromForm = window.hyperclayModules['form-data']?.getDataFromForm ?? window.hyperclayModules['form-data']?.default;
+export const Idiomorph = window.hyperclayModules['idiomorph']?.Idiomorph ?? window.hyperclayModules['idiomorph']?.default;
+export const slugify = window.hyperclayModules['slugify']?.slugify ?? window.hyperclayModules['slugify']?.default;
+export const emmet = window.hyperclayModules['emmet']?.emmet ?? window.hyperclayModules['emmet']?.default;
+export const copyToClipboard = window.hyperclayModules['clipboard']?.copyToClipboard ?? window.hyperclayModules['clipboard']?.default;
+export const query = window.hyperclayModules['query-params']?.query ?? window.hyperclayModules['query-params']?.default;
+export const behaviorCollector = window.hyperclayModules['behavior-collector']?.behaviorCollector ?? window.hyperclayModules['behavior-collector']?.default;
+export const sendMessage = window.hyperclayModules['send-message']?.sendMessage ?? window.hyperclayModules['send-message']?.default;
+export const uploadFile = window.hyperclayModules['file-upload']?.uploadFile ?? window.hyperclayModules['file-upload']?.default;
+export const createFile = window.hyperclayModules['file-upload']?.createFile ?? window.hyperclayModules['file-upload']?.default;
+export const uploadFileBasic = window.hyperclayModules['file-upload']?.uploadFileBasic ?? window.hyperclayModules['file-upload']?.default;
