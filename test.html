@@ -163,12 +163,13 @@
   </div>
 
   <div class="test" id="test-modals">
-    <span class="label">modals:</span>
+    <span class="label">theModal:</span>
+    <button onclick="testTheModal()">Test theModal</button>
     <span class="detail" id="modals-status"></span>
   </div>
 
   <div class="test" id="test-info">
-    <span class="label">info:</span>
+    <span class="label">info (alias for tell):</span>
     <button onclick="testInfo()">Test Info Dialog</button>
   </div>
 
@@ -353,7 +354,7 @@
       }
 
       // UI Components
-      if (window.themodal) markPass('test-modals', 'theModal available');
+      if (window.themodal) markPass('test-modals', 'themodal available - click to test');
       if (window.hyperclayModules?.['tailwind-play']) markPass('test-tailwind', 'Tailwind Play loaded');
 
       // String Utilities
@@ -367,9 +368,16 @@
 
       if (modules?.['emmet']) {
         import('./string-utilities/emmet-html.js').then(({ default: emmet }) => {
-          const html = emmet('div>span');
+          const html = emmet('div.demo>span{Hello Emmet!}');
+          const escaped = html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
           document.getElementById('emmet-output').innerHTML =
-            `<span class="check">✓</span> "div>span" → ${html}`;
+            `<span class="check">✓</span> <code>${escaped}</code>`;
+          // Also render it visually
+          const container = document.createElement('div');
+          container.innerHTML = html;
+          container.style.marginLeft = '10px';
+          container.style.display = 'inline-block';
+          document.getElementById('test-emmet').appendChild(container);
           markPass('test-emmet');
         });
       }
@@ -494,7 +502,7 @@
 
     window.testTell = function() {
       import('./ui/prompts.js').then(({ tell }) => {
-        tell('This is a tell dialog', () => console.log('Closed'));
+        tell('This is a tell dialog', 'Now with variadic content support!', 'Each argument becomes a paragraph.');
       });
     };
 
@@ -505,16 +513,46 @@
     };
 
     window.testInfo = function() {
-      import('./ui/info.js').then(({ info }) => {
-        info('Info Dialog Test', 'This is the info dialog component!');
+      import('./ui/prompts.js').then(({ info }) => {
+        info('Info Dialog Test', 'This is the info dialog component!', 'It now supports multiple paragraphs.');
+      });
+    };
+
+    window.testTheModal = function() {
+      import('./ui/theModal.js').then(({ default: themodal }) => {
+        // Use the proper theModal API and built-in CSS classes
+        themodal.html = `
+          <div class="micromodal__heading">theModal Test</div>
+          <p style="margin-bottom: 10px;">This modal uses the built-in theModal API.</p>
+          <p style="color: #888;">Click the green button or press Enter to confirm.</p>
+        `;
+        // Yes button content (goes inside .micromodal__yes button)
+        themodal.yes = '✓ Confirm';
+        // No button content (goes inside .micromodal__no button)
+        themodal.no = 'Cancel';
+        // Close button in corner
+        themodal.closeHtml = '✕';
+
+        themodal.onYes(() => {
+          markPass('test-modals', 'theModal works!');
+          return true; // Allow close
+        });
+
+        themodal.onNo(() => {
+          console.log('Modal cancelled');
+        });
+
+        themodal.open();
       });
     };
 
     window.testClipboard = function() {
       import('./string-utilities/copy-to-clipboard.js').then(({ default: copy }) => {
-        copy('HyperclayJS Test');
+        const randomId = Math.random().toString(36).substring(2, 8);
+        const testText = `Copy to clipboard test id: ${randomId}`;
+        copy(testText);
         import('./ui/toast.js').then(({ default: toast }) => {
-          toast('Copied to clipboard!', 'success');
+          toast(`Copied: "${testText}"`, 'success');
           markPass('test-clipboard');
         });
       });

@@ -305,7 +305,8 @@
             font-size: 0.875rem;
             box-shadow: 4px 4px 0 var(--shadow-blue);
             resize: none;
-            overflow: hidden;
+            overflow-x: auto;
+            overflow-y: hidden;
             line-height: 1.5;
         }
 
@@ -668,9 +669,9 @@
 
                 <!-- URL Output -->
                 <div class="url-output">
-                    <div class="url-label">Script tag:</div>
+                    <div class="url-label">Add to your page:</div>
                     <div class="url-container">
-                        <textarea class="url-textarea" id="generated-url" readonly></textarea>
+                        <textarea class="url-textarea" id="generated-url" readonly wrap="off"></textarea>
                     </div>
                     <div class="toggle-option">
                         <label class="toggle-switch">
@@ -697,7 +698,9 @@
 
         async function loadModuleData() {
             try {
-                const response = await fetch('/module-dependency-graph.json');
+                const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+                const fetchOptions = isLocal ? { cache: 'no-store' } : {};
+                const response = await fetch('/module-dependency-graph.json', fetchOptions);
                 moduleData = await response.json();
 
                 // Transform modules data to features format
@@ -966,18 +969,23 @@
 
             const fullUrl = baseURL + urlParams;
 
-            // Check if export-to-window is included
-            const hasExportToWindow = selectedFeatures.has('export-to-window');
-
+            // Collect exports from selected modules for the example
+            const exampleExports = new Set();
+            for (const featureId of selectedFeatures) {
+                const module = features[featureId];
+                if (module?.exports) {
+                    for (const exportName of Object.keys(module.exports)) {
+                        exampleExports.add(exportName);
+                    }
+                }
+            }
+            const exportsArray = Array.from(exampleExports).sort();
             let code;
-            if (hasExportToWindow) {
-                code = `<script type="module">
-  const { toast, savePage } = await import('${fullUrl}');
-<\/script>`;
+            if (exportsArray.length > 0) {
+                const formatted = exportsArray.map(name => `    ${name}`).join(',\n');
+                code = `<script type="module">\n  const {\n${formatted}\n  } = await import('${fullUrl}');\n<\/script>`;
             } else {
-                code = `<script type="module">
-  const { toast } = await import('${fullUrl}');
-<\/script>`;
+                code = `<script type="module">\n  await import('${fullUrl}');\n<\/script>`;
             }
 
             urlInput.value = code;

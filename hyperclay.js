@@ -107,6 +107,7 @@ const PRESETS = {
       "input-helpers",
       "dialogs",
       "toast",
+      "toast-hyperclay",
       "the-modal",
       "tailwind-play",
       "mutation",
@@ -200,23 +201,18 @@ if (debug) console.log('HyperclayJS: Ready');
 // ES module exports - allows destructuring from import()
 export const savePage = window.hyperclayModules['save-core']?.savePage ?? window.hyperclayModules['save-core']?.default;
 export const beforeSave = window.hyperclayModules['save-system']?.beforeSave ?? window.hyperclayModules['save-system']?.default;
+export const savePageThrottled = window.hyperclayModules['save-system']?.savePageThrottled ?? window.hyperclayModules['save-system']?.default;
 export const replacePageWith = window.hyperclayModules['save-system']?.replacePageWith ?? window.hyperclayModules['save-system']?.default;
-export const initHyperclaySaveButton = window.hyperclayModules['save-system']?.initHyperclaySaveButton ?? window.hyperclayModules['save-system']?.default;
-export const initSaveKeyboardShortcut = window.hyperclayModules['save-system']?.initSaveKeyboardShortcut ?? window.hyperclayModules['save-system']?.default;
-export const savePageThrottled = window.hyperclayModules['autosave']?.savePageThrottled ?? window.hyperclayModules['autosave']?.default;
-export const initSavePageOnChange = window.hyperclayModules['autosave']?.initSavePageOnChange ?? window.hyperclayModules['autosave']?.default;
-export const enablePersistentFormInputValues = window.hyperclayModules['persist']?.enablePersistentFormInputValues ?? window.hyperclayModules['persist']?.default;
-export const optionVisibilityRuleGenerator = window.hyperclayModules['option-visibility']?.optionVisibilityRuleGenerator ?? window.hyperclayModules['option-visibility']?.default;
 export const toggleEditMode = window.hyperclayModules['edit-mode']?.toggleEditMode ?? window.hyperclayModules['edit-mode']?.default;
 export const isEditMode = window.hyperclayModules['edit-mode']?.isEditMode ?? window.hyperclayModules['edit-mode']?.default;
 export const isOwner = window.hyperclayModules['edit-mode']?.isOwner ?? window.hyperclayModules['edit-mode']?.default;
-export const Sortable = window.hyperclayModules['sortable']?.Sortable ?? window.hyperclayModules['sortable']?.default;
 export const ask = window.hyperclayModules['dialogs']?.ask ?? window.hyperclayModules['dialogs']?.default;
 export const consent = window.hyperclayModules['dialogs']?.consent ?? window.hyperclayModules['dialogs']?.default;
 export const tell = window.hyperclayModules['dialogs']?.tell ?? window.hyperclayModules['dialogs']?.default;
 export const info = window.hyperclayModules['dialogs']?.info ?? window.hyperclayModules['dialogs']?.default;
 export const snippet = window.hyperclayModules['dialogs']?.snippet ?? window.hyperclayModules['dialogs']?.default;
 export const toast = window.hyperclayModules['toast']?.toast ?? window.hyperclayModules['toast']?.default;
+export const toastHyperclay = window.hyperclayModules['toast-hyperclay']?.toastHyperclay ?? window.hyperclayModules['toast-hyperclay']?.default;
 export const themodal = window.hyperclayModules['the-modal']?.themodal ?? window.hyperclayModules['the-modal']?.default;
 export const Mutation = window.hyperclayModules['mutation']?.Mutation ?? window.hyperclayModules['mutation']?.default;
 export const nearest = window.hyperclayModules['nearest']?.nearest ?? window.hyperclayModules['nearest']?.default;

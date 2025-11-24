@@ -7,24 +7,23 @@ const defaultIcons = {
   error: `<svg viewBox="0 0 46 44" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M31.7383 12.4045L13 31.1429M31.7451 31.1429L13.0068 12.4046M2.00977 2H43.9902V41.809H2.00977V2Z" stroke="#FF4450" stroke-width="4"/></svg>`
 };
 
-// Legacy icons for hyperclay.com
-const legacyIcons = {
+// Hyperclay icons
+export const hyperclayIcons = {
   success: `<svg viewBox="0 0 33 33" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M32 1h-5v3.5h-2.5V8h-2v3.5H20V15h-2.5v3.5h-2V22H13v3.5H9V22H7v-3.5H6V15H1v3.5h1V22h2v3.5h1.5V29H7v3.5h5V29h3.5v-3.5H18V22h2.5v-3.5h2V15H25v-3.5h2.5V8h2V4.5H32V1Z" fill="#76C824"/></svg>`,
   error: `<svg viewBox="0 0 33 33" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M33 1h-5v3.5h-3.5V8H21v3.5h-3.5V15h-2v-3.5H12V8H8.5V4.5H5V1H0v3.5h3.5V8H7v3.5h3.5V15H14v3.5h-3.5V22H7v3.5H3.5V29H0v3.5h5V29h3.5v-3.5H12V22h3.5v-3.5h2V22H21v3.5h3.5V29H28v3.5h5V29h-3.5v-3.5H26V22h-3.5v-3.5H19V15h3.5v-3.5H26V8h3.5V4.5H33V1Z" fill="#DD304F"/></svg>`
 };
 
 // Default templates
 const defaultTemplates = {
-  container: `<div class="toast-container" save-ignore></div>`,
   toast: {
     success: `
-      <div class="toast toast-modern hide success noise-texture">
+      <div class="toast hide success noise-texture">
         <div class="toast-icon">{icon}</div>
         <div class="toast-message">{message}</div>
       </div>
     `,
     error: `
-      <div class="toast toast-modern hide error noise-texture">
+      <div class="toast hide error noise-texture">
         <div class="toast-icon">{icon}</div>
         <div class="toast-message">{message}</div>
       </div>
@@ -32,9 +31,8 @@ const defaultTemplates = {
   }
 };
 
-// Legacy templates for hyperclay.com
-const legacyTemplates = {
-  container: `<div class="toast-container" save-ignore></div>`,
+// Hyperclay templates
+export const hyperclayTemplates = {
   toast: {
     success: `
       <div class="toast hide success">
@@ -51,9 +49,9 @@ const legacyTemplates = {
   }
 };
 
-// Default styles
-const defaultStyles = `
-  .toast-container {
+// Modern styles (scoped by data-toast-theme="modern")
+const modernStyles = `
+  [data-toast-theme="modern"].toast-container {
     z-index: 9999;
     position: fixed;
     top: 20px;
@@ -63,20 +61,12 @@ const defaultStyles = `
     align-items: end;
     gap: 18px;
   }
-  
-  .toast {
+
+  [data-toast-theme="modern"] .toast {
     position: relative;
     right: 0;
     cursor: pointer;
     transition: right 0.5s ease-in-out, opacity 0.5s ease-in-out;
-  }
-  
-  .toast.hide {
-    right: -400px;
-    opacity: 0;
-  }
-  
-  .toast-modern {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -88,37 +78,42 @@ const defaultStyles = `
     border-width: 1px;
     border-style: solid;
   }
-  
-  .toast-modern.success {
+
+  [data-toast-theme="modern"] .toast.hide {
+    right: -400px;
+    opacity: 0;
+  }
+
+  [data-toast-theme="modern"] .toast.success {
     border-color: #358234;
     background: radial-gradient(85.86% 68.42% at 50% 68.42%, #142419 0%, #1D3927 100%);
   }
-  
-  .toast-modern.error {
+
+  [data-toast-theme="modern"] .toast.error {
     border-color: #992930;
     background: radial-gradient(85.86% 68.42% at 50% 68.42%, #240A13 0%, #481826 100%);
   }
-  
-  .toast-icon {
+
+  [data-toast-theme="modern"] .toast-icon {
     position: relative;
     top: -1px;
   }
-  
-  .toast-icon svg {
+
+  [data-toast-theme="modern"] .toast-icon svg {
     width: 22px;
     height: 22px;
   }
-  
-  .toast-message {
+
+  [data-toast-theme="modern"] .toast-message {
     position: relative;
     top: -1px;
   }
-  
-  .noise-texture {
+
+  [data-toast-theme="modern"] .noise-texture {
     position: relative;
   }
-  
-  .noise-texture::before {
+
+  [data-toast-theme="modern"] .noise-texture::before {
     content: "";
     position: absolute;
     top: 0;
@@ -132,8 +127,9 @@ const defaultStyles = `
   }
 `;
 
-const legacyStyles = `
-  .toast-container {
+// Hyperclay styles (scoped by data-toast-theme="hyperclay")
+export const hyperclayStyles = `
+  [data-toast-theme="hyperclay"].toast-container {
     z-index: 9999;
     position: fixed;
     top: 20px;
@@ -142,12 +138,12 @@ const legacyStyles = `
     flex-direction: column;
     align-items: end;
   }
-  
-  .toast-container > * + * {
+
+  [data-toast-theme="hyperclay"].toast-container > * + * {
     margin-top: 18px;
   }
-  
-  .toast {
+
+  [data-toast-theme="hyperclay"] .toast {
     position: relative;
     right: 0;
     display: flex;
@@ -159,59 +155,59 @@ const legacyStyles = `
     border: 2px dashed rgba(255,255,255,.6);
     transition: right 0.5s ease-in-out;
   }
-  
-  .toast svg {
+
+  [data-toast-theme="hyperclay"] .toast svg {
     position: relative;
     top: -1px;
     width: 17px;
     height: 17px;
     margin-right: 13px;
   }
-  
-  .toast.hide {
+
+  [data-toast-theme="hyperclay"] .toast.hide {
     right: -300px;
   }
-  
-  .toast.success {
+
+  [data-toast-theme="hyperclay"] .toast.success {
     color: #76C824;
     border: 2px dashed #589E11;
   }
-  
-  .toast.error {
+
+  [data-toast-theme="hyperclay"] .toast.error {
     color: #DD304F;
     border: 2px dashed #CD2140;
   }
 `;
 
-// Helper function to inject styles
-function injectStyles(styles) {
-  // Remove existing toast styles if present
-  const existingStyles = document.querySelectorAll('.toast-styles');
-  existingStyles.forEach(style => style.remove());
-  
-  // Add new styles
+// Track which theme styles have been injected
+const injectedThemes = new Set();
+
+// Helper function to inject styles for a theme (additive, not replacing)
+export function injectToastStyles(styles, theme) {
+  if (injectedThemes.has(theme)) return;
+
   const styleSheet = document.createElement('style');
-  styleSheet.className = 'toast-styles';
+  styleSheet.className = `toast-styles-${theme}`;
   styleSheet.setAttribute('save-ignore', '');
   styleSheet.textContent = styles;
   document.head.appendChild(styleSheet);
+
+  injectedThemes.add(theme);
 }
 
-// Main toast function
-function toast(message, messageType = "success") {
-  messageType = messageType || "success";
-  
-  // Get configuration
-  const config = toast.config || {};
+// Core toast function (used by both toast and toastHyperclay)
+export function toastCore(message, messageType = "success", config = {}) {
   const templates = config.templates || defaultTemplates;
   const icons = config.icons || defaultIcons;
+  const theme = config.theme || 'modern';
 
-  // Get or create container
-  let toastContainer = document.querySelector(".toast-container");
+  // Get or create container for this theme
+  let toastContainer = document.querySelector(`.toast-container[data-toast-theme="${theme}"]`);
   if (!toastContainer) {
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = templates.container;
-    toastContainer = tempDiv.firstElementChild;
+    toastContainer = document.createElement('div');
+    toastContainer.className = 'toast-container';
+    toastContainer.setAttribute('data-toast-theme', theme);
+    toastContainer.setAttribute('save-ignore', '');
     document.body.append(toastContainer);
   }
 
@@ -221,7 +217,7 @@ function toast(message, messageType = "success") {
   const toastHtml = template
     .replace('{icon}', icon)
     .replace('{message}', message);
-  
+
   const tempDiv = document.createElement('div');
   tempDiv.innerHTML = toastHtml.trim();
   const toastElement = tempDiv.firstElementChild;
@@ -243,22 +239,15 @@ function toast(message, messageType = "success") {
   }, 6600);
 }
 
-// Configuration for legacy hyperclay.com style
-toast.legacyConfig = {
-  templates: legacyTemplates,
-  icons: legacyIcons,
-  styles: legacyStyles
-};
-
-// Helper to apply legacy config
-toast.useLegacy = function() {
-  toast.config = toast.legacyConfig;
-  // Replace styles with legacy styles
-  injectStyles(legacyStyles);
-};
-
-// Initialize with default styles when script loads
-injectStyles(defaultStyles);
+// Main toast function - uses modern styles
+function toast(message, messageType = "success") {
+  injectToastStyles(modernStyles, 'modern');
+  toastCore(message, messageType, {
+    templates: defaultTemplates,
+    icons: defaultIcons,
+    theme: 'modern'
+  });
+}
 
 // Auto-export to window unless suppressed by loader
 if (!window.__hyperclayNoAutoExport) {

@@ -57,13 +57,13 @@ import 'hyperclayjs/presets/standard.js';
 
 | Module | Size | Description |
 |--------|------|-------------|
-| autosave | 2.5KB | Auto-save on DOM changes, unsaved changes warning |
+| autosave | 1.2KB | Auto-save on DOM changes, unsaved changes warning |
 | edit-mode | 1.8KB | Toggle edit mode on hyperclay on/off |
-| edit-mode-helpers | 5.4KB | Admin-only resources: [edit-mode-input], [edit-mode-resource], [edit-mode-onclick] |
+| edit-mode-helpers | 5.4KB | Admin-only functionality: [edit-mode-input], [edit-mode-resource], [edit-mode-onclick] |
 | option-visibility | 4.7KB | Dynamic show/hide based on ancestor state with option:attribute="value" |
 | persist | 2.5KB | Persist input/select/textarea values to the DOM with [persist] attribute |
 | save-core | 5.9KB | Basic save function only - hyperclay.savePage() |
-| save-system | 4KB | Manual save: keyboard shortcut (CMD+S), save button, change tracking |
+| save-system | 4.9KB | Manual save: keyboard shortcut (CMD+S), save button, change tracking |
 
 ### Custom Attributes (HTML enhancements)
 
@@ -73,16 +73,16 @@ import 'hyperclayjs/presets/standard.js';
 | dom-helpers | 5.7KB | el.nearest, el.val, el.text, el.exec, el.cycle |
 | event-attrs | 3.6KB | [onclickaway], [onclone], [onpagemutation], [onrender] |
 | input-helpers | 1.2KB | [prevent-enter], [autosize] for textareas |
-| sortable | 118.1KB | Drag-drop sorting with [sortable], includes Sortable.js |
+| sortable | 2.8KB | Drag-drop sorting with [sortable], lazy-loads ~118KB Sortable.js in edit mode |
 
 ### UI Components (User interface elements)
 
 | Module | Size | Description |
 |--------|------|-------------|
-| dialogs | 11.2KB | ask(), consent(), tell(), info(), snippet() functions |
-| tailwind-play | 362.3KB | Live Tailwind CSS editing in hyperclay, should use with [edit-mode-resource] |
+| dialogs | 9KB | ask(), consent(), tell(), info(), snippet() functions |
+| tailwind-play | 0.7KB | Live Tailwind CSS editing, lazy-loads ~370KB script in edit mode only |
 | the-modal | 18.6KB | Full modal window creation system - window.theModal |
-| toast | 7.3KB | Success/error message notifications, toast(msg, msgType) |
+| toast | 7.7KB | Success/error message notifications, toast(msg, msgType) |
 
 ### Utilities (Core utilities (often auto-included))
 
@@ -127,20 +127,40 @@ import 'hyperclayjs/presets/standard.js';
 
 ## Presets
 
-### Minimal (~23KB)
+### Minimal (~24.3KB)
 Essential features for basic editing
 
 **Modules:** `save-core`, `save-system`, `edit-mode-helpers`, `toast`, `export-to-window`
 
-### Standard (~39.5KB)
+### Standard (~40.8KB)
 Standard feature set for most use cases
 
 **Modules:** `save-core`, `save-system`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `export-to-window`
 
-### Everything (~624.2KB)
+### Everything (~146.1KB)
 All available features
 
 Includes all available modules across all categories.
+
+## Lazy-Loaded Modules
+
+Some modules with large vendor dependencies are **lazy-loaded** to optimize page performance:
+
+| Module | Wrapper Size | Vendor Size | Loaded When |
+|--------|-------------|-------------|-------------|
+| `sortable` | ~3KB | ~118KB | Edit mode only |
+| `tailwind-play` | ~1KB | ~370KB | Edit mode only |
+
+**How it works:**
+- The wrapper module checks if the page is in edit mode (`isEditMode`)
+- If true, it injects a `<script save-ignore>` tag that loads the vendor script
+- If false, nothing is loaded - viewers don't download the heavy scripts
+- The `save-ignore` attribute strips the script tag when the page is saved
+
+This means:
+- **Editors** get full functionality when needed
+- **Viewers** never download ~500KB of vendor scripts
+- **Saved pages** stay clean with no leftover script tags
 
 ## Visual Configurator
 

@@ -1,24 +1,37 @@
 /**
- * Toast Hyperclay - Legacy toast for Hyperclay platform
+ * Toast Hyperclay - Toast with Hyperclay platform styling
  *
- * This is a wrapper that loads the toast module and automatically
- * calls toast.useLegacy() to enable the legacy Hyperclay platform styling.
+ * Provides toastHyperclay() function with Hyperclay platform styling.
+ * Use this alongside toast() if you need both styles in the same project.
  *
  * This is a hidden feature not exposed in the UI - used internally by
  * the Hyperclay platform for backward compatibility.
  */
 
-import toast from './toast.js';
+import {
+  toastCore,
+  injectToastStyles,
+  hyperclayStyles,
+  hyperclayTemplates,
+  hyperclayIcons
+} from './toast.js';
 
-// Automatically apply legacy styling for Hyperclay platform
-toast.useLegacy();
+// Toast function with Hyperclay styling
+function toastHyperclay(message, messageType = "success") {
+  injectToastStyles(hyperclayStyles, 'hyperclay');
+  toastCore(message, messageType, {
+    templates: hyperclayTemplates,
+    icons: hyperclayIcons,
+    theme: 'hyperclay'
+  });
+}
 
 // Auto-export to window unless suppressed by loader
 if (!window.__hyperclayNoAutoExport) {
-  window.toast = toast;
+  window.toastHyperclay = toastHyperclay;
   window.hyperclay = window.hyperclay || {};
-  window.hyperclay.toast = toast;
+  window.hyperclay.toastHyperclay = toastHyperclay;
   window.h = window.hyperclay;
 }
 
-export default toast;
+export default toastHyperclay;

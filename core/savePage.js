@@ -10,6 +10,7 @@
  */
 
 import toast from "../ui/toast.js";
+import throttle from "../utilities/throttle.js";
 import { isEditMode, isOwner } from "./isAdminOfCurrentResource.js";
 import {
   savePage as savePageCore,
@@ -95,6 +96,39 @@ export function replacePageWith(url) {
   });
 }
 
+// Throttled version of savePage for auto-save
+const throttledSave = throttle(savePage, 1200);
+
+// Baseline for autosave comparison
+let baselineContents = '';
+
+// Capture baseline after setup mutations settle
+document.addEventListener('DOMContentLoaded', () => {
+  if (isEditMode) {
+    setTimeout(() => {
+      baselineContents = getPageContents();
+    }, 1500);
+  }
+});
+
+/**
+ * Save the page with throttling, for use with auto-save
+ * Checks both baseline and last saved content to prevent saves from initial setup
+ *
+ * @param {Function} callback - Optional callback
+ */
+export function savePageThrottled(callback = () => {}) {
+  if (!isEditMode) return;
+
+  const currentContents = getPageContents();
+  // For autosave: check both that content changed from baseline AND from last save
+  // This prevents saves from initial setup mutations
+  if (currentContents !== baselineContents && currentContents !== lastSavedContents) {
+    unsavedChanges = true;
+    throttledSave(callback);
+  }
+}
+
 /**
  * Initialize keyboard shortcut for save (CMD/CTRL+S)
  */
@@ -140,10 +174,9 @@ export function init() {
 if (!window.__hyperclayNoAutoExport) {
   window.hyperclay = window.hyperclay || {};
   window.hyperclay.savePage = savePage;
+  window.hyperclay.savePageThrottled = savePageThrottled;
   window.hyperclay.beforeSave = beforeSave;
   window.hyperclay.replacePageWith = replacePageWith;
-  window.hyperclay.initHyperclaySaveButton = initHyperclaySaveButton;
-  window.hyperclay.initSaveKeyboardShortcut = initSaveKeyboardShortcut;
   window.h = window.hyperclay;
 }
 

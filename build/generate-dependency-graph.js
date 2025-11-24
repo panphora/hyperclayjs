@@ -52,19 +52,15 @@ const MODULE_DEFINITIONS = {
     exports: {
       beforeSave: ['hyperclay'],
       savePage: ['hyperclay'],
-      replacePageWith: ['hyperclay'],
-      initHyperclaySaveButton: ['hyperclay'],
-      initSaveKeyboardShortcut: ['hyperclay']
+      savePageThrottled: ['hyperclay'],
+      replacePageWith: ['hyperclay']
     }
   },
   'core/autosave.js': {
     name: 'autosave',
     moduleId: 'autosave',
-    description: 'Auto-save on DOM changes, unsaved changes warning',
-    exports: {
-      savePageThrottled: ['hyperclay'],
-      initSavePageOnChange: ['hyperclay']
-    }
+    description: 'Auto-save on DOM changes, unsaved changes warning'
+    // No exports - auto-inits on load, savePageThrottled is in save-system
   },
   'core/adminSystem.js': {
     name: 'edit-mode-helpers',
@@ -76,18 +72,14 @@ const MODULE_DEFINITIONS = {
   'core/enablePersistentFormInputValues.js': {
     name: 'persist',
     moduleId: 'persist',
-    description: 'Persist input/select/textarea values to the DOM with [persist] attribute',
-    exports: {
-      enablePersistentFormInputValues: ['hyperclay']
-    }
+    description: 'Persist input/select/textarea values to the DOM with [persist] attribute'
+    // No exports - auto-inits on load
   },
   'core/optionVisibilityRuleGenerator.js': {
     name: 'option-visibility',
     moduleId: 'option-visibility',
-    description: 'Dynamic show/hide based on ancestor state with option:attribute="value"',
-    exports: {
-      optionVisibilityRuleGenerator: ['window', 'hyperclay']
-    }
+    description: 'Dynamic show/hide based on ancestor state with option:attribute="value"'
+    // No exports - auto-inits on load
   },
   'core/editmodeSystem.js': {
     name: 'edit-mode',
@@ -116,11 +108,8 @@ const MODULE_DEFINITIONS = {
   'custom-attributes/sortable.js': {
     name: 'sortable',
     moduleId: 'sortable',
-    description: 'Drag-drop sorting with [sortable], includes Sortable.js',
-    relatedFiles: ['vendor/Sortable.js'],
-    exports: {
-      Sortable: ['window', 'hyperclay']
-    }
+    description: 'Drag-drop sorting with [sortable], lazy-loads ~118KB Sortable.js in edit mode'
+    // No exports - Sortable.js is loaded via script tag in edit mode only
   },
   'custom-attributes/domHelpers.js': {
     name: 'dom-helpers',
@@ -159,11 +148,10 @@ const MODULE_DEFINITIONS = {
   'ui/toast-hyperclay.js': {
     name: 'toast-hyperclay',
     moduleId: 'toast-hyperclay',
-    description: 'Toast with legacy Hyperclay platform styling (hidden feature)',
-    relatedFiles: ['ui/toast.js'],
+    description: 'toastHyperclay() with legacy Hyperclay platform styling (hidden feature)',
     hidden: true,
     exports: {
-      toast: ['window', 'hyperclay']
+      toastHyperclay: ['window', 'hyperclay']
     }
   },
   'ui/theModal.js': {
@@ -177,9 +165,9 @@ const MODULE_DEFINITIONS = {
   'vendor/tailwind-play.js': {
     name: 'tailwind-play',
     moduleId: 'tailwind-play',
-    description: 'Live Tailwind CSS editing in hyperclay, should use with [edit-mode-resource]',
+    description: 'Live Tailwind CSS editing, lazy-loads ~370KB script in edit mode only',
     category: 'ui' // Override - this is a UI feature even though file is in vendor/
-    // No exports - side effects only
+    // No exports - loads vendor script via script tag in edit mode only
   },
   'utilities/mutation.js': {
     name: 'mutation',
@@ -489,8 +477,8 @@ async function generateDependencyGraph() {
     }
   }
 
-  // Populate "everything" preset with all module IDs (except toast-hyperclay which overrides default toast styling)
-  PRESETS.everything.modules = Object.keys(modules).filter(id => id !== 'toast-hyperclay');
+  // Populate "everything" preset with all module IDs
+  PRESETS.everything.modules = Object.keys(modules);
 
   // Generate module paths for the simplified loader
   const modulePaths = generateModulePaths(modules);
