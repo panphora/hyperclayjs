@@ -15,21 +15,31 @@ A modular JavaScript library for building interactive HTML applications with Hyp
 
 ### Using CDN (Self-detecting Loader)
 
-The self-detecting loader reads URL parameters and automatically loads the requested features with all dependencies:
+The self-detecting loader reads URL parameters and automatically loads the requested features with all dependencies.
+
+Use `await import()` to ensure modules finish loading before your code runs:
 
 ```html
-<!-- Minimal setup -->
-<script src="https://hyperclay.com/js/hyperclay.js?preset=minimal" type="module"></script>
+<!-- Standard setup with window.hyperclay (presets include export-to-window) -->
+<script type="module">
+  await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/hyperclay.js?preset=standard');
+  const { toast, savePage } = window.hyperclay;
+</script>
 
-<!-- Standard setup -->
-<script src="https://hyperclay.com/js/hyperclay.js?preset=standard" type="module"></script>
+<!-- Custom features with window.hyperclay (include export-to-window explicitly) -->
+<script type="module">
+  await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/hyperclay.js?features=save-core,toast,export-to-window');
+  const { toast, savePage } = window.hyperclay;
+</script>
 
-<!-- Custom features -->
-<script src="https://hyperclay.com/js/hyperclay.js?features=save,admin,toast,ajax" type="module"></script>
-
-<!-- Everything -->
-<script src="https://hyperclay.com/js/hyperclay.js?preset=everything" type="module"></script>
+<!-- ES modules only (omit export-to-window) -->
+<script type="module">
+  await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/hyperclay.js?features=save-core,toast');
+  const { default: toast } = window.hyperclayModules['toast'];
+</script>
 ```
+
+**Note:** Presets (`?preset=...`) include `export-to-window` by default. Custom features (`?features=...`) require explicitly adding `export-to-window` if you want `window.hyperclay` access.
 
 ### Using NPM
 
@@ -134,7 +144,7 @@ The configurator dynamically loads this file to always show accurate information
 - Safari 15.4+
 - Edge 89+
 
-The loader uses top-level await, which means any `<script type="module">` placed after it will automatically wait for HyperclayJS to finish loading. No ready events or promises needed.
+The loader uses ES modules with top-level await. Use `await import()` to ensure modules finish loading before your code runs.
 
 ## API Examples
 

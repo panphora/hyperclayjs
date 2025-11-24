@@ -11,8 +11,10 @@ function debounce(callback, delay) {
   };
 }
 
-// Self-export to hyperclay only
-window.hyperclay = window.hyperclay || {};
-window.hyperclay.debounce = debounce;
+// Export to window (called by export-to-window module)
+export function exportToWindow() {
+  window.hyperclay = window.hyperclay || {};
+  window.hyperclay.debounce = debounce;
+}
 
 export default debounce;

@@ -34,9 +34,11 @@ const cookie = {
   remove
 };
 
-// Self-export to window and hyperclay
-window.cookie = cookie;
-window.hyperclay = window.hyperclay || {};
-window.hyperclay.cookie = cookie;
+// Export to window (called by export-to-window module)
+export function exportToWindow() {
+  window.cookie = cookie;
+  window.hyperclay = window.hyperclay || {};
+  window.hyperclay.cookie = cookie;
+}
 
 export default cookie;

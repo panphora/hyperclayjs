@@ -13,9 +13,11 @@ import toast from './toast.js';
 // Automatically apply legacy styling for Hyperclay platform
 toast.useLegacy();
 
-// Self-export (overwrites modern toast with legacy version)
-window.toast = toast;
-window.hyperclay = window.hyperclay || {};
-window.hyperclay.toast = toast;
+// Export to window (called by export-to-window module)
+export function exportToWindow() {
+  window.toast = toast;
+  window.hyperclay = window.hyperclay || {};
+  window.hyperclay.toast = toast;
+}
 
 export default toast;

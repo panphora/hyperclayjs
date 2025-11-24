@@ -14,14 +14,12 @@ import { isEditMode, isOwner } from "./isAdminOfCurrentResource.js";
 import {
   savePage as savePageCore,
   getPageContents,
-  replacePageWith as replacePageWithCore
+  replacePageWith as replacePageWithCore,
+  beforeSave
 } from "./savePageCore.js";
 
-// Re-export beforeSave from core for backward compatibility
-export { beforeSave } from "./savePageCore.js";
-
-// Re-export getPageContents for autosave module
-export { getPageContents } from "./savePageCore.js";
+// Re-export from core for backward compatibility
+export { beforeSave, getPageContents };
 
 let unsavedChanges = false;
 let lastSavedContents = '';
@@ -138,16 +136,17 @@ export function init() {
   initHyperclaySaveButton();
 }
 
-// Self-export to hyperclay only
-window.hyperclay = window.hyperclay || {};
-window.hyperclay.savePage = savePage;
-window.hyperclay.beforeSave = beforeSave;
-window.hyperclay.replacePageWith = replacePageWith;
-window.hyperclay.initHyperclaySaveButton = initHyperclaySaveButton;
-window.hyperclay.initSaveKeyboardShortcut = initSaveKeyboardShortcut;
+// Export to window (called by export-to-window module)
+export function exportToWindow() {
+  window.hyperclay = window.hyperclay || {};
+  window.hyperclay.savePage = savePage;
+  window.hyperclay.beforeSave = beforeSave;
+  window.hyperclay.replacePageWith = replacePageWith;
+  window.hyperclay.initHyperclaySaveButton = initHyperclaySaveButton;
+  window.hyperclay.initSaveKeyboardShortcut = initSaveKeyboardShortcut;
+}
 
 // Auto-init when module is imported
 init();
 
-export { savePage, replacePageWith, initSaveKeyboardShortcut, initHyperclaySaveButton, init };
 export default savePage;

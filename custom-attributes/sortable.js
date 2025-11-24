@@ -72,10 +72,12 @@ function init () {
   // ❌ onElementAdded(newElem => makeSortable(newElem.closest('[sortable]')))
 }
 
-// Self-export to window and hyperclay
-window.Sortable = Sortable;
-window.hyperclay = window.hyperclay || {};
-window.hyperclay.Sortable = Sortable;
+// Export to window (called by export-to-window module)
+export function exportToWindow() {
+  window.Sortable = Sortable;
+  window.hyperclay = window.hyperclay || {};
+  window.hyperclay.Sortable = Sortable;
+}
 
 // Auto-init when module is imported
 init();

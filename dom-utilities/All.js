@@ -403,9 +403,11 @@ const All = new Proxy(function (selectorOrElements, contextSelector) {
 // Install default plugins
 All.use(defaultPlugins);
 
-// Self-export to window and hyperclay
-window.All = All;
-window.hyperclay = window.hyperclay || {};
-window.hyperclay.All = All;
+// Export to window (called by export-to-window module)
+export function exportToWindow() {
+  window.All = All;
+  window.hyperclay = window.hyperclay || {};
+  window.hyperclay.All = All;
+}
 
 export default All;

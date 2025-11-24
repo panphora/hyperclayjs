@@ -24,8 +24,10 @@ function copyToClipboard(text) {
   document.body.removeChild(textarea);
 }
 
-// Self-export to hyperclay only
-window.hyperclay = window.hyperclay || {};
-window.hyperclay.copyToClipboard = copyToClipboard;
+// Export to window (called by export-to-window module)
+export function exportToWindow() {
+  window.hyperclay = window.hyperclay || {};
+  window.hyperclay.copyToClipboard = copyToClipboard;
+}
 
 export default copyToClipboard;

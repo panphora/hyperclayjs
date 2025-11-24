@@ -331,6 +331,12 @@ const MODULE_DEFINITIONS = {
       createFile: ['hyperclay'],
       uploadFileBasic: ['hyperclay']
     }
+  },
+  'core/exportToWindow.js': {
+    name: 'export-to-window',
+    moduleId: 'export-to-window',
+    description: 'Export all modules to window.hyperclay and window globals',
+    // No exports - this module calls exportToWindow() on other modules
   }
 };
 
@@ -383,17 +389,17 @@ const PRESETS = {
   'minimal': {
     name: 'Minimal',
     description: 'Essential features for basic editing',
-    modules: ['save-core', 'save-system', 'admin', 'toast']
+    modules: ['save-core', 'save-system', 'admin', 'toast', 'export-to-window']
   },
   'standard': {
     name: 'Standard',
     description: 'Standard feature set for most use cases',
-    modules: ['save-core', 'save-system', 'admin', 'persist', 'option-visibility', 'event-attrs', 'dom-helpers', 'toast']
+    modules: ['save-core', 'save-system', 'admin', 'persist', 'option-visibility', 'event-attrs', 'dom-helpers', 'toast', 'export-to-window']
   },
   'everything': {
     name: 'Everything',
     description: 'All available features',
-    modules: [] // Will be populated with all module IDs
+    modules: [] // Will be populated with all module IDs (including export-to-window)
   }
 };
 
@@ -485,8 +491,8 @@ async function generateDependencyGraph() {
     }
   }
 
-  // Populate "everything" preset with all module IDs
-  PRESETS.everything.modules = Object.keys(modules);
+  // Populate "everything" preset with all module IDs (except toast-hyperclay which overrides default toast styling)
+  PRESETS.everything.modules = Object.keys(modules).filter(id => id !== 'toast-hyperclay');
 
   // Generate module paths for the simplified loader
   const modulePaths = generateModulePaths(modules);

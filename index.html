@@ -288,7 +288,7 @@
             position: relative;
         }
 
-        .url-input {
+        .url-textarea {
             width: 100%;
             padding: 1rem;
             border: 2px solid var(--primary-blue);
@@ -297,14 +297,20 @@
             font-family: inherit;
             font-size: 0.875rem;
             box-shadow: 4px 4px 0 var(--shadow-blue);
+            resize: none;
+            overflow: hidden;
+            line-height: 1.5;
+        }
+
+        .url-note {
+            font-size: 0.75rem;
+            color: var(--gray);
+            margin: 0.75rem 0;
+            line-height: 1.4;
         }
 
         .copy-button {
-            position: absolute;
-            right: 0.5rem;
-            top: 50%;
-            transform: translateY(-50%);
-            padding: 0.5rem 1rem;
+            padding: 0.75rem 1.5rem;
             background: var(--primary-blue);
             color: white;
             border: none;
@@ -312,6 +318,7 @@
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
+            width: 100%;
         }
 
         .copy-button:hover {
@@ -588,9 +595,14 @@
                 <div class="url-output">
                     <div class="url-label">Script tag:</div>
                     <div class="url-container">
-                        <input type="text" class="url-input" id="generated-url" readonly>
-                        <button class="copy-button" id="copy-button">COPY</button>
+                        <textarea class="url-textarea" id="generated-url" readonly></textarea>
                     </div>
+                    <div class="url-note">
+                        Using <code>await import()</code> ensures all modules finish loading before your code runs.
+                        With <code>export-to-window</code> included (default), exports are attached to <code>window.hyperclay</code>.
+                        Without it, use <code>window.hyperclayModules</code> for ES module exports only.
+                    </div>
+                    <button class="copy-button" id="copy-button">COPY</button>
                 </div>
             </div>
         </div>
@@ -843,7 +855,28 @@
 
             const fullUrl = baseURL + urlParams;
 
-            urlInput.value = `<script src="${fullUrl}" type="module"><\/script>`;
+            // Check if export-to-window is included
+            const hasExportToWindow = selectedFeatures.has('export-to-window');
+
+            let code;
+            if (hasExportToWindow) {
+                code = `<script type="module">
+  await import('${fullUrl}');
+  const { toast, savePage } = window.hyperclay;
+<\/script>`;
+            } else {
+                code = `<script type="module">
+  await import('${fullUrl}');
+  // No window.hyperclay - use window.hyperclayModules for ES module exports
+  const { default: toast } = window.hyperclayModules['toast'];
+<\/script>`;
+            }
+
+            urlInput.value = code;
+
+            // Auto-size textarea to fit content
+            urlInput.style.height = 'auto';
+            urlInput.style.height = urlInput.scrollHeight + 'px';
         }
 
             // Handle checkbox changes

@@ -83,13 +83,14 @@ function init() {
   initSavePageOnChange();
 }
 
-// Self-export to hyperclay
-window.hyperclay = window.hyperclay || {};
-window.hyperclay.savePageThrottled = savePageThrottled;
-window.hyperclay.initSavePageOnChange = initSavePageOnChange;
+// Export to window (called by export-to-window module)
+export function exportToWindow() {
+  window.hyperclay = window.hyperclay || {};
+  window.hyperclay.savePageThrottled = savePageThrottled;
+  window.hyperclay.initSavePageOnChange = initSavePageOnChange;
+}
 
 // Auto-init when module is imported
 init();
 
-export { init, savePageThrottled, initSavePageOnChange };
 export default init;

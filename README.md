@@ -15,21 +15,31 @@ A modular JavaScript library for building interactive HTML applications with Hyp
 
 ### Using CDN (Self-detecting Loader)
 
-The self-detecting loader reads URL parameters and automatically loads the requested features with all dependencies:
+The self-detecting loader reads URL parameters and automatically loads the requested features with all dependencies.
+
+Use `await import()` to ensure modules finish loading before your code runs:
 
 ```html
-<!-- Minimal setup -->
-<script src="https://hyperclay.com/js/hyperclay.js?preset=minimal" type="module"></script>
+<!-- Standard setup with window.hyperclay (presets include export-to-window) -->
+<script type="module">
+  await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/hyperclay.js?preset=standard');
+  const { toast, savePage } = window.hyperclay;
+</script>
 
-<!-- Standard setup -->
-<script src="https://hyperclay.com/js/hyperclay.js?preset=standard" type="module"></script>
+<!-- Custom features with window.hyperclay (include export-to-window explicitly) -->
+<script type="module">
+  await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/hyperclay.js?features=save-core,toast,export-to-window');
+  const { toast, savePage } = window.hyperclay;
+</script>
 
-<!-- Custom features -->
-<script src="https://hyperclay.com/js/hyperclay.js?features=save,admin,toast,ajax" type="module"></script>
-
-<!-- Everything -->
-<script src="https://hyperclay.com/js/hyperclay.js?preset=everything" type="module"></script>
+<!-- ES modules only (omit export-to-window) -->
+<script type="module">
+  await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/hyperclay.js?features=save-core,toast');
+  const { default: toast } = window.hyperclayModules['toast'];
+</script>
 ```
+
+**Note:** Presets (`?preset=...`) include `export-to-window` by default. Custom features (`?features=...`) require explicitly adding `export-to-window` if you want `window.hyperclay` access.
 
 ### Using NPM
 
@@ -55,17 +65,18 @@ import 'hyperclayjs/presets/standard.js';
 | admin | 5.4KB | Hides admin inputs, scripts, contenteditable, onclick for regular viewers |
 | autosave | 2.4KB | Auto-save on DOM changes, unsaved changes warning |
 | edit-mode | 1.7KB | Toggle edit mode on/off |
+| export-to-window | 0.8KB | Export all modules to window.hyperclay and window globals |
 | option-visibility | 4.7KB | Dynamic show/hide based on ancestor state with option:attribute="value" |
-| persist | 2.4KB | Persist form values to the DOM with [persist] attribute |
-| save-core | 5.8KB | Basic save function only - hyperclay.savePage() |
-| save-system | 4.1KB | Manual save: keyboard shortcut (CMD+S), save button, change tracking |
+| persist | 2.5KB | Persist form values to the DOM with [persist] attribute |
+| save-core | 5.9KB | Basic save function only - hyperclay.savePage() |
+| save-system | 4KB | Manual save: keyboard shortcut (CMD+S), save button, change tracking |
 
 ### Custom Attributes (HTML enhancements)
 
 | Module | Size | Description |
 |--------|------|-------------|
 | ajax-elements | 2.8KB | [ajax-form], [ajax-button] for async form submissions |
-| dom-helpers | 5.6KB | el.nearest, el.val, el.text, el.exec, el.cycle |
+| dom-helpers | 5.7KB | el.nearest, el.val, el.text, el.exec, el.cycle |
 | event-attrs | 3.6KB | [onclickaway], [onclone], [onpagemutation], [onrender] |
 | input-helpers | 1.2KB | [prevent-enter], [autosize] for textareas |
 | sortable | 118.1KB | Drag-drop sorting with [sortable] - includes Sortable.js vendor library |
@@ -74,7 +85,7 @@ import 'hyperclayjs/presets/standard.js';
 
 | Module | Size | Description |
 |--------|------|-------------|
-| dialogs | 11.2KB | ask(), consent(), tell(), info(), snippet() functions |
+| dialogs | 11.4KB | ask(), consent(), tell(), info(), snippet() functions |
 | modal | 18.5KB | Full modal window creation system - window.theModal |
 | tailwind-play | 362.3KB | Live Tailwind CSS editing - no need for a build system |
 | toast | 7.3KB | Success/error message notifications - toast(msg, msgType) |
@@ -83,10 +94,10 @@ import 'hyperclayjs/presets/standard.js';
 
 | Module | Size | Description |
 |--------|------|-------------|
-| cookie | 1.3KB | Cookie management (often auto-included) |
+| cookie | 1.4KB | Cookie management (often auto-included) |
 | debounce | 0.4KB | Function debouncing |
-| mutation | 12.9KB | DOM mutation observation (often auto-included) |
-| nearest | 3.3KB | Find nearest elements (often auto-included) |
+| mutation | 13KB | DOM mutation observation (often auto-included) |
+| nearest | 3.4KB | Find nearest elements (often auto-included) |
 | throttle | 0.7KB | Function throttling |
 
 ### DOM Utilities (DOM manipulation helpers)
@@ -94,45 +105,45 @@ import 'hyperclayjs/presets/standard.js';
 | Module | Size | Description |
 |--------|------|-------------|
 | all-js | 13.9KB | Full DOM manipulation library |
-| dom-ready | 0.3KB | DOM ready callback |
-| form-data | 1.9KB | Extract form data as an object |
-| style-injection | 1KB | Dynamic stylesheet injection |
+| dom-ready | 0.4KB | DOM ready callback |
+| form-data | 2KB | Extract form data as an object |
+| style-injection | 1.1KB | Dynamic stylesheet injection |
 
 ### String Utilities (String manipulation helpers)
 
 | Module | Size | Description |
 |--------|------|-------------|
-| clipboard | 0.8KB | Clipboard utility |
-| emmet | 1.5KB | Emmet-like HTML generation |
-| query-params | 0.2KB | Parse URL search params |
-| slugify | 0.6KB | URL-friendly slug generator |
+| clipboard | 0.9KB | Clipboard utility |
+| emmet | 1.6KB | Emmet-like HTML generation |
+| query-params | 0.3KB | Parse URL search params |
+| slugify | 0.7KB | URL-friendly slug generator |
 
 ### Communication & Files (File handling and messaging)
 
 | Module | Size | Description |
 |--------|------|-------------|
 | file-upload | 10.6KB | File upload with progress |
-| send-message | 1.3KB | Message sending utility |
+| send-message | 1.4KB | Message sending utility |
 
 ### Vendor Libraries (Third-party libraries)
 
 | Module | Size | Description |
 |--------|------|-------------|
-| idiomorph | 8.1KB | Efficient DOM morphing library |
+| idiomorph | 8.2KB | Efficient DOM morphing library |
 
 ## Presets
 
-### Minimal (~22.6KB)
+### Minimal (~23.4KB)
 Essential features for basic editing
 
-**Modules:** `save-core`, `save-system`, `admin`, `toast`
+**Modules:** `save-core`, `save-system`, `admin`, `toast`, `export-to-window`
 
-### Standard (~38.9KB)
+### Standard (~39.9KB)
 Standard feature set for most use cases
 
-**Modules:** `save-core`, `save-system`, `admin`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`
+**Modules:** `save-core`, `save-system`, `admin`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `export-to-window`
 
-### Everything (~629.5KB)
+### Everything (~624.1KB)
 All available features
 
 Includes all available modules across all categories.
@@ -217,7 +228,7 @@ The configurator dynamically loads this file to always show accurate information
 - Safari 15.4+
 - Edge 89+
 
-The loader uses top-level await, which means any `<script type="module">` placed after it will automatically wait for HyperclayJS to finish loading. No ready events or promises needed.
+The loader uses ES modules with top-level await. Use `await import()` to ensure modules finish loading before your code runs.
 
 ## API Examples
 

@@ -47,7 +47,14 @@
       "core/adminOnClick.js",
       "core/adminResources.js"
     ],
-    "core/autosave.js": [],
+    "core/autosave.js": [
+      "core/isAdminOfCurrentResource.js",
+      "core/savePage.js",
+      "core/savePageCore.js",
+      "ui/toast.js",
+      "utilities/mutation.js",
+      "utilities/throttle.js"
+    ],
     "core/editmode.js": [
       "core/isAdminOfCurrentResource.js"
     ],
@@ -59,6 +66,7 @@
     "core/enablePersistentFormInputValues.js": [
       "core/savePage.js"
     ],
+    "core/exportToWindow.js": [],
     "core/isAdminOfCurrentResource.js": [
       "string-utilities/query.js",
       "utilities/cookie.js"
@@ -66,7 +74,11 @@
     "core/optionVisibilityRuleGenerator.js": [
       "utilities/mutation.js"
     ],
-    "core/savePage.js": [],
+    "core/savePage.js": [
+      "core/isAdminOfCurrentResource.js",
+      "core/savePageCore.js",
+      "ui/toast.js"
+    ],
     "core/savePageCore.js": [
       "core/isAdminOfCurrentResource.js",
       "utilities/cookie.js"
@@ -155,7 +167,7 @@
     "save-core": {
       "name": "save-core",
       "category": "core",
-      "size": 5.8,
+      "size": 5.9,
       "files": [
         "core/savePageCore.js"
       ],
@@ -169,7 +181,7 @@
     "save-system": {
       "name": "save-system",
       "category": "core",
-      "size": 4.1,
+      "size": 4,
       "files": [
         "core/savePage.js"
       ],
@@ -226,7 +238,7 @@
     "persist": {
       "name": "persist",
       "category": "core",
-      "size": 2.4,
+      "size": 2.5,
       "files": [
         "core/enablePersistentFormInputValues.js"
       ],
@@ -317,7 +329,7 @@
     "dom-helpers": {
       "name": "dom-helpers",
       "category": "custom-attributes",
-      "size": 5.6,
+      "size": 5.7,
       "files": [
         "custom-attributes/domHelpers.js"
       ],
@@ -344,7 +356,7 @@
     "dialogs": {
       "name": "dialogs",
       "category": "ui",
-      "size": 11.2,
+      "size": 11.4,
       "files": [
         "ui/prompts.js",
         "ui/info.js"
@@ -393,7 +405,7 @@
     "toast-hyperclay": {
       "name": "toast-hyperclay",
       "category": "ui",
-      "size": 7.8999999999999995,
+      "size": 8,
       "files": [
         "ui/toast-hyperclay.js",
         "ui/toast.js"
@@ -434,7 +446,7 @@
     "mutation": {
       "name": "mutation",
       "category": "utilities",
-      "size": 12.9,
+      "size": 13,
       "files": [
         "utilities/mutation.js"
       ],
@@ -449,7 +461,7 @@
     "nearest": {
       "name": "nearest",
       "category": "utilities",
-      "size": 3.3,
+      "size": 3.4,
       "files": [
         "utilities/nearest.js"
       ],
@@ -464,7 +476,7 @@
     "cookie": {
       "name": "cookie",
       "category": "utilities",
-      "size": 1.3,
+      "size": 1.4,
       "files": [
         "utilities/cookie.js"
       ],
@@ -507,7 +519,7 @@
     "dom-ready": {
       "name": "dom-ready",
       "category": "dom-utilities",
-      "size": 0.3,
+      "size": 0.4,
       "files": [
         "dom-utilities/onDomReady.js"
       ],
@@ -550,7 +562,7 @@
     "style-injection": {
       "name": "style-injection",
       "category": "dom-utilities",
-      "size": 1,
+      "size": 1.1,
       "files": [
         "dom-utilities/insertStyleTag.js"
       ],
@@ -565,7 +577,7 @@
     "form-data": {
       "name": "form-data",
       "category": "dom-utilities",
-      "size": 1.9,
+      "size": 2,
       "files": [
         "dom-utilities/getDataFromForm.js"
       ],
@@ -580,7 +592,7 @@
     "idiomorph": {
       "name": "idiomorph",
       "category": "vendor",
-      "size": 8.1,
+      "size": 8.2,
       "files": [
         "vendor/idiomorph.min.js"
       ],
@@ -594,7 +606,7 @@
     "slugify": {
       "name": "slugify",
       "category": "string-utilities",
-      "size": 0.6,
+      "size": 0.7,
       "files": [
         "string-utilities/slugify.js"
       ],
@@ -609,7 +621,7 @@
     "emmet": {
       "name": "emmet",
       "category": "string-utilities",
-      "size": 1.5,
+      "size": 1.6,
       "files": [
         "string-utilities/emmet-html.js"
       ],
@@ -623,7 +635,7 @@
     "clipboard": {
       "name": "clipboard",
       "category": "string-utilities",
-      "size": 0.8,
+      "size": 0.9,
       "files": [
         "string-utilities/copy-to-clipboard.js"
       ],
@@ -637,7 +649,7 @@
     "query-params": {
       "name": "query-params",
       "category": "string-utilities",
-      "size": 0.2,
+      "size": 0.3,
       "files": [
         "string-utilities/query.js"
       ],
@@ -652,7 +664,7 @@
     "behavior-collector": {
       "name": "behavior-collector",
       "category": "communication",
-      "size": 5.4,
+      "size": 5.5,
       "files": [
         "communication/behaviorCollector.js"
       ],
@@ -666,7 +678,7 @@
     "send-message": {
       "name": "send-message",
       "category": "communication",
-      "size": 1.3,
+      "size": 1.4,
       "files": [
         "communication/sendMessage.js"
       ],
@@ -696,6 +708,16 @@
           "hyperclay"
         ]
       }
+    },
+    "export-to-window": {
+      "name": "export-to-window",
+      "category": "core",
+      "size": 0.8,
+      "files": [
+        "core/exportToWindow.js"
+      ],
+      "description": "Export all modules to window.hyperclay and window globals",
+      "exports": {}
     }
   },
   "modulePaths": {
@@ -733,7 +755,8 @@
     "query-params": "./string-utilities/query.js",
     "behavior-collector": "./communication/behaviorCollector.js",
     "send-message": "./communication/sendMessage.js",
-    "file-upload": "./communication/uploadFile.js"
+    "file-upload": "./communication/uploadFile.js",
+    "export-to-window": "./core/exportToWindow.js"
   },
   "categories": {
     "core": {
@@ -746,7 +769,8 @@
         "admin",
         "persist",
         "option-visibility",
-        "edit-mode"
+        "edit-mode",
+        "export-to-window"
       ]
     },
     "custom-attributes": {
@@ -825,7 +849,8 @@
         "save-core",
         "save-system",
         "admin",
-        "toast"
+        "toast",
+        "export-to-window"
       ]
     },
     "standard": {
@@ -839,7 +864,8 @@
         "option-visibility",
         "event-attrs",
         "dom-helpers",
-        "toast"
+        "toast",
+        "export-to-window"
       ]
     },
     "everything": {
@@ -860,7 +886,6 @@
         "input-helpers",
         "dialogs",
         "toast",
-        "toast-hyperclay",
         "modal",
         "tailwind-play",
         "mutation",
@@ -880,7 +905,8 @@
         "query-params",
         "behavior-collector",
         "send-message",
-        "file-upload"
+        "file-upload",
+        "export-to-window"
       ]
     }
   }

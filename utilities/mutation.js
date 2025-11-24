@@ -400,9 +400,11 @@ const Mutation = {
   }
 };
 
-// Self-export to window and hyperclay
-window.Mutation = Mutation;
-window.hyperclay = window.hyperclay || {};
-window.hyperclay.Mutation = Mutation;
+// Export to window (called by export-to-window module)
+export function exportToWindow() {
+  window.Mutation = Mutation;
+  window.hyperclay = window.hyperclay || {};
+  window.hyperclay.Mutation = Mutation;
+}
 
 export default Mutation;

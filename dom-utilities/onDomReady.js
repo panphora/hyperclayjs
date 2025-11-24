@@ -6,8 +6,10 @@ function onDomReady (callback) {
   }
 }
 
-// Self-export to hyperclay only
-window.hyperclay = window.hyperclay || {};
-window.hyperclay.onDomReady = onDomReady;
+// Export to window (called by export-to-window module)
+export function exportToWindow() {
+  window.hyperclay = window.hyperclay || {};
+  window.hyperclay.onDomReady = onDomReady;
+}
 
 export default onDomReady;

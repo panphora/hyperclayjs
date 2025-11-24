@@ -166,18 +166,20 @@ export function init() {
   });
 }
 
-// Self-export to window and hyperclay
-window.ask = ask;
-window.consent = consent;
-window.tell = tell;
-window.info = info;
-window.hyperclay = window.hyperclay || {};
-window.hyperclay.ask = ask;
-window.hyperclay.consent = consent;
-window.hyperclay.tell = tell;
-window.hyperclay.info = info;
-window.hyperclay.snippet = snippet;
-window.hyperclay.showApiKey = showApiKey;
+// Export to window (called by export-to-window module)
+export function exportToWindow() {
+  window.ask = ask;
+  window.consent = consent;
+  window.tell = tell;
+  window.info = info;
+  window.hyperclay = window.hyperclay || {};
+  window.hyperclay.ask = ask;
+  window.hyperclay.consent = consent;
+  window.hyperclay.tell = tell;
+  window.hyperclay.info = info;
+  window.hyperclay.snippet = snippet;
+  window.hyperclay.showApiKey = showApiKey;
+}
 
 // Re-export info
 export { info };

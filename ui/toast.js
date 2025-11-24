@@ -260,11 +260,11 @@ toast.useLegacy = function() {
 // Initialize with default styles when script loads
 injectStyles(defaultStyles);
 
-// Self-export to window and hyperclay
-window.toast = toast;
-window.hyperclay = window.hyperclay || {};
-window.hyperclay.toast = toast;
+// Export to window (called by export-to-window module)
+export function exportToWindow() {
+  window.toast = toast;
+  window.hyperclay = window.hyperclay || {};
+  window.hyperclay.toast = toast;
+}
 
-// toast("Site copied");
-// toast("Site name taken", "error");
 export default toast;

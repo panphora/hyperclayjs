@@ -23,11 +23,12 @@ function generateLoadJsdelivr() {
   const htmlPath = path.join(__dirname, 'load-jsdelivr.html');
   let html = fs.readFileSync(htmlPath, 'utf-8');
 
-  // Replace version in jsdelivr URLs
+  // Replace version in jsdelivr URLs (handles both versioned URLs and __VERSION__ placeholder)
   html = html.replace(
     /https:\/\/cdn\.jsdelivr\.net\/npm\/hyperclayjs@[\d.]+/g,
     `https://cdn.jsdelivr.net/npm/hyperclayjs@${version}`
   );
+  html = html.replace(/__VERSION__/g, version);
 
   // Write it back
   fs.writeFileSync(htmlPath, html, 'utf-8');

@@ -260,13 +260,12 @@
     window.hyperclay = window.hyperclay || {};
     window.hyperclay.testMode = true;
   </script>
-  <script src="hyperclay.js?preset=everything" type="module"></script>
-
   <script type="module">
-    // Top-level await in hyperclay.js means this script waits automatically
+    // Use await import to ensure modules finish loading before running tests
+    await import('./hyperclay.js?preset=everything');
+
     const features = Object.keys(window.hyperclayModules || {});
     console.log('HyperclayJS loaded:', features);
-    runTests();
 
     window.markPass = function(id, message = '') {
       const el = document.getElementById(id);
@@ -284,12 +283,15 @@
       }
     };
 
+    // Run tests after markPass is defined
+    runTests();
+
     function runTests() {
       const modules = window.hyperclayModules;
 
       // Core Features
       if (window.hyperclay?.savePage) markPass('test-save-core', 'savePage() function exists');
-      if (modules?.save) markPass('test-save', 'Save system initialized (Ctrl+S, auto-save, save button handler)');
+      if (modules?.['save-system']) markPass('test-save', 'Save system initialized (Ctrl+S, save button handler)');
       markPass('test-admin', 'Admin elements visible');
 
       // Persist test - programmatic test

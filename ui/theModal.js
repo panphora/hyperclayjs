@@ -669,9 +669,11 @@ const themodal = (() => {
   return themodalMain;
 })();
 
-// Self-export to window and hyperclay
-window.themodal = themodal;
-window.hyperclay = window.hyperclay || {};
-window.hyperclay.themodal = themodal;
+// Export to window (called by export-to-window module)
+export function exportToWindow() {
+  window.themodal = themodal;
+  window.hyperclay = window.hyperclay || {};
+  window.hyperclay.themodal = themodal;
+}
 
 export default themodal;

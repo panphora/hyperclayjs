@@ -1,21 +1,24 @@
 /**
  * HyperclayJS v__VERSION__ - Minimal Browser-Native Loader
  *
- * Modules self-export to window.hyperclay when imported.
  * Modules auto-init when imported (no separate init call needed).
- * Uses top-level await so subsequent module scripts automatically wait.
+ * Include `export-to-window` feature to export to window.hyperclay.
  *
- * <!-- Load with a preset -->
- * <script src="https://cdn.jsdelivr.net/npm/hyperclayjs@1/hyperclay.js?preset=minimal" type="module"></script>
- * <!-- Load specific features -->
- * <script src="https://cdn.jsdelivr.net/npm/hyperclayjs@1/hyperclay.js?features=save,admin,toast" type="module"></script>
- * <!-- Load preset with exclusions -->
- * <script src="https://cdn.jsdelivr.net/npm/hyperclayjs@1/hyperclay.js?preset=everything&exclude=tailwind-play,behavior-collector" type="module"></script>
+ * Usage (use await import to ensure modules finish loading):
+ *
+ * <script type="module">
+ *   // With window.hyperclay (default presets include export-to-window):
+ *   await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/hyperclay.js?preset=minimal');
+ *   const { toast, savePage } = window.hyperclay;
+ *
+ *   // ES modules only (exclude export-to-window):
+ *   const hyperclay = await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/hyperclay.js?preset=minimal&exclude=export-to-window');
+ *   const modules = window.hyperclayModules;
+ * </script>
  *
  * AUTO-GENERATED FILE - Do not edit directly
  */
 
-window.hyperclay = window.hyperclay || {};
 window.hyperclayModules = window.hyperclayModules || {};
 
 const MODULE_PATHS = __MODULE_PATHS__;
@@ -48,6 +51,9 @@ if (exclude) {
 // Modules that extend prototypes must load before modules that execute user code
 const LOAD_FIRST = new Set(['dom-helpers', 'all-js']);
 
+// export-to-window must run AFTER all other modules are loaded
+const LOAD_LAST = 'export-to-window';
+
 const loadModules = (modules) => Promise.all(modules.map(async feature => {
   const path = MODULE_PATHS[feature];
   if (!path) throw new Error(`Unknown feature: ${feature}`);
@@ -58,14 +64,27 @@ const loadModules = (modules) => Promise.all(modules.map(async feature => {
 
 if (debug) console.log('HyperclayJS: Loading features:', requested);
 
+// Separate export-to-window from other modules - it must run last
+const shouldExportToWindow = requested.includes(LOAD_LAST);
+const modulesToLoad = requested.filter(f => f !== LOAD_LAST);
+
 // Load in waves: prototype extenders first, then everything else
-const first = requested.filter(f => LOAD_FIRST.has(f));
-const rest = requested.filter(f => !LOAD_FIRST.has(f));
+const first = modulesToLoad.filter(f => LOAD_FIRST.has(f));
+const rest = modulesToLoad.filter(f => !LOAD_FIRST.has(f));
 
-if (first.length) await loadModules(first);
-if (rest.length) await loadModules(rest);
+try {
+  if (first.length) await loadModules(first);
+  if (rest.length) await loadModules(rest);
 
-// Create h alias
-window.h = window.hyperclay;
+  // Load export-to-window LAST, after all modules are registered
+  if (shouldExportToWindow) {
+    if (debug) console.log('HyperclayJS: Exporting to window...');
+    const exportModule = await import(`${baseUrl}/${MODULE_PATHS[LOAD_LAST]}`);
+    window.hyperclayModules[LOAD_LAST] = exportModule;
+  }
+} catch (err) {
+  console.error('HyperclayJS: Failed to load modules:', err);
+  throw err;
+}
 
 if (debug) console.log('HyperclayJS: Ready');

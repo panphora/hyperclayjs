@@ -41,18 +41,26 @@
     <code>https://cdn.jsdelivr.net/npm/hyperclayjs@1.3.1/hyperclay.js?preset=everything</code></p>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/hyperclayjs@1.3.1/hyperclay.js?preset=everything" type="module"></script>
-
   <script type="module">
-    // Top-level await in hyperclay.js means this script waits automatically
+    // Use await import to ensure modules finish loading before checking
+    await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1.3.1/hyperclay.js?preset=everything');
+
     const status = document.getElementById('status');
     const features = Object.keys(window.hyperclayModules || {});
-    status.className = 'status success';
-    status.innerHTML = `
-      ✓ Successfully loaded from jsDelivr!<br>
-      <strong>Modules loaded:</strong> ${features.length}<br>
-      <strong>Features:</strong> ${features.join(', ')}
-    `;
+
+    if (features.length > 0) {
+      status.className = 'status success';
+      status.innerHTML = `
+        ✓ Successfully loaded from jsDelivr!<br>
+        <strong>Modules loaded:</strong> ${features.length}<br>
+        <strong>Features:</strong> ${features.join(', ')}
+      `;
+    } else {
+      status.className = 'status';
+      status.innerHTML = `
+        ✗ Failed to load modules. Check console for errors.
+      `;
+    }
     console.log('HyperclayJS loaded from jsDelivr:', features);
   </script>
 </body>

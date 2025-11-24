@@ -53,8 +53,10 @@ function emmet(strings, ...values) {
     return html;
 }
 
-// Self-export to hyperclay only
-window.hyperclay = window.hyperclay || {};
-window.hyperclay.emmet = emmet;
+// Export to window (called by export-to-window module)
+export function exportToWindow() {
+  window.hyperclay = window.hyperclay || {};
+  window.hyperclay.emmet = emmet;
+}
 
 export default emmet;

@@ -59,9 +59,11 @@ function getDataFromForm(container) {
   return formData;
 }
 
-// Self-export to window and hyperclay
-window.getDataFromForm = getDataFromForm;
-window.hyperclay = window.hyperclay || {};
-window.hyperclay.getDataFromForm = getDataFromForm;
+// Export to window (called by export-to-window module)
+export function exportToWindow() {
+  window.getDataFromForm = getDataFromForm;
+  window.hyperclay = window.hyperclay || {};
+  window.hyperclay.getDataFromForm = getDataFromForm;
+}
 
 export default getDataFromForm;

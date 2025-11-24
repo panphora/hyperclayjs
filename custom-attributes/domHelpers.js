@@ -172,10 +172,12 @@ function init () {
 
 }
 
-// Self-export to window and hyperclay
-window.initCustomAttributes = init;
-window.hyperclay = window.hyperclay || {};
-window.hyperclay.initCustomAttributes = init;
+// Export to window (called by export-to-window module)
+export function exportToWindow() {
+  window.initCustomAttributes = init;
+  window.hyperclay = window.hyperclay || {};
+  window.hyperclay.initCustomAttributes = init;
+}
 
 // Auto-init when module is imported
 init();
