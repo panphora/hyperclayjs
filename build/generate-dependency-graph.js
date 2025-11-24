@@ -92,7 +92,7 @@ const MODULE_DEFINITIONS = {
   'core/editmodeSystem.js': {
     name: 'edit-mode',
     moduleId: 'edit-mode',
-    description: 'Toggle edit mode on/off',
+    description: 'Toggle edit mode on hyperclay on/off',
     relatedFiles: ['core/editmode.js', 'core/setPageTypeOnDocumentElement.js'],
     exports: {
       toggleEditMode: ['hyperclay'],

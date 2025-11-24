@@ -273,7 +273,7 @@
         "core/editmode.js",
         "core/setPageTypeOnDocumentElement.js"
       ],
-      "description": "Toggle edit mode on/off",
+      "description": "Toggle edit mode on hyperclay on/off",
       "exports": {
         "toggleEditMode": [
           "hyperclay"
