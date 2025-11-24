@@ -69,7 +69,7 @@ const MODULE_DEFINITIONS = {
   'core/adminSystem.js': {
     name: 'admin',
     moduleId: 'admin',
-    description: 'Hides admin inputs, scripts, contenteditable, onclick for regular viewers',
+    description: 'Hides/disables admin inputs, scripts, onclick for regular viewers',
     relatedFiles: ['core/adminContenteditable.js', 'core/adminInputs.js', 'core/adminOnClick.js', 'core/adminResources.js']
     // No exports - side effects only (init function)
   },

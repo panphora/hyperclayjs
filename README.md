@@ -57,7 +57,7 @@ import 'hyperclayjs/presets/standard.js';
 
 | Module | Size | Description |
 |--------|------|-------------|
-| admin | 5.4KB | Hides admin inputs, scripts, contenteditable, onclick for regular viewers |
+| admin | 5.4KB | Hides/disables admin inputs, scripts, onclick for regular viewers |
 | autosave | 2.5KB | Auto-save on DOM changes, unsaved changes warning |
 | edit-mode | 1.8KB | Toggle edit mode on hyperclay on/off |
 | option-visibility | 4.7KB | Dynamic show/hide based on ancestor state with option:attribute="value" |

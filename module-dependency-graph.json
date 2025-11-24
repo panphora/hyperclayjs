@@ -232,7 +232,7 @@
         "core/adminOnClick.js",
         "core/adminResources.js"
       ],
-      "description": "Hides admin inputs, scripts, contenteditable, onclick for regular viewers",
+      "description": "Hides/disables admin inputs, scripts, onclick for regular viewers",
       "exports": {}
     },
     "persist": {
