@@ -336,7 +336,8 @@ const MODULE_DEFINITIONS = {
     name: 'export-to-window',
     moduleId: 'export-to-window',
     description: 'Export all modules to window.hyperclay and window globals',
-    // No exports - this module calls exportToWindow() on other modules
+    hidden: true,
+    // No exports - this module flips the auto-export flag
   }
 };
 

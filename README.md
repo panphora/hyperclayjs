@@ -60,7 +60,6 @@ import 'hyperclayjs/presets/standard.js';
 | admin | 5.4KB | Hides admin inputs, scripts, contenteditable, onclick for regular viewers |
 | autosave | 2.5KB | Auto-save on DOM changes, unsaved changes warning |
 | edit-mode | 1.8KB | Toggle edit mode on/off |
-| export-to-window | 0.4KB | Export all modules to window.hyperclay and window globals |
 | option-visibility | 4.7KB | Dynamic show/hide based on ancestor state with option:attribute="value" |
 | persist | 2.5KB | Persist form values to the DOM with [persist] attribute |
 | save-core | 5.9KB | Basic save function only - hyperclay.savePage() |

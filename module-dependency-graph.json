@@ -769,8 +769,7 @@
         "admin",
         "persist",
         "option-visibility",
-        "edit-mode",
-        "export-to-window"
+        "edit-mode"
       ]
     },
     "custom-attributes": {
