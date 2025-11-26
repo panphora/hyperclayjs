@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.4.0] - 2025-11-25
+
+### Added
+- Lazy-load vendor scripts in edit mode only
+- Toggle switch for export-to-window in configurator
+- Migration guide for v1.2 → v1.3+
+- ES module exports and fix standalone module imports
+
+### Changed
+- Update module-dependency-graph.json
+- Make window exports optional via export-to-window module
+
+### Fixed
+- Update admin description
+- Update edit-mode description
+- Changelog
+
+### Breaking Changes
+- Remove emmet-mini, info removal, tell API change, toast.useLegacy removal
+
+
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
