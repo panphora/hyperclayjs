@@ -380,7 +380,7 @@
     "the-modal": {
       "name": "the-modal",
       "category": "ui",
-      "size": 18.6,
+      "size": 19.8,
       "files": [
         "ui/theModal.js"
       ],
