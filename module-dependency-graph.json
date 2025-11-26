@@ -131,12 +131,8 @@
     "hyperclay.js": [],
     "jest.config.js": [],
     "string-utilities/copy-to-clipboard.js": [],
-    "string-utilities/emmet-html.js": [],
     "string-utilities/query.js": [],
     "string-utilities/slugify.js": [],
-    "ui/info.js": [
-      "ui/prompts.js"
-    ],
     "ui/prompts.js": [
       "dom-utilities/onDomReady.js",
       "string-utilities/copy-to-clipboard.js",
@@ -328,12 +324,11 @@
     "dialogs": {
       "name": "dialogs",
       "category": "ui",
-      "size": 9,
+      "size": 8.4,
       "files": [
-        "ui/prompts.js",
-        "ui/info.js"
+        "ui/prompts.js"
       ],
-      "description": "ask(), consent(), tell(), info(), snippet() functions",
+      "description": "ask(), consent(), tell(), snippet() dialog functions",
       "exports": {
         "ask": [
           "window",
@@ -344,10 +339,6 @@
           "hyperclay"
         ],
         "tell": [
-          "window",
-          "hyperclay"
-        ],
-        "info": [
           "window",
           "hyperclay"
         ],
@@ -586,20 +577,6 @@
         ]
       }
     },
-    "emmet-mini": {
-      "name": "emmet-mini",
-      "category": "string-utilities",
-      "size": 1.6,
-      "files": [
-        "string-utilities/emmet-html.js"
-      ],
-      "description": "Emmet-like HTML generation",
-      "exports": {
-        "emmet": [
-          "hyperclay"
-        ]
-      }
-    },
     "copy-to-clipboard": {
       "name": "copy-to-clipboard",
       "category": "string-utilities",
@@ -718,7 +695,6 @@
     "form-data": "./dom-utilities/getDataFromForm.js",
     "idiomorph": "./vendor/idiomorph.min.js",
     "slugify": "./string-utilities/slugify.js",
-    "emmet-mini": "./string-utilities/emmet-html.js",
     "copy-to-clipboard": "./string-utilities/copy-to-clipboard.js",
     "query-params": "./string-utilities/query.js",
     "behavior-collector": "./communication/behaviorCollector.js",
@@ -787,7 +763,6 @@
       "description": "String manipulation helpers",
       "modules": [
         "slugify",
-        "emmet-mini",
         "copy-to-clipboard",
         "query-params"
       ]
@@ -868,7 +843,6 @@
         "form-data",
         "idiomorph",
         "slugify",
-        "emmet-mini",
         "copy-to-clipboard",
         "query-params",
         "behavior-collector",

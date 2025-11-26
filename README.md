@@ -79,7 +79,7 @@ import 'hyperclayjs/presets/standard.js';
 
 | Module | Size | Description |
 |--------|------|-------------|
-| dialogs | 9KB | ask(), consent(), tell(), info(), snippet() functions |
+| dialogs | 8.4KB | ask(), consent(), tell(), snippet() dialog functions |
 | tailwind-play | 0.7KB | Live Tailwind CSS editing, lazy-loads ~370KB script in edit mode only |
 | the-modal | 18.6KB | Full modal window creation system - window.theModal |
 | toast | 7.7KB | Success/error message notifications, toast(msg, msgType) |
@@ -108,7 +108,6 @@ import 'hyperclayjs/presets/standard.js';
 | Module | Size | Description |
 |--------|------|-------------|
 | copy-to-clipboard | 0.9KB | Clipboard utility |
-| emmet-mini | 1.6KB | Emmet-like HTML generation |
 | query-params | 0.3KB | Parse URL search params |
 | slugify | 0.7KB | URL-friendly slug generator |
 
@@ -137,7 +136,7 @@ Standard feature set for most use cases
 
 **Modules:** `save-core`, `save-system`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `export-to-window`
 
-### Everything (~146.1KB)
+### Everything (~145.5KB)
 All available features
 
 Includes all available modules across all categories.

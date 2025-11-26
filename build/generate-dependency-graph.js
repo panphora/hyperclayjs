@@ -127,13 +127,11 @@ const MODULE_DEFINITIONS = {
   'ui/prompts.js': {
     name: 'dialogs',
     moduleId: 'dialogs',
-    description: 'ask(), consent(), tell(), info(), snippet() functions',
-    relatedFiles: ['ui/info.js'],
+    description: 'ask(), consent(), tell(), snippet() dialog functions',
     exports: {
       ask: ['window', 'hyperclay'],
       consent: ['window', 'hyperclay'],
       tell: ['window', 'hyperclay'],
-      info: ['window', 'hyperclay'],
       snippet: ['hyperclay']
     }
   },
@@ -264,14 +262,6 @@ const MODULE_DEFINITIONS = {
     description: 'URL-friendly slug generator',
     exports: {
       slugify: ['window', 'hyperclay']
-    }
-  },
-  'string-utilities/emmet-html.js': {
-    name: 'emmet-mini',
-    moduleId: 'emmet-mini',
-    description: 'Emmet-like HTML generation',
-    exports: {
-      emmet: ['hyperclay']  // Available as h (since window.h = emmet + namespace)
     }
   },
   'string-utilities/copy-to-clipboard.js': {

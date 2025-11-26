@@ -96,9 +96,6 @@ export function tell(promptText, ...content) {
   return promise;
 }
 
-// Alias for backward compatibility
-export const info = tell;
-
 /**
  * Display a modal with a code snippet and copy functionality
  * Following the existing modal pattern from prompts.js
@@ -194,13 +191,11 @@ if (!window.__hyperclayNoAutoExport) {
   window.ask = ask;
   window.consent = consent;
   window.tell = tell;
-  window.info = info;
   window.snippet = snippet;
   window.hyperclay = window.hyperclay || {};
   window.hyperclay.ask = ask;
   window.hyperclay.consent = consent;
   window.hyperclay.tell = tell;
-  window.hyperclay.info = info;
   window.hyperclay.snippet = snippet;
   window.h = window.hyperclay;
 }

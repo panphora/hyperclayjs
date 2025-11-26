@@ -318,6 +318,8 @@ const modalCss = `<style class="micromodal-css">
 .micromodal {
   display: none;
   color: #fff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 18px;
 }
 
 .micromodal button:not(.custom-button) {
@@ -413,7 +415,7 @@ const modalCss = `<style class="micromodal-css">
 .micromodal .micromodal__input {
   width: clamp(300px, calc(100vw - 100px), 420px);
   padding: 6px 6px 7px;
-  font-size: 18px;
+  font-size: 16px;
   color: #000;
 }
 
@@ -469,12 +471,19 @@ const modalHtml = `<div class="micromodal" id="micromodal" aria-hidden="true">
   </div>
 </div>`;
 
+const DEFAULT_FONT_FAMILY = "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace";
+const DEFAULT_FONT_SIZE = "18px";
+const DEFAULT_INPUT_FONT_SIZE = "16px";
+
 const themodal = (() => {
   let html = "";
   let yes = "";
   let no = "";
   let zIndex = "100";
   let closeHtml = "";
+  let fontFamily = DEFAULT_FONT_FAMILY;
+  let fontSize = DEFAULT_FONT_SIZE;
+  let inputFontSize = DEFAULT_INPUT_FONT_SIZE;
 
   let enableClickOutsideCloses = true;
   let disableScroll = true;
@@ -501,6 +510,17 @@ const themodal = (() => {
       modalNoElem.innerHTML = no;
       modalOverlayElem.style.zIndex = zIndex;
       modalCloseElem.innerHTML = closeHtml;
+
+      // Apply font styles to the modal
+      const modalElem = document.querySelector("#micromodal");
+      modalElem.style.fontFamily = fontFamily;
+      modalElem.style.fontSize = fontSize;
+
+      // Apply input font size
+      const modalInputElem = document.querySelector(".micromodal__input");
+      if (modalInputElem) {
+        modalInputElem.style.fontSize = inputFontSize;
+      }
 
       // MODIFIED so modal doesn't close if mousedown happened inside the modal
       let mousedownOnBackdrop = false;
@@ -581,6 +601,9 @@ const themodal = (() => {
           no = "";
           zIndex = "100";
           closeHtml = "";
+          fontFamily = DEFAULT_FONT_FAMILY;
+          fontSize = DEFAULT_FONT_SIZE;
+          inputFontSize = DEFAULT_INPUT_FONT_SIZE;
 
           // reset to defaults
           enableClickOutsideCloses = true;
@@ -641,6 +664,24 @@ const themodal = (() => {
     },
     set zIndex(newVal) {
       zIndex = newVal;
+    },
+    get fontFamily() {
+      return fontFamily;
+    },
+    set fontFamily(newVal) {
+      fontFamily = newVal;
+    },
+    get fontSize() {
+      return fontSize;
+    },
+    set fontSize(newVal) {
+      fontSize = newVal;
+    },
+    get inputFontSize() {
+      return inputFontSize;
+    },
+    set inputFontSize(newVal) {
+      inputFontSize = newVal;
     },
     get disableFocus() {
       return disableFocus;

@@ -29,7 +29,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `modals` → `modal`
   - `alljs` → `all-js`
   - `get-data-from-form` → `form-data`
-  - `emmet-html` → `emmet`
   - `copy-to-clipboard` → `clipboard`
   - `query-parser` → `query-params`
 - **Removed `info` module** - Merged into `dialogs`. Use `?features=dialogs` to get `info()`.

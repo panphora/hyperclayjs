@@ -54,7 +54,6 @@ const MODULE_PATHS = {
   "form-data": "./dom-utilities/getDataFromForm.js",
   "idiomorph": "./vendor/idiomorph.min.js",
   "slugify": "./string-utilities/slugify.js",
-  "emmet-mini": "./string-utilities/emmet-html.js",
   "copy-to-clipboard": "./string-utilities/copy-to-clipboard.js",
   "query-params": "./string-utilities/query.js",
   "behavior-collector": "./communication/behaviorCollector.js",
@@ -122,7 +121,6 @@ const PRESETS = {
       "form-data",
       "idiomorph",
       "slugify",
-      "emmet-mini",
       "copy-to-clipboard",
       "query-params",
       "behavior-collector",
@@ -209,7 +207,6 @@ export const isOwner = window.hyperclayModules['edit-mode']?.isOwner ?? window.h
 export const ask = window.hyperclayModules['dialogs']?.ask ?? window.hyperclayModules['dialogs']?.default;
 export const consent = window.hyperclayModules['dialogs']?.consent ?? window.hyperclayModules['dialogs']?.default;
 export const tell = window.hyperclayModules['dialogs']?.tell ?? window.hyperclayModules['dialogs']?.default;
-export const info = window.hyperclayModules['dialogs']?.info ?? window.hyperclayModules['dialogs']?.default;
 export const snippet = window.hyperclayModules['dialogs']?.snippet ?? window.hyperclayModules['dialogs']?.default;
 export const toast = window.hyperclayModules['toast']?.toast ?? window.hyperclayModules['toast']?.default;
 export const toastHyperclay = window.hyperclayModules['toast-hyperclay']?.toastHyperclay ?? window.hyperclayModules['toast-hyperclay']?.default;
@@ -226,7 +223,6 @@ export const insertStyleTag = window.hyperclayModules['style-injection']?.insert
 export const getDataFromForm = window.hyperclayModules['form-data']?.getDataFromForm ?? window.hyperclayModules['form-data']?.default;
 export const Idiomorph = window.hyperclayModules['idiomorph']?.Idiomorph ?? window.hyperclayModules['idiomorph']?.default;
 export const slugify = window.hyperclayModules['slugify']?.slugify ?? window.hyperclayModules['slugify']?.default;
-export const emmet = window.hyperclayModules['emmet-mini']?.emmet ?? window.hyperclayModules['emmet-mini']?.default;
 export const copyToClipboard = window.hyperclayModules['copy-to-clipboard']?.copyToClipboard ?? window.hyperclayModules['copy-to-clipboard']?.default;
 export const query = window.hyperclayModules['query-params']?.query ?? window.hyperclayModules['query-params']?.default;
 export const behaviorCollector = window.hyperclayModules['behavior-collector']?.behaviorCollector ?? window.hyperclayModules['behavior-collector']?.default;
