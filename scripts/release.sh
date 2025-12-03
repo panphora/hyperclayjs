@@ -92,7 +92,7 @@ if [ -n "$LAST_TAG" ]; then
 
         # Use claude CLI to generate changelog
         info "Analyzing commits with Claude..."
-        CHANGELOG_ENTRIES=$(echo "$GIT_LOG" | claude -p "Analyze these git commit messages and generate changelog entries. Format each entry as one of: 'Added: description', 'Changed: description', 'Fixed: description', or 'Breaking: description'. Only output the formatted changelog entries, nothing else. One entry per line.")
+        CHANGELOG_ENTRIES=$(echo "$GIT_LOG" | npx @anthropic-ai/claude-code -p "Analyze these git commit messages and generate changelog entries. Format each entry as one of: 'Added: description', 'Changed: description', 'Fixed: description', or 'Breaking: description'. Only output the formatted changelog entries, nothing else. One entry per line.")
 
         echo ""
         echo "Generated changelog:"
