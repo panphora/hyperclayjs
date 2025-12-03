@@ -28,6 +28,7 @@ const MODULE_PATHS = {
   "save-core": "./core/savePageCore.js",
   "save-system": "./core/savePage.js",
   "autosave": "./core/autosave.js",
+  "save-toast": "./core/saveToast.js",
   "edit-mode-helpers": "./core/adminSystem.js",
   "persist": "./core/enablePersistentFormInputValues.js",
   "option-visibility": "./core/optionVisibilityRuleGenerator.js",
@@ -37,6 +38,7 @@ const MODULE_PATHS = {
   "sortable": "./custom-attributes/sortable.js",
   "dom-helpers": "./custom-attributes/domHelpers.js",
   "input-helpers": "./custom-attributes/inputHelpers.js",
+  "onaftersave": "./custom-attributes/onaftersave.js",
   "dialogs": "./ui/prompts.js",
   "toast": "./ui/toast.js",
   "toast-hyperclay": "./ui/toast-hyperclay.js",
@@ -70,6 +72,7 @@ const PRESETS = {
       "save-system",
       "edit-mode-helpers",
       "toast",
+      "save-toast",
       "export-to-window"
     ]
   },
@@ -85,6 +88,7 @@ const PRESETS = {
       "event-attrs",
       "dom-helpers",
       "toast",
+      "save-toast",
       "export-to-window"
     ]
   },
@@ -95,6 +99,7 @@ const PRESETS = {
       "save-core",
       "save-system",
       "autosave",
+      "save-toast",
       "edit-mode-helpers",
       "persist",
       "option-visibility",
@@ -104,6 +109,7 @@ const PRESETS = {
       "sortable",
       "dom-helpers",
       "input-helpers",
+      "onaftersave",
       "dialogs",
       "toast",
       "toast-hyperclay",

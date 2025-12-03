@@ -57,13 +57,14 @@ import 'hyperclayjs/presets/standard.js';
 
 | Module | Size | Description |
 |--------|------|-------------|
-| autosave | 1.2KB | Auto-save on DOM changes, unsaved changes warning |
+| autosave | 1.1KB | Auto-save on DOM changes, unsaved changes warning |
 | edit-mode | 1.8KB | Toggle edit mode on hyperclay on/off |
 | edit-mode-helpers | 5.4KB | Admin-only functionality: [edit-mode-input], [edit-mode-resource], [edit-mode-onclick] |
 | option-visibility | 4.7KB | Dynamic show/hide based on ancestor state with option:attribute="value" |
 | persist | 2.5KB | Persist input/select/textarea values to the DOM with [persist] attribute |
-| save-core | 5.9KB | Basic save function only - hyperclay.savePage() |
-| save-system | 4.9KB | Manual save: keyboard shortcut (CMD+S), save button, change tracking |
+| save-core | 6.3KB | Basic save function only - hyperclay.savePage() |
+| save-system | 7KB | Manual save: keyboard shortcut (CMD+S), save button, change tracking |
+| save-toast | 0.9KB | Toast notifications for save events (opt-in) |
 
 ### Custom Attributes (HTML enhancements)
 
@@ -73,6 +74,7 @@ import 'hyperclayjs/presets/standard.js';
 | dom-helpers | 5.7KB | el.nearest, el.val, el.text, el.exec, el.cycle |
 | event-attrs | 3.6KB | [onclickaway], [onclone], [onpagemutation], [onrender] |
 | input-helpers | 1.2KB | [prevent-enter], [autosize] for textareas |
+| onaftersave | 1.2KB | [onaftersave] attribute - run JS when save status changes |
 | sortable | 2.8KB | Drag-drop sorting with [sortable], lazy-loads ~118KB Sortable.js in edit mode |
 
 ### UI Components (User interface elements)
@@ -126,17 +128,17 @@ import 'hyperclayjs/presets/standard.js';
 
 ## Presets
 
-### Minimal (~24.3KB)
+### Minimal (~27.7KB)
 Essential features for basic editing
 
-**Modules:** `save-core`, `save-system`, `edit-mode-helpers`, `toast`, `export-to-window`
+**Modules:** `save-core`, `save-system`, `edit-mode-helpers`, `toast`, `save-toast`, `export-to-window`
 
-### Standard (~40.8KB)
+### Standard (~44.2KB)
 Standard feature set for most use cases
 
-**Modules:** `save-core`, `save-system`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `export-to-window`
+**Modules:** `save-core`, `save-system`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `save-toast`, `export-to-window`
 
-### Everything (~145.1KB)
+### Everything (~149.6KB)
 All available features
 
 Includes all available modules across all categories.

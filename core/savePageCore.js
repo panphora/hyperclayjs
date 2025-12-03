@@ -91,12 +91,18 @@ export function savePage(callback = () => {}) {
     return;
   }
 
+  // Add timeout - abort if server doesn't respond within 5 seconds
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
+
   fetch(saveEndpoint, {
     method: 'POST',
     credentials: 'include',
-    body: currentContents
+    body: currentContents,
+    signal: controller.signal
   })
   .then(res => {
+    clearTimeout(timeoutId);
     return res.json().then(data => {
       if (!res.ok) {
         throw new Error(data.msg || data.error || `HTTP ${res.status}: ${res.statusText}`);
@@ -110,12 +116,19 @@ export function savePage(callback = () => {}) {
     }
   })
   .catch(err => {
+    clearTimeout(timeoutId);
     console.error('Failed to save page:', err);
+
+    const msg = err.name === 'AbortError'
+      ? 'Server not responding'
+      : (err.message || 'Failed to save');
+
     if (typeof callback === 'function') {
-      callback({msg: err.message || "Failed to save", msgType: "error"});
+      callback({msg, msgType: "error"});
     }
   })
   .finally(() => {
+    clearTimeout(timeoutId);
     saveInProgress = false;
   });
 }

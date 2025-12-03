@@ -62,6 +62,12 @@ const MODULE_DEFINITIONS = {
     description: 'Auto-save on DOM changes, unsaved changes warning'
     // No exports - auto-inits on load, savePageThrottled is in save-system
   },
+  'core/saveToast.js': {
+    name: 'save-toast',
+    moduleId: 'save-toast',
+    description: 'Toast notifications for save events (opt-in)'
+    // No exports - auto-inits on load, listens for save events
+  },
   'core/adminSystem.js': {
     name: 'edit-mode-helpers',
     moduleId: 'edit-mode-helpers',
@@ -123,6 +129,12 @@ const MODULE_DEFINITIONS = {
     description: '[prevent-enter], [autosize] for textareas',
     relatedFiles: ['custom-attributes/preventEnter.js', 'custom-attributes/autosize.js']
     // No exports - side effects only (init function)
+  },
+  'custom-attributes/onaftersave.js': {
+    name: 'onaftersave',
+    moduleId: 'onaftersave',
+    description: '[onaftersave] attribute - run JS when save status changes'
+    // No exports - auto-inits on load
   },
   'ui/prompts.js': {
     name: 'dialogs',
@@ -365,12 +377,12 @@ const PRESETS = {
   'minimal': {
     name: 'Minimal',
     description: 'Essential features for basic editing',
-    modules: ['save-core', 'save-system', 'edit-mode-helpers', 'toast', 'export-to-window']
+    modules: ['save-core', 'save-system', 'edit-mode-helpers', 'toast', 'save-toast', 'export-to-window']
   },
   'standard': {
     name: 'Standard',
     description: 'Standard feature set for most use cases',
-    modules: ['save-core', 'save-system', 'edit-mode-helpers', 'persist', 'option-visibility', 'event-attrs', 'dom-helpers', 'toast', 'export-to-window']
+    modules: ['save-core', 'save-system', 'edit-mode-helpers', 'persist', 'option-visibility', 'event-attrs', 'dom-helpers', 'toast', 'save-toast', 'export-to-window']
   },
   'everything': {
     name: 'Everything',

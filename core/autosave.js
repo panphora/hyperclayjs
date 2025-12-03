@@ -5,9 +5,9 @@
  * Warns before leaving page with unsaved changes.
  *
  * Requires the 'save-system' module to be loaded first.
+ * For toast notifications, also load the 'save-toast' module.
  */
 
-import toast from "../ui/toast.js";
 import Mutation from "../utilities/mutation.js";
 import { isEditMode, isOwner } from "./isAdminOfCurrentResource.js";
 import {
@@ -24,9 +24,7 @@ function initSavePageOnChange() {
     debounce: 3333,
     omitChangeDetails: true
   }, () => {
-    savePageThrottled(({msg, msgType} = {}) => {
-      if (msg) toast(msg, msgType);
-    });
+    savePageThrottled();
   });
 }
 

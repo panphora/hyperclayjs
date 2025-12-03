@@ -50,7 +50,6 @@
     "core/autosave.js": [
       "core/isAdminOfCurrentResource.js",
       "core/savePage.js",
-      "ui/toast.js",
       "utilities/mutation.js"
     ],
     "core/editmode.js": [
@@ -75,12 +74,15 @@
     "core/savePage.js": [
       "core/isAdminOfCurrentResource.js",
       "core/savePageCore.js",
-      "ui/toast.js",
       "utilities/throttle.js"
     ],
     "core/savePageCore.js": [
       "core/isAdminOfCurrentResource.js",
       "utilities/cookie.js"
+    ],
+    "core/saveToast.js": [
+      "core/isAdminOfCurrentResource.js",
+      "ui/toast.js"
     ],
     "core/setPageTypeOnDocumentElement.js": [
       "core/isAdminOfCurrentResource.js",
@@ -108,6 +110,7 @@
       "custom-attributes/autosize.js",
       "custom-attributes/preventEnter.js"
     ],
+    "custom-attributes/onaftersave.js": [],
     "custom-attributes/onclickaway.js": [],
     "custom-attributes/onclone.js": [],
     "custom-attributes/onpagemutation.js": [
@@ -165,7 +168,7 @@
     "save-core": {
       "name": "save-core",
       "category": "core",
-      "size": 5.9,
+      "size": 6.3,
       "files": [
         "core/savePageCore.js"
       ],
@@ -179,7 +182,7 @@
     "save-system": {
       "name": "save-system",
       "category": "core",
-      "size": 4.9,
+      "size": 7,
       "files": [
         "core/savePage.js"
       ],
@@ -202,11 +205,21 @@
     "autosave": {
       "name": "autosave",
       "category": "core",
-      "size": 1.2,
+      "size": 1.1,
       "files": [
         "core/autosave.js"
       ],
       "description": "Auto-save on DOM changes, unsaved changes warning",
+      "exports": {}
+    },
+    "save-toast": {
+      "name": "save-toast",
+      "category": "core",
+      "size": 0.9,
+      "files": [
+        "core/saveToast.js"
+      ],
+      "description": "Toast notifications for save events (opt-in)",
       "exports": {}
     },
     "edit-mode-helpers": {
@@ -319,6 +332,16 @@
         "custom-attributes/autosize.js"
       ],
       "description": "[prevent-enter], [autosize] for textareas",
+      "exports": {}
+    },
+    "onaftersave": {
+      "name": "onaftersave",
+      "category": "custom-attributes",
+      "size": 1.2,
+      "files": [
+        "custom-attributes/onaftersave.js"
+      ],
+      "description": "[onaftersave] attribute - run JS when save status changes",
       "exports": {}
     },
     "dialogs": {
@@ -669,6 +692,7 @@
     "save-core": "./core/savePageCore.js",
     "save-system": "./core/savePage.js",
     "autosave": "./core/autosave.js",
+    "save-toast": "./core/saveToast.js",
     "edit-mode-helpers": "./core/adminSystem.js",
     "persist": "./core/enablePersistentFormInputValues.js",
     "option-visibility": "./core/optionVisibilityRuleGenerator.js",
@@ -678,6 +702,7 @@
     "sortable": "./custom-attributes/sortable.js",
     "dom-helpers": "./custom-attributes/domHelpers.js",
     "input-helpers": "./custom-attributes/inputHelpers.js",
+    "onaftersave": "./custom-attributes/onaftersave.js",
     "dialogs": "./ui/prompts.js",
     "toast": "./ui/toast.js",
     "toast-hyperclay": "./ui/toast-hyperclay.js",
@@ -710,6 +735,7 @@
         "save-core",
         "save-system",
         "autosave",
+        "save-toast",
         "edit-mode-helpers",
         "persist",
         "option-visibility",
@@ -724,7 +750,8 @@
         "ajax-elements",
         "sortable",
         "dom-helpers",
-        "input-helpers"
+        "input-helpers",
+        "onaftersave"
       ]
     },
     "ui": {
@@ -792,6 +819,7 @@
         "save-system",
         "edit-mode-helpers",
         "toast",
+        "save-toast",
         "export-to-window"
       ]
     },
@@ -807,6 +835,7 @@
         "event-attrs",
         "dom-helpers",
         "toast",
+        "save-toast",
         "export-to-window"
       ]
     },
@@ -817,6 +846,7 @@
         "save-core",
         "save-system",
         "autosave",
+        "save-toast",
         "edit-mode-helpers",
         "persist",
         "option-visibility",
@@ -826,6 +856,7 @@
         "sortable",
         "dom-helpers",
         "input-helpers",
+        "onaftersave",
         "dialogs",
         "toast",
         "toast-hyperclay",

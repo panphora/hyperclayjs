@@ -1,15 +1,15 @@
 /**
  * Save system for Hyperclay
  *
- * Manual save with change detection, toast notifications,
+ * Manual save with change detection, state management,
  * keyboard shortcuts, and save button support.
  *
  * For auto-save on DOM changes, also load the 'autosave' module.
+ * For toast notifications, also load the 'save-toast' module.
  *
  * Built on top of savePageCore.js
  */
 
-import toast from "../ui/toast.js";
 import throttle from "../utilities/throttle.js";
 import { isEditMode, isOwner } from "./isAdminOfCurrentResource.js";
 import {
@@ -18,6 +18,69 @@ import {
   replacePageWith as replacePageWithCore,
   beforeSave
 } from "./savePageCore.js";
+
+// ============================================
+// SAVE STATE MANAGEMENT
+// ============================================
+
+let savingTimeout = null;
+
+/**
+ * Sets the save status on <html> and dispatches an event.
+ *
+ * @param {string} state - One of: 'saving', 'saved', 'offline', 'error'
+ * @param {string} msg - Optional message (e.g., error details)
+ */
+function setSaveState(state, msg = '') {
+  if (savingTimeout) {
+    clearTimeout(savingTimeout);
+    savingTimeout = null;
+  }
+
+  document.documentElement.setAttribute('savestatus', state);
+
+  const event = new CustomEvent(`hyperclay:save-${state}`, {
+    detail: { msg, timestamp: Date.now() }
+  });
+  document.dispatchEvent(event);
+}
+
+/**
+ * Sets DOM state to 'offline' immediately, but does NOT fire an event.
+ * Used for instant UI feedback before we know the final state.
+ */
+function setOfflineStateQuiet() {
+  if (savingTimeout) {
+    clearTimeout(savingTimeout);
+    savingTimeout = null;
+  }
+  document.documentElement.setAttribute('savestatus', 'offline');
+}
+
+/**
+ * Starts a debounced 'saving' state.
+ * Only shows 'saving' if the save takes longer than 500ms.
+ * This prevents UI flicker on fast saves.
+ */
+function setSavingState() {
+  savingTimeout = setTimeout(() => {
+    setSaveState('saving');
+  }, 500);
+}
+
+// ============================================
+// OFFLINE DETECTION
+// ============================================
+
+window.addEventListener('offline', () => {
+  setOfflineStateQuiet();
+});
+
+window.addEventListener('online', () => {
+  if (document.documentElement.getAttribute('savestatus') === 'offline') {
+    savePage();
+  }
+});
 
 // Re-export from core for backward compatibility
 export { beforeSave, getPageContents };
@@ -41,13 +104,20 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /**
- * Save the current page with change detection and toast notifications
+ * Save the current page with change detection and state management
  *
  * @param {Function} callback - Optional callback for custom handling
  */
 export function savePage(callback = () => {}) {
   if (!isEditMode) {
     return;
+  }
+
+  // Check if offline - set DOM state immediately for UI feedback
+  // but still try the fetch (navigator.onLine can be wrong)
+  const wasOffline = !navigator.onLine;
+  if (wasOffline) {
+    setOfflineStateQuiet();
   }
 
   const currentContents = getPageContents();
@@ -60,11 +130,22 @@ export function savePage(callback = () => {}) {
     return;
   }
 
+  // Start debounced 'saving' state (only shows if save takes >500ms)
+  setSavingState();
+
   savePageCore(({msg, msgType}) => {
-    // Update tracking on success
     if (msgType !== 'error') {
+      // SUCCESS
       lastSavedContents = currentContents;
       unsavedChanges = false;
+      setSaveState('saved', msg);
+    } else {
+      // FAILED - determine if it's offline or server error
+      if (!navigator.onLine) {
+        setSaveState('offline', msg);
+      } else {
+        setSaveState('error', msg);
+      }
     }
 
     // Call user callback if provided
@@ -76,7 +157,7 @@ export function savePage(callback = () => {}) {
 
 /**
  * Fetch HTML from a URL and save it, then reload
- * Shows toast notifications
+ * Emits error event if save fails
  *
  * @param {string} url - URL to fetch from
  */
@@ -87,8 +168,8 @@ export function replacePageWith(url) {
 
   replacePageWithCore(url, (err, data) => {
     if (err) {
-      // Show error toast if save failed
-      toast(err.message || "Failed to save template", "error");
+      // Emit error event (save-toast will show toast if loaded)
+      setSaveState('error', err.message || "Failed to save template");
     } else {
       // Only reload if save was successful
       window.location.reload();
@@ -138,9 +219,7 @@ export function initSaveKeyboardShortcut() {
     let metaKeyPressed = isMac ? event.metaKey : event.ctrlKey;
     if (metaKeyPressed && event.keyCode == 83) {
       event.preventDefault();
-      savePage(({msg, msgType} = {}) => {
-        if (msg) toast(msg, msgType);
-      });
+      savePage();
     }
   });
 }
@@ -152,9 +231,7 @@ export function initSaveKeyboardShortcut() {
 export function initHyperclaySaveButton() {
   document.addEventListener("click", event => {
     if (event.target.closest("[trigger-save]")) {
-      savePage(({msg, msgType} = {}) => {
-        if (msg) toast(msg, msgType);
-      });
+      savePage();
     }
   });
 }
