@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.5.0] - 2025-12-02
+
+### Added
+- savestatus, save-toast, and onaftersave features
+
+### Changed
+- URLs updated to version 1.4.0
+
+
+
 ## [1.4.0] - 2025-11-25
 
 ### Added
