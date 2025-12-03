@@ -63,7 +63,7 @@ import 'hyperclayjs/presets/standard.js';
 | option-visibility | 4.7KB | Dynamic show/hide based on ancestor state with option:attribute="value" |
 | persist | 2.5KB | Persist input/select/textarea values to the DOM with [persist] attribute |
 | save-core | 6.3KB | Basic save function only - hyperclay.savePage() |
-| save-system | 7KB | Manual save: keyboard shortcut (CMD+S), save button, change tracking |
+| save-system | 7.1KB | Manual save: keyboard shortcut (CMD+S), save button, change tracking |
 | save-toast | 0.9KB | Toast notifications for save events |
 
 ### Custom Attributes (HTML enhancements)
@@ -127,17 +127,17 @@ import 'hyperclayjs/presets/standard.js';
 
 ## Presets
 
-### Minimal (~27.7KB)
+### Minimal (~27.8KB)
 Essential features for basic editing
 
 **Modules:** `save-core`, `save-system`, `edit-mode-helpers`, `toast`, `save-toast`, `export-to-window`
 
-### Standard (~44.2KB)
+### Standard (~44.3KB)
 Standard feature set for most use cases
 
 **Modules:** `save-core`, `save-system`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `save-toast`, `export-to-window`
 
-### Everything (~148.9KB)
+### Everything (~149KB)
 All available features
 
 Includes all available modules across all categories.

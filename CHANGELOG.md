@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.6.0] - 2025-12-03
+
+### Changed
+- Updated URLs to version 1.5.0
+- Removed Tailwind Play integration
+
+
+
 ## [1.5.0] - 2025-12-02
 
 ### Added

@@ -175,7 +175,7 @@
     "save-system": {
       "name": "save-system",
       "category": "core",
-      "size": 7,
+      "size": 7.1,
       "files": [
         "core/savePage.js"
       ],
