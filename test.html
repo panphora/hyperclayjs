@@ -169,11 +169,6 @@
   </div>
 
 
-  <div class="test" id="test-tailwind">
-    <span class="label">tailwind-play:</span>
-    <span class="detail" id="tailwind-status"></span>
-  </div>
-
   <!-- STRING UTILITIES -->
   <h2>String Utilities</h2>
 
@@ -346,7 +341,6 @@
 
       // UI Components
       if (window.themodal) markPass('test-modals', 'themodal available - click to test');
-      if (window.hyperclayModules?.['tailwind-play']) markPass('test-tailwind', 'Tailwind Play loaded');
 
       // String Utilities
       if (modules?.slugify) {

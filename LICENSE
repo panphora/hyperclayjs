@@ -31,11 +31,6 @@ This project includes the following third-party libraries:
 - License: 0BSD (Zero-Clause BSD)
 - https://github.com/bigskysoftware/idiomorph
 
-### Tailwind CSS
-- Copyright (c) Tailwind Labs, Inc.
-- License: MIT
-- https://github.com/tailwindlabs/tailwindcss
-
 ### Sortable.js
 - Copyright (c) All contributors to Sortable
 - License: MIT

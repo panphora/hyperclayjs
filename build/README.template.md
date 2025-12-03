@@ -66,7 +66,6 @@ Some modules with large vendor dependencies are **lazy-loaded** to optimize page
 | Module | Wrapper Size | Vendor Size | Loaded When |
 |--------|-------------|-------------|-------------|
 | `sortable` | ~3KB | ~118KB | Edit mode only |
-| `tailwind-play` | ~1KB | ~370KB | Edit mode only |
 
 **How it works:**
 - The wrapper module checks if the page is in edit mode (`isEditMode`)
@@ -76,7 +75,7 @@ Some modules with large vendor dependencies are **lazy-loaded** to optimize page
 
 This means:
 - **Editors** get full functionality when needed
-- **Viewers** never download ~500KB of vendor scripts
+- **Viewers** never download the heavy vendor scripts
 - **Saved pages** stay clean with no leftover script tags
 
 ## Visual Configurator
@@ -285,7 +284,6 @@ MIT © Hyperclay
 This project includes the following open-source libraries:
 
 - **[Idiomorph](https://github.com/bigskysoftware/idiomorph)** - DOM morphing library by Big Sky Software (0BSD)
-- **[Tailwind CSS](https://github.com/tailwindlabs/tailwindcss)** - Utility-first CSS framework by Tailwind Labs (MIT)
 - **[Sortable.js](https://github.com/SortableJS/Sortable)** - Drag-and-drop library (MIT)
 
 ## Links

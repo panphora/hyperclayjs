@@ -65,7 +65,7 @@ const MODULE_DEFINITIONS = {
   'core/saveToast.js': {
     name: 'save-toast',
     moduleId: 'save-toast',
-    description: 'Toast notifications for save events (opt-in)'
+    description: 'Toast notifications for save events'
     // No exports - auto-inits on load, listens for save events
   },
   'core/adminSystem.js': {
@@ -171,13 +171,6 @@ const MODULE_DEFINITIONS = {
     exports: {
       themodal: ['window', 'hyperclay']
     }
-  },
-  'vendor/tailwind-play.js': {
-    name: 'tailwind-play',
-    moduleId: 'tailwind-play',
-    description: 'Live Tailwind CSS editing, lazy-loads ~370KB script in edit mode only',
-    category: 'ui' // Override - this is a UI feature even though file is in vendor/
-    // No exports - loads vendor script via script tag in edit mode only
   },
   'utilities/mutation.js': {
     name: 'mutation',

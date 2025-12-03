@@ -64,7 +64,7 @@ import 'hyperclayjs/presets/standard.js';
 | persist | 2.5KB | Persist input/select/textarea values to the DOM with [persist] attribute |
 | save-core | 6.3KB | Basic save function only - hyperclay.savePage() |
 | save-system | 7KB | Manual save: keyboard shortcut (CMD+S), save button, change tracking |
-| save-toast | 0.9KB | Toast notifications for save events (opt-in) |
+| save-toast | 0.9KB | Toast notifications for save events |
 
 ### Custom Attributes (HTML enhancements)
 
@@ -82,7 +82,6 @@ import 'hyperclayjs/presets/standard.js';
 | Module | Size | Description |
 |--------|------|-------------|
 | dialogs | 8.4KB | ask(), consent(), tell(), snippet() dialog functions |
-| tailwind-play | 0.7KB | Live Tailwind CSS editing, lazy-loads ~370KB script in edit mode only |
 | the-modal | 19.8KB | Full modal window creation system - window.theModal |
 | toast | 7.7KB | Success/error message notifications, toast(msg, msgType) |
 
@@ -138,7 +137,7 @@ Standard feature set for most use cases
 
 **Modules:** `save-core`, `save-system`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `save-toast`, `export-to-window`
 
-### Everything (~149.6KB)
+### Everything (~148.9KB)
 All available features
 
 Includes all available modules across all categories.
@@ -150,7 +149,6 @@ Some modules with large vendor dependencies are **lazy-loaded** to optimize page
 | Module | Wrapper Size | Vendor Size | Loaded When |
 |--------|-------------|-------------|-------------|
 | `sortable` | ~3KB | ~118KB | Edit mode only |
-| `tailwind-play` | ~1KB | ~370KB | Edit mode only |
 
 **How it works:**
 - The wrapper module checks if the page is in edit mode (`isEditMode`)
@@ -160,7 +158,7 @@ Some modules with large vendor dependencies are **lazy-loaded** to optimize page
 
 This means:
 - **Editors** get full functionality when needed
-- **Viewers** never download ~500KB of vendor scripts
+- **Viewers** never download the heavy vendor scripts
 - **Saved pages** stay clean with no leftover script tags
 
 ## Visual Configurator
@@ -369,7 +367,6 @@ MIT © Hyperclay
 This project includes the following open-source libraries:
 
 - **[Idiomorph](https://github.com/bigskysoftware/idiomorph)** - DOM morphing library by Big Sky Software (0BSD)
-- **[Tailwind CSS](https://github.com/tailwindlabs/tailwindcss)** - Utility-first CSS framework by Tailwind Labs (MIT)
 - **[Sortable.js](https://github.com/SortableJS/Sortable)** - Drag-and-drop library (MIT)
 
 ## Links

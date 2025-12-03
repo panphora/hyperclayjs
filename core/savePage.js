@@ -100,6 +100,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (isEditMode) {
     // Capture initial state immediately for comparison
     lastSavedContents = getPageContents();
+    // Set initial save status to 'saved'
+    document.documentElement.setAttribute('savestatus', 'saved');
   }
 });
 

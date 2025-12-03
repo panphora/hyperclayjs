@@ -2,7 +2,7 @@
 
 ## Problem
 
-Large vendor scripts (Sortable.js ~118KB, tailwind-play ~370KB) were bundled directly into modules, forcing all users to download them even if they were just viewing the page.
+Large vendor scripts (Sortable.js ~118KB) were bundled directly into modules, forcing all users to download them even if they were just viewing the page.
 
 ## Solution
 
@@ -15,27 +15,27 @@ Conditionally load heavy vendor scripts only when in edit mode via dynamically i
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │  Module System                                              │
-│  ┌─────────────────────┐    ┌─────────────────────────────┐ │
-│  │ sortable.js (~3KB)  │    │ tailwind-play.js (~1KB)     │ │
-│  │ (wrapper)           │    │ (wrapper)                   │ │
-│  └──────────┬──────────┘    └──────────────┬──────────────┘ │
-└─────────────┼──────────────────────────────┼────────────────┘
-              │                              │
-              │ if (isEditMode)              │ if (isEditMode)
-              │ inject <script>              │ inject <script>
-              ▼                              ▼
+│  ┌─────────────────────┐                                    │
+│  │ sortable.js (~3KB)  │                                    │
+│  │ (wrapper)           │                                    │
+│  └──────────┬──────────┘                                    │
+└─────────────┼───────────────────────────────────────────────┘
+              │
+              │ if (isEditMode)
+              │ inject <script>
+              ▼
 ┌─────────────────────────────────────────────────────────────┐
 │  CDN / Vendor Files (not in module graph)                   │
-│  ┌─────────────────────┐    ┌─────────────────────────────┐ │
-│  │ Sortable.vendor.js  │    │ tailwind-play.vendor.js     │ │
-│  │ (~118KB)            │    │ (~370KB)                    │ │
-│  └─────────────────────┘    └─────────────────────────────┘ │
+│  ┌─────────────────────┐                                    │
+│  │ Sortable.vendor.js  │                                    │
+│  │ (~118KB)            │                                    │
+│  └─────────────────────┘                                    │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ### Flow
 
-1. **User includes module** (e.g., `sortable` or `tailwind-play`)
+1. **User includes module** (e.g., `sortable`)
 2. **Wrapper checks `isEditMode`**
    - If `false`: Do nothing (0 bytes loaded)
    - If `true`: Continue to step 3
@@ -48,7 +48,7 @@ Conditionally load heavy vendor scripts only when in edit mode via dynamically i
 
 ### Code Pattern
 
-Both wrappers use a shared utility (`utilities/loadVendorScript.js`):
+Wrappers use a shared utility (`utilities/loadVendorScript.js`):
 
 ```js
 import { isEditMode } from "../core/isAdminOfCurrentResource.js";
@@ -84,7 +84,6 @@ async function init() {
 | Module | Before | After | Savings |
 |--------|--------|-------|---------|
 | sortable | 118.1KB | 3.1KB | ~115KB |
-| tailwind-play | 362.3KB | 0.9KB | ~361KB |
 
 ## Benefits
 
@@ -97,8 +96,6 @@ async function init() {
 ## Files Changed
 
 - `vendor/Sortable.js` → `vendor/Sortable.vendor.js`
-- `vendor/tailwind-play.js` → `vendor/tailwind-play.vendor.js`
-- `utilities/loadVendorScript.js` (new shared utility)
+- `utilities/loadVendorScript.js` (shared utility)
 - `custom-attributes/sortable.js` (rewritten as wrapper)
-- `vendor/tailwind-play.js` (new wrapper)
 - `build/generate-dependency-graph.js` (updated module definitions)

@@ -155,14 +155,7 @@
     "utilities/pipe.js": [],
     "utilities/throttle.js": [],
     "vendor/Sortable.vendor.js": [],
-    "vendor/idiomorph.min.js": [],
-    "vendor/tailwind-play.js": [
-      "core/isAdminOfCurrentResource.js",
-      "utilities/loadVendorScript.js"
-    ],
-    "vendor/tailwind-play.vendor.js": [
-      "dom-utilities/insertStyleTag.js"
-    ]
+    "vendor/idiomorph.min.js": []
   },
   "modules": {
     "save-core": {
@@ -219,7 +212,7 @@
       "files": [
         "core/saveToast.js"
       ],
-      "description": "Toast notifications for save events (opt-in)",
+      "description": "Toast notifications for save events",
       "exports": {}
     },
     "edit-mode-helpers": {
@@ -414,16 +407,6 @@
           "hyperclay"
         ]
       }
-    },
-    "tailwind-play": {
-      "name": "tailwind-play",
-      "category": "ui",
-      "size": 0.7,
-      "files": [
-        "vendor/tailwind-play.js"
-      ],
-      "description": "Live Tailwind CSS editing, lazy-loads ~370KB script in edit mode only",
-      "exports": {}
     },
     "mutation": {
       "name": "mutation",
@@ -707,7 +690,6 @@
     "toast": "./ui/toast.js",
     "toast-hyperclay": "./ui/toast-hyperclay.js",
     "the-modal": "./ui/theModal.js",
-    "tailwind-play": "./vendor/tailwind-play.js",
     "mutation": "./utilities/mutation.js",
     "nearest": "./utilities/nearest.js",
     "cookie": "./utilities/cookie.js",
@@ -760,8 +742,7 @@
       "modules": [
         "dialogs",
         "toast",
-        "the-modal",
-        "tailwind-play"
+        "the-modal"
       ]
     },
     "utilities": {
@@ -861,7 +842,6 @@
         "toast",
         "toast-hyperclay",
         "the-modal",
-        "tailwind-play",
         "mutation",
         "nearest",
         "cookie",
