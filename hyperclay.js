@@ -31,7 +31,7 @@ const MODULE_PATHS = {
   "save-toast": "./core/saveToast.js",
   "edit-mode-helpers": "./core/adminSystem.js",
   "persist": "./core/enablePersistentFormInputValues.js",
-  "option-visibility": "./core/optionVisibilityRuleGenerator.js",
+  "option-visibility": "./core/optionVisibility.js",
   "edit-mode": "./core/editmodeSystem.js",
   "event-attrs": "./custom-attributes/events.js",
   "ajax-elements": "./custom-attributes/ajaxElements.js",

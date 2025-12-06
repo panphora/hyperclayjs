@@ -81,7 +81,7 @@ const MODULE_DEFINITIONS = {
     description: 'Persist input/select/textarea values to the DOM with [persist] attribute'
     // No exports - auto-inits on load
   },
-  'core/optionVisibilityRuleGenerator.js': {
+  'core/optionVisibility.js': {
     name: 'option-visibility',
     moduleId: 'option-visibility',
     description: 'Dynamic show/hide based on ancestor state with option:attribute="value"'

@@ -68,7 +68,7 @@
       "string-utilities/query.js",
       "utilities/cookie.js"
     ],
-    "core/optionVisibilityRuleGenerator.js": [
+    "core/optionVisibility.js": [
       "utilities/mutation.js"
     ],
     "core/savePage.js": [
@@ -242,9 +242,9 @@
     "option-visibility": {
       "name": "option-visibility",
       "category": "core",
-      "size": 4.7,
+      "size": 5.9,
       "files": [
-        "core/optionVisibilityRuleGenerator.js"
+        "core/optionVisibility.js"
       ],
       "description": "Dynamic show/hide based on ancestor state with option:attribute=\"value\"",
       "exports": {}
@@ -678,7 +678,7 @@
     "save-toast": "./core/saveToast.js",
     "edit-mode-helpers": "./core/adminSystem.js",
     "persist": "./core/enablePersistentFormInputValues.js",
-    "option-visibility": "./core/optionVisibilityRuleGenerator.js",
+    "option-visibility": "./core/optionVisibility.js",
     "edit-mode": "./core/editmodeSystem.js",
     "event-attrs": "./custom-attributes/events.js",
     "ajax-elements": "./custom-attributes/ajaxElements.js",

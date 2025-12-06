@@ -121,7 +121,7 @@ export function savePage(callback = () => {}) {
 
     const msg = err.name === 'AbortError'
       ? 'Server not responding'
-      : (err.message || 'Failed to save');
+      : 'Save failed';
 
     if (typeof callback === 'function') {
       callback({msg, msgType: "error"});

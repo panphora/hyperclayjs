@@ -60,7 +60,7 @@ import 'hyperclayjs/presets/standard.js';
 | autosave | 1.1KB | Auto-save on DOM changes, unsaved changes warning |
 | edit-mode | 1.8KB | Toggle edit mode on hyperclay on/off |
 | edit-mode-helpers | 5.4KB | Admin-only functionality: [edit-mode-input], [edit-mode-resource], [edit-mode-onclick] |
-| option-visibility | 4.7KB | Dynamic show/hide based on ancestor state with option:attribute="value" |
+| option-visibility | 5.9KB | Dynamic show/hide based on ancestor state with option:attribute="value" |
 | persist | 2.5KB | Persist input/select/textarea values to the DOM with [persist] attribute |
 | save-core | 6.3KB | Basic save function only - hyperclay.savePage() |
 | save-system | 7.1KB | Manual save: keyboard shortcut (CMD+S), save button, change tracking |
@@ -132,12 +132,12 @@ Essential features for basic editing
 
 **Modules:** `save-core`, `save-system`, `edit-mode-helpers`, `toast`, `save-toast`, `export-to-window`
 
-### Standard (~44.3KB)
+### Standard (~45.5KB)
 Standard feature set for most use cases
 
 **Modules:** `save-core`, `save-system`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `save-toast`, `export-to-window`
 
-### Everything (~149KB)
+### Everything (~150.2KB)
 All available features
 
 Includes all available modules across all categories.

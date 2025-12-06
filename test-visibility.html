@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Option Visibility Test</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; padding: 2rem; max-width: 800px; margin: 0 auto; }
+        .box { padding: 1.5rem; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 1.5rem; background: #f8fafc; }
+        .target { 
+            padding: 1rem; 
+            background: #dcfce7; 
+            border: 1px solid #86efac; 
+            color: #166534;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+            font-weight: bold;
+        }
+        .target::after { content: " (VISIBLE)"; }
+        
+        /* We can't style the hidden element itself (it's hidden), but we can style a placeholder to show it's gone */
+        .placeholder { color: #94a3b8; font-style: italic; font-size: 0.9em; }
+        
+        button {
+            background: #3b82f6; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;
+            font-size: 1rem; margin-top: 1rem;
+        }
+        button:hover { background: #2563eb; }
+    </style>
+</head>
+<body>
+    <h1>Option Visibility Logic Test</h1>
+    <p>Testing the CSS Layers implementation (<code>core/optionVisibility.js</code>).</p>
+
+    <!-- CASE 1 -->
+    <div class="box">
+        <h3>1. Default State (Should be Hidden)</h3>
+        <div class="placeholder">If you see a green box below, it failed.</div>
+        <div class="target" option:mode="edit">I SHOULD BE HIDDEN</div>
+    </div>
+
+    <!-- CASE 2 -->
+    <div class="box" mode="edit">
+        <h3>2. Matching Context (Should be Visible)</h3>
+        <p>Parent has <code>mode="edit"</code></p>
+        <div class="target" option:mode="edit">I SHOULD BE VISIBLE</div>
+    </div>
+
+    <!-- CASE 3 -->
+    <div class="box" mode="view">
+        <h3>3. Mismatching Context (Should be Hidden)</h3>
+        <p>Parent has <code>mode="view"</code></p>
+        <div class="placeholder">If you see a green box below, it failed.</div>
+        <div class="target" option:mode="edit">I SHOULD BE HIDDEN</div>
+    </div>
+
+    <!-- CASE 4 -->
+    <div class="box" id="dynamic-parent" mode="view">
+        <h3>4. Dynamic Context Switching</h3>
+        <p>Current Parent Attribute: <code id="status-label">mode="view"</code></p>
+        
+        <div class="target" option:mode="view">I am for VIEW mode</div>
+        <div class="target" option:mode="edit">I am for EDIT mode</div>
+        
+        <button id="toggle-btn">Toggle Mode</button>
+    </div>
+
+    <script type="module">
+        import optionVisibility from './core/optionVisibility.js';
+
+        // Initialize
+        optionVisibility.debug = true;
+        optionVisibility.start();
+
+        // Setup Interaction
+        const parent = document.getElementById('dynamic-parent');
+        const label = document.getElementById('status-label');
+        const btn = document.getElementById('toggle-btn');
+
+        btn.addEventListener('click', () => {
+            const current = parent.getAttribute('mode');
+            const next = current === 'view' ? 'edit' : 'view';
+            
+            console.log(`[Test] Switching mode from ${current} to ${next}`);
+            parent.setAttribute('mode', next);
+            label.textContent = `mode="${next}"`;
+        });
+    </script>
+</body>
+</html>
