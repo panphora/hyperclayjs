@@ -321,8 +321,12 @@ echo ""
 git add package.json CHANGELOG.md module-dependency-graph.json hyperclay.js README.md build/load-jsdelivr.html
 
 # Commit
-COMMIT_MSG="chore: release v$NEW_VERSION"
-git commit -m "$COMMIT_MSG"
+git commit -m "$(cat <<EOF
+chore: release v$NEW_VERSION
+
+$CHANGELOG_ENTRIES
+EOF
+)"
 success "Changes committed"
 
 # Create tag
