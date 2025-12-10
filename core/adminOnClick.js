@@ -16,11 +16,28 @@ export function enableOnClickForAdminOnPageLoad () {
   if (!isEditMode) return;
 
   onDomReady(() => {
-    document.querySelectorAll('[edit-mode-onclick]').forEach(resource => {
-      const originalValue = resource.getAttribute("inert-onclick");
-      resource.setAttribute("onclick", originalValue);
-      resource.removeAttribute("inert-onclick");
-    });
+    enableOnClick();
+  });
+}
+
+// Runtime toggle functions
+export function enableOnClick() {
+  document.querySelectorAll('[edit-mode-onclick]').forEach(el => {
+    const val = el.getAttribute("inert-onclick");
+    if (val) {
+      el.setAttribute("onclick", val);
+      el.removeAttribute("inert-onclick");
+    }
+  });
+}
+
+export function disableOnClick() {
+  document.querySelectorAll('[edit-mode-onclick]').forEach(el => {
+    const val = el.getAttribute("onclick");
+    if (val) {
+      el.setAttribute("inert-onclick", val);
+      el.removeAttribute("onclick");
+    }
   });
 }
 
@@ -29,3 +46,9 @@ export function init() {
   disableOnClickBeforeSave();
   enableOnClickForAdminOnPageLoad();
 }
+
+// Export to window
+window.hyperclay = window.hyperclay || {};
+window.hyperclay.enableOnClick = enableOnClick;
+window.hyperclay.disableOnClick = disableOnClick;
+window.h = window.hyperclay;

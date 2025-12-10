@@ -336,6 +336,28 @@ const defaultPlugins = {
       });
 
       return this;
+    },
+
+    pluck(attr) {
+      return this.map(el => el.getAttribute(attr));
+    },
+
+    unique() {
+      return [...new Set(this)];
+    },
+
+    sortBy(fn) {
+      if (typeof fn === 'string') {
+        const attr = fn;
+        fn = el => el.getAttribute(attr);
+      }
+      return [...this].sort((a, b) => {
+        const aVal = fn(a);
+        const bVal = fn(b);
+        if (aVal < bVal) return -1;
+        if (aVal > bVal) return 1;
+        return 0;
+      });
     }
   }
 };

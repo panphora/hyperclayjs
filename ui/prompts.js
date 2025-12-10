@@ -98,27 +98,22 @@ export function tell(promptText, ...content) {
 
 /**
  * Display a modal with a code snippet and copy functionality
- * Following the existing modal pattern from prompts.js
+ * @param {string} title - The modal heading
+ * @param {string} content - The code to display
+ * @param {string} extraContent - Optional warning/info text below the copy button
  */
-export function snippet(title, content, options = {}) {
-  const {
-    extraContent = 'Save this, it won\'t be shown again. Expires in 1 year.'
-  } = options;
+export function snippet(title, content, extraContent = '') {
 
   // Create the modal content with copy button
   const modalContent = `
-    <div class="bg-[#292E54] p-4 mb-[14px] max-w-[420px]">
-      <div class="overflow-x-auto">
-        <pre class="text-white font-mono text-sm whitespace-nowrap">${content}</pre>
-      </div>
+    <div class="snippet-code-block">
+      <pre>${content}</pre>
     </div>
 
-    <button type="button" class="custom-button group font-fixedsys text-center cursor-pointer border-[3px] border-t-[#474C65] border-r-[#131725] border-b-[#131725] border-l-[#474C65] bg-[#1D1F2F] hover:bg-[#232639] active:border-b-[#474C65] active:border-l-[#131725] active:border-t-[#131725] active:border-r-[#474C65] text-[23px] p-[2px_16px_4px] w-full mb-4 copy-snippet-btn">
-      <span class="whitespace-nowrap select-none inline-block group-active:translate-x-[1.5px] group-active:translate-y-[1.5px]">copy</span>
-    </button>
+    <button type="button" class="micromodal__secondary-btn copy-snippet-btn" style="margin-bottom: 14px;">copy</button>
 
     ${extraContent ? `
-      <div class="p-3 border-2 border-[#989742] bg-[#1E1E11] text-sm text-[#FBF7B7] max-w-[420px]">
+      <div class="snippet-warning">
         ${extraContent}
       </div>
     ` : ''}
@@ -131,7 +126,7 @@ export function snippet(title, content, options = {}) {
   </div>`;
 
   themodal.closeHtml = CLOSE_BUTTON_SVG;
-  themodal.yes = CONFIRM_BUTTON_SVG;
+  themodal.yes = '';
 
   const promise = new Promise((resolve) => {
     // Local copy function

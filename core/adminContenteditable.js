@@ -16,16 +16,25 @@ export function enableContentEditableForAdminOnPageLoad () {
   if (!isEditMode) return;
 
   onDomReady(() => {
-    document.querySelectorAll('[edit-mode-contenteditable]').forEach(resource => {
-      let originalValue = resource.getAttribute("inert-contenteditable");
+    enableContentEditable();
+  });
+}
 
-      if (!["false", "plaintext-only"].includes(originalValue)) {
-        originalValue = "true";
-      }
+// Runtime toggle functions
+export function enableContentEditable() {
+  document.querySelectorAll('[edit-mode-contenteditable]').forEach(el => {
+    let val = el.getAttribute("inert-contenteditable");
+    if (!["false", "plaintext-only"].includes(val)) val = "true";
+    el.setAttribute("contenteditable", val);
+    el.removeAttribute("inert-contenteditable");
+  });
+}
 
-      resource.setAttribute("contenteditable", originalValue);
-      resource.removeAttribute("inert-contenteditable");
-    });
+export function disableContentEditable() {
+  document.querySelectorAll('[edit-mode-contenteditable]').forEach(el => {
+    const val = el.getAttribute("contenteditable") || "true";
+    el.setAttribute("inert-contenteditable", val);
+    el.removeAttribute("contenteditable");
   });
 }
 
@@ -34,3 +43,9 @@ export function init() {
   disableContentEditableBeforeSave();
   enableContentEditableForAdminOnPageLoad();
 }
+
+// Export to window
+window.hyperclay = window.hyperclay || {};
+window.hyperclay.enableContentEditable = enableContentEditable;
+window.hyperclay.disableContentEditable = disableContentEditable;
+window.h = window.hyperclay;

@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Use HyperclayJS</title>
+    <style>
+        @font-face {
+            font-family: 'Berkeley Mono';
+            src: url('./BerkeleyMonoVariable-Regular.woff2') format('woff2');
+            font-weight: 100 900;
+            font-style: normal;
+            font-display: swap;
+        }
+        :root {
+            --primary-blue: #3E43EF;
+            --shadow-blue: #F1F2FE;
+            --light-blue: #8A8FEF;
+            --white: #FFFFFF;
+            --red: #DC2626;
+            --green: #10B981;
+            --yellow: #F59E0B;
+            --gray: #6B7280;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Berkeley Mono', monospace;
+            background-color: white;
+            color: var(--primary-blue);
+            padding: 1.5rem;
+            line-height: 1.6;
+            text-wrap: pretty;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            margin-bottom: 2rem;
+        }
+
+        .header .nav-link {
+            display: inline-block;
+            margin-bottom: 0.75rem;
+        }
+
+        .nav-link {
+            font-weight: bold;
+            color: var(--primary-blue);
+            text-decoration: none;
+            border: 2px solid var(--primary-blue);
+            padding: 0.5rem 1rem;
+            background: white;
+            box-shadow: 4px 4px 0 var(--shadow-blue);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--primary-blue);
+            margin-bottom: 0.25rem;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--light-blue);
+        }
+
+        /* Main Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Feature Categories */
+        .feature-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: linear-gradient(90deg, var(--shadow-blue) 0%, transparent 100%);
+            border-left: 4px solid var(--primary-blue);
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--primary-blue);
+        }
+
+        .section-size {
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+
+        /* Feature Grid */
+        .feature-grid {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border: 2px solid var(--primary-blue);
+            background: white;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .feature-item.selected {
+            background: var(--shadow-blue);
+            box-shadow: 4px 4px 0 var(--primary-blue);
+        }
+
+        .feature-checkbox {
+            appearance: none;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 2px solid var(--primary-blue);
+            background: white;
+            margin-right: 1rem;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .feature-checkbox:checked {
+            background: var(--primary-blue);
+            position: relative;
+        }
+
+        .feature-checkbox:checked::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 14px;
+            height: 14px;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 8L6 12L14 4' stroke='white' stroke-width='3' stroke-linecap='square' stroke-linejoin='miter'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .feature-info {
+            flex-grow: 1;
+        }
+
+        .feature-name {
+            font-weight: bold;
+            color: var(--primary-blue);
+            margin-bottom: 0.25rem;
+        }
+
+        .feature-description {
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+
+        .feature-exports {
+            font-size: 0.75rem;
+            color: var(--medium-gray);
+            margin-top: 0.25rem;
+        }
+
+        .feature-dependencies {
+            font-size: 0.75rem;
+            color: var(--green);
+            margin-top: 0.25rem;
+            font-style: italic;
+        }
+
+        .feature-size {
+            font-size: 0.875rem;
+            color: var(--primary-blue);
+            font-weight: bold;
+            margin-left: 1rem;
+        }
+
+        .feature-size.large {
+            color: var(--red);
+        }
+
+        /* Preset Buttons */
+        .preset-section {
+            margin-bottom: 2rem;
+        }
+
+        .preset-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .preset-button {
+            padding: 0.75rem 1.5rem;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: bold;
+            border: 2px solid var(--primary-blue);
+            background: white;
+            color: var(--primary-blue);
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 4px 4px 0 var(--shadow-blue);
+        }
+
+        .preset-button:hover {
+            box-shadow: 2px 2px 0 var(--shadow-blue);
+            transform: translate(2px, 2px);
+        }
+
+        .preset-button.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: sticky;
+            top: 2rem;
+            height: fit-content;
+        }
+
+        .summary-box {
+            padding: 1.5rem;
+            border: 2px solid var(--primary-blue);
+            box-shadow: 4px 4px 0 var(--shadow-blue);
+            background: white;
+            margin-bottom: 2rem;
+        }
+
+        .summary-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+        }
+
+        .summary-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--shadow-blue);
+        }
+
+        .summary-stat:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            color: var(--gray);
+        }
+
+        .stat-value {
+            font-weight: bold;
+            color: var(--primary-blue);
+        }
+
+        .stat-value.large {
+            color: var(--red);
+        }
+
+        .stat-value.medium {
+            color: var(--yellow);
+        }
+
+        .stat-value.small {
+            color: var(--green);
+        }
+
+        /* URL Output */
+        .url-output {
+            margin-top: 2rem;
+        }
+
+        .url-label {
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .url-container {
+            position: relative;
+        }
+
+        .url-textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--primary-blue);
+            background: white;
+            color: var(--primary-blue);
+            font-family: inherit;
+            font-size: 0.875rem;
+            box-shadow: 4px 4px 0 var(--shadow-blue);
+            resize: none;
+            overflow-x: auto;
+            overflow-y: hidden;
+            line-height: 1.5;
+        }
+
+        .url-note {
+            font-size: 0.75rem;
+            color: var(--gray);
+            margin: 0.75rem 0;
+            line-height: 1.4;
+        }
+
+        /* Toggle Switch */
+        .toggle-option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+            margin: 0.75rem 0;
+            border-top: 1px solid var(--shadow-blue);
+            border-bottom: 1px solid var(--shadow-blue);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: var(--primary-blue);
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        .toggle-label {
+            font-size: 0.8rem;
+            color: var(--gray);
+            line-height: 1.3;
+        }
+
+        .toggle-label strong {
+            color: var(--primary-blue);
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .copy-button {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .copy-button.copied {
+            background: var(--green);
+        }
+
+        /* Feature List */
+        .selected-features {
+            margin-top: 1.5rem;
+        }
+
+        .feature-list-title {
+            font-size: 0.875rem;
+            font-weight: bold;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-tag {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: var(--shadow-blue);
+            color: var(--primary-blue);
+            font-size: 0.75rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Size Indicator */
+        .size-indicator {
+            width: 100%;
+            height: 20px;
+            background: var(--shadow-blue);
+            border: 2px solid var(--primary-blue);
+            margin-top: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .size-bar {
+            height: 100%;
+            background: var(--primary-blue);
+            transition: width 0.3s ease;
+        }
+
+        .size-bar.large {
+            background: var(--red);
+        }
+
+        .size-bar.medium {
+            background: var(--yellow);
+        }
+
+        .size-bar.small {
+            background: var(--green);
+        }
+
+        /* Info Box */
+        .info-box {
+            padding: 1rem;
+            background: var(--shadow-blue);
+            border-left: 4px solid var(--primary-blue);
+            margin-bottom: 2rem;
+        }
+
+        .info-text {
+            font-size: 0.875rem;
+            color: var(--primary-blue);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="index.html" class="nav-link">&larr; Home</a>
+            <h1>Use HyperclayJS</h1>
+            <p class="subtitle">Build exactly what you want for your HTML app</p>
+        </div>
+
+        <div class="main-grid">
+            <div class="features-column">
+                <!-- Preset Buttons -->
+                <div class="preset-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Quick Presets</h2>
+                    </div>
+                    <div class="preset-buttons">
+                        <button class="preset-button" data-preset="minimal">Minimal (23KB)</button>
+                        <button class="preset-button" data-preset="standard">Standard (50KB)</button>
+                        <button class="preset-button" data-preset="everything">Everything (220KB)</button>
+                    </div>
+                </div>
+
+                <!-- Core Features -->
+                <div class="feature-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Core Features</h2>
+                        <span class="section-size">Essential functionality</span>
+                    </div>
+                    <div class="feature-grid">
+                        <label class="feature-item">
+                            <input type="checkbox" class="feature-checkbox" data-feature="save-core" data-size="3">
+                            <div class="feature-info">
+                                <div class="feature-name">Save Core</div>
+                                <div class="feature-description">Basic save function only `hyperclay.savePage` - call yourself, handle notifications</div>
+                            </div>
+                            <span class="feature-size">3KB</span>
+                        </label>
+                        <label class="feature-item">
+                            <input type="checkbox" class="feature-checkbox" data-feature="save" data-size="3" data-requires="save-core,toast,mutation">
+                            <div class="feature-info">
+                                <div class="feature-name">Save System</div>
+                                <div class="feature-description">Full save: save button, keyboard shortcut, auto-save, change tracking</div>
+                            </div>
+                            <span class="feature-size">3KB</span>
+                        </label>
+                        <label class="feature-item">
+                            <input type="checkbox" class="feature-checkbox" data-feature="admin" data-size="10" data-requires="cookie">
+                            <div class="feature-info">
+                                <div class="feature-name">Admin Features</div>
+                                <div class="feature-description">Hides admin inputs, admin scripts, admin contenteditable, admin onclick for regular viewers</div>
+                            </div>
+                            <span class="feature-size">10KB</span>
+                        </label>
+                        <label class="feature-item">
+                            <input type="checkbox" class="feature-checkbox" data-feature="persist" data-size="1.4">
+                            <div class="feature-info">
+                                <div class="feature-name">Form Persistence</div>
+                                <div class="feature-description">Persist input/select/textarea values to the DOM with [persist] attribute, so they're saved</div>
+                            </div>
+                            <span class="feature-size">1.4KB</span>
+                        </label>
+                        <label class="feature-item">
+                            <input type="checkbox" class="feature-checkbox" data-feature="options" data-size="4.4" data-requires="mutation">
+                            <div class="feature-info">
+                                <div class="feature-name">Option Visibility</div>
+                                <div class="feature-description">Dynamic show/hide based on page state with `option:attribute="value"`</div>
+                            </div>
+                            <span class="feature-size">4.4KB</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Custom Attributes -->
+                <div class="feature-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Custom Attributes</h2>
+                        <span class="section-size">HTML enhancements</span>
+                    </div>
+                    <div class="feature-grid">
+                        <label class="feature-item">
+                            <input type="checkbox" class="feature-checkbox" data-feature="events" data-size="2.7">
+                            <div class="feature-info">
+                                <div class="feature-name">Event Attributes</div>
+                                <div class="feature-description">[onclickaway], [onclone], [onpagemutation], [onrender]</div>
+                            </div>
+                            <span class="feature-size">2.7KB</span>
+                        </label>
+                        <label class="feature-item">
+                            <input type="checkbox" class="feature-checkbox" data-feature="ajax" data-size="1.8">
+                            <div class="feature-info">
+                                <div class="feature-name">AJAX Elements</div>
+                                <div class="feature-description">[ajax-form], [ajax-button] for async form submissions</div>
+                            </div>
+                            <span class="feature-size">1.8KB</span>
+                        </label>
+                        <label class="feature-item">
+                            <input type="checkbox" class="feature-checkbox" data-feature="sortable" data-size="118" data-requires="mutation">
+                            <div class="feature-info">
+                                <div class="feature-name">Sortable</div>
+                                <div class="feature-description">Drag-drop sorting with [sortable], includes Sortable.js</div>
+                            </div>
+                            <span class="feature-size large">118KB</span>
+                        </label>
+                        <label class="feature-item">
+                            <input type="checkbox" class="feature-checkbox" data-feature="helpers" data-size="5.3" data-requires="nearest">
+                            <div class="feature-info">
+                                <div class="feature-name">DOM Helpers</div>
+                                <div class="feature-description">el.nearest, el.val, el.text, el.exec, el.cycle</div>
+                            </div>
+                            <span class="feature-size">5.3KB</span>
+                        </label>
+                        <label class="feature-item">
+                            <input type="checkbox" class="feature-checkbox" data-feature="inputs" data-size="1">
+                            <div class="feature-info">
+                                <div class="feature-name">Input Helpers</div>
+                                <div class="feature-description">[prevent-enter], [autosize] for textareas</div>
+                            </div>
+                            <span class="feature-size">1KB</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- UI Components -->
+                <div class="feature-section">
+                    <div class="section-header">
+                        <h2 class="section-title">UI Components</h2>
+                        <span class="section-size">User interface elements</span>
+                    </div>
+                    <div class="feature-grid">
+                        <label class="feature-item">
+                            <input type="checkbox" class="feature-checkbox" data-feature="prompts" data-size="7.5" data-requires="modals,toast">
+                            <div class="feature-info">
+                                <div class="feature-name">Dialog Functions</div>
+                                <div class="feature-description">ask(), consent(), tell(), snippet() functions</div>
+                            </div>
+                            <span class="feature-size">7.5KB</span>
+                        </label>
+                        <label class="feature-item">
+                            <input type="checkbox" class="feature-checkbox" data-feature="toast" data-size="7.3">
+                            <div class="feature-info">
+                                <div class="feature-name">Toast Notifications</div>
+                                <div class="feature-description">Success/error message notifications, `toast(msg, msgType)`</div>
+                            </div>
+                            <span class="feature-size">7.3KB</span>
+                        </label>
+                        <label class="feature-item">
+                            <input type="checkbox" class="feature-checkbox" data-feature="modals" data-size="18.8">
+                            <div class="feature-info">
+                                <div class="feature-name">Modal System</div>
+                                <div class="feature-description">Full modal window creation system, access `window.theModal`</div>
+                            </div>
+                            <span class="feature-size">18.8KB</span>
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="sidebar">
+                <!-- Summary Box -->
+                <div class="summary-box">
+                    <h3 class="summary-title">Configuration Summary</h3>
+                    <div class="summary-stat">
+                        <span class="stat-label">Features Selected:</span>
+                        <span class="stat-value" id="feature-count">0</span>
+                    </div>
+                    <div class="summary-stat">
+                        <span class="stat-label">Total Size:</span>
+                        <span class="stat-value" id="total-size">0KB</span>
+                    </div>
+
+                    <div class="size-indicator">
+                        <div class="size-bar" id="size-bar"></div>
+                    </div>
+
+                    <div class="selected-features">
+                        <div class="feature-list-title">Selected Features:</div>
+                        <div id="selected-features-list"></div>
+                    </div>
+                </div>
+
+                <!-- URL Output -->
+                <div class="url-output">
+                    <div class="url-label">Add to your page:</div>
+                    <div class="url-container">
+                        <textarea class="url-textarea" id="generated-url" readonly wrap="off"></textarea>
+                    </div>
+                    <div class="toggle-option">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="export-to-window-toggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <div class="toggle-label">
+                            <strong>Export to window</strong>
+                            Attach modules to window.hyperclay
+                        </div>
+                    </div>
+                    <button class="copy-button" id="copy-button">COPY</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Load module dependency graph
+        let moduleData = null;
+        let features = {};
+        let presets = {};
+        let categories = {};
+
+        async function loadModuleData() {
+            try {
+                const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+                const fetchOptions = isLocal ? { cache: 'no-store' } : {};
+                const response = await fetch('/module-dependency-graph.json', fetchOptions);
+                moduleData = await response.json();
+
+                // Transform modules data to features format
+                features = moduleData.modules;
+                presets = moduleData.presets;
+                categories = moduleData.categories;
+
+                // Render the UI dynamically
+                renderUI();
+                initializeEventListeners();
+
+                // Initialize with standard preset
+                setTimeout(() => {
+                    const standardButton = document.querySelector('[data-preset="standard"]');
+                    if (standardButton) standardButton.click();
+                }, 100);
+            } catch (error) {
+                console.error('Failed to load module data:', error);
+            }
+        }
+
+        function renderUI() {
+            renderPresetButtons();
+            renderFeatureSections();
+        }
+
+        function renderPresetButtons() {
+            const container = document.querySelector('.preset-buttons');
+            if (!container) return;
+
+            container.innerHTML = '';
+
+            for (const [presetId, preset] of Object.entries(presets)) {
+                // Calculate preset size
+                const totalSize = preset.modules.reduce((sum, moduleId) => {
+                    return sum + (features[moduleId]?.size || 0);
+                }, 0);
+
+                const button = document.createElement('button');
+                button.className = 'preset-button';
+                button.dataset.preset = presetId;
+                button.textContent = `${preset.name} (${Math.round(totalSize)}KB)`;
+                container.appendChild(button);
+            }
+        }
+
+        function renderFeatureSections() {
+            const container = document.querySelector('.features-column');
+            if (!container) return;
+
+            // Find the preset section
+            const presetSection = container.querySelector('.preset-section');
+
+            // Remove all existing feature sections
+            const existingSections = container.querySelectorAll('.feature-section');
+            existingSections.forEach(section => section.remove());
+
+            // Render each category
+            for (const [categoryId, category] of Object.entries(categories)) {
+                if (!category.modules || category.modules.length === 0) continue;
+
+                const section = document.createElement('div');
+                section.className = 'feature-section';
+
+                // Calculate category total size
+                const categorySize = category.modules.reduce((sum, moduleId) => {
+                    return sum + (features[moduleId]?.size || 0);
+                }, 0);
+
+                section.innerHTML = `
+                    <div class="section-header">
+                        <h2 class="section-title">${category.name}</h2>
+                        <span class="section-size">${category.description}</span>
+                    </div>
+                    <div class="feature-grid" data-category="${categoryId}">
+                        ${category.modules.map(moduleId => {
+                            const module = features[moduleId];
+                            if (!module) return '';
+
+                            const sizeClass = module.size > 50 ? 'large' : '';
+                            const dependencies = getDependencies(moduleId);
+                            const requiresAttr = dependencies.length > 0 ? `data-requires="${dependencies.join(',')}"` : '';
+
+                            // Filter out hidden dependencies (not in any category)
+                            const visibleDependencies = dependencies.filter(depId => isVisibleModule(depId));
+                            const dependenciesText = visibleDependencies.length > 0
+                                ? `<div class="feature-dependencies">Requires: ${visibleDependencies.map(d => features[d]?.name || d).join(', ')}</div>`
+                                : '';
+
+                            // Generate exports text (will be updated dynamically based on export-to-window toggle)
+                            const exports = module.exports || {};
+                            const exportEntries = Object.entries(exports);
+                            let exportsText = '';
+                            if (exportEntries.length > 0) {
+                                const exportData = JSON.stringify(exports);
+                                const exportNames = exportEntries.map(([fnName]) => fnName);
+                                exportsText = `<div class="feature-exports" data-exports='${exportData}'>${exportNames.join(', ')}</div>`;
+                            }
+
+                            return `
+                                <label class="feature-item">
+                                    <input type="checkbox"
+                                           class="feature-checkbox"
+                                           data-feature="${moduleId}"
+                                           data-size="${module.size}"
+                                           ${requiresAttr}>
+                                    <div class="feature-info">
+                                        <div class="feature-name">${module.name}</div>
+                                        <div class="feature-description">${module.description}</div>
+                                        ${exportsText}
+                                        ${dependenciesText}
+                                    </div>
+                                    <span class="feature-size ${sizeClass}">${module.size.toFixed(1)}KB</span>
+                                </label>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+
+                container.appendChild(section);
+            }
+        }
+
+        function isVisibleModule(moduleId) {
+            // Check if module is in any category (visible modules)
+            for (const category of Object.values(categories)) {
+                if (category.modules && category.modules.includes(moduleId)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function getDependencies(moduleId) {
+            const module = features[moduleId];
+            if (!module || !module.files || !module.files[0]) return [];
+
+            const mainFile = module.files[0];
+            const deps = moduleData.rawDependencies[mainFile] || [];
+
+            // Convert file paths to module IDs
+            const depModuleIds = [];
+            for (const dep of deps) {
+                for (const [modId, mod] of Object.entries(features)) {
+                    if (mod.files && mod.files.includes(dep)) {
+                        if (modId !== moduleId) {
+                            depModuleIds.push(modId);
+                        }
+                        break;
+                    }
+                }
+            }
+
+            return [...new Set(depModuleIds)];
+        }
+
+        const ORIGINAL_SIZE = 2100; // 2.1MB in KB
+
+        // Initialize state
+        let selectedFeatures = new Set(['export-to-window']);
+        let currentPreset = null;
+
+        function initializeEventListeners() {
+            // Get all checkboxes and preset buttons
+            const checkboxes = document.querySelectorAll('.feature-checkbox');
+            const presetButtons = document.querySelectorAll('.preset-button');
+            const urlInput = document.getElementById('generated-url');
+            const copyButton = document.getElementById('copy-button');
+            const featureCountEl = document.getElementById('feature-count');
+            const totalSizeEl = document.getElementById('total-size');
+            const selectedFeaturesEl = document.getElementById('selected-features-list');
+            const sizeBar = document.getElementById('size-bar');
+
+            // Update UI when features change
+            function updateUI() {
+            // Update feature items visual state
+            checkboxes.forEach(checkbox => {
+                const featureItem = checkbox.closest('.feature-item');
+                if (checkbox.checked) {
+                    featureItem.classList.add('selected');
+                } else {
+                    featureItem.classList.remove('selected');
+                }
+            });
+
+            // Sync export-to-window toggle
+            const exportToggle = document.getElementById('export-to-window-toggle');
+            exportToggle.checked = selectedFeatures.has('export-to-window');
+
+            // Update exports text based on toggle state
+            const hasExportToWindow = selectedFeatures.has('export-to-window');
+            document.querySelectorAll('.feature-exports[data-exports]').forEach(el => {
+                const exports = JSON.parse(el.dataset.exports);
+                const allExports = [];
+                for (const [fnName, targets] of Object.entries(exports)) {
+                    if (hasExportToWindow) {
+                        if (targets.includes('window')) allExports.push(`window.${fnName}`);
+                        if (targets.includes('hyperclay')) allExports.push(`hyperclay.${fnName}`);
+                    } else {
+                        allExports.push(fnName);
+                    }
+                }
+                el.textContent = allExports.join(', ');
+            });
+
+            // Calculate total size
+            let totalSize = 0;
+            selectedFeatures.forEach(feature => {
+                totalSize += features[feature].size;
+            });
+
+            // Update summary
+            featureCountEl.textContent = selectedFeatures.size;
+
+            // Format size display
+            if (totalSize < 1000) {
+                totalSizeEl.textContent = totalSize.toFixed(1) + 'KB';
+            } else {
+                totalSizeEl.textContent = (totalSize / 1000).toFixed(2) + 'MB';
+            }
+
+            // Color code the size
+            if (totalSize > 200) {
+                totalSizeEl.className = 'stat-value large';
+                sizeBar.className = 'size-bar large';
+            } else if (totalSize > 100) {
+                totalSizeEl.className = 'stat-value medium';
+                sizeBar.className = 'size-bar medium';
+            } else {
+                totalSizeEl.className = 'stat-value small';
+                sizeBar.className = 'size-bar small';
+            }
+
+            // Update size bar
+            const barWidth = Math.min((totalSize / 300) * 100, 100);
+            sizeBar.style.width = barWidth + '%';
+
+            // Update selected features list (only show visible modules)
+            selectedFeaturesEl.innerHTML = '';
+            selectedFeatures.forEach(feature => {
+                // Skip hidden modules in the display
+                if (!isVisibleModule(feature)) return;
+
+                const tag = document.createElement('span');
+                tag.className = 'feature-tag';
+                tag.textContent = feature;
+                selectedFeaturesEl.appendChild(tag);
+            });
+
+            // Generate URL
+            generateURL();
+        }
+
+            // Generate URL based on selected features
+            function generateURL() {
+            const baseURL = 'https://cdn.jsdelivr.net/npm/hyperclayjs@1.7.0/hyperclay.js';
+
+            let urlParams = '';
+            if (currentPreset) {
+                urlParams = `?preset=${currentPreset}`;
+            } else if (selectedFeatures.size > 0) {
+                // Filter out hidden modules from the URL, but keep export-to-window
+                const featuresArray = Array.from(selectedFeatures).filter(f => isVisibleModule(f) || f === 'export-to-window');
+                urlParams = `?features=${featuresArray.join(',')}`;
+            }
+
+            const fullUrl = baseURL + urlParams;
+
+            // Collect exports from selected modules for the example
+            const exampleExports = new Set();
+            for (const featureId of selectedFeatures) {
+                const module = features[featureId];
+                if (module?.exports) {
+                    for (const exportName of Object.keys(module.exports)) {
+                        exampleExports.add(exportName);
+                    }
+                }
+            }
+            const exportsArray = Array.from(exampleExports).sort();
+            let code;
+            if (exportsArray.length > 0) {
+                const formatted = exportsArray.map(name => `    ${name}`).join(',\n');
+                code = `<script type="module">\n  const {\n${formatted}\n  } = await import('${fullUrl}');\n<\/script>`;
+            } else {
+                code = `<script type="module">\n  await import('${fullUrl}');\n<\/script>`;
+            }
+
+            urlInput.value = code;
+
+            // Auto-size textarea to fit content
+            urlInput.style.height = 'auto';
+            urlInput.style.height = urlInput.scrollHeight + 'px';
+        }
+
+            // Handle checkbox changes
+            checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', (e) => {
+                const feature = e.target.dataset.feature;
+                if (e.target.checked) {
+                    selectedFeatures.add(feature);
+
+                    // Check for dependencies
+                    const requires = e.target.dataset.requires;
+                    if (requires) {
+                        const requiredFeatures = requires.split(',');
+                        requiredFeatures.forEach(reqFeature => {
+                            selectedFeatures.add(reqFeature);
+                            const reqCheckbox = document.querySelector(`[data-feature="${reqFeature}"]`);
+                            if (reqCheckbox) reqCheckbox.checked = true;
+                        });
+                    }
+                } else {
+                    selectedFeatures.delete(feature);
+
+                    // Check if this feature is required by others
+                    checkboxes.forEach(cb => {
+                        const requires = cb.dataset.requires;
+                        if (requires && requires.includes(feature) && cb.checked) {
+                            // Uncheck features that depend on this one
+                            cb.checked = false;
+                            selectedFeatures.delete(cb.dataset.feature);
+                        }
+                    });
+                }
+
+                // Check if current selection matches any preset
+                currentPreset = null;
+                for (const [presetName, presetData] of Object.entries(presets)) {
+                    const presetFeatures = presetData.modules || [];
+                    if (presetFeatures.length === selectedFeatures.size &&
+                        presetFeatures.every(f => selectedFeatures.has(f))) {
+                        currentPreset = presetName;
+                        break;
+                    }
+                }
+
+                // Update preset button states
+                presetButtons.forEach(btn => {
+                    if (btn.dataset.preset === currentPreset) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+
+                updateUI();
+            });
+        });
+
+            // Handle preset button clicks
+            presetButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                const preset = e.target.dataset.preset;
+                currentPreset = preset;
+
+                // Update preset button states
+                presetButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                e.target.classList.add('active');
+
+                // Clear all selections
+                selectedFeatures.clear();
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+
+                // Apply preset
+                if (presets[preset] && presets[preset].modules) {
+                    presets[preset].modules.forEach(feature => {
+                        selectedFeatures.add(feature);
+                        const checkbox = document.querySelector(`[data-feature="${feature}"]`);
+                        if (checkbox) checkbox.checked = true;
+                    });
+                }
+
+                updateUI();
+            });
+        });
+
+            // Handle copy button
+            copyButton.addEventListener('click', async () => {
+            await navigator.clipboard.writeText(urlInput.value);
+
+            // Visual feedback
+            copyButton.textContent = 'COPIED!';
+            copyButton.classList.add('copied');
+
+            setTimeout(() => {
+                copyButton.textContent = 'COPY';
+                copyButton.classList.remove('copied');
+            }, 2000);
+        });
+
+            // Handle export-to-window toggle
+            const exportToggle = document.getElementById('export-to-window-toggle');
+            exportToggle.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    selectedFeatures.add('export-to-window');
+                } else {
+                    selectedFeatures.delete('export-to-window');
+                }
+                // Clear preset since we're customizing
+                currentPreset = null;
+                presetButtons.forEach(btn => btn.classList.remove('active'));
+                updateUI();
+            });
+
+        }
+
+        // Load data on page load
+        loadModuleData();
+    </script>
+</body>
+</html>

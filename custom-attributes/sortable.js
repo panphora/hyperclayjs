@@ -5,6 +5,8 @@
    How to use:
    - add `sortable` attribute to an element to make children sortable
    - e.g. <div sortable></div>
+   - add `onsorting` attribute to execute code during drag
+   - e.g. <ul sortable onsorting="console.log('Dragging!')"></ul>
    - add `onsorted` attribute to execute code when items are sorted
    - e.g. <ul sortable onsorted="console.log('Items reordered!')"></ul>
 
@@ -39,7 +41,20 @@ function makeSortable(sortableElem, Sortable) {
     options.handle = '[sortable-handle]';
   }
 
-  // Add onsorted callback if attribute exists
+  // Add onsorting callback if attribute exists (fires during drag)
+  const onsortingCode = sortableElem.getAttribute('onsorting');
+  if (onsortingCode) {
+    options.onMove = function(evt) {
+      try {
+        const asyncFn = new Function(`return (async function(evt) { ${onsortingCode} })`)();
+        asyncFn.call(sortableElem, evt);
+      } catch (error) {
+        console.error('Error in onsorting execution:', error);
+      }
+    };
+  }
+
+  // Add onsorted callback if attribute exists (fires after drop)
   const onsortedCode = sortableElem.getAttribute('onsorted');
   if (onsortedCode) {
     options.onEnd = function(evt) {

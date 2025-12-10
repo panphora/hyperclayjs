@@ -429,6 +429,7 @@ const modalCss = `<style class="micromodal-css">
   align-items: center;
   width: 100%;
   height: 39px;
+  line-height: 0;
   border: 3px solid;
   border-top-color: #94BA6F;
   border-left-color: #94BA6F;
@@ -447,6 +448,66 @@ const modalCss = `<style class="micromodal-css">
   border-left-color: #1A3004;
   border-bottom-color: #94BA6F;
   border-right-color: #94BA6F;
+}
+
+.micromodal button.micromodal__secondary-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 39px;
+  line-height: 0;
+  border: 3px solid;
+  border-top-color: #474C65;
+  border-left-color: #474C65;
+  border-bottom-color: #131725;
+  border-right-color: #131725;
+  background-color: #1D1F2F;
+  color: #E5E7EB;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.micromodal button.micromodal__secondary-btn:focus,
+.micromodal button.micromodal__secondary-btn:hover {
+  background-color: #232639;
+}
+
+.micromodal button.micromodal__secondary-btn:active {
+  border-top-color: #131725;
+  border-left-color: #131725;
+  border-bottom-color: #474C65;
+  border-right-color: #474C65;
+}
+
+.micromodal:has(.snippet-code-block) .micromodal__content {
+  margin-bottom: 0;
+}
+
+.micromodal .snippet-code-block {
+  background-color: #292E54;
+  padding: 1rem;
+  margin-bottom: 14px;
+  max-width: 420px;
+  overflow-x: auto;
+}
+
+.micromodal .snippet-code-block pre {
+  color: white;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  margin: 0;
+}
+
+.micromodal .snippet-warning {
+  padding: 0.75rem;
+  border: 2px solid #989742;
+  background-color: #1E1E11;
+  font-size: 0.875rem;
+  color: #FBF7B7;
+  max-width: 420px;
 }
 
 .micromodal button.micromodal__close {

@@ -18,13 +18,28 @@ export function enableAdminInputsOnPageLoad() {
   if (!isEditMode) return;
 
   onDomReady(() => {
-    document.querySelectorAll('[edit-mode-input]').forEach(input => {
-      if (supportsReadonly(input)) {
-        input.removeAttribute('readonly');
-      } else {
-        input.removeAttribute('disabled');
-      }
-    });
+    enableAdminInputs();
+  });
+}
+
+// Runtime toggle functions
+export function enableAdminInputs() {
+  document.querySelectorAll('[edit-mode-input]').forEach(input => {
+    if (supportsReadonly(input)) {
+      input.removeAttribute('readonly');
+    } else {
+      input.removeAttribute('disabled');
+    }
+  });
+}
+
+export function disableAdminInputs() {
+  document.querySelectorAll('[edit-mode-input]').forEach(input => {
+    if (supportsReadonly(input)) {
+      input.setAttribute('readonly', '');
+    } else {
+      input.setAttribute('disabled', '');
+    }
   });
 }
 
@@ -56,3 +71,9 @@ export function init() {
   disableAdminInputsBeforeSave();
   enableAdminInputsOnPageLoad();
 }
+
+// Export to window
+window.hyperclay = window.hyperclay || {};
+window.hyperclay.enableAdminInputs = enableAdminInputs;
+window.hyperclay.disableAdminInputs = disableAdminInputs;
+window.h = window.hyperclay;

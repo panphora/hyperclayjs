@@ -1,10 +1,10 @@
 // a nice, simple alert
 // ❗️ don't use too much text!
 
-// Default modern icons
+// Default modern icons (normalized to 48x48 viewBox)
 const defaultIcons = {
-  success: `<svg viewBox="0 0 48 45" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.9404 22.4475L21.9099 29.724L35.1906 14.4045M3 3H44.9804V42.809H3V3Z" stroke="#33D131" stroke-width="4.3"/></svg>`,
-  error: `<svg viewBox="0 0 46 44" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M31.7383 12.4045L13 31.1429M31.7451 31.1429L13.0068 12.4046M2.00977 2H43.9902V41.809H2.00977V2Z" stroke="#FF4450" stroke-width="4"/></svg>`
+  success: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.9404 23.9475L21.9099 31.224L35.1906 15.9045M3 4.5H44.9804V44.309H3V4.5Z" stroke="#33D131" stroke-width="4.3"/></svg>`,
+  error: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M32.7383 14.4045L14 33.1429M32.7451 33.1429L14.0068 14.4046M3.01 4H44.99V43.809H3.01V4Z" stroke="#FF4450" stroke-width="4"/></svg>`
 };
 
 // Hyperclay icons
@@ -100,6 +100,7 @@ const modernStyles = `
   }
 
   [data-toast-theme="modern"] .toast-icon svg {
+    display: block;
     width: 22px;
     height: 22px;
   }

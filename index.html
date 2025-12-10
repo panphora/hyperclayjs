@@ -1,20 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" savestatus="saved" editmode="true">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hyperclay.js Configurator</title>
-    <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    <title>HyperclayJS</title>
     <style>
+        @font-face {
+            font-family: 'Berkeley Mono';
+            src: url('./BerkeleyMonoVariable-Regular.woff2') format('woff2');
+            font-weight: 100 900;
+            font-style: normal;
+            font-display: swap;
+        }
+
         :root {
             --primary-blue: #3E43EF;
             --shadow-blue: #F1F2FE;
             --light-blue: #8A8FEF;
             --white: #FFFFFF;
-            --red: #DC2626;
-            --green: #10B981;
-            --yellow: #F59E0B;
             --gray: #6B7280;
+            --green: #10B981;
+            --red: #DC2626;
+            --yellow: #F59E0B;
         }
 
         * {
@@ -24,12 +31,11 @@
         }
 
         body {
-            font-family: 'Google Sans Code', monospace;
+            font-family: 'Berkeley Mono', monospace;
             background-color: white;
             color: var(--primary-blue);
-            padding: 2rem;
-            line-height: 1.6;
-            text-wrap: pretty;
+            padding: 1.5rem;
+            line-height: 1.5;
         }
 
         .container {
@@ -37,1065 +43,1234 @@
             margin: 0 auto;
         }
 
-        /* Header */
         .header {
-            text-align: center;
-            margin-bottom: 3rem;
-            padding-bottom: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
         }
 
         h1 {
-            font-size: 3rem;
-            font-weight: bold;
-            color: var(--primary-blue);
-            margin-bottom: 1rem;
-            text-shadow: 4px 4px 0 var(--shadow-blue);
-        }
-
-        .subtitle {
-            font-size: 1.25rem;
-            color: var(--light-blue);
-        }
-
-        /* Main Grid */
-        .main-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        @media (max-width: 1024px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Feature Categories */
-        .feature-section {
-            margin-bottom: 2rem;
-        }
-
-        .section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1rem;
-            background: linear-gradient(90deg, var(--shadow-blue) 0%, transparent 100%);
-            border-left: 4px solid var(--primary-blue);
-            margin-bottom: 1rem;
-        }
-
-        .section-title {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: var(--primary-blue);
-        }
-
-        .section-size {
-            font-size: 0.875rem;
-            color: var(--gray);
-        }
-
-        /* Feature Grid */
-        .feature-grid {
-            display: grid;
-            gap: 0.75rem;
-        }
-
-        .feature-item {
-            display: flex;
-            align-items: center;
-            padding: 1rem;
-            border: 2px solid var(--primary-blue);
-            background: white;
-            transition: all 0.3s;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .feature-item:hover {
-            box-shadow: 4px 4px 0 var(--shadow-blue);
-        }
-
-        .feature-item.selected {
-            background: var(--shadow-blue);
-            box-shadow: 4px 4px 0 var(--primary-blue);
-        }
-
-        .feature-checkbox {
-            appearance: none;
-            width: 1.5rem;
-            height: 1.5rem;
-            border: 2px solid var(--primary-blue);
-            background: white;
-            margin-right: 1rem;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-
-        .feature-checkbox:checked {
-            background: var(--primary-blue);
-            position: relative;
-        }
-
-        .feature-checkbox:checked::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 14px;
-            height: 14px;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 8L6 12L14 4' stroke='white' stroke-width='3' stroke-linecap='square' stroke-linejoin='miter'/%3E%3C/svg%3E");
-            background-size: contain;
-            background-repeat: no-repeat;
-        }
-
-        .feature-info {
-            flex-grow: 1;
-        }
-
-        .feature-name {
-            font-weight: bold;
+            font-size: 2.5rem;
+            font-weight: 900;
             color: var(--primary-blue);
             margin-bottom: 0.25rem;
         }
 
-        .feature-description {
-            font-size: 0.875rem;
+        .subtitle {
+            font-size: 1rem;
+            color: var(--light-blue);
+        }
+
+        .intro-bullets {
+            margin-top: 0.75rem;
+            padding-left: 1.25rem;
+            font-size: 0.85rem;
             color: var(--gray);
         }
 
-        .feature-exports {
-            font-size: 0.75rem;
-            color: var(--medium-gray);
-            margin-top: 0.25rem;
+        .intro-bullets li {
+            margin-bottom: 0.25rem;
         }
 
-        .feature-dependencies {
-            font-size: 0.75rem;
-            color: var(--green);
-            margin-top: 0.25rem;
-            font-style: italic;
+        .intro-link {
+            color: var(--gray);
+            text-decoration: underline;
         }
 
-        .feature-size {
-            font-size: 0.875rem;
-            color: var(--primary-blue);
+        .intro-link:hover {
+            text-decoration: none;
+        }
+
+        .nav-link {
             font-weight: bold;
-            margin-left: 1rem;
+            color: var(--primary-blue);
+            text-decoration: none;
+            border: 2px solid var(--primary-blue);
+            padding: 0.5rem 1rem;
+            background: white;
+            box-shadow: 4px 4px 0 var(--shadow-blue);
+            white-space: nowrap;
         }
 
-        .feature-size.large {
-            color: var(--red);
-        }
-
-        /* Preset Buttons */
-        .preset-section {
-            margin-bottom: 2rem;
-        }
-
-        .preset-buttons {
+        .demo-grid {
             display: flex;
+            flex-wrap: wrap;
             gap: 1rem;
+        }
+
+        .demo-card {
+            flex: 1 1 320px;
+            max-width: calc(33.333% - 0.67rem);
+        }
+
+        .category-label {
+            flex: 1 1 100%;
+        }
+
+        @media (max-width: 1000px) {
+            .demo-card { max-width: calc(50% - 0.5rem); }
+        }
+
+        @media (max-width: 640px) {
+            .demo-card { max-width: 100%; }
+            h1 { font-size: 2rem; }
+            .header-row {
+                flex-direction: column-reverse;
+                align-items: flex-end;
+            }
+            .header-row h1 {
+                align-self: flex-start;
+            }
+        }
+
+        .demo-card {
+            border: 2px solid var(--primary-blue);
+            padding: 1rem;
+            background: white;
+        }
+
+        .demo-card h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: var(--primary-blue);
+        }
+
+        .demo-card .desc {
+            font-size: 0.75rem;
+            color: var(--gray);
+            margin-bottom: 0.75rem;
+        }
+
+        .demo-card pre {
+            background: var(--shadow-blue);
+            padding: 0.5rem;
+            font-size: 0.7rem;
+            overflow-x: auto;
+            margin-bottom: 0.75rem;
+            border-left: 3px solid var(--primary-blue);
+            max-width: 100%;
+        }
+
+        .demo-card code {
+            font-family: inherit;
+        }
+
+        .demo-area {
+            padding: 0.5rem;
+            border: 1px dashed var(--light-blue);
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
             flex-wrap: wrap;
         }
 
-        .preset-button {
-            padding: 0.75rem 1.5rem;
+        button {
             font-family: inherit;
-            font-size: 1rem;
-            font-weight: bold;
-            border: 2px solid var(--primary-blue);
-            background: white;
-            color: var(--primary-blue);
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 4px 4px 0 var(--shadow-blue);
-        }
-
-        .preset-button:hover {
-            box-shadow: 2px 2px 0 var(--shadow-blue);
-            transform: translate(2px, 2px);
-        }
-
-        .preset-button.active {
-            background: var(--primary-blue);
-            color: white;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            position: sticky;
-            top: 2rem;
-            height: fit-content;
-        }
-
-        .summary-box {
-            padding: 1.5rem;
-            border: 2px solid var(--primary-blue);
-            box-shadow: 4px 4px 0 var(--shadow-blue);
-            background: white;
-            margin-bottom: 2rem;
-        }
-
-        .summary-title {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: var(--primary-blue);
-            margin-bottom: 1rem;
-        }
-
-        .summary-stat {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid var(--shadow-blue);
-        }
-
-        .summary-stat:last-child {
-            border-bottom: none;
-        }
-
-        .stat-label {
-            color: var(--gray);
-        }
-
-        .stat-value {
-            font-weight: bold;
-            color: var(--primary-blue);
-        }
-
-        .stat-value.large {
-            color: var(--red);
-        }
-
-        .stat-value.medium {
-            color: var(--yellow);
-        }
-
-        .stat-value.small {
-            color: var(--green);
-        }
-
-        /* URL Output */
-        .url-output {
-            margin-top: 2rem;
-        }
-
-        .url-label {
-            font-size: 1rem;
-            font-weight: bold;
-            color: var(--primary-blue);
-            margin-bottom: 0.5rem;
-        }
-
-        .url-container {
-            position: relative;
-        }
-
-        .url-textarea {
-            width: 100%;
-            padding: 1rem;
-            border: 2px solid var(--primary-blue);
-            background: white;
-            color: var(--primary-blue);
-            font-family: inherit;
-            font-size: 0.875rem;
-            box-shadow: 4px 4px 0 var(--shadow-blue);
-            resize: none;
-            overflow-x: auto;
-            overflow-y: hidden;
-            line-height: 1.5;
-        }
-
-        .url-note {
             font-size: 0.75rem;
-            color: var(--gray);
-            margin: 0.75rem 0;
-            line-height: 1.4;
-        }
-
-        /* Toggle Switch */
-        .toggle-option {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 0;
-            margin: 0.75rem 0;
-            border-top: 1px solid var(--shadow-blue);
-            border-bottom: 1px solid var(--shadow-blue);
-        }
-
-        .toggle-switch {
-            position: relative;
-            width: 44px;
-            height: 24px;
-            flex-shrink: 0;
-        }
-
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .toggle-slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: 0.3s;
-            border-radius: 24px;
-        }
-
-        .toggle-slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: 0.3s;
-            border-radius: 50%;
-        }
-
-        .toggle-switch input:checked + .toggle-slider {
-            background-color: var(--primary-blue);
-        }
-
-        .toggle-switch input:checked + .toggle-slider:before {
-            transform: translateX(20px);
-        }
-
-        .toggle-label {
-            font-size: 0.8rem;
-            color: var(--gray);
-            line-height: 1.3;
-        }
-
-        .toggle-label strong {
+            padding: 0.4rem 0.75rem;
+            border: 2px solid var(--primary-blue);
+            background: white;
             color: var(--primary-blue);
-            display: block;
-            margin-bottom: 2px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.15s;
         }
 
-        .copy-button {
-            padding: 0.75rem 1.5rem;
-            background: var(--primary-blue);
-            color: white;
-            border: none;
+        button:hover {
+            background: var(--shadow-blue);
+        }
+
+        button:active:not(:disabled) {
+            transform: translate(1px, 1px);
+        }
+
+        button:disabled, input:disabled, select:disabled,
+        [inert-contenteditable] {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        input:read-only:not([sum]):not([type="radio"]):not([type="checkbox"]):not([type="file"]) {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        input[sum] {
+            border-color: black;
+        }
+
+        input, textarea, select {
             font-family: inherit;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
+            font-size: 0.75rem;
+            padding: 0.4rem;
+            border: 2px solid var(--primary-blue);
+            color: var(--primary-blue);
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            box-shadow: 2px 2px 0 var(--shadow-blue);
+        }
+
+        textarea {
+            resize: none;
+            min-height: 40px;
+        }
+
+        .sortable-list {
+            list-style: none;
             width: 100%;
         }
 
-        .copy-button:hover {
-            background: var(--light-blue);
+        .sortable-list li {
+            padding: 0.4rem 0.6rem;
+            background: var(--shadow-blue);
+            margin-bottom: 0.25rem;
+            cursor: move;
+            font-size: 0.75rem;
+            border: 1px solid var(--light-blue);
         }
 
-        .copy-button.copied {
-            background: var(--green);
-        }
-
-        /* Feature List */
-        .selected-features {
-            margin-top: 1.5rem;
-        }
-
-        .feature-list-title {
-            font-size: 0.875rem;
-            font-weight: bold;
+        .output {
+            font-size: 0.7rem;
             color: var(--gray);
-            margin-bottom: 0.5rem;
+            background: var(--shadow-blue);
+            padding: 0.25rem 0.5rem;
+            width: 100%;
         }
 
-        .feature-tag {
+        .category-label {
+            grid-column: 1 / -1;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--light-blue);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 1rem 0 0.25rem;
+            border-bottom: 1px solid var(--shadow-blue);
+            margin-top: 0.5rem;
+        }
+
+        .category-label:first-of-type {
+            margin-top: 0;
+        }
+
+        .clickaway-box {
+            background: var(--shadow-blue);
+            padding: 0.5rem;
+            text-align: center;
+            font-size: 0.75rem;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .clone-item {
             display: inline-block;
             padding: 0.25rem 0.5rem;
-            background: var(--shadow-blue);
-            color: var(--primary-blue);
-            font-size: 0.75rem;
-            margin-right: 0.5rem;
-            margin-bottom: 0.5rem;
+            font-size: 0.7rem;
+            margin: 0.15rem;
         }
 
-        /* Size Indicator */
-        .size-indicator {
-            width: 100%;
-            height: 20px;
-            background: var(--shadow-blue);
-            border: 2px solid var(--primary-blue);
-            margin-top: 1rem;
-            position: relative;
-            overflow: hidden;
+        .counter-display {
+            font-size: 1.2rem;
+            font-weight: 700;
+            min-width: 3rem;
+            text-align: center;
         }
 
-        .size-bar {
-            height: 100%;
-            background: var(--primary-blue);
-            transition: width 0.3s ease;
-        }
-
-        .size-bar.large {
-            background: var(--red);
-        }
-
-        .size-bar.medium {
-            background: var(--yellow);
-        }
-
-        .size-bar.small {
+        .visibility-box {
+            padding: 0.5rem;
             background: var(--green);
+            color: white;
+            font-size: 0.7rem;
+            text-align: center;
         }
 
-        /* Info Box */
-        .info-box {
-            padding: 1rem;
+        .attr-display {
+            font-size: 0.65rem;
+            color: var(--gray);
+            word-break: break-all;
+        }
+
+        .mini-editor {
+            border: 1px solid var(--light-blue);
+            background: white;
+            padding: 0.5rem;
+            min-height: 50px;
+            font-size: 0.75rem;
+        }
+
+        .mini-editor:focus {
+            outline: none;
+            box-shadow: 2px 2px 0 var(--shadow-blue);
+        }
+
+        .badge {
+            display: inline-block;
+            border: 1px solid var(--light-blue);
+            padding: 0.2rem 0.4rem;
+            font-size: 0.7rem;
+            background: white;
+        }
+
+        .flex-row {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        /* New styles for demos */
+        .hidden { display: none !important; }
+        .muted { opacity: 0.4; border-style: dashed !important; }
+                .menu-box {
+            padding: 0.5rem;
             background: var(--shadow-blue);
-            border-left: 4px solid var(--primary-blue);
-            margin-bottom: 2rem;
+            font-size: 0.7rem;
+            text-align: center;
+            border: 1px solid var(--light-blue);
         }
 
-        .info-text {
-            font-size: 0.875rem;
-            color: var(--primary-blue);
+        .sync-card {
+            border: 1px solid var(--light-blue);
+            padding: 0.5rem;
+            background: white;
+            font-size: 0.75rem;
+            min-height: 60px;
+        }
+
+        .sync-card:focus {
+            outline: none;
+            box-shadow: 2px 2px 0 var(--shadow-blue);
+        }
+
+        .filter-card {
+            padding: 0.5rem;
+            background: var(--shadow-blue);
+            font-size: 0.7rem;
+            text-align: center;
+            border: 1px solid var(--light-blue);
+            transition: opacity 0.2s, border-style 0.2s;
+        }
+
+        .morph-box {
+            padding: 0.5rem;
+            background: var(--shadow-blue);
+            font-size: 0.75rem;
+            text-align: center;
+            border: 1px solid var(--light-blue);
+            min-width: 40px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Hyperclay.js Configurator</h1>
-            <p class="subtitle">Build your custom bundle</p>
+            <div class="header-row">
+                <h1>HyperclayJS</h1>
+                <a href="config.html" class="nav-link">Use HyperclayJS &rarr;</a>
+            </div>
+            <p class="subtitle">Let's turn the DOM into a state machine</p>
+            <ul class="intro-bullets">
+                <li>The DOM API is incomplete. These modules patch the gaps.</li>
+                <li>Pair with <a href="https://hyperclay.com" class="intro-link">Hyperclay</a> to unlock HTML pages that edit themselves.</li>
+            </ul>
         </div>
 
-        <div class="main-grid">
-            <div class="features-column">
-                <!-- Preset Buttons -->
-                <div class="preset-section">
-                    <div class="section-header">
-                        <h2 class="section-title">Quick Presets</h2>
-                    </div>
-                    <div class="preset-buttons">
-                        <button class="preset-button" data-preset="minimal">Minimal (23KB)</button>
-                        <button class="preset-button" data-preset="standard">Standard (50KB)</button>
-                        <button class="preset-button" data-preset="everything">Everything (220KB)</button>
-                    </div>
-                </div>
+        <div class="demo-grid">
 
-                <!-- Core Features -->
-                <div class="feature-section">
-                    <div class="section-header">
-                        <h2 class="section-title">Core Features</h2>
-                        <span class="section-size">Essential functionality</span>
-                    </div>
-                    <div class="feature-grid">
-                        <label class="feature-item">
-                            <input type="checkbox" class="feature-checkbox" data-feature="save-core" data-size="3">
-                            <div class="feature-info">
-                                <div class="feature-name">Save Core</div>
-                                <div class="feature-description">Basic save function only `hyperclay.savePage` - call yourself, handle notifications</div>
-                            </div>
-                            <span class="feature-size">3KB</span>
-                        </label>
-                        <label class="feature-item">
-                            <input type="checkbox" class="feature-checkbox" data-feature="save" data-size="3" data-requires="save-core,toast,mutation">
-                            <div class="feature-info">
-                                <div class="feature-name">Save System</div>
-                                <div class="feature-description">Full save: save button, keyboard shortcut, auto-save, change tracking</div>
-                            </div>
-                            <span class="feature-size">3KB</span>
-                        </label>
-                        <label class="feature-item">
-                            <input type="checkbox" class="feature-checkbox" data-feature="admin" data-size="10" data-requires="cookie">
-                            <div class="feature-info">
-                                <div class="feature-name">Admin Features</div>
-                                <div class="feature-description">Hides admin inputs, admin scripts, admin contenteditable, admin onclick for regular viewers</div>
-                            </div>
-                            <span class="feature-size">10KB</span>
-                        </label>
-                        <label class="feature-item">
-                            <input type="checkbox" class="feature-checkbox" data-feature="persist" data-size="1.4">
-                            <div class="feature-info">
-                                <div class="feature-name">Form Persistence</div>
-                                <div class="feature-description">Persist input/select/textarea values to the DOM with [persist] attribute, so they're saved</div>
-                            </div>
-                            <span class="feature-size">1.4KB</span>
-                        </label>
-                        <label class="feature-item">
-                            <input type="checkbox" class="feature-checkbox" data-feature="options" data-size="4.4" data-requires="mutation">
-                            <div class="feature-info">
-                                <div class="feature-name">Option Visibility</div>
-                                <div class="feature-description">Dynamic show/hide based on page state with `option:attribute="value"`</div>
-                            </div>
-                            <span class="feature-size">4.4KB</span>
-                        </label>
-                    </div>
-                </div>
+            <!-- ========== SECTION 1: SAVE (CORE) ========== -->
+            <div class="category-label">Save (core)</div>
 
-                <!-- Custom Attributes -->
-                <div class="feature-section">
-                    <div class="section-header">
-                        <h2 class="section-title">Custom Attributes</h2>
-                        <span class="section-size">HTML enhancements</span>
-                    </div>
-                    <div class="feature-grid">
-                        <label class="feature-item">
-                            <input type="checkbox" class="feature-checkbox" data-feature="events" data-size="2.7">
-                            <div class="feature-info">
-                                <div class="feature-name">Event Attributes</div>
-                                <div class="feature-description">[onclickaway], [onclone], [onpagemutation], [onrender]</div>
-                            </div>
-                            <span class="feature-size">2.7KB</span>
-                        </label>
-                        <label class="feature-item">
-                            <input type="checkbox" class="feature-checkbox" data-feature="ajax" data-size="1.8">
-                            <div class="feature-info">
-                                <div class="feature-name">AJAX Elements</div>
-                                <div class="feature-description">[ajax-form], [ajax-button] for async form submissions</div>
-                            </div>
-                            <span class="feature-size">1.8KB</span>
-                        </label>
-                        <label class="feature-item">
-                            <input type="checkbox" class="feature-checkbox" data-feature="sortable" data-size="118" data-requires="mutation">
-                            <div class="feature-info">
-                                <div class="feature-name">Sortable</div>
-                                <div class="feature-description">Drag-drop sorting with [sortable], includes Sortable.js</div>
-                            </div>
-                            <span class="feature-size large">118KB</span>
-                        </label>
-                        <label class="feature-item">
-                            <input type="checkbox" class="feature-checkbox" data-feature="helpers" data-size="5.3" data-requires="nearest">
-                            <div class="feature-info">
-                                <div class="feature-name">DOM Helpers</div>
-                                <div class="feature-description">el.nearest, el.val, el.text, el.exec, el.cycle</div>
-                            </div>
-                            <span class="feature-size">5.3KB</span>
-                        </label>
-                        <label class="feature-item">
-                            <input type="checkbox" class="feature-checkbox" data-feature="inputs" data-size="1">
-                            <div class="feature-info">
-                                <div class="feature-name">Input Helpers</div>
-                                <div class="feature-description">[prevent-enter], [autosize] for textareas</div>
-                            </div>
-                            <span class="feature-size">1KB</span>
-                        </label>
-                    </div>
+            <!-- savePage() -->
+            <div class="demo-card" id="save-page">
+                <h3>savePage()</h3>
+                <p class="desc">Persist page's HTML to a hyperclay server</p>
+                <pre><code>hyperclay.savePage(callback);</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <button onclick="testSavePage()">Call savePage()</button>
+                    <span class="output" id="save-page-log">Click to trigger save</span>
                 </div>
-
-                <!-- UI Components -->
-                <div class="feature-section">
-                    <div class="section-header">
-                        <h2 class="section-title">UI Components</h2>
-                        <span class="section-size">User interface elements</span>
-                    </div>
-                    <div class="feature-grid">
-                        <label class="feature-item">
-                            <input type="checkbox" class="feature-checkbox" data-feature="prompts" data-size="7.5" data-requires="modals,toast">
-                            <div class="feature-info">
-                                <div class="feature-name">Dialog Functions</div>
-                                <div class="feature-description">ask(), consent(), tell(), snippet() functions</div>
-                            </div>
-                            <span class="feature-size">7.5KB</span>
-                        </label>
-                        <label class="feature-item">
-                            <input type="checkbox" class="feature-checkbox" data-feature="toast" data-size="7.3">
-                            <div class="feature-info">
-                                <div class="feature-name">Toast Notifications</div>
-                                <div class="feature-description">Success/error message notifications, `toast(msg, msgType)`</div>
-                            </div>
-                            <span class="feature-size">7.3KB</span>
-                        </label>
-                        <label class="feature-item">
-                            <input type="checkbox" class="feature-checkbox" data-feature="modals" data-size="18.8">
-                            <div class="feature-info">
-                                <div class="feature-name">Modal System</div>
-                                <div class="feature-description">Full modal window creation system, access `window.theModal`</div>
-                            </div>
-                            <span class="feature-size">18.8KB</span>
-                        </label>
-                    </div>
-                </div>
-
             </div>
 
-            <div class="sidebar">
-                <!-- Summary Box -->
-                <div class="summary-box">
-                    <h3 class="summary-title">Configuration Summary</h3>
-                    <div class="summary-stat">
-                        <span class="stat-label">Features Selected:</span>
-                        <span class="stat-value" id="feature-count">0</span>
-                    </div>
-                    <div class="summary-stat">
-                        <span class="stat-label">Total Size:</span>
-                        <span class="stat-value" id="total-size">0KB</span>
-                    </div>
+            <!-- save-system -->
+            <div class="demo-card" id="save-system">
+                <h3>save-system</h3>
+                <p class="desc">Track changes via savestatus attribute</p>
+                <pre><code>&lt;html savestatus="saved"&gt;
+&lt;!-- saved | saving | dirty | error --&gt;</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <div class="mini-editor" contenteditable id="save-editor">Type here to mark dirty</div>
+                    <span class="output" id="save-system-log">savestatus: saved</span>
+                </div>
+            </div>
 
-                    <div class="size-indicator">
-                        <div class="size-bar" id="size-bar"></div>
-                    </div>
+            <!-- autosave -->
+            <div class="demo-card" id="autosave">
+                <h3>autosave</h3>
+                <p class="desc">Auto-save on DOM mutations</p>
+                <pre><code>// Automatic - debounces saves
+// after DOM changes</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <div class="mini-editor" contenteditable id="autosave-editor">Edit me, pause, watch auto-save</div>
+                    <span class="output" id="autosave-log">Waiting for edits...</span>
+                </div>
+            </div>
 
-                    <div class="selected-features">
-                        <div class="feature-list-title">Selected Features:</div>
-                        <div id="selected-features-list"></div>
+            <!-- save-toast -->
+            <div class="demo-card" id="save-toast">
+                <h3>save-toast</h3>
+                <p class="desc">Toast on save events</p>
+                <pre><code>// Dispatches toast on
+// hyperclay:save-* events</code></pre>
+                <div class="demo-area">
+                    <button onclick="dispatchSaveEvent('saved')">Dispatch saved</button>
+                    <button onclick="dispatchSaveEvent('error')">Dispatch error</button>
+                </div>
+            </div>
+
+            <!-- onaftersave -->
+            <div class="demo-card" id="onaftersave">
+                <h3>[onaftersave]</h3>
+                <p class="desc">Run JS after save events</p>
+                <pre><code>&lt;div onaftersave="console.log(
+  event.detail.status)"&gt;</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <button onclick="dispatchSaveEvent('saved')">Trigger save event</button>
+                    <div class="output" onaftersave="this.textContent = 'Last: ' + event.detail.status">Waiting for save events...</div>
+                </div>
+            </div>
+
+            <!-- ========== SECTION 2: EDIT MODE (CORE) ========== -->
+            <div class="category-label">Edit Mode (core)</div>
+
+            <!-- toggleEditMode -->
+            <div class="demo-card" id="toggle-edit-mode">
+                <h3>toggleEditMode()</h3>
+                <p class="desc">Switch edit mode on/off (affects demos below)</p>
+                <pre><code>hyperclay.toggleEditMode();
+hyperclay.isEditMode;</code></pre>
+                <div class="demo-area">
+                    <button onclick="toggleEditModeDemo()">Toggle edit mode</button>
+                    <span class="output" id="edit-mode-status">editmode: true</span>
+                </div>
+            </div>
+
+            <!-- edit-mode-contenteditable -->
+            <div class="demo-card" id="edit-mode-contenteditable">
+                <h3>[edit-mode-contenteditable]</h3>
+                <p class="desc">Only editable in edit mode, otherwise readonly</p>
+                <pre><code>&lt;div edit-mode-contenteditable&gt;
+  Editable in edit mode
+&lt;/div&gt;</code></pre>
+                <div class="demo-area">
+                    <div class="mini-editor" edit-mode-contenteditable contenteditable style="width: 100%;">Only editable in edit mode, otherwise readonly</div>
+                </div>
+            </div>
+
+            <!-- edit-mode-input -->
+            <div class="demo-card" id="edit-mode-input">
+                <h3>[edit-mode-input]</h3>
+                <p class="desc">Inputs/selects editable only in edit mode</p>
+                <pre><code>&lt;input edit-mode-input&gt;
+&lt;select edit-mode-input&gt;</code></pre>
+                <div class="demo-area flex-row">
+                    <input edit-mode-input value="Admin only" style="flex: 1;">
+                    <select edit-mode-input>
+                        <option>Option A</option>
+                        <option>Option B</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- edit-mode-onclick -->
+            <div class="demo-card" id="edit-mode-onclick">
+                <h3>[edit-mode-onclick]</h3>
+                <p class="desc">onclick handlers active only in edit mode</p>
+                <pre><code>&lt;button edit-mode-onclick
+  onclick="alert('Admin!')"&gt;</code></pre>
+                <div class="demo-area">
+                    <button edit-mode-onclick edit-mode-input onclick="alert('Admin action triggered!')">Admin Action</button>
+                    <span class="output">Only works in edit mode</span>
+                </div>
+            </div>
+
+            <!-- edit-mode-resource -->
+            <div class="demo-card" id="edit-mode-resource">
+                <h3>[edit-mode-resource]</h3>
+                <p class="desc">Scripts/styles active only in edit mode</p>
+                <pre><code>&lt;style edit-mode-resource&gt;
+  .edit-outline { outline: 2px dashed blue; }
+&lt;/style&gt;</code></pre>
+                <div class="demo-area">
+                    <style edit-mode-resource type="text/css">.edit-outline { outline: 2px dashed var(--primary-blue); }</style>
+                    <div class="edit-outline badge">Outlined in edit mode</div>
+                </div>
+            </div>
+
+            <!-- ========== SECTION 3: DOM HELPERS ========== -->
+            <div class="category-label">DOM Helpers</div>
+
+            <!-- el.val -->
+            <div class="demo-card" id="el-val">
+                <h3>el.val</h3>
+                <p class="desc">Get/set attribute values on nearest matching element</p>
+                <pre><code>&lt;input a oninput="this.val.sum =
+  Number(this.val.a) + Number(this.val.b)"&gt;</code></pre>
+                <div class="demo-area flex-row">
+                    <input type="number" a value="0" oninput="this.val.sum = Number(this.val.a) + Number(this.val.b)" style="width: 60px;">
+                    <span>+</span>
+                    <input type="number" b value="0" oninput="this.val.sum = Number(this.val.a) + Number(this.val.b)" style="width: 60px;">
+                    <span>=</span>
+                    <input sum readonly value="0" style="width: 60px;">
+                </div>
+            </div>
+
+            <!-- el.text -->
+            <div class="demo-card" id="el-text">
+                <h3>el.text</h3>
+                <p class="desc">Get/set innerText on nearest matching element</p>
+                <pre><code>&lt;button onclick="this.text.counter--"&gt;-&lt;/button&gt;
+&lt;div counter&gt;0&lt;/div&gt;</code></pre>
+                <div class="demo-area flex-row" style="justify-content: center;">
+                    <button onclick="this.text.counter--">-</button>
+                    <div counter class="counter-display">0</div>
+                    <button onclick="this.text.counter++">+</button>
+                </div>
+            </div>
+
+            <!-- el.exec -->
+            <div class="demo-card" id="el-exec">
+                <h3>el.exec</h3>
+                <p class="desc">Execute code stored in an attribute</p>
+                <pre><code>&lt;div confirm-delete="consent('Delete?',
+  () =&gt; this.remove())"&gt;</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <div id="exec-demo-container" confirm-delete="execDeleteDemo(this)" style="display: flex; gap: 0.5rem; align-items: center;">
+                        <span class="badge">Deletable Item</span>
+                        <button onclick="this.exec['confirm-delete']()">Delete</button>
+                    </div>
+                    <span class="output" id="exec-log">Click delete to trigger consent</span>
+                </div>
+            </div>
+
+            <!-- el.nearest -->
+            <div class="demo-card" id="el-nearest">
+                <h3>el.nearest</h3>
+                <p class="desc">Find nearest element by class or attribute</p>
+                <pre><code>&lt;div box&gt;
+  &lt;button onclick="this.nearest.box
+    .style.background = 'red'"&gt;</code></pre>
+                <div class="demo-area" box style="background: var(--shadow-blue);">
+                    <button onclick="this.nearest.box.style.background = randomColor()">Paint</button>
+                    <button onclick="this.nearest.box.style.background = ''">Reset</button>
+                </div>
+            </div>
+
+            <!-- ========== SECTION 4: OPTION VISIBILITY ========== -->
+            <div class="category-label">Option Visibility</div>
+
+            <!-- option:savestatus -->
+            <div class="demo-card" id="option-savestatus">
+                <h3>option:savestatus</h3>
+                <p class="desc">Show elements based on save state</p>
+                <pre><code>&lt;span option:savestatus="saved"&gt;
+  ✓ Saved
+&lt;/span&gt;</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <div class="flex-row" style="margin-bottom: 0.5rem;">
+                        <button onclick="document.documentElement.setAttribute('savestatus', 'saved')">Set saved</button>
+                        <button onclick="document.documentElement.setAttribute('savestatus', 'saving')">Set saving</button>
+                        <button onclick="document.documentElement.setAttribute('savestatus', 'dirty')">Set dirty</button>
+                    </div>
+                    <div class="flex-row">
+                        <span class="badge" option:savestatus="saved" style="background: var(--green); color: white; border-color: #059669;">✓ Saved</span>
+                        <span class="badge" option:savestatus="saving" style="background: var(--yellow); color: white; border-color: #d97706;">Saving...</span>
+                        <span class="badge" option:savestatus="dirty" style="background: var(--red); color: white; border-color: #b91c1c;">Unsaved</span>
                     </div>
                 </div>
+            </div>
 
-                <!-- URL Output -->
-                <div class="url-output">
-                    <div class="url-label">Add to your page:</div>
-                    <div class="url-container">
-                        <textarea class="url-textarea" id="generated-url" readonly wrap="off"></textarea>
+            <!-- option:editmode -->
+            <div class="demo-card" id="option-editmode">
+                <h3>option:editmode</h3>
+                <p class="desc">Show elements only in edit mode</p>
+                <pre><code>&lt;button option:editmode="true"&gt;
+  Edit Tools
+&lt;/button&gt;</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <div class="flex-row" style="margin-bottom: 0.5rem;">
+                        <button onclick="setEditMode(true)">Edit mode ON</button>
+                        <button onclick="setEditMode(false)">Edit mode OFF</button>
                     </div>
-                    <div class="toggle-option">
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="export-to-window-toggle" checked>
-                            <span class="toggle-slider"></span>
+                    <div class="flex-row">
+                        <span class="badge" option:editmode="true" style="background: var(--primary-blue); color: white; border-color: #1e1b4b;">Edit Tools</span>
+                        <span class="badge" option:editmode="false" style="background: var(--gray); color: white; border-color: #334155;">View Only</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- option:status (custom) -->
+            <div class="demo-card" id="option-status">
+                <h3>option:status (custom)</h3>
+                <p class="desc">Show elements based on any custom attribute</p>
+                <pre><code>&lt;div status="pending"&gt;
+  &lt;span option:status="completed"&gt;</code></pre>
+                <div class="demo-area" id="status-demo" status="pending" style="flex-direction: column; align-items: stretch;">
+                    <div class="flex-row" style="margin-bottom: 0.5rem;">
+                        <button onclick="this.closest('[status]').setAttribute('status', 'completed')">Mark Completed</button>
+                        <button onclick="this.closest('[status]').setAttribute('status', 'pending')">Mark Pending</button>
+                    </div>
+                    <div class="flex-row">
+                        <span class="badge" option:status="pending" style="background: var(--yellow); color: white; border-color: #d97706;">⏳ Pending</span>
+                        <span class="badge" option:status="completed" style="background: var(--green); color: white; border-color: #059669;">✓ Completed</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== SECTION 5: EVENT ATTRIBUTES ========== -->
+            <div class="category-label">Event Attributes</div>
+
+            <!-- onrender -->
+            <div class="demo-card" id="onrender">
+                <h3>[onrender]</h3>
+                <p class="desc">Execute JS when element renders</p>
+                <pre><code>&lt;span onrender="this.textContent =
+  new Date().toLocaleTimeString()"&gt;</code></pre>
+                <div class="demo-area">
+                    <span class="output" onrender="this.textContent = 'Rendered at ' + new Date().toLocaleTimeString()"></span>
+                </div>
+            </div>
+
+            <!-- onclone -->
+            <div class="demo-card" id="onclone">
+                <h3>[onclone]</h3>
+                <p class="desc">Execute JS when element is cloned</p>
+                <pre><code>&lt;div onclone="this.style.background =
+  randomColor()"&gt;</code></pre>
+                <div class="demo-area" id="clone-area">
+                    <button onclick="cloneItem()">Clone</button>
+                    <span id="clone-template" onclone="this.style.background = randomColor(); this.style.color = '#fff'" class="clone-item" style="display:none;">Item</span>
+                </div>
+            </div>
+
+            <!-- onclickaway -->
+            <div class="demo-card" id="onclickaway">
+                <h3>[onclickaway]</h3>
+                <p class="desc">Trigger code when clicking outside element</p>
+                <pre><code>&lt;div onclick="reset"
+     onclickaway="trigger"&gt;</code></pre>
+                <div class="demo-area">
+                    <div class="clickaway-box"
+                         onclick="this.textContent = 'Click outside me'"
+                         onclickaway="this.textContent = 'Clicked outside!'">Click outside me</div>
+                </div>
+            </div>
+
+            <!-- sortable -->
+            <div class="demo-card" id="sortable">
+                <h3>[sortable]</h3>
+                <p class="desc">Drag-and-drop reordering with onsorted callback</p>
+                <pre><code>&lt;ul sortable onsorted="..."&gt;
+  &lt;li&gt;Item&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <ul class="sortable-list" sortable onsorting="document.getElementById('sortable-log').textContent = 'Dragging: ' + evt.dragged.textContent" onsorted="document.getElementById('sortable-log').textContent = 'Sorted: ' + evt.item.textContent">
+                        <li>Drag me (1)</li>
+                        <li>Drag me (2)</li>
+                        <li>Drag me (3)</li>
+                    </ul>
+                    <span class="output" id="sortable-log">Drag items to reorder</span>
+                </div>
+            </div>
+
+            <!-- ========== SECTION 6: MUTATION ========== -->
+            <div class="category-label">Mutation</div>
+
+            <!-- onmutation -->
+            <div class="demo-card" id="onmutation">
+                <h3>[onmutation]</h3>
+                <p class="desc">Trigger code when this element or its children change</p>
+                <pre><code>&lt;div onmutation="console.log('changed')"&gt;
+  &lt;span contenteditable&gt;Edit&lt;/span&gt;
+&lt;/div&gt;</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <div onmutation="document.getElementById('onmutation-log').textContent = 'Mutation detected @ ' + new Date().toLocaleTimeString()">
+                        <div class="mini-editor" contenteditable style="width: 100%;">Edit me to trigger mutation</div>
+                    </div>
+                    <span class="output" id="onmutation-log">Edit the text above</span>
+                </div>
+            </div>
+
+            <!-- onglobalmutation -->
+            <div class="demo-card" id="onglobalmutation">
+                <h3>[onglobalmutation]</h3>
+                <p class="desc">Trigger code when any element on the page changes</p>
+                <pre><code>&lt;span onglobalmutation="this.textContent =
+  All('li').length"&gt;0&lt;/span&gt;</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;" id="globalmutation-zone">
+                    <button onclick="addGlobalMutationItem()">Add item</button>
+                    <ul id="globalmutation-list" style="list-style: none; display: flex; gap: 0.25rem; flex-wrap: wrap; margin-top: 0.25rem;"></ul>
+                    <span class="output" onglobalmutation="this.textContent = 'Total items: ' + document.querySelectorAll('#globalmutation-list li').length">Total items: 0</span>
+                </div>
+            </div>
+
+            <!-- Mutation.onAddElement -->
+            <div class="demo-card" id="mutation-api">
+                <h3>Mutation.onAddElement</h3>
+                <p class="desc">Programmatic observer for added elements</p>
+                <pre><code>Mutation.onAddElement({
+  selectorFilter: '.item'
+}, changes => ...);</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;" id="mutation-zone">
+                    <button onclick="addMutationBlocks()">Add 8 elements</button>
+                    <div id="mutation-items" style="display: flex; gap: 0.25rem; flex-wrap: wrap; margin-top: 0.25rem;"></div>
+                    <span class="output" id="mutation-log">Click to add watched elements</span>
+                </div>
+            </div>
+
+            <!-- ========== SECTION 7: UTILITIES ========== -->
+            <div class="category-label">Utilities</div>
+
+            <!-- Idiomorph -->
+            <div class="demo-card" id="idiomorph">
+                <h3>Idiomorph</h3>
+                <p class="desc">Morph DOM without full re-render</p>
+                <pre><code>Idiomorph.morph(el, newHtml);</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <div class="flex-row" id="morph-container">
+                        <div class="morph-box">A</div>
+                        <div class="morph-box">A</div>
+                        <div class="morph-box" id="morph-target">A</div>
+                    </div>
+                    <button onclick="morphDemo()" style="margin-top: 0.5rem;">Morph 3rd box</button>
+                </div>
+            </div>
+
+            <!-- insertStyleTag -->
+            <div class="demo-card" id="style-injection">
+                <h3>insertStyleTag()</h3>
+                <p class="desc">Inject CSS stylesheet dynamically</p>
+                <pre><code>insertStyleTag('./test-style.css');</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <button onclick="hyperclay.insertStyleTag?.('./test-style.css'); document.getElementById('style-log').textContent = 'CSS injected!'">Inject CSS</button>
+                    <span class="output test-style-injected" id="style-log">Click to inject</span>
+                </div>
+            </div>
+
+            <!-- slugify -->
+            <div class="demo-card" id="slugify">
+                <h3>slugify()</h3>
+                <p class="desc">URL-friendly slug generator</p>
+                <pre><code>slugify('Hello World!')
+// "hello-world"</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <input placeholder="Type to slugify..." oninput="document.getElementById('slug-out').textContent = slugify(this.value)" style="width: 100%;">
+                    <span class="output" id="slug-out"></span>
+                </div>
+            </div>
+
+            <!-- copyToClipboard -->
+            <div class="demo-card" id="clipboard">
+                <h3>copyToClipboard()</h3>
+                <p class="desc">Copy text to clipboard</p>
+                <pre><code>copyToClipboard('Hello!');</code></pre>
+                <div class="demo-area flex-row">
+                    <input id="copy-input" value="Copy this text!" style="flex: 1;">
+                    <button onclick="hyperclay.copyToClipboard(document.getElementById('copy-input').value); toast('Copied!', 'success')">Copy</button>
+                </div>
+            </div>
+
+            <!-- query -->
+            <div class="demo-card" id="query">
+                <h3>query</h3>
+                <p class="desc">Parse URL search params</p>
+                <pre><code>// ?name=dev
+query.name // "dev"</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <button onclick="location.search = '?demo=true&count=42'">Add params to current page</button>
+                    <span class="output" id="query-out">(no params)</span>
+                </div>
+            </div>
+
+            <!-- ========== SECTION 8: ALL() ========== -->
+            <div class="category-label">All()</div>
+
+            <!-- Close All Menus -->
+            <div class="demo-card" id="all-close-menus">
+                <h3>Close All Menus</h3>
+                <p class="desc">Select all elements by attribute and modify them</p>
+                <pre><code>All.menu.classList.add('hidden');</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <div class="flex-row" style="margin-bottom: 0.5rem;">
+                        <button onclick="All.menu.forEach(m => m.classList.add('hidden'))">Close All</button>
+                        <button onclick="All.menu.forEach(m => m.classList.remove('hidden'))">Open All</button>
+                    </div>
+                    <div class="flex-row">
+                        <div menu class="menu-box">Menu 1</div>
+                        <div menu class="menu-box">Menu 2</div>
+                        <div menu class="menu-box">Menu 3</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inline Edit -->
+            <div class="demo-card" id="all-inline-edit">
+                <h3>Inline Edit</h3>
+                <p class="desc">Edit attributes inline with ask() and close menus</p>
+                <pre><code>ask('URL:', res => {
+  this.nearest.link.href = res;
+})</code></pre>
+                <div class="demo-area" style="justify-content: space-between;">
+                    <a link href="https://example.com" target="_blank">example.com</a>
+                    <button onclick="ask('New URL:', res => { this.nearest.link.href = res; this.nearest.link.textContent = res.replace(/^https?:\/\//, ''); }, this.nearest.link.href)">Edit Link</button>
+                </div>
+            </div>
+
+            <!-- Live Sync -->
+            <div class="demo-card" id="all-live-sync">
+                <h3>Live Sync</h3>
+                <p class="desc">Sync content across elements with same identifier</p>
+                <pre><code>All.sync_card.forEach(c =>
+  c.val.project_name === this.val.project_name
+  && c.innerHTML !== this.innerHTML
+  && (c.innerHTML = this.innerHTML))</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch; gap: 0.5rem;">
+                    <div sync_card project_name="alpha" class="sync-card" contenteditable onmutation="All.sync_card.forEach(c => c !== this && c.val.project_name === this.val.project_name && c.innerHTML !== this.innerHTML && (c.innerHTML = this.innerHTML))">Edit me - I sync with below</div>
+                    <div sync_card project_name="alpha" class="sync-card" contenteditable onmutation="All.sync_card.forEach(c => c !== this && c.val.project_name === this.val.project_name && c.innerHTML !== this.innerHTML && (c.innerHTML = this.innerHTML))">Edit me - I sync with above</div>
+                </div>
+            </div>
+
+            <!-- Filter by Category -->
+            <div class="demo-card" id="all-filter">
+                <h3>Filter by Category</h3>
+                <p class="desc">Filter elements with a dropdown</p>
+                <pre><code>All.card.forEach(c =>
+  c.classList.toggle('muted', ...)
+)</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <select onchange="filterByCategory(this.value)" style="margin-bottom: 0.5rem;">
+                        <option value="">All</option>
+                        <option value="work">Work</option>
+                        <option value="personal">Personal</option>
+                    </select>
+                    <div class="flex-row">
+                        <div filter-card category="work" class="filter-card">Work</div>
+                        <div filter-card category="personal" class="filter-card">Personal</div>
+                        <div filter-card category="work" class="filter-card">Work</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== SECTION 9: UI COMPONENTS ========== -->
+            <div class="category-label">UI Components</div>
+
+            <!-- theModal -->
+            <div class="demo-card" id="themodal">
+                <h3>theModal</h3>
+                <p class="desc">Parent module for ask/tell/consent/snippet</p>
+                <pre><code>themodal.html = '&lt;h2&gt;Custom&lt;/h2&gt;';
+themodal.open();</code></pre>
+                <div class="demo-area">
+                    <button onclick="openCustomModal()">Open Modal</button>
+                </div>
+            </div>
+
+            <!-- ask() -->
+            <div class="demo-card" id="ask">
+                <h3>ask()</h3>
+                <p class="desc">Prompt user for text input, returns promise</p>
+                <pre><code>const name = await ask('Name?');</code></pre>
+                <div class="demo-area">
+                    <button onclick="askDemo()">ask()</button>
+                </div>
+            </div>
+
+            <!-- tell() -->
+            <div class="demo-card" id="tell">
+                <h3>tell()</h3>
+                <p class="desc">Display informational message, returns promise</p>
+                <pre><code>await tell('Welcome!', 'Info');</code></pre>
+                <div class="demo-area">
+                    <button onclick="tell('Welcome!', 'This is an informational message.')">tell()</button>
+                </div>
+            </div>
+
+            <!-- consent() -->
+            <div class="demo-card" id="consent">
+                <h3>consent()</h3>
+                <p class="desc">Get yes/no confirmation, returns promise</p>
+                <pre><code>const ok = await consent('Delete?');</code></pre>
+                <div class="demo-area">
+                    <button onclick="consentDemo()">consent()</button>
+                </div>
+            </div>
+
+            <!-- snippet() -->
+            <div class="demo-card" id="snippet">
+                <h3>snippet()</h3>
+                <p class="desc">Show code snippet with copy button</p>
+                <pre><code>await snippet('Install', code, 'Copy');</code></pre>
+                <div class="demo-area">
+                    <button onclick="hyperclay.snippet('Install', 'npm install hyperclayjs', 'Copy to terminal')">snippet()</button>
+                </div>
+            </div>
+
+            <!-- toast() -->
+            <div class="demo-card" id="toast">
+                <h3>toast()</h3>
+                <p class="desc">Show notification messages</p>
+                <pre><code>toast('Saved!', 'success');</code></pre>
+                <div class="demo-area">
+                    <button onclick="toast('Saved successfully!', 'success')">Success</button>
+                    <button onclick="toast('Something went wrong', 'error')">Error</button>
+                </div>
+            </div>
+
+            <!-- ========== SECTION 10: FORM HELPERS ========== -->
+            <div class="category-label">Form Helpers</div>
+
+            <!-- persist -->
+            <div class="demo-card" id="persist">
+                <h3>[persist]</h3>
+                <p class="desc">Persist form values to DOM attributes</p>
+                <pre><code>&lt;input persist&gt;
+&lt;select persist&gt;</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <div class="flex-row">
+                        <input persist id="persist-input" placeholder="Type..." oninput="updatePersistDisplay()" style="flex: 1;">
+                        <label style="font-size: 0.7rem; display: flex; align-items: center; gap: 0.25rem;">
+                            <input type="radio" persist name="persist-radio" value="A" onchange="updatePersistDisplay()"> A
                         </label>
-                        <div class="toggle-label">
-                            <strong>Export to window</strong>
-                            Attach modules to window.hyperclay
+                        <label style="font-size: 0.7rem; display: flex; align-items: center; gap: 0.25rem;">
+                            <input type="radio" persist name="persist-radio" value="B" onchange="updatePersistDisplay()"> B
+                        </label>
+                        <select persist id="persist-select" onchange="updatePersistDisplay()">
+                            <option>One</option>
+                            <option>Two</option>
+                        </select>
+                    </div>
+                    <span class="output" id="persist-log">Values will appear here</span>
+                </div>
+            </div>
+
+            <!-- autosize -->
+            <div class="demo-card" id="autosize">
+                <h3>[autosize]</h3>
+                <p class="desc">Textarea grows with content</p>
+                <pre><code>&lt;textarea autosize&gt;&lt;/textarea&gt;</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <textarea autosize placeholder="Type to grow..." style="width: 100%;" oninput="document.getElementById('autosize-log').textContent = 'Textarea autogrew'"></textarea>
+                    <span class="output" id="autosize-log">Press Enter to grow</span>
+                </div>
+            </div>
+
+            <!-- prevent-enter -->
+            <div class="demo-card" id="prevent-enter">
+                <h3>[prevent-enter]</h3>
+                <p class="desc">Prevent Enter key, useful for inline editing with contenteditable elements</p>
+                <pre><code>&lt;span contenteditable prevent-enter&gt;</code></pre>
+                <div class="demo-area">
+                    <span class="mini-editor" contenteditable prevent-enter style="width: 100%;">No newlines here - Enter does nothing</span>
+                </div>
+            </div>
+
+            <!-- getDataFromForm -->
+            <div class="demo-card" id="form-data">
+                <h3>getDataFromForm()</h3>
+                <p class="desc">Serialize form to object</p>
+                <pre><code>const data = getDataFromForm(form);</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <form id="demo-form" onsubmit="return serializeForm(event)">
+                        <input name="title" value="Hyperclay" style="width: 100%; margin-bottom: 0.25rem;">
+                        <div class="flex-row">
+                            <select name="type">
+                                <option>Library</option>
+                                <option>Framework</option>
+                            </select>
+                            <label style="font-size: 0.7rem;"><input type="checkbox" name="flags" value="demo" checked> demo</label>
+                            <button type="submit">Serialize</button>
                         </div>
-                    </div>
-                    <button class="copy-button" id="copy-button">COPY</button>
+                    </form>
+                    <span class="output" id="form-output" style="margin-top: 0.5rem;">Click serialize</span>
                 </div>
             </div>
+
+            <!-- ========== SECTION 11: COMMUNICATION ========== -->
+            <div class="category-label">Communication</div>
+
+            <!-- sendMessage -->
+            <div class="demo-card" id="send-message">
+                <h3>sendMessage()</h3>
+                <p class="desc">Submit form data to /message endpoint</p>
+                <pre><code>await sendMessage(event, 'Sent!');</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <form id="message-form" onsubmit="return sendMessageDemo(event)">
+                        <input name="subject" placeholder="Subject" style="width: 100%; margin-bottom: 0.25rem;">
+                        <button type="submit">Send message</button>
+                    </form>
+                    <span class="output" id="send-log">Submit to test</span>
+                </div>
+            </div>
+
+            <!-- uploadFile -->
+            <div class="demo-card" id="file-upload">
+                <h3>uploadFile()</h3>
+                <p class="desc">Upload file with progress callback</p>
+                <pre><code>uploadFile(event, res => {
+  console.log(res.urls);
+});</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <input type="file" id="upload-input" onchange="uploadDemo(event)">
+                    <span class="output" id="upload-log">Select a file</span>
+                </div>
+            </div>
+
         </div>
     </div>
 
+    <script>
+        window.hyperclay = window.hyperclay || {};
+        window.hyperclay.testMode = true;
+
+        // Mock fetch for demos
+        const originalFetch = window.fetch.bind(window);
+        window.fetch = async (resource, init = {}) => {
+            const url = typeof resource === 'string' ? resource : resource?.url;
+            // Mock save endpoint
+            if (url?.startsWith('/save/')) {
+                await new Promise(r => setTimeout(r, 300));
+                return new Response(JSON.stringify({ msg: 'Saved (demo)', msgType: 'success' }), {
+                    status: 200, headers: { 'Content-Type': 'application/json' }
+                });
+            }
+            return originalFetch(resource, init);
+        };
+    </script>
     <script type="module">
-        // Load module dependency graph
-        let moduleData = null;
-        let features = {};
-        let presets = {};
-        let categories = {};
+        await import('./hyperclay.js?preset=everything&exclude=autosave,save-toast');
 
-        async function loadModuleData() {
-            try {
-                const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-                const fetchOptions = isLocal ? { cache: 'no-store' } : {};
-                const response = await fetch('/module-dependency-graph.json', fetchOptions);
-                moduleData = await response.json();
+        // ========== HELPER FUNCTIONS ==========
 
-                // Transform modules data to features format
-                features = moduleData.modules;
-                presets = moduleData.presets;
-                categories = moduleData.categories;
+        window.randomColor = () => {
+            const colors = ['#3E43EF', '#10B981', '#F59E0B', '#DC2626', '#8B5CF6', '#EC4899'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        };
 
-                // Render the UI dynamically
-                renderUI();
-                initializeEventListeners();
+        // ========== SAVE DEMOS ==========
 
-                // Initialize with standard preset
-                setTimeout(() => {
-                    const standardButton = document.querySelector('[data-preset="standard"]');
-                    if (standardButton) standardButton.click();
-                }, 100);
-            } catch (error) {
-                console.error('Failed to load module data:', error);
-            }
-        }
-
-        function renderUI() {
-            renderPresetButtons();
-            renderFeatureSections();
-        }
-
-        function renderPresetButtons() {
-            const container = document.querySelector('.preset-buttons');
-            if (!container) return;
-
-            container.innerHTML = '';
-
-            for (const [presetId, preset] of Object.entries(presets)) {
-                // Calculate preset size
-                const totalSize = preset.modules.reduce((sum, moduleId) => {
-                    return sum + (features[moduleId]?.size || 0);
-                }, 0);
-
-                const button = document.createElement('button');
-                button.className = 'preset-button';
-                button.dataset.preset = presetId;
-                button.textContent = `${preset.name} (${Math.round(totalSize)}KB)`;
-                container.appendChild(button);
-            }
-        }
-
-        function renderFeatureSections() {
-            const container = document.querySelector('.features-column');
-            if (!container) return;
-
-            // Find the preset section
-            const presetSection = container.querySelector('.preset-section');
-
-            // Remove all existing feature sections
-            const existingSections = container.querySelectorAll('.feature-section');
-            existingSections.forEach(section => section.remove());
-
-            // Render each category
-            for (const [categoryId, category] of Object.entries(categories)) {
-                if (!category.modules || category.modules.length === 0) continue;
-
-                const section = document.createElement('div');
-                section.className = 'feature-section';
-
-                // Calculate category total size
-                const categorySize = category.modules.reduce((sum, moduleId) => {
-                    return sum + (features[moduleId]?.size || 0);
-                }, 0);
-
-                section.innerHTML = `
-                    <div class="section-header">
-                        <h2 class="section-title">${category.name}</h2>
-                        <span class="section-size">${category.description}</span>
-                    </div>
-                    <div class="feature-grid" data-category="${categoryId}">
-                        ${category.modules.map(moduleId => {
-                            const module = features[moduleId];
-                            if (!module) return '';
-
-                            const sizeClass = module.size > 50 ? 'large' : '';
-                            const dependencies = getDependencies(moduleId);
-                            const requiresAttr = dependencies.length > 0 ? `data-requires="${dependencies.join(',')}"` : '';
-
-                            // Filter out hidden dependencies (not in any category)
-                            const visibleDependencies = dependencies.filter(depId => isVisibleModule(depId));
-                            const dependenciesText = visibleDependencies.length > 0
-                                ? `<div class="feature-dependencies">Requires: ${visibleDependencies.map(d => features[d]?.name || d).join(', ')}</div>`
-                                : '';
-
-                            // Generate exports text (will be updated dynamically based on export-to-window toggle)
-                            const exports = module.exports || {};
-                            const exportEntries = Object.entries(exports);
-                            let exportsText = '';
-                            if (exportEntries.length > 0) {
-                                const exportData = JSON.stringify(exports);
-                                const exportNames = exportEntries.map(([fnName]) => fnName);
-                                exportsText = `<div class="feature-exports" data-exports='${exportData}'>${exportNames.join(', ')}</div>`;
-                            }
-
-                            return `
-                                <label class="feature-item">
-                                    <input type="checkbox"
-                                           class="feature-checkbox"
-                                           data-feature="${moduleId}"
-                                           data-size="${module.size}"
-                                           ${requiresAttr}>
-                                    <div class="feature-info">
-                                        <div class="feature-name">${module.name}</div>
-                                        <div class="feature-description">${module.description}</div>
-                                        ${exportsText}
-                                        ${dependenciesText}
-                                    </div>
-                                    <span class="feature-size ${sizeClass}">${module.size.toFixed(1)}KB</span>
-                                </label>
-                            `;
-                        }).join('')}
-                    </div>
-                `;
-
-                container.appendChild(section);
-            }
-        }
-
-        function isVisibleModule(moduleId) {
-            // Check if module is in any category (visible modules)
-            for (const category of Object.values(categories)) {
-                if (category.modules && category.modules.includes(moduleId)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        function getDependencies(moduleId) {
-            const module = features[moduleId];
-            if (!module || !module.files || !module.files[0]) return [];
-
-            const mainFile = module.files[0];
-            const deps = moduleData.rawDependencies[mainFile] || [];
-
-            // Convert file paths to module IDs
-            const depModuleIds = [];
-            for (const dep of deps) {
-                for (const [modId, mod] of Object.entries(features)) {
-                    if (mod.files && mod.files.includes(dep)) {
-                        if (modId !== moduleId) {
-                            depModuleIds.push(modId);
-                        }
-                        break;
-                    }
-                }
-            }
-
-            return [...new Set(depModuleIds)];
-        }
-
-        const ORIGINAL_SIZE = 2100; // 2.1MB in KB
-
-        // Initialize state
-        let selectedFeatures = new Set(['export-to-window']);
-        let currentPreset = null;
-
-        function initializeEventListeners() {
-            // Get all checkboxes and preset buttons
-            const checkboxes = document.querySelectorAll('.feature-checkbox');
-            const presetButtons = document.querySelectorAll('.preset-button');
-            const urlInput = document.getElementById('generated-url');
-            const copyButton = document.getElementById('copy-button');
-            const featureCountEl = document.getElementById('feature-count');
-            const totalSizeEl = document.getElementById('total-size');
-            const selectedFeaturesEl = document.getElementById('selected-features-list');
-            const sizeBar = document.getElementById('size-bar');
-
-            // Update UI when features change
-            function updateUI() {
-            // Update feature items visual state
-            checkboxes.forEach(checkbox => {
-                const featureItem = checkbox.closest('.feature-item');
-                if (checkbox.checked) {
-                    featureItem.classList.add('selected');
-                } else {
-                    featureItem.classList.remove('selected');
-                }
+        window.testSavePage = () => {
+            const log = document.getElementById('save-page-log');
+            log.textContent = 'Saving...';
+            hyperclay.savePage?.(({ msgType, msg }) => {
+                log.textContent = `${msgType}: ${msg}`;
             });
+        };
 
-            // Sync export-to-window toggle
-            const exportToggle = document.getElementById('export-to-window-toggle');
-            exportToggle.checked = selectedFeatures.has('export-to-window');
+        window.dispatchSaveEvent = (type) => {
+            const eventName = type === 'saved' ? 'hyperclay:save-saved' : 'hyperclay:save-error';
+            document.dispatchEvent(new CustomEvent(eventName, { detail: { msg: `Demo ${type}`, status: type } }));
+            // Also show toast since save-toast module is excluded
+            toast(type === 'saved' ? 'Page saved' : 'Save failed', type === 'saved' ? 'success' : 'error');
+        };
 
-            // Update exports text based on toggle state
-            const hasExportToWindow = selectedFeatures.has('export-to-window');
-            document.querySelectorAll('.feature-exports[data-exports]').forEach(el => {
-                const exports = JSON.parse(el.dataset.exports);
-                const allExports = [];
-                for (const [fnName, targets] of Object.entries(exports)) {
-                    if (hasExportToWindow) {
-                        if (targets.includes('window')) allExports.push(`window.${fnName}`);
-                        if (targets.includes('hyperclay')) allExports.push(`hyperclay.${fnName}`);
-                    } else {
-                        allExports.push(fnName);
-                    }
-                }
-                el.textContent = allExports.join(', ');
-            });
-
-            // Calculate total size
-            let totalSize = 0;
-            selectedFeatures.forEach(feature => {
-                totalSize += features[feature].size;
-            });
-
-            // Update summary
-            featureCountEl.textContent = selectedFeatures.size;
-
-            // Format size display
-            if (totalSize < 1000) {
-                totalSizeEl.textContent = totalSize.toFixed(1) + 'KB';
-            } else {
-                totalSizeEl.textContent = (totalSize / 1000).toFixed(2) + 'MB';
-            }
-
-            // Color code the size
-            if (totalSize > 200) {
-                totalSizeEl.className = 'stat-value large';
-                sizeBar.className = 'size-bar large';
-            } else if (totalSize > 100) {
-                totalSizeEl.className = 'stat-value medium';
-                sizeBar.className = 'size-bar medium';
-            } else {
-                totalSizeEl.className = 'stat-value small';
-                sizeBar.className = 'size-bar small';
-            }
-
-            // Update size bar
-            const barWidth = Math.min((totalSize / 300) * 100, 100);
-            sizeBar.style.width = barWidth + '%';
-
-            // Update selected features list (only show visible modules)
-            selectedFeaturesEl.innerHTML = '';
-            selectedFeatures.forEach(feature => {
-                // Skip hidden modules in the display
-                if (!isVisibleModule(feature)) return;
-
-                const tag = document.createElement('span');
-                tag.className = 'feature-tag';
-                tag.textContent = feature;
-                selectedFeaturesEl.appendChild(tag);
-            });
-
-            // Generate URL
-            generateURL();
-        }
-
-            // Generate URL based on selected features
-            function generateURL() {
-            const baseURL = 'https://cdn.jsdelivr.net/npm/hyperclayjs@1.6.0/hyperclay.js';
-
-            let urlParams = '';
-            if (currentPreset) {
-                urlParams = `?preset=${currentPreset}`;
-            } else if (selectedFeatures.size > 0) {
-                // Filter out hidden modules from the URL, but keep export-to-window
-                const featuresArray = Array.from(selectedFeatures).filter(f => isVisibleModule(f) || f === 'export-to-window');
-                urlParams = `?features=${featuresArray.join(',')}`;
-            }
-
-            const fullUrl = baseURL + urlParams;
-
-            // Collect exports from selected modules for the example
-            const exampleExports = new Set();
-            for (const featureId of selectedFeatures) {
-                const module = features[featureId];
-                if (module?.exports) {
-                    for (const exportName of Object.keys(module.exports)) {
-                        exampleExports.add(exportName);
-                    }
-                }
-            }
-            const exportsArray = Array.from(exampleExports).sort();
-            let code;
-            if (exportsArray.length > 0) {
-                const formatted = exportsArray.map(name => `    ${name}`).join(',\n');
-                code = `<script type="module">\n  const {\n${formatted}\n  } = await import('${fullUrl}');\n<\/script>`;
-            } else {
-                code = `<script type="module">\n  await import('${fullUrl}');\n<\/script>`;
-            }
-
-            urlInput.value = code;
-
-            // Auto-size textarea to fit content
-            urlInput.style.height = 'auto';
-            urlInput.style.height = urlInput.scrollHeight + 'px';
-        }
-
-            // Handle checkbox changes
-            checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', (e) => {
-                const feature = e.target.dataset.feature;
-                if (e.target.checked) {
-                    selectedFeatures.add(feature);
-
-                    // Check for dependencies
-                    const requires = e.target.dataset.requires;
-                    if (requires) {
-                        const requiredFeatures = requires.split(',');
-                        requiredFeatures.forEach(reqFeature => {
-                            selectedFeatures.add(reqFeature);
-                            const reqCheckbox = document.querySelector(`[data-feature="${reqFeature}"]`);
-                            if (reqCheckbox) reqCheckbox.checked = true;
-                        });
-                    }
-                } else {
-                    selectedFeatures.delete(feature);
-
-                    // Check if this feature is required by others
-                    checkboxes.forEach(cb => {
-                        const requires = cb.dataset.requires;
-                        if (requires && requires.includes(feature) && cb.checked) {
-                            // Uncheck features that depend on this one
-                            cb.checked = false;
-                            selectedFeatures.delete(cb.dataset.feature);
-                        }
-                    });
-                }
-
-                // Check if current selection matches any preset
-                currentPreset = null;
-                for (const [presetName, presetData] of Object.entries(presets)) {
-                    const presetFeatures = presetData.modules || [];
-                    if (presetFeatures.length === selectedFeatures.size &&
-                        presetFeatures.every(f => selectedFeatures.has(f))) {
-                        currentPreset = presetName;
-                        break;
-                    }
-                }
-
-                // Update preset button states
-                presetButtons.forEach(btn => {
-                    if (btn.dataset.preset === currentPreset) {
-                        btn.classList.add('active');
-                    } else {
-                        btn.classList.remove('active');
-                    }
-                });
-
-                updateUI();
-            });
+        // Save system - update savestatus on edit
+        document.getElementById('save-editor')?.addEventListener('input', () => {
+            document.documentElement.setAttribute('savestatus', 'dirty');
+            document.getElementById('save-system-log').textContent = 'savestatus: dirty';
         });
 
-            // Handle preset button clicks
-            presetButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
-                const preset = e.target.dataset.preset;
-                currentPreset = preset;
-
-                // Update preset button states
-                presetButtons.forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                e.target.classList.add('active');
-
-                // Clear all selections
-                selectedFeatures.clear();
-                checkboxes.forEach(checkbox => {
-                    checkbox.checked = false;
-                });
-
-                // Apply preset
-                if (presets[preset] && presets[preset].modules) {
-                    presets[preset].modules.forEach(feature => {
-                        selectedFeatures.add(feature);
-                        const checkbox = document.querySelector(`[data-feature="${feature}"]`);
-                        if (checkbox) checkbox.checked = true;
-                    });
-                }
-
-                updateUI();
-            });
-        });
-
-            // Handle copy button
-            copyButton.addEventListener('click', async () => {
-            await navigator.clipboard.writeText(urlInput.value);
-
-            // Visual feedback
-            copyButton.textContent = 'COPIED!';
-            copyButton.classList.add('copied');
-
+        // Autosave demo
+        let autosavePending = false;
+        document.getElementById('autosave-editor')?.addEventListener('input', () => {
+            autosavePending = true;
+            document.getElementById('autosave-log').textContent = 'Change detected...';
+            // Simulate autosave after delay
             setTimeout(() => {
-                copyButton.textContent = 'COPY';
-                copyButton.classList.remove('copied');
+                if (autosavePending) {
+                    autosavePending = false;
+                    document.getElementById('autosave-log').textContent = `Auto-saved @ ${new Date().toLocaleTimeString()}`;
+                }
             }, 2000);
         });
 
-            // Handle export-to-window toggle
-            const exportToggle = document.getElementById('export-to-window-toggle');
-            exportToggle.addEventListener('change', (e) => {
-                if (e.target.checked) {
-                    selectedFeatures.add('export-to-window');
-                } else {
-                    selectedFeatures.delete('export-to-window');
-                }
-                // Clear preset since we're customizing
-                currentPreset = null;
-                presetButtons.forEach(btn => btn.classList.remove('active'));
-                updateUI();
+        // ========== EDIT MODE DEMOS ==========
+
+        window.setEditMode = (isEdit) => {
+            document.documentElement.setAttribute('editmode', isEdit ? 'true' : 'false');
+            document.getElementById('edit-mode-status').textContent = `editmode: ${isEdit}`;
+
+            // Toggle all edit-mode-* elements using module functions
+            if (isEdit) {
+                hyperclay.enableContentEditable?.();
+                hyperclay.enableAdminInputs?.();
+                hyperclay.enableOnClick?.();
+                hyperclay.enableAdminResources?.();
+            } else {
+                hyperclay.disableContentEditable?.();
+                hyperclay.disableAdminInputs?.();
+                hyperclay.disableOnClick?.();
+                hyperclay.disableAdminResources?.();
+            }
+        };
+
+        window.toggleEditModeDemo = () => {
+            const current = document.documentElement.getAttribute('editmode');
+            setEditMode(current !== 'true');
+        };
+
+        // ========== DOM HELPER DEMOS ==========
+
+        window.execDeleteDemo = (container) => {
+            consent('Delete this item?', () => {
+                container.remove();
+                document.getElementById('exec-log').textContent = 'Item deleted!';
             });
+        };
 
+        // ========== EVENT ATTRIBUTE DEMOS ==========
+
+        window.cloneItem = () => {
+            const template = document.getElementById('clone-template');
+            const clone = template.cloneNode(true);
+            clone.style.display = 'inline-block';
+            clone.id = '';
+            document.getElementById('clone-area').appendChild(clone);
+        };
+
+        // ========== MUTATION DEMOS ==========
+
+        let globalMutCount = 0;
+        window.addGlobalMutationItem = () => {
+            globalMutCount++;
+            const li = document.createElement('li');
+            li.className = 'badge';
+            li.textContent = `#${globalMutCount}`;
+            document.getElementById('globalmutation-list').appendChild(li);
+        };
+
+        let mutBatch = 0;
+        if (window.Mutation?.onAddElement) {
+            Mutation.onAddElement({ selectorFilter: '.mut-item' }, changes => {
+                document.getElementById('mutation-log').textContent = `Added ${changes.length} element(s)`;
+            });
         }
+        window.addMutationBlocks = () => {
+            mutBatch++;
+            const container = document.getElementById('mutation-items');
+            container.innerHTML = '';
+            for (let i = 1; i <= 8; i++) {
+                const block = document.createElement('span');
+                block.className = 'badge mut-item';
+                block.textContent = `${mutBatch}.${i}`;
+                container.appendChild(block);
+            }
+        };
 
-        // Load data on page load
-        loadModuleData();
+        // ========== UTILITY DEMOS ==========
+
+        let morphIndex = 0;
+        window.morphDemo = () => {
+            morphIndex = (morphIndex + 1) % 26;
+            const letter = String.fromCharCode(65 + morphIndex);
+            const target = document.getElementById('morph-target');
+            hyperclay.Idiomorph?.morph(target, `<div class="morph-box" id="morph-target">${letter}</div>`);
+        };
+
+        // Query display
+        const queryOut = document.getElementById('query-out');
+        const params = Object.fromEntries(new URLSearchParams(location.search));
+        queryOut.textContent = Object.keys(params).length ? JSON.stringify(params) : '(no params)';
+
+        // ========== ALL() DEMOS ==========
+
+        window.filterByCategory = (category) => {
+            document.querySelectorAll('[filter-card]').forEach(c => {
+                c.classList.toggle('muted', category && c.getAttribute('category') !== category);
+            });
+        };
+
+        // ========== UI COMPONENT DEMOS ==========
+
+        window.openCustomModal = () => {
+            themodal.html = `
+                <div style="text-align: center; padding: 1rem;">
+                    <h2 style="margin-bottom: 0.5rem;">Custom Modal</h2>
+                    <p style="color: #666;">This is theModal in action!</p>
+                </div>
+            `;
+            themodal.yes = 'Got it';
+            themodal.onYes(() => true);
+            themodal.open();
+        };
+
+        window.askDemo = async () => {
+            const name = await new Promise(resolve => {
+                ask('What is your name?', resolve);
+            });
+            if (name) toast(`Hello, ${name}!`, 'success');
+        };
+
+        window.consentDemo = async () => {
+            consent('Are you sure?', () => {
+                toast('Confirmed!', 'success');
+            });
+        };
+
+        // ========== FORM HELPER DEMOS ==========
+
+        window.updatePersistDisplay = () => {
+            const input = document.getElementById('persist-input');
+            const select = document.getElementById('persist-select');
+            const radio = document.querySelector('input[name="persist-radio"]:checked');
+            setTimeout(() => {
+                const vals = [];
+                if (input?.getAttribute('value')) vals.push(`input: "${input.getAttribute('value')}"`);
+                if (radio) vals.push(`radio: ${radio.value}`);
+                if (select) vals.push(`select: ${select.value}`);
+                document.getElementById('persist-log').textContent = vals.length ? vals.join(', ') : 'Values will appear here';
+            }, 50);
+        };
+
+        window.serializeForm = (event) => {
+            event.preventDefault();
+            const form = document.getElementById('demo-form');
+            const data = hyperclay.getDataFromForm?.(form) || {};
+            document.getElementById('form-output').textContent = JSON.stringify(data);
+            return false;
+        };
+
+        // ========== COMMUNICATION DEMOS ==========
+
+        window.sendMessageDemo = (event) => {
+            event.preventDefault();
+            document.getElementById('send-log').textContent = 'Sending...';
+            setTimeout(() => {
+                document.getElementById('send-log').textContent = 'Message sent (demo)';
+                document.getElementById('message-form').reset();
+            }, 400);
+            return false;
+        };
+
+        window.uploadDemo = (event) => {
+            const input = event.target;
+            const filename = input?.files?.[0]?.name || 'file.txt';
+            document.getElementById('upload-log').textContent = 'Uploading...';
+            setTimeout(() => {
+                document.getElementById('upload-log').textContent = `https://example.com/${filename}`;
+                if (input) input.value = '';
+            }, 400);
+        };
+
+        // ========== INITIAL STATE ==========
+        document.getElementById('edit-mode-status').textContent = `editmode: ${document.documentElement.getAttribute('editmode')}`;
     </script>
 </body>
 </html>

@@ -24,22 +24,35 @@ function init () {
     }
   });
 
-  // elem.val.project returns the value of the nearest "project" attribute
-  // elem.val.project = "hello world" sets the value of the nearest "project" attribute
+  // elem.val.project returns the value of the nearest element with "project" attribute
+  // elem.val.project = "hello world" sets the value of the nearest element with "project" attribute
+  // For form elements (input/select/textarea), uses the value property; otherwise uses the attribute
   Object.defineProperty(HTMLElement.prototype, 'val', {
     configurable: true,
     get: function() {
       let element = this;
 
+      const isFormElement = (elem) =>
+        elem.tagName === 'INPUT' || elem.tagName === 'SELECT' || elem.tagName === 'TEXTAREA';
+
       const handler = {
         get(target, prop) {
-          return nearest(element, `[${prop}], .${prop}`, elem => elem.getAttribute(prop));
+          return nearest(element, `[${prop}], .${prop}`, elem => {
+            if (isFormElement(elem)) {
+              return elem.value;
+            }
+            return elem.getAttribute(prop);
+          });
         },
         set(target, prop, value) {
           const foundElem = nearest(element, `[${prop}], .${prop}`);
 
           if (foundElem) {
-            foundElem.setAttribute(prop, value);
+            if (isFormElement(foundElem)) {
+              foundElem.value = value;
+            } else {
+              foundElem.setAttribute(prop, value);
+            }
           }
 
           return true;
