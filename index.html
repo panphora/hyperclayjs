@@ -3,7 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HyperclayJS</title>
+    <title>HyperclayJS - Better DOM API</title>
+    <meta name="description" content="A single HTML file is all you need to build a web app. Hyperclay hosts these HTML files so you can create personal, malleable software easily.">
+    <meta property="og:url" content="https://hyperclay.com/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="HyperclayJS - Better DOM API">
+    <meta property="og:description" content="A single HTML file is all you need to build a web app. Hyperclay hosts these HTML files so you can create personal, malleable software easily.">
+    <meta property="og:image" content="https://hyperclay.com/images/open-graph.png?v=3">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="twitter:domain" content="hyperclay.com">
+    <meta property="twitter:url" content="https://hyperclay.com/">
+    <meta name="twitter:title" content="HyperclayJS - Better DOM API">
+    <meta name="twitter:description" content="A single HTML file is all you need to build a web app. Hyperclay hosts these HTML files so you can create personal, malleable software easily.">
+    <meta name="twitter:image" content="https://hyperclay.com/images/open-graph.png?v=3">
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
     <style>
         @font-face {
             font-family: 'Berkeley Mono';
@@ -36,6 +49,7 @@
             color: var(--primary-blue);
             padding: 1.5rem;
             line-height: 1.5;
+            text-wrap: pretty;
         }
 
         .container {
@@ -84,6 +98,55 @@
 
         .intro-link:hover {
             text-decoration: none;
+        }
+
+        .intro-section {
+            margin-top: 1.5rem;
+            padding: 1.25rem;
+            border: 2px solid var(--primary-blue);
+            background: var(--shadow-blue);
+        }
+
+        .intro-section h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 0.75rem;
+        }
+
+        .intro-section p {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-bottom: 0.75rem;
+            line-height: 1.6;
+        }
+
+        .intro-section p:last-child {
+            margin-bottom: 0;
+        }
+
+        .intro-section strong {
+            color: var(--primary-blue);
+        }
+
+        .feature-list {
+            list-style: none;
+            margin: 0.75rem 0;
+            padding-left: 1.25rem;
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        .feature-list li {
+            margin-bottom: 0.25rem;
+        }
+
+        .feature-list li::before {
+            content: "•";
+            color: var(--primary-blue);
+            display: inline-block;
+            width: 1rem;
+            margin-left: -1rem;
         }
 
         .nav-link {
@@ -377,11 +440,38 @@
                 <h1>HyperclayJS</h1>
                 <a href="config.html" class="nav-link">Use HyperclayJS &rarr;</a>
             </div>
-            <p class="subtitle">Let's turn the DOM into a state machine</p>
+            <p class="subtitle">A Better DOM API</p>
             <ul class="intro-bullets">
                 <li>The DOM API is incomplete. These modules patch the gaps.</li>
-                <li>Pair with <a href="https://hyperclay.com" class="intro-link">Hyperclay</a> to unlock HTML pages that edit themselves.</li>
+                <li>Pair with <a href="https://hyperclay.com" class="intro-link">Hyperclay</a> to unlock HTML files that edit themselves.</li>
             </ul>
+
+            <div class="intro-section">
+                <h2>What is Hyperclay?</h2>
+                <p>
+                    <strong>Hyperclay</strong> is a unique system that lets you directly shape HTML files and have changes persist live on the web.
+                </p>
+                <p><strong>Features:</strong></p>
+                <ul class="feature-list">
+                    <li>Turn HTML files into apps</li>
+                    <li>Share access, attach custom domains, allow signups</li>
+                    <li>Create a simple CMS by turning HTML into a JSON API</li>
+                    <li>Sync apps from <a href="https://hyperclay.com/hyperclay-local" style="color: inherit; text-decoration: none;">Hyperclay Local</a> directly online</li>
+                </ul>
+                <p>
+                    Build admin controls that are automatically stripped before saving and restored when you return, so regular users only ever see a clean static page.
+                </p>
+                <p>
+                    <strong>One HTML file, full application.</strong>
+                </p>
+            </div>
+
+            <div class="intro-section" style="margin-top: 0.75rem; background: #FEF3E6; border-color: #E85D04;">
+                <h2 style="color: #E85D04;">What is HyperclayJS?</h2>
+                <p>
+                    HyperclayJS is the JavaScript library that powers Hyperclay HTML apps. It gives your HTML files the ability to overwrite themselves, toggles between admin and viewer modes, and blurs the line between document and application.
+                </p>
+            </div>
         </div>
 
         <div class="demo-grid">
@@ -512,7 +602,7 @@ hyperclay.isEditMode;</code></pre>
   .edit-outline { outline: 2px dashed blue; }
 &lt;/style&gt;</code></pre>
                 <div class="demo-area">
-                    <style edit-mode-resource type="text/css">.edit-outline { outline: 2px dashed var(--primary-blue); border: none; }</style>
+                    <style edit-mode-resource type="text/css">.edit-outline { outline: 2px dashed #E85D04; border: none; }</style>
                     <div class="edit-outline badge">Dashed outline in edit mode</div>
                 </div>
             </div>
@@ -592,12 +682,15 @@ hyperclay.isEditMode;</code></pre>
             <div class="demo-card" id="el-nearest">
                 <h3>el.nearest</h3>
                 <p class="desc">Find nearest element by class or attribute</p>
-                <pre><code>&lt;div box&gt;
-  &lt;button onclick="this.nearest.box
-    .style.background = 'red'"&gt;</code></pre>
-                <div class="demo-area" box style="background: var(--shadow-blue);">
-                    <button onclick="this.nearest.box.style.background = randomColor()">Paint</button>
-                    <button onclick="this.nearest.box.style.background = ''">Reset</button>
+                <pre><code>&lt;span paintable&gt;Item&lt;/span&gt;
+&lt;button onclick="this.nearest.paintable
+  .style.background = randomColor()"&gt;</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <span paintable class="badge">Paintable Item</span>
+                        <button onclick="this.nearest.paintable.style.background = randomColor(); this.nearest.paintable.style.color = '#fff'">Paint</button>
+                    </div>
+                    <span class="output" id="nearest-log">Click paint to color the sibling badge</span>
                 </div>
             </div>
 
@@ -1044,10 +1137,14 @@ themodal.open();</code></pre>
 
         </div>
 
-        <footer style="margin-top: 3rem; padding: 2rem; border: 2px solid var(--primary-blue); background: var(--shadow-blue); text-align: center;">
-            <p style="font-size: 1rem; color: var(--primary-blue); margin-bottom: 0.5rem;">HyperclayJS is part of <strong>Hyperclay</strong></p>
-            <p style="font-size: 0.85rem; color: var(--gray); margin-bottom: 1rem;">Build HTML files that edit themselves</p>
-            <a href="https://hyperclay.com" style="display: inline-block; font-weight: bold; color: white; background: var(--primary-blue); padding: 0.6rem 1.5rem; text-decoration: none;">Learn more &rarr;</a>
+        <footer style="margin-top: 3rem; padding: 2rem; border: 2px solid #E85D04; background: #FEF3E6; text-align: center;">
+            <p style="font-size: 1rem; color: #E85D04; margin-bottom: 0.5rem;"><strong>Build your own HyperclayJS</strong></p>
+            <p style="font-size: 0.85rem; color: var(--gray); margin-bottom: 1rem;">Make your HTML files into apps</p>
+            <a href="https://hyperclay.com" style="display: inline-block; font-weight: bold; color: white; background: #E85D04; padding: 0.6rem 1.5rem; text-decoration: none;">Use HyperclayJS &rarr;</a>
+        </footer>
+
+        <footer style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #ddd; text-align: center;">
+            <p style="font-size: 0.85rem; color: var(--gray);">HyperclayJS is part of <a href="https://hyperclay.com" style="color: var(--gray);">Hyperclay</a></p>
         </footer>
     </div>
 
@@ -1070,7 +1167,7 @@ themodal.open();</code></pre>
         };
     </script>
     <script type="module">
-        await import('./hyperclay.js?preset=everything&exclude=autosave,save-toast');
+        await import('./hyperclay.js?preset=everything&exclude=autosave,save-toast,edit-mode');
 
         // ========== HELPER FUNCTIONS ==========
 
@@ -1214,6 +1311,8 @@ themodal.open();</code></pre>
 
         // ========== UI COMPONENT DEMOS ==========
 
+        const CLOSE_BUTTON_SVG = `<svg viewBox="0 0 134 134" fill="none" xmlns="http://www.w3.org/2000/svg"><path class="micromodal__close-bg" d="M132 132.5 1 1.5h131v131Z" /><path class="micromodal__close-x" fill-rule="evenodd" clip-rule="evenodd" d="M0 0h3v1.5h1.5V3H6v1.5h1.5V6H9v1.5h1.5V9H12v1.5h1.5V12H15v1.5h1.5V15H18v1.5h1.5V18H21v1.5h1.5V21H24v1.5h1.5V24H27v1.5h1.5V27H30v1.5h1.5V30H33v1.5h1.5V33H36v1.5h1.5V36H39v1.5h1.5V39H42v1.5h1.5V42H45v1.5h1.5V45H48v1.5h1.5V48H51v1.5h1.5V51H54v1.5h1.5V54H57v1.5h1.5V57H60v1.5h1.5V60H63v1.5h1.5V63H66v1.5h1.5V66H69v1.5h1.5V69H72v1.5h1.5V72H75v1.5h1.5V75H78v1.5h1.5V78H81v1.5h1.5V81H84v1.5h1.5V84H87v1.5h1.5V87H90v1.5h1.5V90H93v1.5h1.5V93H96v1.5h1.5V96H99v1.5h1.5V99h1.5v1.5h1.5v1.5h1.5v1.5h1.5v1.5h1.5v1.5h1.5v1.5h1.5v1.5h1.5v1.5h1.5v1.5h1.5v1.5h1.5v1.5h1.5v1.5h1.5v1.5h1.5v1.5h1.5v1.5h1.5v1.5h1.5v1.5h1.5v1.5h1.5v1.5h1.5v1.5h1.5v1.5h1.5v3h-3V132H129v-1.5h-1.5V129H126v-1.5h-1.5V126H123v-1.5h-1.5V123H120v-1.5h-1.5V120H117v-1.5h-1.5V117H114v-1.5h-1.5V114H111v-1.5h-1.5V111H108v-1.5h-1.5V108H105v-1.5h-1.5V105H102v-1.5h-1.5V102H99v-1.5h-1.5V99H96v-1.5h-1.5V96H93v-1.5h-1.5V93H90v-1.5h-1.5V90H87v-1.5h-1.5V87H84v-1.5h-1.5V84H81v-1.5h-1.5V81H78v-1.5h-1.5V78H75v-1.5h-1.5V75H72v-1.5h-1.5V72H69v-1.5h-1.5V69H66v-1.5h-1.5V66H63v-1.5h-1.5V63H60v-1.5h-1.5V60H57v-1.5h-1.5V57H54v-1.5h-1.5V54H51v-1.5h-1.5V51H48v-1.5h-1.5V48H45v-1.5h-1.5V45H42v-1.5h-1.5V42H39v-1.5h-1.5V39H36v-1.5h-1.5V36H33v-1.5h-1.5V33H30v-1.5h-1.5V30H27v-1.5h-1.5V27H24v-1.5h-1.5V24H21v-1.5h-1.5V21H18v-1.5h-1.5V18H15v-1.5h-1.5V15H12v-1.5h-1.5V12H9v-1.5H7.5V9H6V7.5H4.5V6H3V4.5H1.5V3H0V0ZM108.8 22h5.2v5.1h-2.6v2.6H109v2.6h-2.6v2.6h-2.6v2.5h-2.6v5.2h2.6V45h2.6v2.6h2.6v2.6h2.5v2.6h2.6V58h-5.1v-2.6h-2.6V53h-2.6v-2.6h-2.6v-2.6h-2.5v-2.6h-5.2v2.6H91v2.6h-2.6v2.6h-2.6v2.5h-2.6V58H78v-5.1h2.6v-2.6H83v-2.6h2.6v-2.6h2.6v-2.5h2.6v-5.2h-2.6V35h-2.6v-2.6h-2.6v-2.6h-2.5v-2.6H78V22h5.2v2.6h2.5V27h2.6v2.6h2.6v2.6h2.5v2.6h5.2v-2.6h2.5v-2.6h2.6v-2.6h2.6v-2.5h2.5V22Z" /></svg>`;
+
         window.openCustomModal = () => {
             themodal.html = `
                 <div style="text-align: center; padding: 1rem;">
@@ -1221,6 +1320,7 @@ themodal.open();</code></pre>
                     <p style="color: #666;">This is theModal in action!</p>
                 </div>
             `;
+            themodal.closeHtml = CLOSE_BUTTON_SVG;
             themodal.yes = 'Got it';
             themodal.onYes(() => true);
             themodal.open();

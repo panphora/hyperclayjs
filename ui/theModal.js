@@ -517,6 +517,46 @@ const modalCss = `<style class="micromodal-css">
   right: -1px;
   width: 68px;
 }
+
+.micromodal .micromodal__close-bg {
+  fill: #1D2032;
+}
+
+.micromodal .micromodal__close:hover .micromodal__close-bg {
+  fill: #212543;
+}
+
+.micromodal .micromodal__close-x {
+  fill: #fff;
+}
+
+.micromodal .micromodal__tell {
+  max-width: 440px;
+  margin-bottom: 28px;
+}
+
+.micromodal .micromodal__tell > * + * {
+  margin-top: 20px;
+}
+
+.micromodal .micromodal__tell-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.micromodal .micromodal__tell-content {
+  font-size: 16px;
+  font-weight: normal;
+}
+
+@media (min-width: 640px) {
+  .micromodal .micromodal__tell-title {
+    font-size: 22px;
+  }
+  .micromodal .micromodal__tell-content {
+    font-size: 18px;
+  }
+}
 </style>`;
 
 const modalHtml = `<div class="micromodal" id="micromodal" aria-hidden="true">
