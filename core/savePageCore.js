@@ -73,11 +73,21 @@ export function getPageContents() {
  * });
  */
 export function savePage(callback = () => {}) {
-  if (!isEditMode || saveInProgress) {
+  if (saveInProgress) {
+    return;
+  }
+  if (!isEditMode && !window.hyperclay?.testMode) {
     return;
   }
 
-  const currentContents = getPageContents();
+  let currentContents;
+  try {
+    currentContents = getPageContents();
+  } catch (err) {
+    console.error('savePage: getPageContents failed', err);
+    callback({msg: err.message, msgType: "error"});
+    return;
+  }
   saveInProgress = true;
 
   // Test mode: skip network request, return mock success

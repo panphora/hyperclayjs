@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
  * @param {Function} callback - Optional callback for custom handling
  */
 export function savePage(callback = () => {}) {
-  if (!isEditMode) {
+  if (!isEditMode && !window.hyperclay?.testMode) {
     return;
   }
 

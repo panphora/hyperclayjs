@@ -250,11 +250,11 @@
             grid-column: 1 / -1;
             font-size: 0.8rem;
             font-weight: 700;
-            color: var(--light-blue);
+            color: #E85D04;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             padding: 1rem 0 0.25rem;
-            border-bottom: 1px solid var(--shadow-blue);
+            border-bottom: 2px solid #E85D04;
             margin-top: 0.5rem;
         }
 
@@ -441,11 +441,11 @@
             <div class="demo-card" id="onaftersave">
                 <h3>[onaftersave]</h3>
                 <p class="desc">Run JS after save events</p>
-                <pre><code>&lt;div onaftersave="console.log(
-  event.detail.status)"&gt;</code></pre>
+                <pre><code>&lt;div onaftersave="this.textContent =
+  event.detail.status"&gt;</code></pre>
                 <div class="demo-area" style="flex-direction: column; align-items: stretch;">
                     <button onclick="dispatchSaveEvent('saved')">Trigger save event</button>
-                    <div class="output" onaftersave="this.textContent = 'Last: ' + event.detail.status">Waiting for save events...</div>
+                    <span class="output" onaftersave="this.textContent = 'event.detail.status = ' + event.detail.status">Waiting for save event...</span>
                 </div>
             </div>
 
@@ -512,8 +512,8 @@ hyperclay.isEditMode;</code></pre>
   .edit-outline { outline: 2px dashed blue; }
 &lt;/style&gt;</code></pre>
                 <div class="demo-area">
-                    <style edit-mode-resource type="text/css">.edit-outline { outline: 2px dashed var(--primary-blue); }</style>
-                    <div class="edit-outline badge">Outlined in edit mode</div>
+                    <style edit-mode-resource type="text/css">.edit-outline { outline: 2px dashed var(--primary-blue); border: none; }</style>
+                    <div class="edit-outline badge">Dashed outline in edit mode</div>
                 </div>
             </div>
 
