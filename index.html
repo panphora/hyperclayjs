@@ -19,9 +19,9 @@
             --light-blue: #8A8FEF;
             --white: #FFFFFF;
             --gray: #6B7280;
-            --green: #10B981;
-            --red: #DC2626;
-            --yellow: #F59E0B;
+            --green: #00A676;
+            --red: #E63946;
+            --yellow: #E69500;
         }
 
         * {
@@ -388,6 +388,7 @@
 
             <!-- ========== SECTION 1: SAVE (CORE) ========== -->
             <div class="category-label">Save (core)</div>
+            <p class="desc" style="flex: 1 1 100%; margin-top: 0.5rem; font-size: 0.85rem;">Hyperclay pages update themselves. The save state is tracked via a <code>savestatus</code> attribute on the <code>&lt;html&gt;</code> element.</p>
 
             <!-- savePage() -->
             <div class="demo-card" id="save-page">
@@ -450,11 +451,12 @@
 
             <!-- ========== SECTION 2: EDIT MODE (CORE) ========== -->
             <div class="category-label">Edit Mode (core)</div>
+            <p class="desc" style="flex: 1 1 100%; margin-top: 0.5rem; font-size: 0.85rem;">Edit mode is a state defined by an <code>editmode</code> attribute on the <code>&lt;html&gt;</code> element. When true, admin controls are usable/visible; when false, they are disabled/hidden.</p>
 
             <!-- toggleEditMode -->
             <div class="demo-card" id="toggle-edit-mode">
                 <h3>toggleEditMode()</h3>
-                <p class="desc">Switch edit mode on/off (affects demos below)</p>
+                <p class="desc">Switch edit mode on/off (affects other demos)</p>
                 <pre><code>hyperclay.toggleEditMode();
 hyperclay.isEditMode;</code></pre>
                 <div class="demo-area">
@@ -515,8 +517,33 @@ hyperclay.isEditMode;</code></pre>
                 </div>
             </div>
 
+            <!-- persist -->
+            <div class="demo-card" id="persist">
+                <h3>[persist]</h3>
+                <p class="desc">Persist form values to DOM attributes</p>
+                <pre><code>&lt;input persist&gt;
+&lt;select persist&gt;</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <div class="flex-row">
+                        <input persist id="persist-input" placeholder="Type..." oninput="updatePersistDisplay()" style="flex: 1;">
+                        <label style="font-size: 0.7rem; display: flex; align-items: center; gap: 0.25rem;">
+                            <input type="radio" persist name="persist-radio" value="A" onchange="updatePersistDisplay()"> A
+                        </label>
+                        <label style="font-size: 0.7rem; display: flex; align-items: center; gap: 0.25rem;">
+                            <input type="radio" persist name="persist-radio" value="B" onchange="updatePersistDisplay()"> B
+                        </label>
+                        <select persist id="persist-select" onchange="updatePersistDisplay()">
+                            <option>One</option>
+                            <option>Two</option>
+                        </select>
+                    </div>
+                    <span class="output" id="persist-log">Values will appear here</span>
+                </div>
+            </div>
+
             <!-- ========== SECTION 3: DOM HELPERS ========== -->
             <div class="category-label">DOM Helpers</div>
+            <p class="desc" style="flex: 1 1 100%; margin-top: 0.5rem; font-size: 0.85rem;">Properties added to all elements that patch two gaps in the native DOM: traversing intuitively through the natural hierarchy, and getting/setting values in one short command.</p>
 
             <!-- el.val -->
             <div class="demo-card" id="el-val">
@@ -529,7 +556,7 @@ hyperclay.isEditMode;</code></pre>
                     <span>+</span>
                     <input type="number" b value="0" oninput="this.val.sum = Number(this.val.a) + Number(this.val.b)" style="width: 60px;">
                     <span>=</span>
-                    <input sum readonly value="0" style="width: 60px;">
+                    <input sum readonly value="0" style="width: 60px; border-color: #006B4D; background: #E6F5F0; color: #006B4D;">
                 </div>
             </div>
 
@@ -576,11 +603,12 @@ hyperclay.isEditMode;</code></pre>
 
             <!-- ========== SECTION 4: OPTION VISIBILITY ========== -->
             <div class="category-label">Option Visibility</div>
+            <p class="desc" style="flex: 1 1 100%; margin-top: 0.5rem; font-size: 0.85rem;">Show or hide elements based on the value of an attribute on an ancestor element. Uses the <code>option:</code> prefix.</p>
 
             <!-- option:savestatus -->
             <div class="demo-card" id="option-savestatus">
                 <h3>option:savestatus</h3>
-                <p class="desc">Show elements based on save state</p>
+                <p class="desc">Show elements based on hyperclay save state</p>
                 <pre><code>&lt;span option:savestatus="saved"&gt;
   ✓ Saved
 &lt;/span&gt;</code></pre>
@@ -591,9 +619,9 @@ hyperclay.isEditMode;</code></pre>
                         <button onclick="document.documentElement.setAttribute('savestatus', 'dirty')">Set dirty</button>
                     </div>
                     <div class="flex-row">
-                        <span class="badge" option:savestatus="saved" style="background: var(--green); color: white; border-color: #059669;">✓ Saved</span>
-                        <span class="badge" option:savestatus="saving" style="background: var(--yellow); color: white; border-color: #d97706;">Saving...</span>
-                        <span class="badge" option:savestatus="dirty" style="background: var(--red); color: white; border-color: #b91c1c;">Unsaved</span>
+                        <span class="badge" option:savestatus="saved" style="background: var(--green); color: white; border: 2px solid #006B4D;">✓ Saved</span>
+                        <span class="badge" option:savestatus="saving" style="background: var(--yellow); color: white; border: 2px solid #A66D00;">Saving...</span>
+                        <span class="badge" option:savestatus="dirty" style="background: var(--red); color: white; border: 2px solid #A62833;">Unsaved</span>
                     </div>
                 </div>
             </div>
@@ -601,7 +629,7 @@ hyperclay.isEditMode;</code></pre>
             <!-- option:editmode -->
             <div class="demo-card" id="option-editmode">
                 <h3>option:editmode</h3>
-                <p class="desc">Show elements only in edit mode</p>
+                <p class="desc">Show elements only in hyperclay edit mode</p>
                 <pre><code>&lt;button option:editmode="true"&gt;
   Edit Tools
 &lt;/button&gt;</code></pre>
@@ -611,8 +639,8 @@ hyperclay.isEditMode;</code></pre>
                         <button onclick="setEditMode(false)">Edit mode OFF</button>
                     </div>
                     <div class="flex-row">
-                        <span class="badge" option:editmode="true" style="background: var(--primary-blue); color: white; border-color: #1e1b4b;">Edit Tools</span>
-                        <span class="badge" option:editmode="false" style="background: var(--gray); color: white; border-color: #334155;">View Only</span>
+                        <span class="badge" option:editmode="true" style="background: var(--primary-blue); color: white; border: 2px solid #1e1b4b;">Edit Tools</span>
+                        <span class="badge" option:editmode="false" style="background: var(--gray); color: white; border: 2px solid #334155;">View Only</span>
                     </div>
                 </div>
             </div>
@@ -629,14 +657,15 @@ hyperclay.isEditMode;</code></pre>
                         <button onclick="this.closest('[status]').setAttribute('status', 'pending')">Mark Pending</button>
                     </div>
                     <div class="flex-row">
-                        <span class="badge" option:status="pending" style="background: var(--yellow); color: white; border-color: #d97706;">⏳ Pending</span>
-                        <span class="badge" option:status="completed" style="background: var(--green); color: white; border-color: #059669;">✓ Completed</span>
+                        <span class="badge" option:status="pending" style="background: var(--yellow); color: white; border: 2px solid #A66D00;">⏳ Pending</span>
+                        <span class="badge" option:status="completed" style="background: var(--green); color: white; border: 2px solid #006B4D;">✓ Completed</span>
                     </div>
                 </div>
             </div>
 
             <!-- ========== SECTION 5: EVENT ATTRIBUTES ========== -->
             <div class="category-label">Event Attributes</div>
+            <p class="desc" style="flex: 1 1 100%; margin-top: 0.5rem; font-size: 0.85rem;">Custom event attributes that extend the native <code>on*</code> pattern to handle rendering, cloning, click-away, and drag-and-drop sorting.</p>
 
             <!-- onrender -->
             <div class="demo-card" id="onrender">
@@ -691,121 +720,13 @@ hyperclay.isEditMode;</code></pre>
                 </div>
             </div>
 
-            <!-- ========== SECTION 6: MUTATION ========== -->
-            <div class="category-label">Mutation</div>
-
-            <!-- onmutation -->
-            <div class="demo-card" id="onmutation">
-                <h3>[onmutation]</h3>
-                <p class="desc">Trigger code when this element or its children change</p>
-                <pre><code>&lt;div onmutation="console.log('changed')"&gt;
-  &lt;span contenteditable&gt;Edit&lt;/span&gt;
-&lt;/div&gt;</code></pre>
-                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
-                    <div onmutation="document.getElementById('onmutation-log').textContent = 'Mutation detected @ ' + new Date().toLocaleTimeString()">
-                        <div class="mini-editor" contenteditable style="width: 100%;">Edit me to trigger mutation</div>
-                    </div>
-                    <span class="output" id="onmutation-log">Edit the text above</span>
-                </div>
-            </div>
-
-            <!-- onglobalmutation -->
-            <div class="demo-card" id="onglobalmutation">
-                <h3>[onglobalmutation]</h3>
-                <p class="desc">Trigger code when any element on the page changes</p>
-                <pre><code>&lt;span onglobalmutation="this.textContent =
-  All('li').length"&gt;0&lt;/span&gt;</code></pre>
-                <div class="demo-area" style="flex-direction: column; align-items: stretch;" id="globalmutation-zone">
-                    <button onclick="addGlobalMutationItem()">Add item</button>
-                    <ul id="globalmutation-list" style="list-style: none; display: flex; gap: 0.25rem; flex-wrap: wrap; margin-top: 0.25rem;"></ul>
-                    <span class="output" onglobalmutation="this.textContent = 'Total items: ' + document.querySelectorAll('#globalmutation-list li').length">Total items: 0</span>
-                </div>
-            </div>
-
-            <!-- Mutation.onAddElement -->
-            <div class="demo-card" id="mutation-api">
-                <h3>Mutation.onAddElement</h3>
-                <p class="desc">Programmatic observer for added elements</p>
-                <pre><code>Mutation.onAddElement({
-  selectorFilter: '.item'
-}, changes => ...);</code></pre>
-                <div class="demo-area" style="flex-direction: column; align-items: stretch;" id="mutation-zone">
-                    <button onclick="addMutationBlocks()">Add 8 elements</button>
-                    <div id="mutation-items" style="display: flex; gap: 0.25rem; flex-wrap: wrap; margin-top: 0.25rem;"></div>
-                    <span class="output" id="mutation-log">Click to add watched elements</span>
-                </div>
-            </div>
-
-            <!-- ========== SECTION 7: UTILITIES ========== -->
-            <div class="category-label">Utilities</div>
-
-            <!-- Idiomorph -->
-            <div class="demo-card" id="idiomorph">
-                <h3>Idiomorph</h3>
-                <p class="desc">Morph DOM without full re-render</p>
-                <pre><code>Idiomorph.morph(el, newHtml);</code></pre>
-                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
-                    <div class="flex-row" id="morph-container">
-                        <div class="morph-box">A</div>
-                        <div class="morph-box">A</div>
-                        <div class="morph-box" id="morph-target">A</div>
-                    </div>
-                    <button onclick="morphDemo()" style="margin-top: 0.5rem;">Morph 3rd box</button>
-                </div>
-            </div>
-
-            <!-- insertStyleTag -->
-            <div class="demo-card" id="style-injection">
-                <h3>insertStyleTag()</h3>
-                <p class="desc">Inject CSS stylesheet dynamically</p>
-                <pre><code>insertStyleTag('./test-style.css');</code></pre>
-                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
-                    <button onclick="hyperclay.insertStyleTag?.('./test-style.css'); document.getElementById('style-log').textContent = 'CSS injected!'">Inject CSS</button>
-                    <span class="output test-style-injected" id="style-log">Click to inject</span>
-                </div>
-            </div>
-
-            <!-- slugify -->
-            <div class="demo-card" id="slugify">
-                <h3>slugify()</h3>
-                <p class="desc">URL-friendly slug generator</p>
-                <pre><code>slugify('Hello World!')
-// "hello-world"</code></pre>
-                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
-                    <input placeholder="Type to slugify..." oninput="document.getElementById('slug-out').textContent = slugify(this.value)" style="width: 100%;">
-                    <span class="output" id="slug-out"></span>
-                </div>
-            </div>
-
-            <!-- copyToClipboard -->
-            <div class="demo-card" id="clipboard">
-                <h3>copyToClipboard()</h3>
-                <p class="desc">Copy text to clipboard</p>
-                <pre><code>copyToClipboard('Hello!');</code></pre>
-                <div class="demo-area flex-row">
-                    <input id="copy-input" value="Copy this text!" style="flex: 1;">
-                    <button onclick="hyperclay.copyToClipboard(document.getElementById('copy-input').value); toast('Copied!', 'success')">Copy</button>
-                </div>
-            </div>
-
-            <!-- query -->
-            <div class="demo-card" id="query">
-                <h3>query</h3>
-                <p class="desc">Parse URL search params</p>
-                <pre><code>// ?name=dev
-query.name // "dev"</code></pre>
-                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
-                    <button onclick="location.search = '?demo=true&count=42'">Add params to current page</button>
-                    <span class="output" id="query-out">(no params)</span>
-                </div>
-            </div>
-
-            <!-- ========== SECTION 8: ALL() ========== -->
+            <!-- ========== SECTION 6: ALL() ========== -->
             <div class="category-label">All()</div>
+            <p class="desc" style="flex: 1 1 100%; margin-top: 0.5rem; font-size: 0.85rem;">The tersest way to work with multiple elements. <code>All.x</code> selects by attribute or class, native array methods transform them, and any DOM method applies to all at once.</p>
 
             <!-- Close All Menus -->
             <div class="demo-card" id="all-close-menus">
-                <h3>Close All Menus</h3>
+                <h3>Close Menus</h3>
                 <p class="desc">Select all elements by attribute and modify them</p>
                 <pre><code>All.menu.classList.add('hidden');</code></pre>
                 <div class="demo-area" style="flex-direction: column; align-items: stretch;">
@@ -869,8 +790,120 @@ query.name // "dev"</code></pre>
                 </div>
             </div>
 
+            <!-- ========== SECTION 7: MUTATION ========== -->
+            <div class="category-label">Mutation</div>
+            <p class="desc" style="flex: 1 1 100%; margin-top: 0.5rem; font-size: 0.85rem;">Run code when the DOM changes, scoped to a single element or the entire page.</p>
+
+            <!-- onmutation -->
+            <div class="demo-card" id="onmutation">
+                <h3>[onmutation]</h3>
+                <p class="desc">Trigger code when this element or its children change</p>
+                <pre><code>&lt;div onmutation="console.log('changed')"&gt;
+  &lt;span contenteditable&gt;Edit&lt;/span&gt;
+&lt;/div&gt;</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <div onmutation="document.getElementById('onmutation-log').textContent = 'Mutation detected @ ' + new Date().toLocaleTimeString()">
+                        <div class="mini-editor" contenteditable style="width: 100%;">Edit me to trigger mutation</div>
+                    </div>
+                    <span class="output" id="onmutation-log">Edit the text above</span>
+                </div>
+            </div>
+
+            <!-- onglobalmutation -->
+            <div class="demo-card" id="onglobalmutation">
+                <h3>[onglobalmutation]</h3>
+                <p class="desc">Trigger code when any element on the page changes</p>
+                <pre><code>&lt;span onglobalmutation="this.textContent =
+  All('li').length"&gt;0&lt;/span&gt;</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;" id="globalmutation-zone">
+                    <button onclick="addGlobalMutationItem()">Add item</button>
+                    <ul id="globalmutation-list" style="list-style: none; display: flex; gap: 0.25rem; flex-wrap: wrap; margin-top: 0.25rem;"></ul>
+                    <span class="output" onglobalmutation="this.textContent = 'Total items: ' + document.querySelectorAll('#globalmutation-list li').length">Total items: 0</span>
+                </div>
+            </div>
+
+            <!-- Mutation.onAddElement -->
+            <div class="demo-card" id="mutation-api">
+                <h3>Mutation.onAddElement</h3>
+                <p class="desc">Programmatic observer for added elements</p>
+                <pre><code>Mutation.onAddElement({
+  selectorFilter: '.item'
+}, changes => ...);</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;" id="mutation-zone">
+                    <button onclick="addMutationBlocks()">Add 8 elements</button>
+                    <div id="mutation-items" style="display: flex; gap: 0.25rem; flex-wrap: wrap; margin-top: 0.25rem;"></div>
+                    <span class="output" id="mutation-log">Click to add watched elements</span>
+                </div>
+            </div>
+
+            <!-- ========== SECTION 8: UTILITIES ========== -->
+            <div class="category-label">Utilities</div>
+            <p class="desc" style="flex: 1 1 100%; margin-top: 0.5rem; font-size: 0.85rem;">Standalone helpers for common tasks: DOM morphing, clipboard, slugs, query params, and style injection.</p>
+
+            <!-- Idiomorph -->
+            <div class="demo-card" id="idiomorph">
+                <h3>Idiomorph</h3>
+                <p class="desc">Morph DOM without full re-render</p>
+                <pre><code>Idiomorph.morph(el, newHtml);</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <div class="flex-row" id="morph-container">
+                        <div class="morph-box">A</div>
+                        <div class="morph-box">A</div>
+                        <div class="morph-box" id="morph-target">A</div>
+                    </div>
+                    <button onclick="morphDemo()" style="margin-top: 0.5rem;">Morph 3rd box</button>
+                </div>
+            </div>
+
+            <!-- insertStyleTag -->
+            <div class="demo-card" id="style-injection">
+                <h3>insertStyleTag()</h3>
+                <p class="desc">Inject CSS stylesheet dynamically</p>
+                <pre><code>insertStyleTag('./test-style.css');</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <button onclick="hyperclay.insertStyleTag?.('./test-style.css'); document.getElementById('style-log').textContent = 'CSS injected!'">Inject CSS</button>
+                    <span class="output test-style-injected" id="style-log">Click to inject</span>
+                </div>
+            </div>
+
+            <!-- slugify -->
+            <div class="demo-card" id="slugify">
+                <h3>slugify()</h3>
+                <p class="desc">URL-friendly slug generator</p>
+                <pre><code>slugify('Hello World!')
+// "hello-world"</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <input placeholder="Type to slugify..." oninput="document.getElementById('slug-out').textContent = slugify(this.value)" style="width: 100%;">
+                    <span class="output" id="slug-out"></span>
+                </div>
+            </div>
+
+            <!-- copyToClipboard -->
+            <div class="demo-card" id="clipboard">
+                <h3>copyToClipboard()</h3>
+                <p class="desc">Copy text to clipboard</p>
+                <pre><code>copyToClipboard('Hello!');</code></pre>
+                <div class="demo-area flex-row">
+                    <input id="copy-input" value="Copy this text!" style="flex: 1;">
+                    <button onclick="hyperclay.copyToClipboard(document.getElementById('copy-input').value); toast('Copied!', 'success')">Copy</button>
+                </div>
+            </div>
+
+            <!-- query -->
+            <div class="demo-card" id="query">
+                <h3>query</h3>
+                <p class="desc">Parse URL search params</p>
+                <pre><code>// ?name=dev
+query.name // "dev"</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <button onclick="location.search = '?demo=true&count=42'">Add params to current page</button>
+                    <span class="output" id="query-out">(no params)</span>
+                </div>
+            </div>
+
             <!-- ========== SECTION 9: UI COMPONENTS ========== -->
             <div class="category-label">UI Components</div>
+            <p class="desc" style="flex: 1 1 100%; margin-top: 0.5rem; font-size: 0.85rem;">The modals and prompts that should ship with the browser: ask for input, confirm an action, show a message.</p>
 
             <!-- theModal -->
             <div class="demo-card" id="themodal">
@@ -936,28 +969,26 @@ themodal.open();</code></pre>
 
             <!-- ========== SECTION 10: FORM HELPERS ========== -->
             <div class="category-label">Form Helpers</div>
+            <p class="desc" style="flex: 1 1 100%; margin-top: 0.5rem; font-size: 0.85rem;">What native forms are missing: auto-growing textareas and serialization that handles nested objects and arrays.</p>
 
-            <!-- persist -->
-            <div class="demo-card" id="persist">
-                <h3>[persist]</h3>
-                <p class="desc">Persist form values to DOM attributes</p>
-                <pre><code>&lt;input persist&gt;
-&lt;select persist&gt;</code></pre>
+            <!-- getDataFromForm -->
+            <div class="demo-card" id="form-data">
+                <h3>getDataFromForm()</h3>
+                <p class="desc">Serialize form to object</p>
+                <pre><code>const data = getDataFromForm(form);</code></pre>
                 <div class="demo-area" style="flex-direction: column; align-items: stretch;">
-                    <div class="flex-row">
-                        <input persist id="persist-input" placeholder="Type..." oninput="updatePersistDisplay()" style="flex: 1;">
-                        <label style="font-size: 0.7rem; display: flex; align-items: center; gap: 0.25rem;">
-                            <input type="radio" persist name="persist-radio" value="A" onchange="updatePersistDisplay()"> A
-                        </label>
-                        <label style="font-size: 0.7rem; display: flex; align-items: center; gap: 0.25rem;">
-                            <input type="radio" persist name="persist-radio" value="B" onchange="updatePersistDisplay()"> B
-                        </label>
-                        <select persist id="persist-select" onchange="updatePersistDisplay()">
-                            <option>One</option>
-                            <option>Two</option>
-                        </select>
-                    </div>
-                    <span class="output" id="persist-log">Values will appear here</span>
+                    <form id="demo-form" onsubmit="return serializeForm(event)">
+                        <input name="title" value="Hyperclay" style="width: 100%; margin-bottom: 0.25rem;">
+                        <div class="flex-row">
+                            <select name="type">
+                                <option>Library</option>
+                                <option>Framework</option>
+                            </select>
+                            <label style="font-size: 0.7rem;"><input type="checkbox" name="flags" value="demo" checked> demo</label>
+                        </div>
+                        <button type="submit" style="margin-top: 0.5rem; border-color: #006B4D; color: #006B4D; background: #E6F5F0;" onmouseover="this.style.background='#D0EBE3'" onmouseout="this.style.background='#E6F5F0'">Serialize</button>
+                    </form>
+                    <span class="output" id="form-output" style="margin-top: 0.5rem;">Click serialize</span>
                 </div>
             </div>
 
@@ -982,29 +1013,9 @@ themodal.open();</code></pre>
                 </div>
             </div>
 
-            <!-- getDataFromForm -->
-            <div class="demo-card" id="form-data">
-                <h3>getDataFromForm()</h3>
-                <p class="desc">Serialize form to object</p>
-                <pre><code>const data = getDataFromForm(form);</code></pre>
-                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
-                    <form id="demo-form" onsubmit="return serializeForm(event)">
-                        <input name="title" value="Hyperclay" style="width: 100%; margin-bottom: 0.25rem;">
-                        <div class="flex-row">
-                            <select name="type">
-                                <option>Library</option>
-                                <option>Framework</option>
-                            </select>
-                            <label style="font-size: 0.7rem;"><input type="checkbox" name="flags" value="demo" checked> demo</label>
-                            <button type="submit">Serialize</button>
-                        </div>
-                    </form>
-                    <span class="output" id="form-output" style="margin-top: 0.5rem;">Click serialize</span>
-                </div>
-            </div>
-
             <!-- ========== SECTION 11: COMMUNICATION ========== -->
             <div class="category-label">Communication</div>
+            <p class="desc" style="flex: 1 1 100%; margin-top: 0.5rem; font-size: 0.85rem;">Send form data and upload files to Hyperclay servers with one function call.</p>
 
             <!-- sendMessage -->
             <div class="demo-card" id="send-message">
@@ -1023,10 +1034,8 @@ themodal.open();</code></pre>
             <!-- uploadFile -->
             <div class="demo-card" id="file-upload">
                 <h3>uploadFile()</h3>
-                <p class="desc">Upload file with progress callback</p>
-                <pre><code>uploadFile(event, res => {
-  console.log(res.urls);
-});</code></pre>
+                <p class="desc">Upload file with progress toasts, copies URL to clipboard</p>
+                <pre><code>&lt;input type="file" onchange="uploadFile(event)"&gt;</code></pre>
                 <div class="demo-area" style="flex-direction: column; align-items: stretch;">
                     <input type="file" id="upload-input" onchange="uploadDemo(event)">
                     <span class="output" id="upload-log">Select a file</span>
@@ -1034,6 +1043,12 @@ themodal.open();</code></pre>
             </div>
 
         </div>
+
+        <footer style="margin-top: 3rem; padding: 2rem; border: 2px solid var(--primary-blue); background: var(--shadow-blue); text-align: center;">
+            <p style="font-size: 1rem; color: var(--primary-blue); margin-bottom: 0.5rem;">HyperclayJS is part of <strong>Hyperclay</strong></p>
+            <p style="font-size: 0.85rem; color: var(--gray); margin-bottom: 1rem;">Build HTML files that edit themselves</p>
+            <a href="https://hyperclay.com" style="display: inline-block; font-weight: bold; color: white; background: var(--primary-blue); padding: 0.6rem 1.5rem; text-decoration: none;">Learn more &rarr;</a>
+        </footer>
     </div>
 
     <script>

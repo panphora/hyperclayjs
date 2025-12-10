@@ -103,6 +103,7 @@
     "custom-attributes/events.js": [
       "custom-attributes/onclickaway.js",
       "custom-attributes/onclone.js",
+      "custom-attributes/onmutation.js",
       "custom-attributes/onpagemutation.js",
       "custom-attributes/onrender.js"
     ],
@@ -113,6 +114,9 @@
     "custom-attributes/onaftersave.js": [],
     "custom-attributes/onclickaway.js": [],
     "custom-attributes/onclone.js": [],
+    "custom-attributes/onmutation.js": [
+      "utilities/mutation.js"
+    ],
     "custom-attributes/onpagemutation.js": [
       "utilities/mutation.js"
     ],
@@ -218,7 +222,7 @@
     "edit-mode-helpers": {
       "name": "edit-mode-helpers",
       "category": "core",
-      "size": 5.4,
+      "size": 7.500000000000001,
       "files": [
         "core/adminSystem.js",
         "core/adminContenteditable.js",
@@ -274,7 +278,7 @@
     "event-attrs": {
       "name": "event-attrs",
       "category": "custom-attributes",
-      "size": 3.6000000000000005,
+      "size": 4.1000000000000005,
       "files": [
         "custom-attributes/events.js",
         "custom-attributes/onclickaway.js",
@@ -298,7 +302,7 @@
     "sortable": {
       "name": "sortable",
       "category": "custom-attributes",
-      "size": 2.8,
+      "size": 3.4,
       "files": [
         "custom-attributes/sortable.js"
       ],
@@ -308,7 +312,7 @@
     "dom-helpers": {
       "name": "dom-helpers",
       "category": "custom-attributes",
-      "size": 5.7,
+      "size": 6.2,
       "files": [
         "custom-attributes/domHelpers.js"
       ],
@@ -340,7 +344,7 @@
     "dialogs": {
       "name": "dialogs",
       "category": "ui",
-      "size": 8.4,
+      "size": 7.8,
       "files": [
         "ui/prompts.js"
       ],
@@ -396,7 +400,7 @@
     "the-modal": {
       "name": "the-modal",
       "category": "ui",
-      "size": 19.8,
+      "size": 21.1,
       "files": [
         "ui/theModal.js"
       ],
@@ -512,7 +516,7 @@
     "all-js": {
       "name": "all-js",
       "category": "dom-utilities",
-      "size": 14,
+      "size": 14.4,
       "files": [
         "dom-utilities/All.js"
       ],
