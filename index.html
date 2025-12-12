@@ -5,17 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HyperclayJS - Better DOM API</title>
     <meta name="description" content="A single HTML file is all you need to build a web app. Hyperclay hosts these HTML files so you can create personal, malleable software easily.">
-    <meta property="og:url" content="https://hyperclay.com/">
+    <meta property="og:url" content="https://hyperclayjs.com/">
     <meta property="og:type" content="website">
     <meta property="og:title" content="HyperclayJS - Better DOM API">
     <meta property="og:description" content="A single HTML file is all you need to build a web app. Hyperclay hosts these HTML files so you can create personal, malleable software easily.">
-    <meta property="og:image" content="https://hyperclay.com/images/open-graph.png?v=3">
+    <meta property="og:image" content="https://hyperclayjs.com/public/open-graph.jpg">
     <meta name="twitter:card" content="summary_large_image">
-    <meta property="twitter:domain" content="hyperclay.com">
-    <meta property="twitter:url" content="https://hyperclay.com/">
+    <meta property="twitter:domain" content="hyperclayjs.com">
+    <meta property="twitter:url" content="https://hyperclayjs.com/">
     <meta name="twitter:title" content="HyperclayJS - Better DOM API">
     <meta name="twitter:description" content="A single HTML file is all you need to build a web app. Hyperclay hosts these HTML files so you can create personal, malleable software easily.">
-    <meta name="twitter:image" content="https://hyperclay.com/images/open-graph.png?v=3">
+    <meta name="twitter:image" content="https://hyperclayjs.com/public/open-graph.jpg">
     <link rel="icon" type="image/x-icon" href="./favicon.ico">
     <style>
         @font-face {
@@ -446,7 +446,14 @@
                 <li>Pair with <a href="https://hyperclay.com" class="intro-link">Hyperclay</a> to unlock HTML files that edit themselves.</li>
             </ul>
 
-            <div class="intro-section">
+            <div class="intro-section" style="background: #FEF3E6; border-color: #E85D04;">
+                <h2 style="color: #E85D04;">What is HyperclayJS?</h2>
+                <p>
+                    HyperclayJS is the JavaScript library that powers single-file HTML apps. It gives your HTML files the ability to overwrite themselves, toggles between admin and viewer modes, and blurs the line between document and application.
+                </p>
+            </div>
+
+            <div class="intro-section" style="margin-top: 0.75rem;">
                 <h2>What is Hyperclay?</h2>
                 <p>
                     <strong>Hyperclay</strong> is a unique system that lets you directly shape HTML files and have changes persist live on the web.
@@ -463,13 +470,6 @@
                 </p>
                 <p>
                     <strong>One HTML file, full application.</strong>
-                </p>
-            </div>
-
-            <div class="intro-section" style="margin-top: 0.75rem; background: #FEF3E6; border-color: #E85D04;">
-                <h2 style="color: #E85D04;">What is HyperclayJS?</h2>
-                <p>
-                    HyperclayJS is the JavaScript library that powers Hyperclay HTML apps. It gives your HTML files the ability to overwrite themselves, toggles between admin and viewer modes, and blurs the line between document and application.
                 </p>
             </div>
         </div>
@@ -519,7 +519,7 @@
             <div class="demo-card" id="save-toast">
                 <h3>save-toast</h3>
                 <p class="desc">Toast on save events</p>
-                <pre><code>// Dispatches toast on
+                <pre><code>// Shows toast on
 // hyperclay:save-* events</code></pre>
                 <div class="demo-area">
                     <button onclick="dispatchSaveEvent('saved')">Dispatch saved</button>
@@ -681,7 +681,7 @@ hyperclay.isEditMode;</code></pre>
             <!-- el.nearest -->
             <div class="demo-card" id="el-nearest">
                 <h3>el.nearest</h3>
-                <p class="desc">Find nearest element by class or attribute</p>
+                <p class="desc">Nearest matching element (searches siblings, ancestors, and their descendants)</p>
                 <pre><code>&lt;span paintable&gt;Item&lt;/span&gt;
 &lt;button onclick="this.nearest.paintable
   .style.background = randomColor()"&gt;</code></pre>
@@ -835,19 +835,6 @@ hyperclay.isEditMode;</code></pre>
                 </div>
             </div>
 
-            <!-- Inline Edit -->
-            <div class="demo-card" id="all-inline-edit">
-                <h3>Inline Edit</h3>
-                <p class="desc">Edit attributes inline with ask() and close menus</p>
-                <pre><code>ask('URL:', res => {
-  this.nearest.link.href = res;
-})</code></pre>
-                <div class="demo-area" style="justify-content: space-between;">
-                    <a link href="https://example.com" target="_blank">example.com</a>
-                    <button onclick="ask('New URL:', res => { this.nearest.link.href = res; this.nearest.link.textContent = res.replace(/^https?:\/\//, ''); }, this.nearest.link.href)">Edit Link</button>
-                </div>
-            </div>
-
             <!-- Live Sync -->
             <div class="demo-card" id="all-live-sync">
                 <h3>Live Sync</h3>
@@ -936,7 +923,7 @@ hyperclay.isEditMode;</code></pre>
             <!-- Idiomorph -->
             <div class="demo-card" id="idiomorph">
                 <h3>Idiomorph</h3>
-                <p class="desc">Morph DOM without full re-render</p>
+                <p class="desc">Morph DOM preserving state/focus</p>
                 <pre><code>Idiomorph.morph(el, newHtml);</code></pre>
                 <div class="demo-area" style="flex-direction: column; align-items: stretch;">
                     <div class="flex-row" id="morph-container">
@@ -1012,10 +999,13 @@ themodal.open();</code></pre>
             <!-- ask() -->
             <div class="demo-card" id="ask">
                 <h3>ask()</h3>
-                <p class="desc">Prompt user for text input, returns promise</p>
-                <pre><code>const name = await ask('Name?');</code></pre>
-                <div class="demo-area">
-                    <button onclick="askDemo()">ask()</button>
+                <p class="desc">Edit attributes inline with ask() and el.nearest</p>
+                <pre><code>ask('URL:', res => {
+  this.nearest.link.href = res;
+})</code></pre>
+                <div class="demo-area" style="justify-content: space-between;">
+                    <a link href="https://example.com" target="_blank">example.com</a>
+                    <button onclick="ask('New URL:', res => { this.nearest.link.href = res; this.nearest.link.textContent = res.replace(/^https?:\/\//, ''); }, this.nearest.link.href)">Edit Link</button>
                 </div>
             </div>
 
@@ -1138,7 +1128,7 @@ themodal.open();</code></pre>
         </div>
 
         <footer style="margin-top: 3rem; padding: 2rem; border: 2px solid #E85D04; background: #FEF3E6; text-align: center;">
-            <p style="font-size: 1rem; color: #E85D04; margin-bottom: 0.5rem;"><strong>Build your own HyperclayJS</strong></p>
+            <p style="font-size: 1rem; color: #E85D04; margin-bottom: 0.5rem;"><strong>Build your own apps with HyperclayJS</strong></p>
             <p style="font-size: 0.85rem; color: var(--gray); margin-bottom: 1rem;">Make your HTML files into apps</p>
             <a href="https://hyperclay.com" style="display: inline-block; font-weight: bold; color: white; background: #E85D04; padding: 0.6rem 1.5rem; text-decoration: none;">Use HyperclayJS &rarr;</a>
         </footer>
