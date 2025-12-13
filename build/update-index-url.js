@@ -24,7 +24,7 @@ function updateIndexUrl() {
   let html = fs.readFileSync(htmlPath, 'utf-8');
 
   // Update the base URL in the generateURL function
-  const cdnUrl = `https://cdn.jsdelivr.net/npm/hyperclayjs@${version}/hyperclay.js`;
+  const cdnUrl = `https://cdn.jsdelivr.net/npm/hyperclayjs@${version}/src/hyperclay.js`;
   html = html.replace(
     /const baseURL = ['"]https:\/\/[^'"]+['"]/,
     `const baseURL = '${cdnUrl}'`

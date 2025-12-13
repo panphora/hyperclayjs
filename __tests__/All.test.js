@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import All from '../dom-utilities/All.js';
+import All from '../src/dom-utilities/All.js';
 
 describe('All.js', () => {
   let container;

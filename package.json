@@ -3,33 +3,24 @@
   "version": "1.7.0",
   "description": "Modular JavaScript library for building interactive HTML applications with Hyperclay",
   "type": "module",
-  "main": "hyperclay.js",
-  "module": "hyperclay.js",
+  "main": "src/hyperclay.js",
+  "module": "src/hyperclay.js",
   "exports": {
     ".": {
-      "import": "./hyperclay.js",
-      "default": "./hyperclay.js"
+      "import": "./src/hyperclay.js",
+      "default": "./src/hyperclay.js"
     },
-    "./core/*": "./core/*.js",
-    "./custom-attributes/*": "./custom-attributes/*.js",
-    "./ui/*": "./ui/*.js",
-    "./utilities/*": "./utilities/*.js",
-    "./dom-utilities/*": "./dom-utilities/*.js",
-    "./string-utilities/*": "./string-utilities/*.js",
-    "./communication/*": "./communication/*.js",
-    "./vendor/*": "./vendor/*.js"
+    "./core/*": "./src/core/*.js",
+    "./custom-attributes/*": "./src/custom-attributes/*.js",
+    "./ui/*": "./src/ui/*.js",
+    "./utilities/*": "./src/utilities/*.js",
+    "./dom-utilities/*": "./src/dom-utilities/*.js",
+    "./string-utilities/*": "./src/string-utilities/*.js",
+    "./communication/*": "./src/communication/*.js",
+    "./vendor/*": "./src/vendor/*.js"
   },
   "files": [
-    "core",
-    "custom-attributes",
-    "ui",
-    "utilities",
-    "dom-utilities",
-    "string-utilities",
-    "communication",
-    "vendor",
-    "hyperclay.js",
-    "module-dependency-graph.json"
+    "src"
   ],
   "scripts": {
     "dev": "npm run build && npm run build:website && http-server website -p 3535 -c-1 -o /index.html",

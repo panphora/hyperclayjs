@@ -1,15 +1,5 @@
 {
   "rawDependencies": {
-    "__tests__/All.test.js": [
-      "dom-utilities/All.js"
-    ],
-    "babel.config.js": [],
-    "build/build-loader.js": [],
-    "build/generate-dependency-graph.js": [],
-    "build/generate-load-jsdelivr.js": [],
-    "build/generate-readme.js": [],
-    "build/hyperclay.template.js": [],
-    "build/update-index-url.js": [],
     "communication/behaviorCollector.js": [],
     "communication/sendMessage.js": [
       "communication/behaviorCollector.js",
@@ -89,9 +79,6 @@
       "core/savePage.js",
       "dom-utilities/onDomReady.js"
     ],
-    "coverage/lcov-report/block-navigation.js": [],
-    "coverage/lcov-report/prettify.js": [],
-    "coverage/lcov-report/sorter.js": [],
     "custom-attributes/ajaxElements.js": [
       "dom-utilities/getDataFromForm.js"
     ],
@@ -136,7 +123,6 @@
     "dom-utilities/onDomReady.js": [],
     "dom-utilities/onLoad.js": [],
     "hyperclay.js": [],
-    "jest.config.js": [],
     "string-utilities/copy-to-clipboard.js": [],
     "string-utilities/query.js": [],
     "string-utilities/slugify.js": [],

@@ -8,11 +8,11 @@
  *
  * <script type="module">
  *   // With window.hyperclay (default presets include export-to-window):
- *   await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/hyperclay.js?preset=minimal');
+ *   await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/src/hyperclay.js?preset=minimal');
  *   const { toast, savePage } = window.hyperclay;
  *
  *   // ES modules only (exclude export-to-window):
- *   const hyperclay = await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/hyperclay.js?preset=minimal&exclude=export-to-window');
+ *   const hyperclay = await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/src/hyperclay.js?preset=minimal&exclude=export-to-window');
  *   const modules = window.hyperclayModules;
  * </script>
  *

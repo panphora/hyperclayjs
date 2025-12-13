@@ -19,7 +19,7 @@ const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
 const version = packageJson.version;
 
 // Read module dependency graph
-const depGraphPath = path.join(__dirname, '../module-dependency-graph.json');
+const depGraphPath = path.join(__dirname, '../src/module-dependency-graph.json');
 const depGraph = JSON.parse(fs.readFileSync(depGraphPath, 'utf8'));
 
 // Read template
@@ -64,7 +64,7 @@ function generateLoader() {
 }
 
 // Write the generated file
-const outputPath = path.join(__dirname, '../hyperclay.js');
+const outputPath = path.join(__dirname, '../src/hyperclay.js');
 const content = generateLoader();
 fs.writeFileSync(outputPath, content, 'utf8');
 

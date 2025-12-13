@@ -5,9 +5,10 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.join(__dirname, '..');
+const SRC_DIR = path.join(ROOT_DIR, 'src');
 const WEBSITE_DIST = path.join(ROOT_DIR, 'website', 'dist');
 
-// Folders to copy to website/dist
+// Folders to copy to website/dist (from src/)
 const FOLDERS_TO_COPY = [
   'core',
   'custom-attributes',
@@ -20,10 +21,12 @@ const FOLDERS_TO_COPY = [
 ];
 
 // Files to copy to website/dist
-const FILES_TO_COPY = [
+const SRC_FILES_TO_COPY = [
   'hyperclay.js',
   'module-dependency-graph.json'
 ];
+
+const ROOT_FILES_TO_COPY = [];
 
 async function main() {
   console.log('Building website/dist...');
@@ -34,21 +37,34 @@ async function main() {
   }
   fs.mkdirSync(WEBSITE_DIST, { recursive: true });
 
-  // Copy folders
+  // Copy folders from src/
   for (const folder of FOLDERS_TO_COPY) {
-    const src = path.join(ROOT_DIR, folder);
+    const src = path.join(SRC_DIR, folder);
     const dest = path.join(WEBSITE_DIST, folder);
 
     if (fs.existsSync(src)) {
       fs.cpSync(src, dest, { recursive: true });
-      console.log(`  Copied ${folder}/`);
+      console.log(`  Copied src/${folder}/`);
     } else {
-      console.warn(`  Warning: ${folder}/ not found`);
+      console.warn(`  Warning: src/${folder}/ not found`);
     }
   }
 
-  // Copy files
-  for (const file of FILES_TO_COPY) {
+  // Copy files from src/
+  for (const file of SRC_FILES_TO_COPY) {
+    const src = path.join(SRC_DIR, file);
+    const dest = path.join(WEBSITE_DIST, file);
+
+    if (fs.existsSync(src)) {
+      fs.copyFileSync(src, dest);
+      console.log(`  Copied src/${file}`);
+    } else {
+      console.warn(`  Warning: src/${file} not found`);
+    }
+  }
+
+  // Copy files from root
+  for (const file of ROOT_FILES_TO_COPY) {
     const src = path.join(ROOT_DIR, file);
     const dest = path.join(WEBSITE_DIST, file);
 

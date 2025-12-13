@@ -21,7 +21,7 @@ Destructure directly from the import:
 
 ```html
 <script type="module">
-  const { toast, savePage } = await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/hyperclay.js?preset=standard');
+  const { toast, savePage } = await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/src/hyperclay.js?preset=standard');
   toast('Hello!');
 </script>
 ```
@@ -30,7 +30,7 @@ Or with custom features:
 
 ```html
 <script type="module">
-  const { toast, ask } = await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/hyperclay.js?features=toast,dialogs');
+  const { toast, ask } = await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/src/hyperclay.js?features=toast,dialogs');
 </script>
 ```
 

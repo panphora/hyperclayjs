@@ -1,6 +1,9 @@
 {
   "name": "hyperclayjs",
   "compatibility_date": "2025-12-10",
+  "build": {
+    "command": "npm run build && npm run build:website"
+  },
   "routes": [
     { "pattern": "hyperclayjs.com/*", "zone_name": "hyperclayjs.com" },
     { "pattern": "www.hyperclayjs.com/*", "zone_name": "hyperclayjs.com" }

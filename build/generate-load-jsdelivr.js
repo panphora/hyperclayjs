@@ -25,8 +25,8 @@ function generateLoadJsdelivr() {
 
   // Replace version in jsdelivr URLs (handles both versioned URLs and __VERSION__ placeholder)
   html = html.replace(
-    /https:\/\/cdn\.jsdelivr\.net\/npm\/hyperclayjs@[\d.]+/g,
-    `https://cdn.jsdelivr.net/npm/hyperclayjs@${version}`
+    /https:\/\/cdn\.jsdelivr\.net\/npm\/hyperclayjs@[\d.]+\/src/g,
+    `https://cdn.jsdelivr.net/npm/hyperclayjs@${version}/src`
   );
   html = html.replace(/__VERSION__/g, version);
 

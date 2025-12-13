@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.join(__dirname, '..');
+const SRC_DIR = path.join(ROOT_DIR, 'src');
 
 // Category mapping based on folder structure
 const CATEGORY_MAP = {
@@ -389,7 +390,7 @@ const PRESETS = {
  */
 function getFileSize(filePath) {
   try {
-    const fullPath = path.join(ROOT_DIR, filePath);
+    const fullPath = path.join(SRC_DIR, filePath);
     const stats = fs.statSync(fullPath);
     return Math.round((stats.size / 1024) * 10) / 10; // Round to 1 decimal
   } catch (error) {
@@ -425,7 +426,7 @@ async function generateDependencyGraph() {
   console.log('🔍 Analyzing dependencies...');
 
   // Get dependency tree using madge
-  const result = await madge(ROOT_DIR, {
+  const result = await madge(SRC_DIR, {
     fileExtensions: ['js'],
     excludeRegExp: [/node_modules/, /dist/, /scripts/]
   });
@@ -488,7 +489,7 @@ async function generateDependencyGraph() {
   };
 
   // Write to file
-  const outputPath = path.join(ROOT_DIR, 'module-dependency-graph.json');
+  const outputPath = path.join(SRC_DIR, 'module-dependency-graph.json');
   fs.writeFileSync(outputPath, JSON.stringify(graph, null, 2));
 
   console.log('✅ Generated module-dependency-graph.json');

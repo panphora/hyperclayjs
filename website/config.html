@@ -705,7 +705,7 @@
             try {
                 const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
                 const fetchOptions = isLocal ? { cache: 'no-store' } : {};
-                const response = await fetch('/module-dependency-graph.json', fetchOptions);
+                const response = await fetch('/dist/module-dependency-graph.json', fetchOptions);
                 moduleData = await response.json();
 
                 // Transform modules data to features format
@@ -961,7 +961,7 @@
 
             // Generate URL based on selected features
             function generateURL() {
-            const baseURL = 'https://cdn.jsdelivr.net/npm/hyperclayjs@1.7.0/hyperclay.js';
+            const baseURL = 'https://cdn.jsdelivr.net/npm/hyperclayjs@1.7.0/src/hyperclay.js';
 
             let urlParams = '';
             if (currentPreset) {

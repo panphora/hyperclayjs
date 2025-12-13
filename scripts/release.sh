@@ -333,7 +333,7 @@ if [[ $accept_commit_msg =~ ^[Nn]$ ]]; then
 fi
 
 # Stage changes
-git add package.json CHANGELOG.md module-dependency-graph.json hyperclay.js README.md build/load-jsdelivr.html
+git add package.json CHANGELOG.md src/module-dependency-graph.json src/hyperclay.js README.md build/load-jsdelivr.html
 
 # Commit
 git commit -m "$(cat <<EOF
@@ -438,9 +438,9 @@ echo "Git tag: v$NEW_VERSION"
 echo ""
 echo "Next steps:"
 echo "  • Test installation: npm install hyperclayjs@$NPM_TAG"
-echo "  • Check jsDelivr CDN: https://cdn.jsdelivr.net/npm/hyperclayjs@$NEW_VERSION/hyperclay.js"
+echo "  • Check jsDelivr CDN: https://cdn.jsdelivr.net/npm/hyperclayjs@$NEW_VERSION/src/hyperclay.js"
 echo "  • Announce the release"
 echo ""
 echo "CDN URL:"
-echo "  https://cdn.jsdelivr.net/npm/hyperclayjs@$NEW_VERSION/hyperclay.js?preset=everything"
+echo "  https://cdn.jsdelivr.net/npm/hyperclayjs@$NEW_VERSION/src/hyperclay.js?preset=everything"
 echo ""
