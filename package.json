@@ -36,7 +36,7 @@
     "format": "prettier --write .",
     "release": "./scripts/release.sh",
     "prepublishOnly": "npm run build && npm test",
-    "postpublish": "test -n \"$SKIP_POSTPUBLISH\" || open http://127.0.0.1:3535/build/load-jsdelivr.html"
+    "postpublish": "test -n \"$SKIP_POSTPUBLISH\" || open http://127.0.0.1:3535/load-jsdelivr.html"
   },
   "repository": {
     "type": "git",

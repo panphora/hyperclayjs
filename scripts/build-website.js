@@ -6,7 +6,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.join(__dirname, '..');
 const SRC_DIR = path.join(ROOT_DIR, 'src');
-const WEBSITE_DIST = path.join(ROOT_DIR, 'website', 'dist');
+const BUILD_DIR = path.join(ROOT_DIR, 'build');
+const WEBSITE_DIR = path.join(ROOT_DIR, 'website');
+const WEBSITE_DIST = path.join(WEBSITE_DIR, 'dist');
 
 // Folders to copy to website/dist (from src/)
 const FOLDERS_TO_COPY = [
@@ -27,6 +29,11 @@ const SRC_FILES_TO_COPY = [
 ];
 
 const ROOT_FILES_TO_COPY = [];
+
+// Build files to copy to website/ (not dist/)
+const BUILD_FILES_TO_COPY = [
+  'load-jsdelivr.html'
+];
 
 async function main() {
   console.log('Building website/dist...');
@@ -73,6 +80,19 @@ async function main() {
       console.log(`  Copied ${file}`);
     } else {
       console.warn(`  Warning: ${file} not found`);
+    }
+  }
+
+  // Copy build files to website/
+  for (const file of BUILD_FILES_TO_COPY) {
+    const src = path.join(BUILD_DIR, file);
+    const dest = path.join(WEBSITE_DIR, file);
+
+    if (fs.existsSync(src)) {
+      fs.copyFileSync(src, dest);
+      console.log(`  Copied build/${file} to website/`);
+    } else {
+      console.warn(`  Warning: build/${file} not found`);
     }
   }
 
