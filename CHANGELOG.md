@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.8.0] - 2025-12-12
+
+### Added
+- Documentation and website
+- Open graph meta tags
+- Favicon and improved meta tags
+
+### Changed
+- Reorganized project structure by moving source files to src/ directory
+- Moved website files to website/ directory and configured Cloudflare Workers deploy
+- Improved heading colors
+- Improved demos with better descriptions
+
+### Fixed
+- Modal styles
+- Library dependencies and demo front page
+
+
+
 ## [1.7.0] - 2025-12-05
 
 ### Changed
