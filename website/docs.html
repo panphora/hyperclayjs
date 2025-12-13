@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HyperclayJS API Reference</title>
+  <style>
+    @font-face {
+      font-family: 'Berkeley Mono';
+      src: url('./assets/BerkeleyMonoVariable-Regular.woff2') format('woff2');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    :root {
+      --primary-blue: #6A73B6;
+      --shadow-blue: rgba(106, 115, 182, 0.2);
+      --border-blue: #6A73B6;
+      --bg-dark: #0d0e14;
+      --bg-card: #11131e;
+      --text-primary: #e5e7eb;
+      --text-secondary: #9ca3af;
+      --code-bg: rgba(106, 115, 182, 0.15);
+      --sidebar-width: 240px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Berkeley Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-primary);
+      background-color: var(--bg-dark);
+      margin: 0;
+      padding: 0;
+      min-width: 320px;
+    }
+
+    .container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Mobile menu button */
+    .menu-btn {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 200;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: var(--primary-blue);
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .menu-btn svg {
+      width: 24px;
+      height: 24px;
+      fill: white;
+    }
+
+    .menu-btn:hover {
+      background-color: #7A83C6;
+    }
+
+    /* Sidebar overlay for mobile */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 299;
+    }
+
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--bg-card);
+      border-right: 1px solid var(--border-blue);
+      padding: 20px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 300;
+    }
+
+    .sidebar-close {
+      display: none;
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 24px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .sidebar-close:hover {
+      background-color: var(--shadow-blue);
+      color: var(--text-primary);
+    }
+
+    .sidebar h2 {
+      font-size: 14px;
+      color: var(--primary-blue);
+      margin: 0 0 16px 0;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-blue);
+    }
+
+    .sidebar-section {
+      margin-bottom: 20px;
+    }
+
+    .sidebar-section h3 {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin: 0 0 8px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .sidebar-section a {
+      display: block;
+      color: var(--text-primary);
+      text-decoration: none;
+      padding: 4px 8px;
+      margin: 2px 0;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+
+    .sidebar-section a:hover {
+      background-color: var(--shadow-blue);
+    }
+
+    .content {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      padding: 40px;
+      max-width: 900px;
+      min-width: 0;
+    }
+
+    .content h1 {
+      font-size: 28px;
+      margin: 0 0 8px 0;
+      color: var(--text-primary);
+    }
+
+    .content > p:first-of-type {
+      color: var(--text-secondary);
+      margin-bottom: 40px;
+    }
+
+    .category-section {
+      margin-bottom: 60px;
+    }
+
+    .category-section h2 {
+      font-size: 20px;
+      color: var(--primary-blue);
+      margin: 0 0 24px 0;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-blue);
+    }
+
+    .function-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-blue);
+      box-shadow: 4px 4px 0 var(--shadow-blue);
+      padding: 24px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+
+    .function-card h3 {
+      font-size: 18px;
+      margin: 0 0 4px 0;
+      color: var(--text-primary);
+      word-break: break-word;
+    }
+
+    .function-description {
+      color: var(--text-secondary);
+      margin: 0 0 16px 0;
+    }
+
+    .exports {
+      display: inline-block;
+      background-color: var(--code-bg);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: var(--primary-blue);
+      margin-bottom: 16px;
+      word-break: break-all;
+    }
+
+    .signature {
+      background-color: var(--code-bg);
+      border-left: 3px solid var(--primary-blue);
+      padding: 12px 16px;
+      margin: 16px 0;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .signature code {
+      color: var(--text-primary);
+      white-space: pre;
+      display: block;
+    }
+
+    .function-card h4 {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin: 20px 0 8px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .params-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      display: block;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .params-table tbody,
+    .params-table tr {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
+    }
+
+    .params-table th {
+      text-align: left;
+      color: var(--text-secondary);
+      font-weight: normal;
+      padding: 8px;
+      border-bottom: 1px solid var(--border-blue);
+    }
+
+    .params-table td {
+      padding: 8px;
+      border-bottom: 1px solid rgba(106, 115, 182, 0.2);
+      vertical-align: top;
+      word-break: break-word;
+    }
+
+    .params-table code {
+      background-color: var(--code-bg);
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 12px;
+      word-break: break-all;
+    }
+
+    .returns-type {
+      background-color: var(--code-bg);
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 13px;
+    }
+
+    .example {
+      background-color: var(--code-bg);
+      border-left: 3px solid var(--primary-blue);
+      padding: 16px;
+      margin: 16px 0 0 0;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .example pre {
+      margin: 0;
+      color: var(--text-primary);
+      font-size: 13px;
+      line-height: 1.5;
+      white-space: pre;
+    }
+
+    /* Mobile styles */
+    @media (max-width: 768px) {
+      .menu-btn {
+        display: flex;
+      }
+
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .sidebar-close {
+        display: block;
+      }
+
+      .sidebar-overlay.open {
+        display: block;
+      }
+
+      .content {
+        margin-left: 0;
+        padding: 20px;
+        padding-bottom: 80px;
+      }
+
+      .content h1 {
+        font-size: 24px;
+      }
+
+      .function-card {
+        padding: 16px;
+        box-shadow: 2px 2px 0 var(--shadow-blue);
+      }
+
+      .function-card h3 {
+        font-size: 16px;
+      }
+
+      .params-table {
+        font-size: 12px;
+      }
+
+      .params-table th,
+      .params-table td {
+        padding: 6px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .content {
+        padding: 16px;
+        padding-bottom: 80px;
+      }
+
+      .content h1 {
+        font-size: 20px;
+      }
+
+      .category-section h2 {
+        font-size: 18px;
+      }
+
+      .function-card {
+        padding: 12px;
+      }
+
+      .signature {
+        padding: 10px 12px;
+        font-size: 12px;
+      }
+
+      .example {
+        padding: 12px;
+        font-size: 12px;
+      }
+
+      .example pre {
+        font-size: 11px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="menu-btn" onclick="toggleSidebar()" aria-label="Open menu">
+    <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+  </button>
+  <div class="sidebar-overlay" onclick="closeSidebar()"></div>
+  <div class="container">
+    <div class="sidebar">
+      <button class="sidebar-close" onclick="closeSidebar()" aria-label="Close menu">&times;</button>
+      <h2>API Reference</h2><div class="sidebar-section">
+      <h3>UI Components</h3><a href="#fn-toast">toast</a><a href="#fn-ask">ask</a><a href="#fn-consent">consent</a><a href="#fn-tell">tell</a><a href="#fn-snippet">snippet</a><a href="#fn-themodal">themodal</a></div><div class="sidebar-section">
+      <h3>DOM Utilities</h3><a href="#fn-All">All</a><a href="#fn-insertStyleTag">insertStyleTag</a><a href="#fn-getDataFromForm">getDataFromForm</a><a href="#fn-onDomReady">onDomReady</a><a href="#fn-onLoad">onLoad</a></div><div class="sidebar-section">
+      <h3>String Utilities</h3><a href="#fn-slugify">slugify</a><a href="#fn-copyToClipboard">copyToClipboard</a><a href="#fn-query">query</a></div><div class="sidebar-section">
+      <h3>Utilities</h3><a href="#fn-throttle">throttle</a><a href="#fn-debounce">debounce</a><a href="#fn-cookie">cookie</a><a href="#fn-Mutation">Mutation</a><a href="#fn-nearest">nearest</a></div><div class="sidebar-section">
+      <h3>Communication</h3><a href="#fn-sendMessage">sendMessage</a><a href="#fn-uploadFile">uploadFile</a><a href="#fn-createFile">createFile</a><a href="#fn-uploadFileBasic">uploadFileBasic</a></div>
+    </div>
+    <main class="content">
+      <h1>HyperclayJS API Reference</h1>
+      <p>Documentation for all exported functions and utilities.</p>
+      <div class="category-section" id="cat-ui">
+      <h2>UI Components</h2><div class="function-card" id="fn-toast">
+    <h3>toast</h3>
+    <p class="function-description">Display a toast notification for success or error messages.</p>
+    <div class="exports">Available as: <code>window.toast</code>, <code>hyperclay.toast</code></div>
+    <div class="signature"><code>toast(message, messageType)</code></div>
+    <h4>Parameters</h4>
+    <table class="params-table">
+      <tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>message</code></td>
+          <td><code>string</code></td>
+          <td>—</td>
+          <td>The message to display</td>
+        </tr>
+      
+        <tr>
+          <td><code>messageType</code></td>
+          <td><code>string</code></td>
+          <td><code>`'success'`</code></td>
+          <td>Either `'success'` or `'error'`</td>
+        </tr>
+      
+    </table>
+    
+    <h4>Returns</h4><p><code class="returns-type">void</code></p>
+    <h4>Example</h4><div class="example"><pre>// Show a success message
+toast('Changes saved!', 'success');
+
+// Show an error message
+toast('Something went wrong', 'error');
+
+// Success is the default type
+toast('Uploaded successfully');</pre></div>
+  </div><div class="function-card" id="fn-ask">
+    <h3>ask</h3>
+    <p class="function-description">Display a modal with an input field to prompt the user for text input.</p>
+    <div class="exports">Available as: <code>window.ask</code>, <code>hyperclay.ask</code></div>
+    <div class="signature"><code>ask(promptText, yesCallback, defaultValue, extraContent)</code></div>
+    <h4>Parameters</h4>
+    <table class="params-table">
+      <tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>promptText</code></td>
+          <td><code>string</code></td>
+          <td>—</td>
+          <td>The question or prompt to display</td>
+        </tr>
+      
+        <tr>
+          <td><code>yesCallback</code></td>
+          <td><code>function</code></td>
+          <td>—</td>
+          <td>Called with the input value when user confirms</td>
+        </tr>
+      
+        <tr>
+          <td><code>defaultValue</code></td>
+          <td><code>string</code></td>
+          <td><code>`''`</code></td>
+          <td>Pre-filled value in the input field</td>
+        </tr>
+      
+        <tr>
+          <td><code>extraContent</code></td>
+          <td><code>string</code></td>
+          <td><code>`''`</code></td>
+          <td>Additional HTML content to display below the input</td>
+        </tr>
+      
+    </table>
+    
+    <h4>Returns</h4><p><code class="returns-type">Promise&lt;string&gt;</code> — Resolves with the input value, rejects if user closes modal</p>
+    <h4>Example</h4><div class="example"><pre>// Basic usage with async/await
+const name = await ask('What is your name?');
+console.log('Hello, ' + name);
+
+// With a default value
+const title = await ask('Enter title:', null, 'Untitled');
+
+// With callback
+ask('Enter your email:', (email) =&gt; {
+  console.log('Email:', email);
+});
+
+// With extra content
+ask('Confirm action:', null, '', '&lt;p class=&quot;warning&quot;&gt;This cannot be undone&lt;/p&gt;');</pre></div>
+  </div><div class="function-card" id="fn-consent">
+    <h3>consent</h3>
+    <p class="function-description">Display a confirmation modal to get user consent before an action.</p>
+    <div class="exports">Available as: <code>window.consent</code>, <code>hyperclay.consent</code></div>
+    <div class="signature"><code>consent(promptText, yesCallback, extraContent)</code></div>
+    <h4>Parameters</h4>
+    <table class="params-table">
+      <tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>promptText</code></td>
+          <td><code>string</code></td>
+          <td>—</td>
+          <td>The question or prompt to display</td>
+        </tr>
+      
+        <tr>
+          <td><code>yesCallback</code></td>
+          <td><code>function</code></td>
+          <td>—</td>
+          <td>Called when user confirms</td>
+        </tr>
+      
+        <tr>
+          <td><code>extraContent</code></td>
+          <td><code>string</code></td>
+          <td><code>`''`</code></td>
+          <td>Additional HTML content to display</td>
+        </tr>
+      
+    </table>
+    
+    <h4>Returns</h4><p><code class="returns-type">Promise&lt;void&gt;</code> — Resolves when user confirms, rejects if user closes modal</p>
+    <h4>Example</h4><div class="example"><pre>// Basic usage with async/await
+try {
+  await consent('Delete this item?');
+  deleteItem();
+} catch (e) {
+  // User cancelled
+}
+
+// With callback
+consent('Are you sure?', () =&gt; {
+  performAction();
+});
+
+// With extra content
+consent('Publish changes?', null, '&lt;p&gt;This will be visible to all users.&lt;/p&gt;');</pre></div>
+  </div><div class="function-card" id="fn-tell">
+    <h3>tell</h3>
+    <p class="function-description">Display an informational modal with a title and optional content paragraphs.</p>
+    <div class="exports">Available as: <code>window.tell</code>, <code>hyperclay.tell</code></div>
+    <div class="signature"><code>tell(promptText, ...content)</code></div>
+    <h4>Parameters</h4>
+    <table class="params-table">
+      <tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>promptText</code></td>
+          <td><code>string</code></td>
+          <td>—</td>
+          <td>The title/heading text</td>
+        </tr>
+      
+        <tr>
+          <td><code>...content</code></td>
+          <td><code>string[]</code></td>
+          <td>—</td>
+          <td>Additional content paragraphs (variadic)</td>
+        </tr>
+      
+    </table>
+    
+    <h4>Returns</h4><p><code class="returns-type">Promise&lt;void&gt;</code> — Resolves when user confirms, rejects on close</p>
+    <h4>Example</h4><div class="example"><pre>// Simple message
+await tell('Welcome!');
+
+// With additional content
+await tell(
+  'About This App',
+  'This is a collaborative editing platform.',
+  'Changes are saved automatically.',
+  'Press CMD+S to save manually.'
+);
+
+// Informational popup
+tell('Tip', 'You can drag and drop items to reorder them.');</pre></div>
+  </div><div class="function-card" id="fn-snippet">
+    <h3>snippet</h3>
+    <p class="function-description">Display a modal with a code snippet and a copy-to-clipboard button.</p>
+    <div class="exports">Available as: <code>hyperclay.snippet</code></div>
+    <div class="signature"><code>snippet(title, content, extraContent)</code></div>
+    <h4>Parameters</h4>
+    <table class="params-table">
+      <tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>title</code></td>
+          <td><code>string</code></td>
+          <td>—</td>
+          <td>The modal heading</td>
+        </tr>
+      
+        <tr>
+          <td><code>content</code></td>
+          <td><code>string</code></td>
+          <td>—</td>
+          <td>The code/text to display and copy</td>
+        </tr>
+      
+        <tr>
+          <td><code>extraContent</code></td>
+          <td><code>string</code></td>
+          <td><code>`''`</code></td>
+          <td>Optional warning or info text below the copy button</td>
+        </tr>
+      
+    </table>
+    
+    <h4>Returns</h4><p><code class="returns-type">Promise&lt;void&gt;</code> — Resolves when modal is closed</p>
+    <h4>Example</h4><div class="example"><pre>// Show embed code
+snippet('Embed Code', '&lt;iframe src=&quot;https://example.com&quot;&gt;&lt;/iframe&gt;');
+
+// With a warning message
+snippet(
+  'API Key',
+  'sk-1234567890abcdef',
+  'Keep this key secret. Do not share it publicly.'
+);
+
+// Show configuration
+const config = JSON.stringify({ theme: 'dark', lang: 'en' }, null, 2);
+snippet('Your Settings', config);</pre></div>
+  </div><div class="function-card" id="fn-themodal">
+    <h3>themodal</h3>
+    <p class="function-description">A flexible modal window creation system. Configure and display custom modals with full control over content and behavior.</p>
+    <div class="exports">Available as: <code>window.themodal</code>, <code>hyperclay.themodal</code></div>
+    <div class="signature"><code>themodal.html = content;
+themodal.yes = buttonContent;
+themodal.no = buttonContent;
+themodal.open();
+themodal.close();</code></div>
+    
+    <h4>Methods</h4>
+    <table class="params-table">
+      <tr><th>Method</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>open()</code></td>
+          <td>Show the modal</td>
+        </tr>
+      
+        <tr>
+          <td><code>close()</code></td>
+          <td>Close the modal (triggers onNo callbacks)</td>
+        </tr>
+      
+        <tr>
+          <td><code>onYes(callback)</code></td>
+          <td>Add callback for confirm action. Return `false` to prevent closing</td>
+        </tr>
+      
+        <tr>
+          <td><code>onNo(callback)</code></td>
+          <td>Add callback for cancel/close action</td>
+        </tr>
+      
+        <tr>
+          <td><code>onOpen(callback)</code></td>
+          <td>Add callback for when modal opens</td>
+        </tr>
+      
+    </table>
+    
+    <h4>Example</h4><div class="example"><pre>// Basic custom modal
+themodal.html = '&lt;h2&gt;Custom Title&lt;/h2&gt;&lt;p&gt;Your content here&lt;/p&gt;';
+themodal.yes = 'Confirm';
+themodal.no = 'Cancel';
+
+themodal.onYes(() =&gt; {
+  console.log('User confirmed');
+});
+
+themodal.onNo(() =&gt; {
+  console.log('User cancelled');
+});
+
+themodal.open();
+
+// Modal with form validation
+themodal.html = '&lt;input class=&quot;micromodal__input&quot; type=&quot;email&quot; required&gt;';
+themodal.yes = 'Submit';
+
+themodal.onYes(() =&gt; {
+  const email = document.querySelector('.micromodal__input').value;
+  if (!email.includes('@')) {
+    toast('Invalid email', 'error');
+    return false; // Prevent modal from closing
+  }
+  processEmail(email);
+});
+
+themodal.open();</pre></div>
+  </div></div><div class="category-section" id="cat-dom">
+      <h2>DOM Utilities</h2><div class="function-card" id="fn-All">
+    <h3>All</h3>
+    <p class="function-description">A lightweight DOM manipulation library with jQuery-like syntax. Select elements, chain methods, handle events with delegation, and more.</p>
+    <div class="exports">Available as: <code>window.All</code>, <code>hyperclay.All</code></div>
+    <div class="signature"><code>All(selector)
+All(selector, context)
+All(element)
+All(elements)</code></div>
+    <h4>Parameters</h4>
+    <table class="params-table">
+      <tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>selector</code></td>
+          <td><code>string</code></td>
+          <td>—</td>
+          <td>CSS selector to match elements</td>
+        </tr>
+      
+        <tr>
+          <td><code>context</code></td>
+          <td><code>string\</code></td>
+          <td><code>Element</code></td>
+          <td>document</td>
+        </tr>
+      
+        <tr>
+          <td><code>element</code></td>
+          <td><code>Element</code></td>
+          <td>—</td>
+          <td>Wrap a single DOM element</td>
+        </tr>
+      
+        <tr>
+          <td><code>elements</code></td>
+          <td><code>Element[]</code></td>
+          <td>—</td>
+          <td>Wrap an array of DOM elements</td>
+        </tr>
+      
+    </table>
+    
+    <h4>Returns</h4><p><code class="returns-type">Proxy&lt;Element[]&gt;</code> — A proxied array of elements with chainable methods</p>
+    <h4>Example</h4><div class="example"><pre>// Toggle visibility on all cards
+All('.card').classList.toggle('hidden');
+
+// Get values from all inputs
+const values = All('input').map(el =&gt; el.value);
+
+// Event delegation for dynamic content
+All(document).onclick('.dynamic-btn', function() {
+  console.log('Button clicked:', this.dataset.id);
+});
+
+// Chained operations
+All('.notification')
+  .classList.add('fade-out')
+  .style.opacity = '0';
+
+// Iterate with for...of
+for (const el of All('.item')) {
+  el.textContent = 'Updated';
+}</pre></div>
+  </div><div class="function-card" id="fn-insertStyleTag">
+    <h3>insertStyleTag</h3>
+    <p class="function-description">Dynamically inject a stylesheet link into the document head. Automatically prevents duplicate stylesheets.</p>
+    <div class="exports">Available as: <code>window.insertStyleTag</code>, <code>hyperclay.insertStyleTag</code></div>
+    <div class="signature"><code>insertStyleTag(href)</code></div>
+    <h4>Parameters</h4>
+    <table class="params-table">
+      <tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>href</code></td>
+          <td><code>string</code></td>
+          <td>—</td>
+          <td>URL of the stylesheet to inject</td>
+        </tr>
+      
+    </table>
+    
+    <h4>Returns</h4><p><code class="returns-type">void</code></p>
+    <h4>Example</h4><div class="example"><pre>// Load a CSS file
+insertStyleTag('/styles/theme.css');
+
+// Load from CDN
+insertStyleTag('https://cdn.example.com/lib.css');
+
+// Safe to call multiple times - duplicates are ignored
+insertStyleTag('/styles/theme.css'); // No duplicate added</pre></div>
+  </div><div class="function-card" id="fn-getDataFromForm">
+    <h3>getDataFromForm</h3>
+    <p class="function-description">Extract all form field values as a plain JavaScript object. Works with `&lt;form&gt;` elements or any container with named inputs.</p>
+    <div class="exports">Available as: <code>window.getDataFromForm</code>, <code>hyperclay.getDataFromForm</code></div>
+    <div class="signature"><code>getDataFromForm(container)</code></div>
+    <h4>Parameters</h4>
+    <table class="params-table">
+      <tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>container</code></td>
+          <td><code>HTMLFormElement\</code></td>
+          <td><code>Element</code></td>
+          <td>—</td>
+        </tr>
+      
+    </table>
+    
+    <h4>Returns</h4><p><code class="returns-type">object</code> — Key-value pairs of field names and their values</p>
+    <h4>Example</h4><div class="example"><pre>// From a form element
+const form = document.querySelector('form');
+const data = getDataFromForm(form);
+// { username: 'john', email: 'john@example.com' }
+
+// From any container
+const container = document.querySelector('.filter-panel');
+const filters = getDataFromForm(container);
+
+// Checkbox handling
+// &lt;input type=&quot;checkbox&quot; name=&quot;tags&quot; value=&quot;js&quot; checked&gt;
+// &lt;input type=&quot;checkbox&quot; name=&quot;tags&quot; value=&quot;css&quot; checked&gt;
+// Result: { tags: ['js', 'css'] }
+
+// Use with fetch
+const formData = getDataFromForm(form);
+fetch('/api/submit', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(formData)
+});</pre></div>
+  </div><div class="function-card" id="fn-onDomReady">
+    <h3>onDomReady</h3>
+    <p class="function-description">Execute a callback when the DOM is ready. If the DOM is already loaded, the callback runs immediately.</p>
+    <div class="exports">Available as: <code>hyperclay.onDomReady</code></div>
+    <div class="signature"><code>onDomReady(callback)</code></div>
+    <h4>Parameters</h4>
+    <table class="params-table">
+      <tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>callback</code></td>
+          <td><code>function</code></td>
+          <td>—</td>
+          <td>Function to execute when DOM is ready</td>
+        </tr>
+      
+    </table>
+    
+    <h4>Returns</h4><p><code class="returns-type">void</code></p>
+    <h4>Example</h4><div class="example"><pre>// Initialize app when DOM is ready
+onDomReady(() =&gt; {
+  initializeApp();
+  setupEventListeners();
+});
+
+// Safe to call after page load - runs immediately
+onDomReady(() =&gt; {
+  console.log('This runs right away if DOM is already loaded');
+});</pre></div>
+  </div><div class="function-card" id="fn-onLoad">
+    <h3>onLoad</h3>
+    <p class="function-description">Execute a callback when the window load event fires (all resources loaded). If already loaded, the callback runs immediately.</p>
+    <div class="exports">Available as: <code>hyperclay.onLoad</code></div>
+    <div class="signature"><code>onLoad(callback)</code></div>
+    <h4>Parameters</h4>
+    <table class="params-table">
+      <tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>callback</code></td>
+          <td><code>function</code></td>
+          <td>—</td>
+          <td>Function to execute when window is fully loaded</td>
+        </tr>
+      
+    </table>
+    
+    <h4>Returns</h4><p><code class="returns-type">void</code></p>
+    <h4>Example</h4><div class="example"><pre>// Wait for all images and resources to load
+onLoad(() =&gt; {
+  initializeImageGallery();
+  calculateLayoutDimensions();
+});
+
+// Difference from onDomReady:
+// - onDomReady: DOM structure ready, images may still be loading
+// - onLoad: Everything loaded including images, fonts, iframes</pre></div>
+  </div></div><div class="category-section" id="cat-string">
+      <h2>String Utilities</h2><div class="function-card" id="fn-slugify">
+    <h3>slugify</h3>
+    <p class="function-description">Convert text into a URL-friendly slug. Handles accents, spaces, and special characters.</p>
+    <div class="exports">Available as: <code>window.slugify</code>, <code>hyperclay.slugify</code></div>
+    <div class="signature"><code>slugify(text)</code></div>
+    <h4>Parameters</h4>
+    <table class="params-table">
+      <tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>text</code></td>
+          <td><code>string</code></td>
+          <td>—</td>
+          <td>The text to convert to a slug</td>
+        </tr>
+      
+    </table>
+    
+    <h4>Returns</h4><p><code class="returns-type">string</code> — URL-friendly slug</p>
+    <h4>Example</h4><div class="example"><pre>slugify('Hello World');
+// 'hello-world'
+
+slugify('Café &amp; Restaurant');
+// 'cafe-restaurant'
+
+slugify('  Multiple   Spaces  ');
+// 'multiple-spaces'
+
+slugify('Ñoño with Accénts');
+// 'nono-with-accents'
+
+// Use for URLs
+const title = 'My Blog Post Title!';
+const url = `/posts/${slugify(title)}`;
+// '/posts/my-blog-post-title'</pre></div>
+  </div><div class="function-card" id="fn-copyToClipboard">
+    <h3>copyToClipboard</h3>
+    <p class="function-description">Copy text to the system clipboard.</p>
+    <div class="exports">Available as: <code>hyperclay.copyToClipboard</code></div>
+    <div class="signature"><code>copyToClipboard(text)</code></div>
+    <h4>Parameters</h4>
+    <table class="params-table">
+      <tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>text</code></td>
+          <td><code>string</code></td>
+          <td>—</td>
+          <td>The text to copy to clipboard</td>
+        </tr>
+      
+    </table>
+    
+    <h4>Returns</h4><p><code class="returns-type">void</code></p>
+    <h4>Example</h4><div class="example"><pre>// Copy a URL
+copyToClipboard('https://example.com/share/123');
+
+// Copy with user feedback
+copyToClipboard(embedCode);
+toast('Copied to clipboard!');
+
+// Copy from an element
+const code = document.querySelector('pre').textContent;
+copyToClipboard(code);</pre></div>
+  </div><div class="function-card" id="fn-query">
+    <h3>query</h3>
+    <p class="function-description">An object containing parsed URL query parameters from the current page URL.</p>
+    <div class="exports">Available as: <code>window.query</code>, <code>hyperclay.query</code></div>
+    <div class="signature"><code>query</code></div>
+    
+    
+    
+    <h4>Example</h4><div class="example"><pre>// URL: https://example.com/page?name=john&amp;page=2&amp;active=true
+
+query.name;    // 'john'
+query.page;    // '2'
+query.active;  // 'true'
+
+// Check if parameter exists
+if (query.debug) {
+  enableDebugMode();
+}
+
+// Use with defaults
+const page = query.page || '1';
+const sort = query.sort || 'date';
+
+// Destructure parameters
+const { name, page, sort = 'date' } = query;</pre></div>
+  </div></div><div class="category-section" id="cat-utilities">
+      <h2>Utilities</h2><div class="function-card" id="fn-throttle">
+    <h3>throttle</h3>
+    <p class="function-description">Limit how often a function can be called. The function executes at most once per specified delay period.</p>
+    <div class="exports">Available as: <code>hyperclay.throttle</code></div>
+    <div class="signature"><code>throttle(callback, delay, executeFirst)</code></div>
+    <h4>Parameters</h4>
+    <table class="params-table">
+      <tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>callback</code></td>
+          <td><code>function</code></td>
+          <td>—</td>
+          <td>The function to throttle</td>
+        </tr>
+      
+        <tr>
+          <td><code>delay</code></td>
+          <td><code>number</code></td>
+          <td>—</td>
+          <td>Minimum time between calls in milliseconds</td>
+        </tr>
+      
+        <tr>
+          <td><code>executeFirst</code></td>
+          <td><code>boolean</code></td>
+          <td><code>`true`</code></td>
+          <td>Execute immediately on first call</td>
+        </tr>
+      
+    </table>
+    
+    <h4>Returns</h4><p><code class="returns-type">function</code> — Throttled version of the callback</p>
+    <h4>Example</h4><div class="example"><pre>// Throttle scroll handler to once per 100ms
+const handleScroll = throttle(() =&gt; {
+  updateScrollPosition();
+}, 100);
+
+window.addEventListener('scroll', handleScroll);
+
+// Throttle resize handler
+const handleResize = throttle(() =&gt; {
+  recalculateLayout();
+}, 200);
+
+window.addEventListener('resize', handleResize);
+
+// Don't execute immediately on first call
+const lazyUpdate = throttle(updateUI, 500, false);</pre></div>
+  </div><div class="function-card" id="fn-debounce">
+    <h3>debounce</h3>
+    <p class="function-description">Delay function execution until after a period of inactivity. The timer resets each time the function is called.</p>
+    <div class="exports">Available as: <code>hyperclay.debounce</code></div>
+    <div class="signature"><code>debounce(callback, delay)</code></div>
+    <h4>Parameters</h4>
+    <table class="params-table">
+      <tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>callback</code></td>
+          <td><code>function</code></td>
+          <td>—</td>
+          <td>The function to debounce</td>
+        </tr>
+      
+        <tr>
+          <td><code>delay</code></td>
+          <td><code>number</code></td>
+          <td>—</td>
+          <td>Wait time in milliseconds after last call</td>
+        </tr>
+      
+    </table>
+    
+    <h4>Returns</h4><p><code class="returns-type">function</code> — Debounced version of the callback</p>
+    <h4>Example</h4><div class="example"><pre>// Debounce search input
+const searchInput = document.querySelector('#search');
+const handleSearch = debounce((query) =&gt; {
+  fetchSearchResults(query);
+}, 300);
+
+searchInput.addEventListener('input', (e) =&gt; {
+  handleSearch(e.target.value);
+});
+
+// Debounce window resize
+const handleResize = debounce(() =&gt; {
+  recalculateLayout();
+}, 250);
+
+window.addEventListener('resize', handleResize);
+
+// Auto-save after user stops typing
+const autoSave = debounce(() =&gt; {
+  saveDraft();
+}, 1000);</pre></div>
+  </div><div class="function-card" id="fn-cookie">
+    <h3>cookie</h3>
+    <p class="function-description">Utility object for reading and removing browser cookies.</p>
+    <div class="exports">Available as: <code>window.cookie</code>, <code>hyperclay.cookie</code></div>
+    <div class="signature"><code>cookie.get(name)
+cookie.remove(name)</code></div>
+    
+    <h4>Methods</h4>
+    <table class="params-table">
+      <tr><th>Method</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>name</code></td>
+          <td>string</td>
+        </tr>
+      
+        <tr>
+          <td><code>Parameter</code></td>
+          <td>Type</td>
+        </tr>
+      
+        <tr>
+          <td><code>-----------</code></td>
+          <td>------</td>
+        </tr>
+      
+        <tr>
+          <td><code>name</code></td>
+          <td>string</td>
+        </tr>
+      
+    </table>
+    
+    <h4>Example</h4><div class="example"><pre>// Get a cookie value
+const userId = cookie.get('userId');
+
+// Get JSON cookie (auto-parsed)
+const preferences = cookie.get('userPrefs');
+// { theme: 'dark', lang: 'en' }
+
+// Check if cookie exists
+if (cookie.get('authToken')) {
+  showLoggedInUI();
+}
+
+// Remove a cookie
+cookie.remove('sessionId');
+
+// Clear authentication
+cookie.remove('authToken');
+cookie.remove('userId');</pre></div>
+  </div><div class="function-card" id="fn-Mutation">
+    <h3>Mutation</h3>
+    <p class="function-description">A lightweight wrapper around MutationObserver for watching DOM changes. Provides methods to observe element additions, removals, and attribute changes.</p>
+    <div class="exports">Available as: <code>window.Mutation</code>, <code>hyperclay.Mutation</code></div>
+    <div class="signature"><code>Mutation.onAnyChange(options, callback)
+Mutation.onAddOrRemove(options, callback)
+Mutation.onAddElement(options, callback)
+Mutation.onRemoveElement(options, callback)
+Mutation.onAttribute(options, callback)</code></div>
+    <h4>Parameters</h4>
+    <table class="params-table">
+      <tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>options</code></td>
+          <td><code>object</code></td>
+          <td><code>`{}`</code></td>
+          <td>Configuration options</td>
+        </tr>
+      
+        <tr>
+          <td><code>options.debounce</code></td>
+          <td><code>number</code></td>
+          <td><code>`0`</code></td>
+          <td>Debounce delay in milliseconds</td>
+        </tr>
+      
+        <tr>
+          <td><code>options.selectorFilter</code></td>
+          <td><code>string\</code></td>
+          <td><code>function</code></td>
+          <td>—</td>
+        </tr>
+      
+        <tr>
+          <td><code>options.omitChangeDetails</code></td>
+          <td><code>boolean</code></td>
+          <td><code>`false`</code></td>
+          <td>Call callback without change data</td>
+        </tr>
+      
+        <tr>
+          <td><code>callback</code></td>
+          <td><code>function</code></td>
+          <td>—</td>
+          <td>Called with array of changes</td>
+        </tr>
+      
+    </table>
+    <h4>Methods</h4>
+    <table class="params-table">
+      <tr><th>Method</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>onAnyChange</code></td>
+          <td>Watch all DOM changes</td>
+        </tr>
+      
+        <tr>
+          <td><code>onAddOrRemove</code></td>
+          <td>Watch element additions and removals</td>
+        </tr>
+      
+        <tr>
+          <td><code>onAddElement</code></td>
+          <td>Watch only element additions</td>
+        </tr>
+      
+        <tr>
+          <td><code>onRemoveElement</code></td>
+          <td>Watch only element removals</td>
+        </tr>
+      
+        <tr>
+          <td><code>onAttribute</code></td>
+          <td>Watch attribute changes</td>
+        </tr>
+      
+    </table>
+    <h4>Returns</h4><p><code class="returns-type">function</code> — Call to stop observing</p>
+    <h4>Example</h4><div class="example"><pre>// Watch for any DOM changes (debounced)
+const unsubscribe = Mutation.onAnyChange({ debounce: 200 }, (changes) =&gt; {
+  changes.forEach(change =&gt; {
+    console.log(change.type, change.element);
+  });
+});
+
+// Watch for new elements matching a selector
+Mutation.onAddElement({ selectorFilter: '.card' }, (changes) =&gt; {
+  changes.forEach(({ element }) =&gt; {
+    initializeCard(element);
+  });
+});
+
+// Watch for attribute changes
+Mutation.onAttribute({ debounce: 100 }, (changes) =&gt; {
+  changes.forEach(({ element, attribute, oldValue, newValue }) =&gt; {
+    console.log(`${attribute} changed from ${oldValue} to ${newValue}`);
+  });
+});
+
+// Simple debounced callback without change details
+Mutation.onAnyChange({ debounce: 500, omitChangeDetails: true }, () =&gt; {
+  console.log('DOM changed');
+});
+
+// Stop observing
+unsubscribe();</pre></div>
+  </div><div class="function-card" id="fn-nearest">
+    <h3>nearest</h3>
+    <p class="function-description">Search for elements matching a CSS selector by exploring outward from a starting point. Unlike `element.closest()` which only searches ancestors, this explores siblings, cousins, and nearby elements in visual proximity.</p>
+    <div class="exports">Available as: <code>window.nearest</code>, <code>hyperclay.nearest</code></div>
+    <div class="signature"><code>nearest(startElem, selector, elementFoundReturnValue)</code></div>
+    <h4>Parameters</h4>
+    <table class="params-table">
+      <tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>startElem</code></td>
+          <td><code>Element</code></td>
+          <td>—</td>
+          <td>Starting element for the search</td>
+        </tr>
+      
+        <tr>
+          <td><code>selector</code></td>
+          <td><code>string</code></td>
+          <td>—</td>
+          <td>CSS selector to match</td>
+        </tr>
+      
+        <tr>
+          <td><code>elementFoundReturnValue</code></td>
+          <td><code>function</code></td>
+          <td><code>`x =&gt; x`</code></td>
+          <td>Transform function for the found element</td>
+        </tr>
+      
+    </table>
+    
+    <h4>Returns</h4><p><code class="returns-type">Element | any | null</code> — Found element (or transformed value), or `null` if not found</p>
+    <h4>Example</h4><div class="example"><pre>// Find the nearest button
+const btn = nearest(clickedElement, 'button');
+
+// Find nearest input field from a label
+const input = nearest(label, 'input');
+
+// Find nearest and get its value
+const value = nearest(el, '[data-value]', el =&gt; el.dataset.value);
+
+// Find related UI elements
+const card = nearest(deleteBtn, '.card');
+card.remove();
+
+// Find next input in reading order
+const nextInput = nearest(currentInput, 'input:not(:disabled)');
+nextInput?.focus();</pre></div>
+  </div></div><div class="category-section" id="cat-communication">
+      <h2>Communication</h2><div class="function-card" id="fn-sendMessage">
+    <h3>sendMessage</h3>
+    <p class="function-description">Send form data or a custom object to the `/message` endpoint. Automatically collects form data, includes behavior tracking, and handles success/error toasts.</p>
+    <div class="exports">Available as: <code>hyperclay.sendMessage</code></div>
+    <div class="signature"><code>sendMessage(eventOrObj, successMessage, callback)</code></div>
+    <h4>Parameters</h4>
+    <table class="params-table">
+      <tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>eventOrObj</code></td>
+          <td><code>Event\</code></td>
+          <td><code>object</code></td>
+          <td>—</td>
+        </tr>
+      
+        <tr>
+          <td><code>successMessage</code></td>
+          <td><code>string</code></td>
+          <td><code>`'Successfully sent'`</code></td>
+          <td>Toast message on success</td>
+        </tr>
+      
+        <tr>
+          <td><code>callback</code></td>
+          <td><code>function</code></td>
+          <td>—</td>
+          <td>Called with response data on success</td>
+        </tr>
+      
+    </table>
+    
+    <h4>Returns</h4><p><code class="returns-type">Promise&lt;object&gt;</code> — Resolves with server response, rejects on error</p>
+    <h4>Example</h4><div class="example"><pre>// Handle form submission
+document.querySelector('form').onsubmit = (e) =&gt; {
+  sendMessage(e, 'Message sent!');
+};
+
+// Send custom data
+sendMessage({
+  name: 'John',
+  email: 'john@example.com'
+}, 'Contact form submitted');
+
+// With callback
+sendMessage(event, 'Sent!', (response) =&gt; {
+  console.log('Server responded:', response);
+});
+
+// With async/await
+try {
+  const result = await sendMessage(formEvent);
+  redirectToThankYou();
+} catch (error) {
+  console.error('Failed:', error);
+}</pre></div>
+  </div><div class="function-card" id="fn-uploadFile">
+    <h3>uploadFile</h3>
+    <p class="function-description">Upload a file to the `/upload` endpoint with progress toasts and automatic clipboard copy of the resulting URL.</p>
+    <div class="exports">Available as: <code>hyperclay.uploadFile</code></div>
+    <div class="signature"><code>uploadFile(eventOrFile, callback, extraData)</code></div>
+    <h4>Parameters</h4>
+    <table class="params-table">
+      <tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>eventOrFile</code></td>
+          <td><code>Event\</code></td>
+          <td><code>File</code></td>
+          <td>—</td>
+        </tr>
+      
+        <tr>
+          <td><code>callback</code></td>
+          <td><code>function</code></td>
+          <td><code>`() =&gt; {}`</code></td>
+          <td>Called with response on success</td>
+        </tr>
+      
+        <tr>
+          <td><code>extraData</code></td>
+          <td><code>object</code></td>
+          <td><code>`{}`</code></td>
+          <td>Additional data to include in the request</td>
+        </tr>
+      
+    </table>
+    
+    <h4>Returns</h4><p><code class="returns-type">Promise&lt;object&gt;</code> — Resolves with server response containing URLs</p>
+    <h4>Example</h4><div class="example"><pre>// Handle file input
+document.querySelector('input[type=&quot;file&quot;]').onchange = (e) =&gt; {
+  uploadFile(e, (response) =&gt; {
+    console.log('Uploaded to:', response.urls);
+  });
+};
+
+// Upload a File object directly
+const file = new File(['content'], 'test.txt', { type: 'text/plain' });
+uploadFile(file);
+
+// With extra metadata
+uploadFile(event, null, {
+  folder: 'images',
+  public: true
+});
+
+// Progress is shown automatically via toasts:
+// &quot;10% uploaded&quot; → &quot;50% uploaded&quot; → &quot;80% uploaded&quot; → &quot;Uploaded! URL copied&quot;</pre></div>
+  </div><div class="function-card" id="fn-createFile">
+    <h3>createFile</h3>
+    <p class="function-description">Create and upload a file from text content. Automatically detects content type (HTML, CSS, JS, JSON, etc.) and adjusts the file extension.</p>
+    <div class="exports">Available as: <code>hyperclay.createFile</code></div>
+    <div class="signature"><code>createFile(eventOrData)
+createFile(fileName, fileBody)</code></div>
+    
+    
+    <h4>Returns</h4><p><code class="returns-type">Promise&lt;object&gt;</code> — Resolves with server response containing URLs</p>
+    <h4>Example</h4><div class="example"><pre>// From form submission
+document.querySelector('#create-file-form').onsubmit = (e) =&gt; {
+  createFile(e);
+};
+
+// From object
+createFile({
+  fileName: 'styles.css',
+  fileBody: '.container { max-width: 1200px; }'
+});
+
+// From arguments
+createFile('config.json', JSON.stringify({ theme: 'dark' }));
+
+// Content type auto-detection:
+// - HTML content → .html
+// - CSS content → .css
+// - JavaScript → .js
+// - Valid JSON → .json
+// - Unknown → .txt</pre></div>
+  </div><div class="function-card" id="fn-uploadFileBasic">
+    <h3>uploadFileBasic</h3>
+    <p class="function-description">Upload a file with custom progress, completion, and error callbacks. A lower-level alternative to `uploadFile` without automatic toasts.</p>
+    <div class="exports">Available as: <code>hyperclay.uploadFileBasic</code></div>
+    <div class="signature"><code>uploadFileBasic(eventOrFile, options)</code></div>
+    <h4>Parameters</h4>
+    <table class="params-table">
+      <tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>eventOrFile</code></td>
+          <td><code>Event\</code></td>
+          <td><code>File</code></td>
+          <td>—</td>
+        </tr>
+      
+        <tr>
+          <td><code>options</code></td>
+          <td><code>object</code></td>
+          <td><code>`{}`</code></td>
+          <td>Callback options</td>
+        </tr>
+      
+        <tr>
+          <td><code>options.onProgress</code></td>
+          <td><code>function</code></td>
+          <td><code>`() =&gt; {}`</code></td>
+          <td>Called with percent complete (0-100)</td>
+        </tr>
+      
+        <tr>
+          <td><code>options.onComplete</code></td>
+          <td><code>function</code></td>
+          <td><code>`() =&gt; {}`</code></td>
+          <td>Called with response on success</td>
+        </tr>
+      
+        <tr>
+          <td><code>options.onError</code></td>
+          <td><code>function</code></td>
+          <td><code>`() =&gt; {}`</code></td>
+          <td>Called with error on failure</td>
+        </tr>
+      
+    </table>
+    
+    <h4>Returns</h4><p><code class="returns-type">Promise&lt;object&gt;</code> — Resolves with server response, rejects on error</p>
+    <h4>Example</h4><div class="example"><pre>// With custom progress UI
+uploadFileBasic(fileInput.files[0], {
+  onProgress: (percent) =&gt; {
+    progressBar.style.width = percent + '%';
+    progressText.textContent = percent + '%';
+  },
+  onComplete: (response) =&gt; {
+    progressBar.classList.add('complete');
+    showSuccessMessage(response.urls[0]);
+  },
+  onError: (error) =&gt; {
+    progressBar.classList.add('error');
+    showErrorMessage(error.message);
+  }
+});
+
+// Minimal usage
+uploadFileBasic(event, {
+  onComplete: (res) =&gt; console.log('Done:', res.urls)
+});
+
+// With async/await
+try {
+  const result = await uploadFileBasic(file, {
+    onProgress: p =&gt; console.log(p + '%')
+  });
+  console.log('Uploaded:', result);
+} catch (err) {
+  console.error('Failed:', err);
+}</pre></div>
+  </div></div>
+    </main>
+  </div>
+  <script>
+    function toggleSidebar() {
+      document.querySelector('.sidebar').classList.toggle('open');
+      document.querySelector('.sidebar-overlay').classList.toggle('open');
+    }
+    function closeSidebar() {
+      document.querySelector('.sidebar').classList.remove('open');
+      document.querySelector('.sidebar-overlay').classList.remove('open');
+    }
+    // Close sidebar when clicking a link (mobile)
+    document.querySelectorAll('.sidebar a').forEach(link => {
+      link.addEventListener('click', closeSidebar);
+    });
+  </script>
+</body>
+</html>

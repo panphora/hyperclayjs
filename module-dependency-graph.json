@@ -165,7 +165,7 @@
     "save-core": {
       "name": "save-core",
       "category": "core",
-      "size": 6.3,
+      "size": 6.5,
       "files": [
         "core/savePageCore.js"
       ],
@@ -344,7 +344,7 @@
     "dialogs": {
       "name": "dialogs",
       "category": "ui",
-      "size": 7.8,
+      "size": 7.7,
       "files": [
         "ui/prompts.js"
       ],
@@ -400,7 +400,7 @@
     "the-modal": {
       "name": "the-modal",
       "category": "ui",
-      "size": 21.1,
+      "size": 21.8,
       "files": [
         "ui/theModal.js"
       ],

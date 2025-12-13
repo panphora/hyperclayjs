@@ -62,7 +62,7 @@ import 'hyperclayjs/presets/standard.js';
 | edit-mode-helpers | 7.5KB | Admin-only functionality: [edit-mode-input], [edit-mode-resource], [edit-mode-onclick] |
 | option-visibility | 5.9KB | Dynamic show/hide based on ancestor state with option:attribute="value" |
 | persist | 2.5KB | Persist input/select/textarea values to the DOM with [persist] attribute |
-| save-core | 6.3KB | Basic save function only - hyperclay.savePage() |
+| save-core | 6.5KB | Basic save function only - hyperclay.savePage() |
 | save-system | 7.1KB | Manual save: keyboard shortcut (CMD+S), save button, change tracking |
 | save-toast | 0.9KB | Toast notifications for save events |
 
@@ -81,8 +81,8 @@ import 'hyperclayjs/presets/standard.js';
 
 | Module | Size | Description |
 |--------|------|-------------|
-| dialogs | 7.8KB | ask(), consent(), tell(), snippet() dialog functions |
-| the-modal | 21.1KB | Full modal window creation system - window.theModal |
+| dialogs | 7.7KB | ask(), consent(), tell(), snippet() dialog functions |
+| the-modal | 21.8KB | Full modal window creation system - window.theModal |
 | toast | 7.7KB | Success/error message notifications, toast(msg, msgType) |
 
 ### Utilities (Core utilities (often auto-included))
@@ -127,17 +127,17 @@ import 'hyperclayjs/presets/standard.js';
 
 ## Presets
 
-### Minimal (~29.9KB)
+### Minimal (~30.1KB)
 Essential features for basic editing
 
 **Modules:** `save-core`, `save-system`, `edit-mode-helpers`, `toast`, `save-toast`, `export-to-window`
 
-### Standard (~48.6KB)
+### Standard (~48.8KB)
 Standard feature set for most use cases
 
 **Modules:** `save-core`, `save-system`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `save-toast`, `export-to-window`
 
-### Everything (~155KB)
+### Everything (~155.8KB)
 All available features
 
 Includes all available modules across all categories.

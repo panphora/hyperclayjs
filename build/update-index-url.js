@@ -20,7 +20,7 @@ function updateIndexUrl() {
   const version = packageJson.version;
 
   // Read the HTML file
-  const htmlPath = path.join(ROOT_DIR, 'index.html');
+  const htmlPath = path.join(ROOT_DIR, 'website', 'index.html');
   let html = fs.readFileSync(htmlPath, 'utf-8');
 
   // Update the base URL in the generateURL function

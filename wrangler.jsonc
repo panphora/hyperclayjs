@@ -1,7 +1,11 @@
 {
   "name": "hyperclayjs",
   "compatibility_date": "2025-12-10",
+  "routes": [
+    { "pattern": "hyperclayjs.com/*", "zone_name": "hyperclayjs.com" },
+    { "pattern": "www.hyperclayjs.com/*", "zone_name": "hyperclayjs.com" }
+  ],
   "assets": {
-    "directory": "./"
+    "directory": "./website"
   }
 }

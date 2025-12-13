@@ -249,7 +249,7 @@
   </script>
   <script type="module">
     // Use await import to ensure modules finish loading before running tests
-    await import('./hyperclay.js?preset=everything');
+    await import('./dist/hyperclay.js?preset=everything');
 
     const features = Object.keys(window.hyperclayModules || {});
     console.log('HyperclayJS loaded:', features);

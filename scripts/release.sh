@@ -317,12 +317,27 @@ echo "Step 6: Commit and Tag"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
+# Generate commit message with Claude
+info "Generating commit message with Claude..."
+COMMIT_MSG=$(echo "$CHANGELOG_ENTRIES" | npx @anthropic-ai/claude-code -p "Based on these changelog entries, generate a single-line commit message (max 72 chars) for a release. Start with 'chore: release v$NEW_VERSION - ' followed by a brief summary of the main changes. Output only the commit message, nothing else.")
+
+echo ""
+echo "Generated commit message:"
+echo "  $COMMIT_MSG"
+echo ""
+
+read -p "Accept this commit message? [Y/n]: " accept_commit_msg
+if [[ $accept_commit_msg =~ ^[Nn]$ ]]; then
+    echo ""
+    read -p "Enter custom commit message: " COMMIT_MSG
+fi
+
 # Stage changes
 git add package.json CHANGELOG.md module-dependency-graph.json hyperclay.js README.md build/load-jsdelivr.html
 
 # Commit
 git commit -m "$(cat <<EOF
-chore: release v$NEW_VERSION
+$COMMIT_MSG
 
 $CHANGELOG_ENTRIES
 EOF
