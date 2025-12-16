@@ -1,6 +1,6 @@
 # uploadFileBasic
 
-Upload a file with custom progress, completion, and error callbacks. A lower-level alternative to `uploadFile` without automatic toasts.
+Upload a file with custom progress, completion, and error callbacks. A lower-level alternative to `uploadFile` without progress toasts (HTTP errors still trigger toast notifications).
 
 ## Signature
 
@@ -21,6 +21,10 @@ uploadFileBasic(eventOrFile, options)
 ## Returns
 
 `Promise<object>` - Resolves with server response, rejects on error
+
+## Limits
+
+- Maximum file size: **10 MB**. Larger files are rejected with an error.
 
 ## Example
 

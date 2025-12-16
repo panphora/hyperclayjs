@@ -31,6 +31,14 @@ createFile(fileName, fileBody)
 
 `Promise<object>` - Resolves with server response containing URLs
 
+## Validation
+
+Filenames are validated before upload:
+- Must be non-empty and ≤ 255 characters
+- Cannot contain: `< > : " / \ | ? *` or control characters
+
+Invalid filenames reject the promise with an error (and show a toast for form submissions).
+
 ## Example
 
 ```js

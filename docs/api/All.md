@@ -16,7 +16,7 @@ All(elements)
 | Name | Type | Default | Description |
 |------|------|---------|-------------|
 | selector | string | — | CSS selector to match elements |
-| context | string\|Element | document | Limit search to within this context |
+| context | string \| Element \| Element[] \| Document | — | Optional context to limit search scope |
 | element | Element | — | Wrap a single DOM element |
 | elements | Element[] | — | Wrap an array of DOM elements |
 

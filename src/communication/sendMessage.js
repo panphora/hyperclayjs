@@ -5,17 +5,11 @@ import toast from "../ui/toast.js";
 function sendMessage(eventOrObj, successMessage = "Successfully sent", callback) {
   let form;
   let data;
-  
+
   if (eventOrObj instanceof Event) {
     eventOrObj.preventDefault();
     form = eventOrObj.target.closest('form');
-
-    if (!form) {
-      toast('No form found for this element', 'error');
-      return Promise.reject('No form found');
-    }
-
-    data = getDataFromForm(form);
+    data = form ? getDataFromForm(form) : {};
   } else {
     data = eventOrObj;
     if (this?.closest) {

@@ -726,6 +726,8 @@ const themodal = (() => {
 
       this.isShowing = true;
 
+      onOpen.forEach(cb => cb());
+
       if (!disableFocus) {
         let firstInput = modalOverlayElem.querySelector(".micromodal__content :is(input,textarea,button):not(.micromodal__hide), .micromodal__buttons :is(input,textarea,button):not(.micromodal__hide)");
         firstInput?.focus();

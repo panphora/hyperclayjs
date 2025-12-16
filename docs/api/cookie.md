@@ -11,23 +11,10 @@ cookie.remove(name)
 
 ## Methods
 
-### cookie.get(name)
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| name | string | Name of the cookie to retrieve |
-
-**Returns:** `any` - Parsed JSON value, decoded string, or `null` if not found
-
-### cookie.remove(name)
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| name | string | Name of the cookie to remove |
-
-**Returns:** `void`
-
-Removes the cookie from current path, current domain, and apex domain.
+| Method | Description |
+|--------|-------------|
+| `get(name)` | Get cookie value. Returns parsed JSON if valid, otherwise decoded string, or `null` if not found. |
+| `remove(name)` | Remove cookie from current path, host domain, and apex domain. |
 
 ## Example
 

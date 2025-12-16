@@ -91,7 +91,11 @@ function extractParams(content) {
 
   // Skip header and separator rows
   for (let i = 2; i < rows.length; i++) {
-    const cells = rows[i].split('|').map(c => c.trim()).filter(c => c);
+    const cells = rows[i]
+      .replace(/\\\|/g, '\x00')  // Protect escaped pipes
+      .split('|')
+      .map(c => c.trim().replace(/\x00/g, '|'))  // Restore pipes
+      .filter(c => c);
     if (cells.length >= 4) {
       params.push({
         name: cells[0],
@@ -114,7 +118,11 @@ function extractMethods(content) {
 
   // Skip header and separator rows
   for (let i = 2; i < rows.length; i++) {
-    const cells = rows[i].split('|').map(c => c.trim()).filter(c => c);
+    const cells = rows[i]
+      .replace(/\\\|/g, '\x00')  // Protect escaped pipes
+      .split('|')
+      .map(c => c.trim().replace(/\x00/g, '|'))  // Restore pipes
+      .filter(c => c);
     if (cells.length >= 2) {
       methods.push({
         name: cells[0].replace(/`/g, ''),
@@ -169,7 +177,7 @@ function generateStyles() {
   return `<style>
     @font-face {
       font-family: 'Berkeley Mono';
-      src: url('./BerkeleyMonoVariable-Regular.woff2') format('woff2');
+      src: url('./assets/BerkeleyMonoVariable-Regular.woff2') format('woff2');
       font-weight: normal;
       font-style: normal;
     }

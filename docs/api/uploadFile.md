@@ -20,6 +20,10 @@ uploadFile(eventOrFile, callback, extraData)
 
 `Promise<object>` - Resolves with server response containing URLs
 
+## Limits
+
+- Maximum file size: **10 MB**. Larger files are rejected with an error toast.
+
 ## Example
 
 ```js

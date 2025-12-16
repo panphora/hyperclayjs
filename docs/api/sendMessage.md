@@ -12,7 +12,7 @@ sendMessage(eventOrObj, successMessage, callback)
 
 | Name | Type | Default | Description |
 |------|------|---------|-------------|
-| eventOrObj | Event\|object | — | Form submit event or data object to send |
+| eventOrObj | Event\|object | — | Form submit event, click event, or data object to send |
 | successMessage | string | `'Successfully sent'` | Toast message on success |
 | callback | function | — | Called with response data on success |
 
@@ -28,16 +28,16 @@ document.querySelector('form').onsubmit = (e) => {
   sendMessage(e, 'Message sent!');
 };
 
-// Send custom data
+// Event outside a form (sends behavior data only)
+document.querySelector('#contact-btn').onclick = (e) => {
+  sendMessage(e, 'Contact request sent!');
+};
+
+// Send custom data object
 sendMessage({
   name: 'John',
   email: 'john@example.com'
 }, 'Contact form submitted');
-
-// With callback
-sendMessage(event, 'Sent!', (response) => {
-  console.log('Server responded:', response);
-});
 
 // With async/await
 try {
