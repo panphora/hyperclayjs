@@ -101,9 +101,9 @@ export function savePage(callback = () => {}) {
     return;
   }
 
-  // Add timeout - abort if server doesn't respond within 5 seconds
+  // Add timeout - abort if server doesn't respond within 12 seconds
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
+  const timeoutId = setTimeout(() => controller.abort('Save timeout'), 12000);
 
   fetch(saveEndpoint, {
     method: 'POST',
