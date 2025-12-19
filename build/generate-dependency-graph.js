@@ -60,8 +60,14 @@ const MODULE_DEFINITIONS = {
   'core/autosave.js': {
     name: 'autosave',
     moduleId: 'autosave',
-    description: 'Auto-save on DOM changes, unsaved changes warning'
+    description: 'Auto-save on DOM changes'
     // No exports - auto-inits on load, savePageThrottled is in save-system
+  },
+  'core/unsavedWarning.js': {
+    name: 'unsaved-warning',
+    moduleId: 'unsaved-warning',
+    description: 'Warn before leaving page with unsaved changes'
+    // No exports - auto-inits on load
   },
   'core/saveToast.js': {
     name: 'save-toast',
@@ -145,7 +151,7 @@ const MODULE_DEFINITIONS = {
       ask: ['window', 'hyperclay'],
       consent: ['window', 'hyperclay'],
       tell: ['window', 'hyperclay'],
-      snippet: ['hyperclay']
+      snippet: ['window', 'hyperclay']
     }
   },
   'ui/toast.js': {
@@ -211,6 +217,14 @@ const MODULE_DEFINITIONS = {
     description: 'Function debouncing',
     exports: {
       debounce: ['hyperclay']
+    }
+  },
+  'utilities/cacheBust.js': {
+    name: 'cache-bust',
+    moduleId: 'cache-bust',
+    description: 'Cache-bust href/src attributes',
+    exports: {
+      cacheBust: ['window', 'hyperclay']
     }
   },
   'dom-utilities/onDomReady.js': {
@@ -311,6 +325,15 @@ const MODULE_DEFINITIONS = {
       uploadFile: ['hyperclay'],
       createFile: ['hyperclay'],
       uploadFileBasic: ['hyperclay']
+    }
+  },
+  'communication/live-sync.js': {
+    name: 'live-sync',
+    moduleId: 'live-sync',
+    description: 'Real-time DOM sync across browsers and with file system',
+    dependencies: ['idiomorph'],
+    exports: {
+      liveSync: ['hyperclay']
     }
   },
   'core/exportToWindow.js': {

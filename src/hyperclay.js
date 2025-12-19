@@ -28,6 +28,7 @@ const MODULE_PATHS = {
   "save-core": "./core/savePageCore.js",
   "save-system": "./core/savePage.js",
   "autosave": "./core/autosave.js",
+  "unsaved-warning": "./core/unsavedWarning.js",
   "save-toast": "./core/saveToast.js",
   "edit-mode-helpers": "./core/adminSystem.js",
   "persist": "./core/enablePersistentFormInputValues.js",
@@ -48,6 +49,7 @@ const MODULE_PATHS = {
   "cookie": "./utilities/cookie.js",
   "throttle": "./utilities/throttle.js",
   "debounce": "./utilities/debounce.js",
+  "cache-bust": "./utilities/cacheBust.js",
   "dom-ready": "./dom-utilities/onDomReady.js",
   "window-load": "./dom-utilities/onLoad.js",
   "all-js": "./dom-utilities/All.js",
@@ -81,6 +83,7 @@ const PRESETS = {
     "modules": [
       "save-core",
       "save-system",
+      "unsaved-warning",
       "edit-mode-helpers",
       "persist",
       "option-visibility",
@@ -98,6 +101,7 @@ const PRESETS = {
       "save-core",
       "save-system",
       "autosave",
+      "unsaved-warning",
       "save-toast",
       "edit-mode-helpers",
       "persist",
@@ -118,6 +122,7 @@ const PRESETS = {
       "cookie",
       "throttle",
       "debounce",
+      "cache-bust",
       "dom-ready",
       "window-load",
       "all-js",
@@ -220,6 +225,7 @@ export const nearest = window.hyperclayModules['nearest']?.nearest ?? window.hyp
 export const cookie = window.hyperclayModules['cookie']?.cookie ?? window.hyperclayModules['cookie']?.default;
 export const throttle = window.hyperclayModules['throttle']?.throttle ?? window.hyperclayModules['throttle']?.default;
 export const debounce = window.hyperclayModules['debounce']?.debounce ?? window.hyperclayModules['debounce']?.default;
+export const cacheBust = window.hyperclayModules['cache-bust']?.cacheBust ?? window.hyperclayModules['cache-bust']?.default;
 export const onDomReady = window.hyperclayModules['dom-ready']?.onDomReady ?? window.hyperclayModules['dom-ready']?.default;
 export const onLoad = window.hyperclayModules['window-load']?.onLoad ?? window.hyperclayModules['window-load']?.default;
 export const All = window.hyperclayModules['all-js']?.All ?? window.hyperclayModules['all-js']?.default;

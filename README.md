@@ -57,7 +57,7 @@ import 'hyperclayjs/presets/standard.js';
 
 | Module | Size | Description |
 |--------|------|-------------|
-| autosave | 1.1KB | Auto-save on DOM changes, unsaved changes warning |
+| autosave | 1.1KB | Auto-save on DOM changes |
 | edit-mode | 1.8KB | Toggle edit mode on hyperclay on/off |
 | edit-mode-helpers | 7.5KB | Admin-only functionality: [edit-mode-input], [edit-mode-resource], [edit-mode-onclick] |
 | option-visibility | 5.9KB | Dynamic show/hide based on ancestor state with option:attribute="value" |
@@ -65,6 +65,7 @@ import 'hyperclayjs/presets/standard.js';
 | save-core | 6.5KB | Basic save function only - hyperclay.savePage() |
 | save-system | 7.1KB | Manual save: keyboard shortcut (CMD+S), save button, change tracking |
 | save-toast | 0.9KB | Toast notifications for save events |
+| unsaved-warning | 0.5KB | Warn before leaving page with unsaved changes |
 
 ### Custom Attributes (HTML enhancements)
 
@@ -91,6 +92,7 @@ import 'hyperclayjs/presets/standard.js';
 |--------|------|-------------|
 | cookie | 1.4KB | Cookie management (often auto-included) |
 | debounce | 0.4KB | Function debouncing |
+| cache-bust | 0.3KB | Cache-bust href/src attributes |
 | mutation | 13KB | DOM mutation observation (often auto-included) |
 | nearest | 3.4KB | Find nearest elements (often auto-included) |
 | throttle | 0.8KB | Function throttling |
@@ -117,7 +119,7 @@ import 'hyperclayjs/presets/standard.js';
 | Module | Size | Description |
 |--------|------|-------------|
 | file-upload | 10.7KB | File upload with progress |
-| send-message | 1.4KB | Message sending utility |
+| send-message | 1.3KB | Message sending utility |
 
 ### Vendor Libraries (Third-party libraries)
 
@@ -132,12 +134,12 @@ Essential features for basic editing
 
 **Modules:** `save-core`, `save-system`, `edit-mode-helpers`, `toast`, `save-toast`, `export-to-window`
 
-### Standard (~48.8KB)
+### Standard (~49.3KB)
 Standard feature set for most use cases
 
-**Modules:** `save-core`, `save-system`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `save-toast`, `export-to-window`
+**Modules:** `save-core`, `save-system`, `unsaved-warning`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `save-toast`, `export-to-window`
 
-### Everything (~155.8KB)
+### Everything (~156.2KB)
 All available features
 
 Includes all available modules across all categories.

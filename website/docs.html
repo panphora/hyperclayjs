@@ -398,7 +398,7 @@
       <h3>UI Components</h3><a href="#fn-toast">toast</a><a href="#fn-ask">ask</a><a href="#fn-consent">consent</a><a href="#fn-tell">tell</a><a href="#fn-snippet">snippet</a><a href="#fn-themodal">themodal</a></div><div class="sidebar-section">
       <h3>DOM Utilities</h3><a href="#fn-All">All</a><a href="#fn-insertStyleTag">insertStyleTag</a><a href="#fn-getDataFromForm">getDataFromForm</a><a href="#fn-onDomReady">onDomReady</a><a href="#fn-onLoad">onLoad</a></div><div class="sidebar-section">
       <h3>String Utilities</h3><a href="#fn-slugify">slugify</a><a href="#fn-copyToClipboard">copyToClipboard</a><a href="#fn-query">query</a></div><div class="sidebar-section">
-      <h3>Utilities</h3><a href="#fn-throttle">throttle</a><a href="#fn-debounce">debounce</a><a href="#fn-cookie">cookie</a><a href="#fn-Mutation">Mutation</a><a href="#fn-nearest">nearest</a></div><div class="sidebar-section">
+      <h3>Utilities</h3><a href="#fn-throttle">throttle</a><a href="#fn-debounce">debounce</a><a href="#fn-cacheBust">cacheBust</a><a href="#fn-cookie">cookie</a><a href="#fn-Mutation">Mutation</a><a href="#fn-nearest">nearest</a></div><div class="sidebar-section">
       <h3>Communication</h3><a href="#fn-sendMessage">sendMessage</a><a href="#fn-uploadFile">uploadFile</a><a href="#fn-createFile">createFile</a><a href="#fn-uploadFileBasic">uploadFileBasic</a></div>
     </div>
     <main class="content">
@@ -1071,6 +1071,37 @@ window.addEventListener('resize', handleResize);
 const autoSave = debounce(() =&gt; {
   saveDraft();
 }, 1000);</pre></div>
+  </div><div class="function-card" id="fn-cacheBust">
+    <h3>cacheBust</h3>
+    <p class="function-description">Cache-bust an element's href or src attribute by adding or updating a version query parameter. Useful for reloading stylesheets or scripts after dynamic changes.</p>
+    <div class="exports">Available as: <code>hyperclay.cacheBust</code>, <code>window.cacheBust</code></div>
+    <div class="signature"><code>cacheBust(element)</code></div>
+    <h4>Parameters</h4>
+    <table class="params-table">
+      <tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>element</code></td>
+          <td><code>HTMLElement</code></td>
+          <td>—</td>
+          <td>Element with href or src attribute to cache-bust</td>
+        </tr>
+      
+    </table>
+    
+    <h4>Returns</h4><p><code class="returns-type">void</code></p>
+    <h4>Example</h4><div class="example"><pre>// Cache-bust a stylesheet link
+const link = document.querySelector('link[rel=&quot;stylesheet&quot;]');
+cacheBust(link);
+// href=&quot;/styles.css&quot; becomes &quot;/styles.css?v=1702847291234&quot;
+
+// Cache-bust an image
+const img = document.querySelector('img');
+cacheBust(img);
+// src=&quot;/photo.jpg?v=123&quot; becomes &quot;/photo.jpg?v=1702847291234&quot;
+
+// Use with onaftersave to reload Tailwind CSS after save
+// &lt;link href=&quot;/tailwindcss/mysite.css&quot; onaftersave=&quot;cacheBust(this)&quot;&gt;</pre></div>
   </div><div class="function-card" id="fn-cookie">
     <h3>cookie</h3>
     <p class="function-description">Utility object for reading and removing browser cookies.</p>

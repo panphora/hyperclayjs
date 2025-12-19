@@ -42,6 +42,10 @@
       "core/savePage.js",
       "utilities/mutation.js"
     ],
+    "core/unsavedWarning.js": [
+      "core/isAdminOfCurrentResource.js",
+      "core/savePage.js"
+    ],
     "core/editmode.js": [
       "core/isAdminOfCurrentResource.js"
     ],
@@ -139,6 +143,7 @@
     "ui/toast.js": [],
     "utilities/cookie.js": [],
     "utilities/debounce.js": [],
+    "utilities/cacheBust.js": [],
     "utilities/loadVendorScript.js": [],
     "utilities/mutation.js": [],
     "utilities/nearest.js": [],
@@ -192,7 +197,17 @@
       "files": [
         "core/autosave.js"
       ],
-      "description": "Auto-save on DOM changes, unsaved changes warning",
+      "description": "Auto-save on DOM changes",
+      "exports": {}
+    },
+    "unsaved-warning": {
+      "name": "unsaved-warning",
+      "category": "core",
+      "size": 0.5,
+      "files": [
+        "core/unsavedWarning.js"
+      ],
+      "description": "Warn before leaving page with unsaved changes",
       "exports": {}
     },
     "save-toast": {
@@ -349,6 +364,7 @@
           "hyperclay"
         ],
         "snippet": [
+          "window",
           "hyperclay"
         ]
       }
@@ -468,6 +484,21 @@
       "exports": {
         "debounce": [
           "hyperclay"
+        ]
+      }
+    },
+    "cache-bust": {
+      "name": "cache-bust",
+      "category": "utilities",
+      "size": 0.3,
+      "files": [
+        "utilities/cacheBust.js"
+      ],
+      "description": "Cache-bust href/src attributes",
+      "exports": {
+        "cacheBust": [
+          "hyperclay",
+          "window"
         ]
       }
     },
@@ -665,6 +696,7 @@
     "save-core": "./core/savePageCore.js",
     "save-system": "./core/savePage.js",
     "autosave": "./core/autosave.js",
+    "unsaved-warning": "./core/unsavedWarning.js",
     "save-toast": "./core/saveToast.js",
     "edit-mode-helpers": "./core/adminSystem.js",
     "persist": "./core/enablePersistentFormInputValues.js",
@@ -685,6 +717,7 @@
     "cookie": "./utilities/cookie.js",
     "throttle": "./utilities/throttle.js",
     "debounce": "./utilities/debounce.js",
+    "cache-bust": "./utilities/cacheBust.js",
     "dom-ready": "./dom-utilities/onDomReady.js",
     "window-load": "./dom-utilities/onLoad.js",
     "all-js": "./dom-utilities/All.js",
@@ -707,6 +740,7 @@
         "save-core",
         "save-system",
         "autosave",
+        "unsaved-warning",
         "save-toast",
         "edit-mode-helpers",
         "persist",
@@ -800,6 +834,7 @@
       "modules": [
         "save-core",
         "save-system",
+        "unsaved-warning",
         "edit-mode-helpers",
         "persist",
         "option-visibility",
@@ -817,6 +852,7 @@
         "save-core",
         "save-system",
         "autosave",
+        "unsaved-warning",
         "save-toast",
         "edit-mode-helpers",
         "persist",
@@ -837,6 +873,7 @@
         "cookie",
         "throttle",
         "debounce",
+        "cache-bust",
         "dom-ready",
         "window-load",
         "all-js",

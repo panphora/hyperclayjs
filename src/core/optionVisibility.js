@@ -136,7 +136,10 @@ const optionVisibility = {
         return;
       }
 
-      // Create or update
+      // Create or update (reuse existing element if one was saved into the document)
+      if (!this._styleElement) {
+        this._styleElement = document.querySelector(`style.${this.STYLE_CLASS}`);
+      }
       if (!this._styleElement) {
         this._styleElement = document.createElement('style');
         this._styleElement.className = this.STYLE_CLASS;

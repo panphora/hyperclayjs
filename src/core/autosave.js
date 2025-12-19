@@ -2,18 +2,17 @@
  * Auto-save system for Hyperclay
  *
  * Automatically saves page on DOM changes with throttling.
- * Warns before leaving page with unsaved changes.
  *
  * Requires the 'save-system' module to be loaded first.
- * For toast notifications, also load the 'save-toast' module.
+ *
+ * Recommended companion modules:
+ *   - 'unsaved-warning' - Warn before leaving with unsaved changes (required for beforeunload)
+ *   - 'save-toast' - Show toast notifications on save events
  */
 
 import Mutation from "../utilities/mutation.js";
-import { isEditMode, isOwner } from "./isAdminOfCurrentResource.js";
-import {
-  savePageThrottled,
-  getUnsavedChanges
-} from "./savePage.js";
+import { isEditMode } from "./isAdminOfCurrentResource.js";
+import { savePageThrottled } from "./savePage.js";
 
 /**
  * Initialize auto-save on DOM changes
@@ -27,16 +26,6 @@ function initSavePageOnChange() {
     savePageThrottled();
   });
 }
-
-/**
- * Warn before leaving page with unsaved changes
- */
-window.addEventListener('beforeunload', (event) => {
-  if (getUnsavedChanges() && isOwner) {
-    event.preventDefault();
-    event.returnValue = '';
-  }
-});
 
 function init() {
   if (!isEditMode) return;

@@ -1,16 +1,16 @@
 /**
  * [onaftersave] Custom Attribute
  *
- * Runs inline JavaScript when save status changes.
- * Pairs with the existing [onbeforesave] attribute.
+ * Runs inline JavaScript after a successful save.
+ * Only fires on 'hyperclay:save-saved' events (not on error/offline).
  *
  * Usage:
  *   <span onaftersave="this.innerText = event.detail.msg"></span>
- *   <div onaftersave="console.log('Status:', event.detail.status)"></div>
+ *   <link href="styles.css" onaftersave="cacheBust(this)">
  *
  * The event.detail object contains:
- *   - status: 'saving' | 'saved' | 'offline' | 'error'
- *   - msg: string (e.g., 'Saved' or error message)
+ *   - status: 'saved'
+ *   - msg: string (e.g., 'Saved')
  *   - timestamp: number (Date.now())
  */
 
@@ -30,10 +30,7 @@ function broadcast(e) {
 }
 
 function init() {
-  document.addEventListener('hyperclay:save-saving', broadcast);
   document.addEventListener('hyperclay:save-saved', broadcast);
-  document.addEventListener('hyperclay:save-offline', broadcast);
-  document.addEventListener('hyperclay:save-error', broadcast);
 }
 
 init();

@@ -19,7 +19,7 @@ const FUNCTION_ORDER = [
   // String
   'slugify', 'copyToClipboard', 'query',
   // Utilities
-  'throttle', 'debounce', 'cookie', 'Mutation', 'nearest',
+  'throttle', 'debounce', 'cacheBust', 'cookie', 'Mutation', 'nearest',
   // Communication
   'sendMessage', 'uploadFile', 'createFile', 'uploadFileBasic'
 ];
@@ -40,7 +40,7 @@ const CATEGORIES = {
   },
   utilities: {
     name: 'Utilities',
-    functions: ['throttle', 'debounce', 'cookie', 'Mutation', 'nearest']
+    functions: ['throttle', 'debounce', 'cacheBust', 'cookie', 'Mutation', 'nearest']
   },
   communication: {
     name: 'Communication',

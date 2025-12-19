@@ -565,6 +565,18 @@
                 </div>
             </div>
 
+            <!-- cacheBust -->
+            <div class="demo-card" id="cache-bust">
+                <h3>cacheBust()</h3>
+                <p class="desc">Cache-bust href/src attributes</p>
+                <pre><code>&lt;link href="styles.css"
+  onaftersave="cacheBust(this)"&gt;</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <button onclick="testCacheBust()">Cache-bust demo link</button>
+                    <span class="output" id="cache-bust-log">Click to see URL update</span>
+                </div>
+            </div>
+
             <!-- ========== SECTION 2: EDIT MODE (CORE) ========== -->
             <div class="category-label">Edit Mode (core)</div>
             <p class="desc" style="flex: 1 1 100%; margin-top: 0.5rem; font-size: 0.85rem;">Edit mode is a state defined by an <code>editmode</code> attribute on the <code>&lt;html&gt;</code> element. When true, admin controls are usable/visible; when false, they are disabled/hidden.</p>
@@ -1207,6 +1219,16 @@ themodal.open();</code></pre>
             document.dispatchEvent(new CustomEvent(eventName, { detail: { msg: `Demo ${type}`, status: type } }));
             // Also show toast since save-toast module is excluded
             toast(type === 'saved' ? 'Page saved' : 'Save failed', type === 'saved' ? 'success' : 'error');
+        };
+
+        // cacheBust demo
+        window.testCacheBust = () => {
+            // Create a fake link element for demo purposes
+            const fakeLink = { href: 'https://example.com/styles.css' };
+            const before = fakeLink.href;
+            cacheBust(fakeLink);
+            const after = fakeLink.href;
+            document.getElementById('cache-bust-log').textContent = `${before} → ${after.split('?')[0]}?v=...`;
         };
 
         // Save system - update savestatus on edit
