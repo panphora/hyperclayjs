@@ -15,7 +15,7 @@ const FUNCTION_ORDER = [
   // UI
   'toast', 'ask', 'consent', 'tell', 'snippet', 'themodal',
   // DOM
-  'All', 'insertStyleTag', 'getDataFromForm', 'onDomReady', 'onLoad',
+  'All', 'insertStyles', 'getDataFromForm', 'onDomReady', 'onLoad',
   // String
   'slugify', 'copyToClipboard', 'query',
   // Utilities
@@ -32,7 +32,7 @@ const CATEGORIES = {
   },
   dom: {
     name: 'DOM Utilities',
-    functions: ['All', 'insertStyleTag', 'getDataFromForm', 'onDomReady', 'onLoad']
+    functions: ['All', 'insertStyles', 'getDataFromForm', 'onDomReady', 'onLoad']
   },
   string: {
     name: 'String Utilities',

@@ -31,15 +31,14 @@
  */
 
 import Mutation from "../utilities/mutation.js";
+import insertStyles from "../dom-utilities/insertStyleTag.js";
+
+const STYLE_NAME = 'option-visibility';
 
 const optionVisibility = {
   debug: false,
   _started: false,
-  _styleElement: null,
   _unsubscribe: null,
-
-  LAYER_NAME: 'option-visibility',
-  STYLE_CLASS: 'option-visibility-layer-styles',
 
   log(...args) {
     if (this.debug) console.log('[OptionVisibility:Layer]', ...args);
@@ -104,7 +103,7 @@ const optionVisibility = {
       return `[option\\:${safeName}="${safeValue}"]{display:none!important}[${safeName}="${safeValue}"] [option\\:${safeName}="${safeValue}"]{display:revert-layer!important}`;
     }).join('');
 
-    return `@layer ${this.LAYER_NAME}{${rules}}`;
+    return `@layer ${STYLE_NAME}{${rules}}`;
   },
 
   /**
@@ -119,36 +118,8 @@ const optionVisibility = {
     try {
       const attributes = this.findOptionAttributes();
       const css = this.generateCSS(attributes);
-
-      // Remove style element if no attributes
-      if (!css) {
-        if (this._styleElement) {
-          this._styleElement.remove();
-          this._styleElement = null;
-          this.log('Removed empty style element');
-        }
-        return;
-      }
-
-      // Skip if unchanged
-      if (this._styleElement?.textContent === css) {
-        this.log('Styles unchanged');
-        return;
-      }
-
-      // Create or update (reuse existing element if one was saved into the document)
-      if (!this._styleElement) {
-        this._styleElement = document.querySelector(`style.${this.STYLE_CLASS}`);
-      }
-      if (!this._styleElement) {
-        this._styleElement = document.createElement('style');
-        this._styleElement.className = this.STYLE_CLASS;
-        document.head.appendChild(this._styleElement);
-      }
-
-      this._styleElement.textContent = css;
+      insertStyles(STYLE_NAME, css);
       this.log(`Generated ${attributes.length} rules`);
-
     } catch (error) {
       console.error('[OptionVisibility:Layer] Error generating rules:', error);
     }
@@ -193,10 +164,8 @@ const optionVisibility = {
       this._unsubscribe = null;
     }
 
-    if (this._styleElement) {
-      this._styleElement.remove();
-      this._styleElement = null;
-    }
+    const style = document.querySelector(`style[data-name="${STYLE_NAME}"]`);
+    if (style) style.remove();
 
     this.log('Stopped');
   }
