@@ -1,57 +1,52 @@
-import { beforeSave } from './savePage.js';
+import { onSnapshot } from './snapshot.js';
 
 // <input type="checkbox" persist>
 export default function enablePersistentFormInputValues(filterBySelector = "[persist]") {
-  const selector = `input${filterBySelector}:not([type="password"]):not([type="hidden"]):not([type="file"]), textarea${filterBySelector}, select${filterBySelector}`;
-  
-  document.addEventListener('input', (event) => {
-    const elem = event.target;
-    if (elem.matches(selector) && !(elem.type === 'checkbox' || elem.type === 'radio')) {
-      if (elem.tagName.toLowerCase() === 'textarea') {
-        // Store in value attribute instead of textContent to preserve cursor position
-        elem.setAttribute('value', elem.value);
-      } else {
-        elem.setAttribute('value', elem.value);
-      }
-    }
-  });
+  const inputSelector = `input${filterBySelector}:not([type="password"]):not([type="hidden"]):not([type="file"])`;
+  const textareaSelector = `textarea${filterBySelector}`;
+  const selectSelector = `select${filterBySelector}`;
 
-  document.addEventListener('change', (event) => {
-    const elem = event.target;
-    if (elem.matches(selector)) {
-      // Handle checkboxes and radios
-      if (elem.type === 'checkbox' || elem.type === 'radio') {
-        if (elem.checked) {
-          elem.setAttribute('checked', '');
+  // Use onSnapshot so form values are synced for both save AND live-sync
+  onSnapshot((doc) => {
+    // Sync text inputs
+    const liveInputs = document.querySelectorAll(inputSelector);
+    const clonedInputs = doc.querySelectorAll(inputSelector);
+    clonedInputs.forEach((cloned, i) => {
+      const live = liveInputs[i];
+      if (live.type === 'checkbox' || live.type === 'radio') {
+        if (live.checked) {
+          cloned.setAttribute('checked', '');
         } else {
-          elem.removeAttribute('checked');
+          cloned.removeAttribute('checked');
         }
+      } else {
+        cloned.setAttribute('value', live.value);
       }
-      // Handle select elements
-      else if (elem.tagName.toLowerCase() === 'select') {
-        // Remove selected from all options
-        const options = elem.querySelectorAll('option');
-        options.forEach(option => option.removeAttribute('selected'));
+    });
 
-        // Add selected to currently selected option(s)
-        if (elem.multiple) {
-          const selectedOptions = elem.selectedOptions;
-          Array.from(selectedOptions).forEach(option => {
-            option.setAttribute('selected', '');
-          });
-        } else if (elem.selectedIndex >= 0) {
-          options[elem.selectedIndex].setAttribute('selected', '');
-        }
+    // Sync textareas
+    const liveTextareas = document.querySelectorAll(textareaSelector);
+    const clonedTextareas = doc.querySelectorAll(textareaSelector);
+    clonedTextareas.forEach((cloned, i) => {
+      cloned.textContent = liveTextareas[i].value;
+    });
+
+    // Sync selects
+    const liveSelects = document.querySelectorAll(selectSelector);
+    const clonedSelects = doc.querySelectorAll(selectSelector);
+    clonedSelects.forEach((cloned, i) => {
+      const live = liveSelects[i];
+      const clonedOptions = cloned.querySelectorAll('option');
+      clonedOptions.forEach(opt => opt.removeAttribute('selected'));
+
+      if (live.multiple) {
+        Array.from(live.selectedOptions).forEach(opt => {
+          const idx = Array.from(live.options).indexOf(opt);
+          if (clonedOptions[idx]) clonedOptions[idx].setAttribute('selected', '');
+        });
+      } else if (live.selectedIndex >= 0 && clonedOptions[live.selectedIndex]) {
+        clonedOptions[live.selectedIndex].setAttribute('selected', '');
       }
-    }
-  });
-
-  // Before save, transfer value attribute to textContent for textareas
-  beforeSave((doc) => {
-    const textareas = doc.querySelectorAll('textarea[value]');
-    textareas.forEach(textarea => {
-      textarea.textContent = textarea.getAttribute('value');
-      textarea.removeAttribute('value');
     });
   });
 }

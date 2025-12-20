@@ -1,64 +1,63 @@
 /**
- * Core save functionality for Hyperclay
+ * savePageCore.js — Network save functionality
  *
- * This is the minimal save system - just the basic save function you can call yourself.
- * No toast notifications, no auto-save, no keyboard shortcuts.
+ * This module handles sending page contents to the server.
+ * It uses snapshot.js for capturing the DOM state.
  *
- * Use this if you want full control over save behavior and notifications.
- * For the full save system with conveniences, use savePage.js instead.
+ * For full save system with state management, use savePage.js instead.
  */
 
 import cookie from "../utilities/cookie.js";
 import { isEditMode } from "./isAdminOfCurrentResource.js";
+import {
+  captureForSave,
+  isCodeMirrorPage,
+  getCodeMirrorContents,
+  beforeSave,
+  getPageContents,
+  onSnapshot,
+  onPrepareForSave
+} from "./snapshot.js";
 
-let beforeSaveCallbacks = [];
+// =============================================================================
+// STATE
+// =============================================================================
+
 let saveInProgress = false;
 const saveEndpoint = `/save/${cookie.get("currentResource")}`;
 
-/**
- * Register a callback to run before saving
- * Callbacks receive the cloned document element
- *
- * @param {Function} cb - Callback function(docElem)
- */
-export function beforeSave(cb) {
-  beforeSaveCallbacks.push(cb);
-}
+// =============================================================================
+// RE-EXPORTS FROM SNAPSHOT (for backwards compat)
+// =============================================================================
+
+export { beforeSave, getPageContents, onSnapshot, onPrepareForSave };
+
+// =============================================================================
+// INTERNAL: GET PAGE CONTENTS
+// =============================================================================
 
 /**
- * Get the current page contents as HTML
- * Handles CodeMirror pages, runs [onbeforesave] attributes, removes [save-ignore] elements
+ * Get the current page contents as HTML string for saving.
+ * Handles both normal pages and CodeMirror editor pages.
+ * Emits snapshot-ready event for live-sync (normal pages only).
  *
  * @returns {string} HTML string of current page
  */
-export function getPageContents() {
-  const isCodeMirrorPage = !!document.querySelector('.CodeMirror')?.CodeMirror;
-
-  if (!isCodeMirrorPage) {
-    let docElem = document.documentElement.cloneNode(true);
-
-    // Run onbeforesave callbacks
-    docElem.querySelectorAll('[onbeforesave]').forEach(el =>
-      new Function(el.getAttribute('onbeforesave')).call(el)
-    );
-
-    // Remove elements marked save-ignore
-    docElem.querySelectorAll('[save-ignore]').forEach(el =>
-      el.remove()
-    );
-
-    // Run registered beforeSave callbacks
-    beforeSaveCallbacks.forEach(cb => cb(docElem));
-
-    return "<!DOCTYPE html>" + docElem.outerHTML;
-  } else {
-    // For CodeMirror pages, get value from editor
-    return document.querySelector('.CodeMirror').CodeMirror.getValue();
+function getContentsForSave() {
+  if (isCodeMirrorPage()) {
+    // CodeMirror pages don't emit snapshot-ready - no live-sync for code editors
+    return getCodeMirrorContents();
   }
+  // Emit for live-sync when actually saving
+  return captureForSave({ emitForSync: true });
 }
 
+// =============================================================================
+// SAVE FUNCTIONS
+// =============================================================================
+
 /**
- * Save the current page contents to the server
+ * Save the current page contents to the server.
  *
  * @param {Function} callback - Called with {msg, msgType} on completion
  *   msgType will be 'success' or 'error'
@@ -82,10 +81,10 @@ export function savePage(callback = () => {}) {
 
   let currentContents;
   try {
-    currentContents = getPageContents();
+    currentContents = getContentsForSave();
   } catch (err) {
-    console.error('savePage: getPageContents failed', err);
-    callback({msg: err.message, msgType: "error"});
+    console.error('savePage: getContentsForSave failed', err);
+    callback({ msg: err.message, msgType: "error" });
     return;
   }
   saveInProgress = true;
@@ -95,7 +94,7 @@ export function savePage(callback = () => {}) {
     setTimeout(() => {
       saveInProgress = false;
       if (typeof callback === 'function') {
-        callback({msg: "Test mode: save skipped", msgType: "success"});
+        callback({ msg: "Test mode: save skipped", msgType: "success" });
       }
     }, 0);
     return;
@@ -111,44 +110,43 @@ export function savePage(callback = () => {}) {
     body: currentContents,
     signal: controller.signal
   })
-  .then(res => {
-    clearTimeout(timeoutId);
-    return res.json().then(data => {
-      if (!res.ok) {
-        throw new Error(data.msg || data.error || `HTTP ${res.status}: ${res.statusText}`);
+    .then(res => {
+      clearTimeout(timeoutId);
+      return res.json().then(data => {
+        if (!res.ok) {
+          throw new Error(data.msg || data.error || `HTTP ${res.status}: ${res.statusText}`);
+        }
+        return data;
+      });
+    })
+    .then(data => {
+      if (typeof callback === 'function') {
+        callback({ msg: data.msg, msgType: data.msgType || 'success' });
       }
-      return data;
+    })
+    .catch(err => {
+      clearTimeout(timeoutId);
+      console.error('Failed to save page:', err);
+
+      const msg = err.name === 'AbortError'
+        ? 'Server not responding'
+        : 'Save failed';
+
+      if (typeof callback === 'function') {
+        callback({ msg, msgType: "error" });
+      }
+    })
+    .finally(() => {
+      clearTimeout(timeoutId);
+      saveInProgress = false;
     });
-  })
-  .then(data => {
-    if (typeof callback === 'function') {
-      callback({msg: data.msg, msgType: data.msgType || 'success'});
-    }
-  })
-  .catch(err => {
-    clearTimeout(timeoutId);
-    console.error('Failed to save page:', err);
-
-    const msg = err.name === 'AbortError'
-      ? 'Server not responding'
-      : 'Save failed';
-
-    if (typeof callback === 'function') {
-      callback({msg, msgType: "error"});
-    }
-  })
-  .finally(() => {
-    clearTimeout(timeoutId);
-    saveInProgress = false;
-  });
 }
 
 /**
- * Save specific HTML content to the server
+ * Save specific HTML content to the server.
  *
  * @param {string} html - HTML string to save
  * @param {Function} callback - Called with (err, data) on completion
- *   err will be null on success, Error object on failure
  *
  * @example
  * saveHtml(myHtml, (err, data) => {
@@ -171,7 +169,7 @@ export function saveHtml(html, callback = () => {}) {
     setTimeout(() => {
       saveInProgress = false;
       if (typeof callback === 'function') {
-        callback(null, {msg: "Test mode: save skipped", msgType: "success"});
+        callback(null, { msg: "Test mode: save skipped", msgType: "success" });
       }
     }, 0);
     return;
@@ -182,32 +180,32 @@ export function saveHtml(html, callback = () => {}) {
     credentials: 'include',
     body: html
   })
-  .then(res => {
-    return res.json().then(data => {
-      if (!res.ok) {
-        throw new Error(data.msg || data.error || `HTTP ${res.status}: ${res.statusText}`);
+    .then(res => {
+      return res.json().then(data => {
+        if (!res.ok) {
+          throw new Error(data.msg || data.error || `HTTP ${res.status}: ${res.statusText}`);
+        }
+        return data;
+      });
+    })
+    .then(data => {
+      if (typeof callback === 'function') {
+        callback(null, data);
       }
-      return data;
+    })
+    .catch(err => {
+      console.error('Failed to save page:', err);
+      if (typeof callback === 'function') {
+        callback(err);
+      }
+    })
+    .finally(() => {
+      saveInProgress = false;
     });
-  })
-  .then(data => {
-    if (typeof callback === 'function') {
-      callback(null, data); // Success: no error
-    }
-  })
-  .catch(err => {
-    console.error('Failed to save page:', err);
-    if (typeof callback === 'function') {
-      callback(err); // Pass error
-    }
-  })
-  .finally(() => {
-    saveInProgress = false;
-  });
 }
 
 /**
- * Fetch HTML from a URL and save it to replace the current page
+ * Fetch HTML from a URL and save it to replace the current page.
  *
  * @param {string} url - URL to fetch HTML from
  * @param {Function} callback - Called with (err, data) on completion
@@ -243,7 +241,10 @@ export function replacePageWith(url, callback = () => {}) {
     });
 }
 
-// Auto-export to window unless suppressed by loader
+// =============================================================================
+// WINDOW EXPORTS
+// =============================================================================
+
 if (!window.__hyperclayNoAutoExport) {
   window.hyperclay = window.hyperclay || {};
   window.hyperclay.savePage = savePage;
