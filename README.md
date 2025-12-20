@@ -120,7 +120,7 @@ import 'hyperclayjs/presets/standard.js';
 | Module | Size | Description |
 |--------|------|-------------|
 | file-upload | 10.7KB | File upload with progress |
-| live-sync | 12KB | Real-time DOM sync across browsers and with file system |
+| live-sync | 12KB | Real-time DOM sync across browsers |
 | send-message | 1.3KB | Message sending utility |
 
 ### Vendor Libraries (Third-party libraries)

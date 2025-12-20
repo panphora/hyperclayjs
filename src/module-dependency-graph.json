@@ -728,7 +728,7 @@
       "files": [
         "communication/live-sync.js"
       ],
-      "description": "Real-time DOM sync across browsers and with file system",
+      "description": "Real-time DOM sync across browsers",
       "exports": {
         "liveSync": [
           "hyperclay"

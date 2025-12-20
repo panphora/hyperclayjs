@@ -345,7 +345,7 @@ const MODULE_DEFINITIONS = {
   'communication/live-sync.js': {
     name: 'live-sync',
     moduleId: 'live-sync',
-    description: 'Real-time DOM sync across browsers and with file system',
+    description: 'Real-time DOM sync across browsers',
     dependencies: ['idiomorph'],
     exports: {
       liveSync: ['hyperclay']
