@@ -703,12 +703,7 @@
 
         async function loadModuleData() {
             try {
-                const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-                const fetchOptions = isLocal ? { cache: 'no-store' } : {};
-                const url = isLocal
-                    ? '/src/module-dependency-graph.json'
-                    : 'https://cdn.jsdelivr.net/npm/hyperclayjs@latest/src/module-dependency-graph.json';
-                const response = await fetch(url, fetchOptions);
+                const response = await fetch('/dist/module-dependency-graph.json');
                 moduleData = await response.json();
 
                 // Transform modules data to features format

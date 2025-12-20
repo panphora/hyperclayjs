@@ -31,9 +31,7 @@ const SRC_FILES_TO_COPY = [
 const ROOT_FILES_TO_COPY = [];
 
 // Build files to copy to website/ (not dist/)
-const BUILD_FILES_TO_COPY = [
-  'load-jsdelivr.html'
-];
+const BUILD_FILES_TO_COPY = [];
 
 async function main() {
   console.log('Building website/dist...');
