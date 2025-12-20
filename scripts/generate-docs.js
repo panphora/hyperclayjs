@@ -21,7 +21,7 @@ const FUNCTION_ORDER = [
   // Utilities
   'throttle', 'debounce', 'cacheBust', 'cookie', 'Mutation', 'nearest',
   // Communication
-  'sendMessage', 'uploadFile', 'createFile', 'uploadFileBasic'
+  'sendMessage', 'uploadFile', 'createFile', 'uploadFileBasic', 'live-sync'
 ];
 
 // Category definitions with display order
@@ -44,7 +44,7 @@ const CATEGORIES = {
   },
   communication: {
     name: 'Communication',
-    functions: ['sendMessage', 'uploadFile', 'createFile', 'uploadFileBasic']
+    functions: ['sendMessage', 'uploadFile', 'createFile', 'uploadFileBasic', 'live-sync']
   }
 };
 
