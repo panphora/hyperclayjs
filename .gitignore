@@ -3,4 +3,3 @@ package-lock.json
 .DS_Store
 /coverage
 website/dist/
-website/load-jsdelivr.html
