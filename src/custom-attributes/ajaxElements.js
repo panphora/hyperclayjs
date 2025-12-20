@@ -38,16 +38,9 @@ function submitAjax(elem) {
     }
     method = (method || 'POST').toUpperCase();
 
-    // Get data - for buttons, only use form data if button is inside a form
-    let data = {};
-    if (isButton && parentForm) {
-      // Button inside form: use form data
-      data = getDataFromForm(parentForm);
-    } else if (!isButton) {
-      // It's a form element itself
-      data = getDataFromForm(elem);
-    }
-    // For standalone buttons with no form, data remains empty object
+    // Get data - from parent form if button is inside one, otherwise from element itself
+    const dataSource = (isButton && parentForm) ? parentForm : elem;
+    const data = getDataFromForm(dataSource);
 
     fetch(url, {
       method: method,
