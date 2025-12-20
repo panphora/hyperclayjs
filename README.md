@@ -57,25 +57,26 @@ import 'hyperclayjs/presets/standard.js';
 
 | Module | Size | Description |
 |--------|------|-------------|
-| autosave | 1.1KB | Auto-save on DOM changes |
+| autosave | 0.9KB | Auto-save on DOM changes |
 | edit-mode | 1.8KB | Toggle edit mode on hyperclay on/off |
 | edit-mode-helpers | 7.5KB | Admin-only functionality: [edit-mode-input], [edit-mode-resource], [edit-mode-onclick] |
-| option-visibility | 5.9KB | Dynamic show/hide based on ancestor state with option:attribute="value" |
-| persist | 2.5KB | Persist input/select/textarea values to the DOM with [persist] attribute |
-| save-core | 6.5KB | Basic save function only - hyperclay.savePage() |
+| option-visibility | 5.3KB | Dynamic show/hide based on ancestor state with option:attribute="value" |
+| persist | 2.4KB | Persist input/select/textarea values to the DOM with [persist] attribute |
+| save-core | 6.7KB | Basic save function only - hyperclay.savePage() |
 | save-system | 7.1KB | Manual save: keyboard shortcut (CMD+S), save button, change tracking |
 | save-toast | 0.9KB | Toast notifications for save events |
-| unsaved-warning | 0.5KB | Warn before leaving page with unsaved changes |
+| snapshot | 7.4KB | Source of truth for page state - captures DOM snapshots for save and sync |
+| unsaved-warning | 0.8KB | Warn before leaving page with unsaved changes |
 
 ### Custom Attributes (HTML enhancements)
 
 | Module | Size | Description |
 |--------|------|-------------|
-| ajax-elements | 2.8KB | [ajax-form], [ajax-button] for async form submissions |
+| ajax-elements | 2.6KB | [ajax-form], [ajax-button] for async form submissions |
 | dom-helpers | 6.2KB | el.nearest, el.val, el.text, el.exec, el.cycle |
 | event-attrs | 4.1KB | [onclickaway], [onclone], [onpagemutation], [onrender] |
 | input-helpers | 1.2KB | [prevent-enter], [autosize] for textareas |
-| onaftersave | 1.2KB | [onaftersave] attribute - run JS when save status changes |
+| onaftersave | 1KB | [onaftersave] attribute - run JS when save status changes |
 | sortable | 3.4KB | Drag-drop sorting with [sortable], lazy-loads ~118KB Sortable.js in edit mode |
 
 ### UI Components (User interface elements)
@@ -90,9 +91,9 @@ import 'hyperclayjs/presets/standard.js';
 
 | Module | Size | Description |
 |--------|------|-------------|
+| cache-bust | 0.6KB | Cache-bust href/src attributes |
 | cookie | 1.4KB | Cookie management (often auto-included) |
 | debounce | 0.4KB | Function debouncing |
-| cache-bust | 0.3KB | Cache-bust href/src attributes |
 | mutation | 13KB | DOM mutation observation (often auto-included) |
 | nearest | 3.4KB | Find nearest elements (often auto-included) |
 | throttle | 0.8KB | Function throttling |
@@ -104,7 +105,7 @@ import 'hyperclayjs/presets/standard.js';
 | all-js | 14.4KB | Full DOM manipulation library |
 | dom-ready | 0.4KB | DOM ready callback |
 | form-data | 2KB | Extract form data as an object |
-| style-injection | 1.1KB | Dynamic stylesheet injection |
+| style-injection | 1.9KB | Dynamic stylesheet injection |
 
 ### String Utilities (String manipulation helpers)
 
@@ -119,27 +120,28 @@ import 'hyperclayjs/presets/standard.js';
 | Module | Size | Description |
 |--------|------|-------------|
 | file-upload | 10.7KB | File upload with progress |
+| live-sync | 11.9KB | Real-time DOM sync across browsers and with file system |
 | send-message | 1.3KB | Message sending utility |
 
 ### Vendor Libraries (Third-party libraries)
 
 | Module | Size | Description |
 |--------|------|-------------|
-| idiomorph | 8.2KB | Efficient DOM morphing library |
+| idiomorph | 8.3KB | Efficient DOM morphing library |
 
 ## Presets
 
-### Minimal (~30.1KB)
+### Minimal (~30.3KB)
 Essential features for basic editing
 
 **Modules:** `save-core`, `save-system`, `edit-mode-helpers`, `toast`, `save-toast`, `export-to-window`
 
-### Standard (~49.3KB)
+### Standard (~48.3KB)
 Standard feature set for most use cases
 
-**Modules:** `save-core`, `save-system`, `unsaved-warning`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `save-toast`, `export-to-window`
+**Modules:** `save-core`, `save-system`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `save-toast`, `export-to-window`
 
-### Everything (~156.2KB)
+### Everything (~176.2KB)
 All available features
 
 Includes all available modules across all categories.

@@ -32,6 +32,7 @@ const MODULE_PATHS = {
   "save-toast": "./core/saveToast.js",
   "edit-mode-helpers": "./core/adminSystem.js",
   "persist": "./core/enablePersistentFormInputValues.js",
+  "snapshot": "./core/snapshot.js",
   "option-visibility": "./core/optionVisibility.js",
   "edit-mode": "./core/editmodeSystem.js",
   "event-attrs": "./custom-attributes/events.js",
@@ -62,6 +63,7 @@ const MODULE_PATHS = {
   "behavior-collector": "./communication/behaviorCollector.js",
   "send-message": "./communication/sendMessage.js",
   "file-upload": "./communication/uploadFile.js",
+  "live-sync": "./communication/live-sync.js",
   "export-to-window": "./core/exportToWindow.js"
 };
 const PRESETS = {
@@ -83,7 +85,6 @@ const PRESETS = {
     "modules": [
       "save-core",
       "save-system",
-      "unsaved-warning",
       "edit-mode-helpers",
       "persist",
       "option-visibility",
@@ -105,6 +106,7 @@ const PRESETS = {
       "save-toast",
       "edit-mode-helpers",
       "persist",
+      "snapshot",
       "option-visibility",
       "edit-mode",
       "event-attrs",
@@ -135,6 +137,7 @@ const PRESETS = {
       "behavior-collector",
       "send-message",
       "file-upload",
+      "live-sync",
       "export-to-window"
     ]
   }
@@ -210,6 +213,12 @@ export const savePage = window.hyperclayModules['save-core']?.savePage ?? window
 export const beforeSave = window.hyperclayModules['save-system']?.beforeSave ?? window.hyperclayModules['save-system']?.default;
 export const savePageThrottled = window.hyperclayModules['save-system']?.savePageThrottled ?? window.hyperclayModules['save-system']?.default;
 export const replacePageWith = window.hyperclayModules['save-system']?.replacePageWith ?? window.hyperclayModules['save-system']?.default;
+export const captureSnapshot = window.hyperclayModules['snapshot']?.captureSnapshot ?? window.hyperclayModules['snapshot']?.default;
+export const captureForSave = window.hyperclayModules['snapshot']?.captureForSave ?? window.hyperclayModules['snapshot']?.default;
+export const captureBodyForSync = window.hyperclayModules['snapshot']?.captureBodyForSync ?? window.hyperclayModules['snapshot']?.default;
+export const onSnapshot = window.hyperclayModules['snapshot']?.onSnapshot ?? window.hyperclayModules['snapshot']?.default;
+export const onPrepareForSave = window.hyperclayModules['snapshot']?.onPrepareForSave ?? window.hyperclayModules['snapshot']?.default;
+export const getPageContents = window.hyperclayModules['snapshot']?.getPageContents ?? window.hyperclayModules['snapshot']?.default;
 export const toggleEditMode = window.hyperclayModules['edit-mode']?.toggleEditMode ?? window.hyperclayModules['edit-mode']?.default;
 export const isEditMode = window.hyperclayModules['edit-mode']?.isEditMode ?? window.hyperclayModules['edit-mode']?.default;
 export const isOwner = window.hyperclayModules['edit-mode']?.isOwner ?? window.hyperclayModules['edit-mode']?.default;
@@ -229,6 +238,7 @@ export const cacheBust = window.hyperclayModules['cache-bust']?.cacheBust ?? win
 export const onDomReady = window.hyperclayModules['dom-ready']?.onDomReady ?? window.hyperclayModules['dom-ready']?.default;
 export const onLoad = window.hyperclayModules['window-load']?.onLoad ?? window.hyperclayModules['window-load']?.default;
 export const All = window.hyperclayModules['all-js']?.All ?? window.hyperclayModules['all-js']?.default;
+export const insertStyles = window.hyperclayModules['style-injection']?.insertStyles ?? window.hyperclayModules['style-injection']?.default;
 export const insertStyleTag = window.hyperclayModules['style-injection']?.insertStyleTag ?? window.hyperclayModules['style-injection']?.default;
 export const getDataFromForm = window.hyperclayModules['form-data']?.getDataFromForm ?? window.hyperclayModules['form-data']?.default;
 export const Idiomorph = window.hyperclayModules['idiomorph']?.Idiomorph ?? window.hyperclayModules['idiomorph']?.default;
@@ -240,3 +250,4 @@ export const sendMessage = window.hyperclayModules['send-message']?.sendMessage 
 export const uploadFile = window.hyperclayModules['file-upload']?.uploadFile ?? window.hyperclayModules['file-upload']?.default;
 export const createFile = window.hyperclayModules['file-upload']?.createFile ?? window.hyperclayModules['file-upload']?.default;
 export const uploadFileBasic = window.hyperclayModules['file-upload']?.uploadFileBasic ?? window.hyperclayModules['file-upload']?.default;
+export const liveSync = window.hyperclayModules['live-sync']?.liveSync ?? window.hyperclayModules['live-sync']?.default;

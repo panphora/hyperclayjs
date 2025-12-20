@@ -396,7 +396,7 @@
       <button class="sidebar-close" onclick="closeSidebar()" aria-label="Close menu">&times;</button>
       <h2>API Reference</h2><div class="sidebar-section">
       <h3>UI Components</h3><a href="#fn-toast">toast</a><a href="#fn-ask">ask</a><a href="#fn-consent">consent</a><a href="#fn-tell">tell</a><a href="#fn-snippet">snippet</a><a href="#fn-themodal">themodal</a></div><div class="sidebar-section">
-      <h3>DOM Utilities</h3><a href="#fn-All">All</a><a href="#fn-insertStyleTag">insertStyleTag</a><a href="#fn-getDataFromForm">getDataFromForm</a><a href="#fn-onDomReady">onDomReady</a><a href="#fn-onLoad">onLoad</a></div><div class="sidebar-section">
+      <h3>DOM Utilities</h3><a href="#fn-All">All</a><a href="#fn-insertStyles">insertStyles</a><a href="#fn-getDataFromForm">getDataFromForm</a><a href="#fn-onDomReady">onDomReady</a><a href="#fn-onLoad">onLoad</a></div><div class="sidebar-section">
       <h3>String Utilities</h3><a href="#fn-slugify">slugify</a><a href="#fn-copyToClipboard">copyToClipboard</a><a href="#fn-query">query</a></div><div class="sidebar-section">
       <h3>Utilities</h3><a href="#fn-throttle">throttle</a><a href="#fn-debounce">debounce</a><a href="#fn-cacheBust">cacheBust</a><a href="#fn-cookie">cookie</a><a href="#fn-Mutation">Mutation</a><a href="#fn-nearest">nearest</a></div><div class="sidebar-section">
       <h3>Communication</h3><a href="#fn-sendMessage">sendMessage</a><a href="#fn-uploadFile">uploadFile</a><a href="#fn-createFile">createFile</a><a href="#fn-uploadFileBasic">uploadFileBasic</a></div>
@@ -760,11 +760,12 @@ All('.notification')
 for (const el of All('.item')) {
   el.textContent = 'Updated';
 }</pre></div>
-  </div><div class="function-card" id="fn-insertStyleTag">
-    <h3>insertStyleTag</h3>
-    <p class="function-description">Dynamically inject a stylesheet link into the document head. Automatically prevents duplicate stylesheets.</p>
-    <div class="exports">Available as: <code>window.insertStyleTag</code>, <code>hyperclay.insertStyleTag</code></div>
-    <div class="signature"><code>insertStyleTag(href)</code></div>
+  </div><div class="function-card" id="fn-insertStyles">
+    <h3>insertStyles</h3>
+    <p class="function-description">Insert styles into the document — either an external stylesheet or inline CSS. With a persistent DOM (hyperclay), new styles are inserted first, then duplicates are removed to prevent flickering.</p>
+    <div class="exports">Available as: <code>window.insertStyles</code>, <code>hyperclay.insertStyles</code></div>
+    <div class="signature"><code>insertStyles(href)
+insertStyles(name, css)</code></div>
     <h4>Parameters</h4>
     <table class="params-table">
       <tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr>
@@ -773,20 +774,39 @@ for (const el of All('.item')) {
           <td><code>href</code></td>
           <td><code>string</code></td>
           <td>—</td>
-          <td>URL of the stylesheet to inject</td>
+          <td>URL of the stylesheet to inject (1-arg form)</td>
+        </tr>
+      
+        <tr>
+          <td><code>name</code></td>
+          <td><code>string</code></td>
+          <td>—</td>
+          <td>Unique name for inline styles, used as data-name attribute (2-arg form)</td>
+        </tr>
+      
+        <tr>
+          <td><code>css</code></td>
+          <td><code>string</code></td>
+          <td>—</td>
+          <td>CSS content to inject inline (2-arg form)</td>
         </tr>
       
     </table>
     
-    <h4>Returns</h4><p><code class="returns-type">void</code></p>
-    <h4>Example</h4><div class="example"><pre>// Load a CSS file
-insertStyleTag('/styles/theme.css');
+    <h4>Returns</h4><p><code class="returns-type">HTMLElement</code></p>
+    <h4>Example</h4><div class="example"><pre>// External stylesheet
+insertStyles('/styles/theme.css');
 
 // Load from CDN
-insertStyleTag('https://cdn.example.com/lib.css');
+insertStyles('https://cdn.example.com/lib.css');
 
-// Safe to call multiple times - duplicates are ignored
-insertStyleTag('/styles/theme.css'); // No duplicate added</pre></div>
+// Inline CSS with a name (for deduplication)
+insertStyles('my-theme', `
+  .dark-mode { background: #1a1a1a; color: #fff; }
+`);
+
+// Safe to call multiple times - old duplicates are removed
+insertStyles('/styles/theme.css'); // Replaces previous</pre></div>
   </div><div class="function-card" id="fn-getDataFromForm">
     <h3>getDataFromForm</h3>
     <p class="function-description">Extract all form field values as a plain JavaScript object. Works with `&lt;form&gt;` elements or any container with named inputs.</p>
@@ -1074,7 +1094,7 @@ const autoSave = debounce(() =&gt; {
   </div><div class="function-card" id="fn-cacheBust">
     <h3>cacheBust</h3>
     <p class="function-description">Cache-bust an element's href or src attribute by adding or updating a version query parameter. Useful for reloading stylesheets or scripts after dynamic changes.</p>
-    <div class="exports">Available as: <code>hyperclay.cacheBust</code>, <code>window.cacheBust</code></div>
+    <div class="exports">Available as: <code>window.cacheBust</code>, <code>hyperclay.cacheBust</code></div>
     <div class="signature"><code>cacheBust(element)</code></div>
     <h4>Parameters</h4>
     <table class="params-table">

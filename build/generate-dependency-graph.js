@@ -88,6 +88,20 @@ const MODULE_DEFINITIONS = {
     description: 'Persist input/select/textarea values to the DOM with [persist] attribute'
     // No exports - auto-inits on load
   },
+  'core/snapshot.js': {
+    name: 'snapshot',
+    moduleId: 'snapshot',
+    description: 'Source of truth for page state - captures DOM snapshots for save and sync',
+    exports: {
+      captureSnapshot: ['hyperclay'],
+      captureForSave: ['hyperclay'],
+      captureBodyForSync: ['hyperclay'],
+      onSnapshot: ['hyperclay'],
+      onPrepareForSave: ['hyperclay'],
+      beforeSave: ['hyperclay'],
+      getPageContents: ['hyperclay']
+    }
+  },
   'core/optionVisibility.js': {
     name: 'option-visibility',
     moduleId: 'option-visibility',
@@ -257,7 +271,8 @@ const MODULE_DEFINITIONS = {
     moduleId: 'style-injection',
     description: 'Dynamic stylesheet injection',
     exports: {
-      insertStyleTag: ['window', 'hyperclay']
+      insertStyles: ['window', 'hyperclay'],
+      insertStyleTag: ['window', 'hyperclay']  // backwards-compat alias
     }
   },
   'dom-utilities/getDataFromForm.js': {

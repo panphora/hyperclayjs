@@ -1,6 +1,7 @@
 {
   "rawDependencies": {
     "communication/behaviorCollector.js": [],
+    "communication/live-sync.js": [],
     "communication/sendMessage.js": [
       "communication/behaviorCollector.js",
       "dom-utilities/getDataFromForm.js",
@@ -42,10 +43,6 @@
       "core/savePage.js",
       "utilities/mutation.js"
     ],
-    "core/unsavedWarning.js": [
-      "core/isAdminOfCurrentResource.js",
-      "core/savePage.js"
-    ],
     "core/editmode.js": [
       "core/isAdminOfCurrentResource.js"
     ],
@@ -55,7 +52,7 @@
       "core/setPageTypeOnDocumentElement.js"
     ],
     "core/enablePersistentFormInputValues.js": [
-      "core/savePage.js"
+      "core/snapshot.js"
     ],
     "core/exportToWindow.js": [],
     "core/isAdminOfCurrentResource.js": [
@@ -63,6 +60,7 @@
       "utilities/cookie.js"
     ],
     "core/optionVisibility.js": [
+      "dom-utilities/insertStyleTag.js",
       "utilities/mutation.js"
     ],
     "core/savePage.js": [
@@ -72,6 +70,7 @@
     ],
     "core/savePageCore.js": [
       "core/isAdminOfCurrentResource.js",
+      "core/snapshot.js",
       "utilities/cookie.js"
     ],
     "core/saveToast.js": [
@@ -82,6 +81,11 @@
       "core/isAdminOfCurrentResource.js",
       "core/savePage.js",
       "dom-utilities/onDomReady.js"
+    ],
+    "core/snapshot.js": [],
+    "core/unsavedWarning.js": [
+      "core/isAdminOfCurrentResource.js",
+      "core/savePage.js"
     ],
     "custom-attributes/ajaxElements.js": [
       "dom-utilities/getDataFromForm.js"
@@ -141,9 +145,9 @@
       "ui/toast.js"
     ],
     "ui/toast.js": [],
+    "utilities/cacheBust.js": [],
     "utilities/cookie.js": [],
     "utilities/debounce.js": [],
-    "utilities/cacheBust.js": [],
     "utilities/loadVendorScript.js": [],
     "utilities/mutation.js": [],
     "utilities/nearest.js": [],
@@ -156,7 +160,7 @@
     "save-core": {
       "name": "save-core",
       "category": "core",
-      "size": 6.5,
+      "size": 6.7,
       "files": [
         "core/savePageCore.js"
       ],
@@ -193,7 +197,7 @@
     "autosave": {
       "name": "autosave",
       "category": "core",
-      "size": 1.1,
+      "size": 0.9,
       "files": [
         "core/autosave.js"
       ],
@@ -203,7 +207,7 @@
     "unsaved-warning": {
       "name": "unsaved-warning",
       "category": "core",
-      "size": 0.5,
+      "size": 0.8,
       "files": [
         "core/unsavedWarning.js"
       ],
@@ -237,17 +241,49 @@
     "persist": {
       "name": "persist",
       "category": "core",
-      "size": 2.5,
+      "size": 2.4,
       "files": [
         "core/enablePersistentFormInputValues.js"
       ],
       "description": "Persist input/select/textarea values to the DOM with [persist] attribute",
       "exports": {}
     },
+    "snapshot": {
+      "name": "snapshot",
+      "category": "core",
+      "size": 7.4,
+      "files": [
+        "core/snapshot.js"
+      ],
+      "description": "Source of truth for page state - captures DOM snapshots for save and sync",
+      "exports": {
+        "captureSnapshot": [
+          "hyperclay"
+        ],
+        "captureForSave": [
+          "hyperclay"
+        ],
+        "captureBodyForSync": [
+          "hyperclay"
+        ],
+        "onSnapshot": [
+          "hyperclay"
+        ],
+        "onPrepareForSave": [
+          "hyperclay"
+        ],
+        "beforeSave": [
+          "hyperclay"
+        ],
+        "getPageContents": [
+          "hyperclay"
+        ]
+      }
+    },
     "option-visibility": {
       "name": "option-visibility",
       "category": "core",
-      "size": 5.9,
+      "size": 5.3,
       "files": [
         "core/optionVisibility.js"
       ],
@@ -293,7 +329,7 @@
     "ajax-elements": {
       "name": "ajax-elements",
       "category": "custom-attributes",
-      "size": 2.8,
+      "size": 2.6,
       "files": [
         "custom-attributes/ajaxElements.js"
       ],
@@ -335,7 +371,7 @@
     "onaftersave": {
       "name": "onaftersave",
       "category": "custom-attributes",
-      "size": 1.2,
+      "size": 1,
       "files": [
         "custom-attributes/onaftersave.js"
       ],
@@ -490,15 +526,15 @@
     "cache-bust": {
       "name": "cache-bust",
       "category": "utilities",
-      "size": 0.3,
+      "size": 0.6,
       "files": [
         "utilities/cacheBust.js"
       ],
       "description": "Cache-bust href/src attributes",
       "exports": {
         "cacheBust": [
-          "hyperclay",
-          "window"
+          "window",
+          "hyperclay"
         ]
       }
     },
@@ -548,12 +584,16 @@
     "style-injection": {
       "name": "style-injection",
       "category": "dom-utilities",
-      "size": 1.1,
+      "size": 1.9,
       "files": [
         "dom-utilities/insertStyleTag.js"
       ],
       "description": "Dynamic stylesheet injection",
       "exports": {
+        "insertStyles": [
+          "window",
+          "hyperclay"
+        ],
         "insertStyleTag": [
           "window",
           "hyperclay"
@@ -578,7 +618,7 @@
     "idiomorph": {
       "name": "idiomorph",
       "category": "vendor",
-      "size": 8.2,
+      "size": 8.3,
       "files": [
         "vendor/idiomorph.min.js"
       ],
@@ -681,6 +721,20 @@
         ]
       }
     },
+    "live-sync": {
+      "name": "live-sync",
+      "category": "communication",
+      "size": 11.9,
+      "files": [
+        "communication/live-sync.js"
+      ],
+      "description": "Real-time DOM sync across browsers and with file system",
+      "exports": {
+        "liveSync": [
+          "hyperclay"
+        ]
+      }
+    },
     "export-to-window": {
       "name": "export-to-window",
       "category": "core",
@@ -700,6 +754,7 @@
     "save-toast": "./core/saveToast.js",
     "edit-mode-helpers": "./core/adminSystem.js",
     "persist": "./core/enablePersistentFormInputValues.js",
+    "snapshot": "./core/snapshot.js",
     "option-visibility": "./core/optionVisibility.js",
     "edit-mode": "./core/editmodeSystem.js",
     "event-attrs": "./custom-attributes/events.js",
@@ -730,6 +785,7 @@
     "behavior-collector": "./communication/behaviorCollector.js",
     "send-message": "./communication/sendMessage.js",
     "file-upload": "./communication/uploadFile.js",
+    "live-sync": "./communication/live-sync.js",
     "export-to-window": "./core/exportToWindow.js"
   },
   "categories": {
@@ -744,6 +800,7 @@
         "save-toast",
         "edit-mode-helpers",
         "persist",
+        "snapshot",
         "option-visibility",
         "edit-mode"
       ]
@@ -777,7 +834,8 @@
         "nearest",
         "cookie",
         "throttle",
-        "debounce"
+        "debounce",
+        "cache-bust"
       ]
     },
     "dom-utilities": {
@@ -804,7 +862,8 @@
       "description": "File handling and messaging",
       "modules": [
         "send-message",
-        "file-upload"
+        "file-upload",
+        "live-sync"
       ]
     },
     "vendor": {
@@ -834,7 +893,6 @@
       "modules": [
         "save-core",
         "save-system",
-        "unsaved-warning",
         "edit-mode-helpers",
         "persist",
         "option-visibility",
@@ -856,6 +914,7 @@
         "save-toast",
         "edit-mode-helpers",
         "persist",
+        "snapshot",
         "option-visibility",
         "edit-mode",
         "event-attrs",
@@ -886,6 +945,7 @@
         "behavior-collector",
         "send-message",
         "file-upload",
+        "live-sync",
         "export-to-window"
       ]
     }

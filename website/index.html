@@ -973,13 +973,17 @@ hyperclay.isEditMode;</code></pre>
                 </div>
             </div>
 
-            <!-- insertStyleTag -->
+            <!-- insertStyles -->
             <div class="demo-card" id="style-injection">
-                <h3>insertStyleTag()</h3>
-                <p class="desc">Inject CSS stylesheet dynamically</p>
-                <pre><code>insertStyleTag('./test-style.css');</code></pre>
+                <h3>insertStyles()</h3>
+                <p class="desc">Inject CSS (external or inline)</p>
+                <pre><code>// External stylesheet
+insertStyles('./test-style.css');
+
+// Inline CSS with name
+insertStyles('my-theme', '.foo { color: red }');</code></pre>
                 <div class="demo-area" style="flex-direction: column; align-items: stretch;">
-                    <button onclick="hyperclay.insertStyleTag?.('./test-style.css'); document.getElementById('style-log').textContent = 'CSS injected!'">Inject CSS</button>
+                    <button onclick="hyperclay.insertStyles?.('./test-style.css'); document.getElementById('style-log').textContent = 'CSS injected!'">Inject CSS</button>
                     <span class="output test-style-injected" id="style-log">Click to inject</span>
                 </div>
             </div>
@@ -1195,7 +1199,7 @@ themodal.open();</code></pre>
         };
     </script>
     <script type="module">
-        await import('./dist/hyperclay.js?preset=everything&exclude=autosave,save-toast,edit-mode');
+        await import('./dist/hyperclay.js?preset=everything&exclude=autosave,save-toast,edit-mode,live-sync');
 
         // ========== HELPER FUNCTIONS ==========
 
