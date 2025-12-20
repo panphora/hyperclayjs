@@ -705,7 +705,10 @@
             try {
                 const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
                 const fetchOptions = isLocal ? { cache: 'no-store' } : {};
-                const response = await fetch('/dist/module-dependency-graph.json', fetchOptions);
+                const url = isLocal
+                    ? '/src/module-dependency-graph.json'
+                    : 'https://cdn.jsdelivr.net/npm/hyperclayjs@latest/src/module-dependency-graph.json';
+                const response = await fetch(url, fetchOptions);
                 moduleData = await response.json();
 
                 // Transform modules data to features format
