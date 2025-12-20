@@ -1,31 +1,49 @@
 /**
- * hyperclayjs/src/communication/live-sync.js
+ * live-sync.js — Real-time sync between admin users
  *
- * Browser-side LiveSync: SSE receiving + DOM observation + sending changes
+ * HOW IT WORKS:
  *
- * WHAT THIS FILE DOES:
- * 1. Connects to the server's SSE endpoint
- * 2. Receives updates and morphs the DOM
- * 3. Watches for local DOM changes
- * 4. Sends local changes to the server
+ *   ┌─────────────────────────────────────────────────────────┐
+ *   │  1. LISTEN            snapshot-ready event from save    │
+ *   │                       (body with form values, no strip) │
+ *   └─────────────────────────────────────────────────────────┘
+ *                              │
+ *                              ▼
+ *   ┌─────────────────────────────────────────────────────────┐
+ *   │  2. SEND               POST body to /live-sync/save     │
+ *   │                        (debounced, skip if unchanged)   │
+ *   └─────────────────────────────────────────────────────────┘
+ *                              │
+ *                              ▼
+ *   ┌─────────────────────────────────────────────────────────┐
+ *   │  3. RECEIVE            SSE stream from server           │
+ *   │                        (other clients' changes)         │
+ *   └─────────────────────────────────────────────────────────┘
+ *                              │
+ *                              ▼
+ *   ┌─────────────────────────────────────────────────────────┐
+ *   │  4. MORPH              Idiomorph to update DOM          │
+ *   │                        (preserves focus, input values)  │
+ *   └─────────────────────────────────────────────────────────┘
  *
  * DEPENDS ON: Idiomorph (for intelligent DOM morphing)
+ * INTEGRATES WITH: snapshot.js (receives snapshot-ready events)
  */
 
 class LiveSync {
   constructor() {
     this.sse = null;
-    this.observer = null;
     this.currentFile = null;
     this.lastHeadHash = null;
     this.lastBodyHtml = null;
     this.clientId = this.generateClientId();
-    this.reconnectAttempts = 0;
-    this.maxReconnectAttempts = 10;
     this.debounceMs = 150;
     this.debounceTimer = null;
     this.isPaused = false;
     this.isDestroyed = false;
+
+    // Store handler reference for cleanup
+    this._snapshotHandler = null;
 
     // Callbacks
     this.onConnect = null;
@@ -60,9 +78,16 @@ class LiveSync {
 
   /**
    * Start the LiveSync system
+   * Can be called after stop() to restart with a new file
    */
   start(file = null) {
-    if (this.isDestroyed) return;
+    // Reset destroyed flag to allow restart after stop()
+    this.isDestroyed = false;
+
+    // Prevent double-connect: clean up existing connection first
+    if (this.sse || this._snapshotHandler) {
+      this.cleanup();
+    }
 
     this.currentFile = file || this.detectCurrentFile();
 
@@ -71,25 +96,73 @@ class LiveSync {
       return;
     }
 
+    // Reset state for new connection
+    this.lastHeadHash = null;
+    this.lastBodyHtml = null;
+
     console.log('[LiveSync] Starting for:', this.currentFile);
     this.connect();
-    this.observeChanges();
+    this.listenForSnapshots();
   }
 
   /**
-   * Auto-detect the current HTML file from the URL
+   * Clean up resources without marking as destroyed
+   * Used internally by start() to prevent double-connect
+   */
+  cleanup() {
+    if (this.sse) {
+      this.sse.close();
+      this.sse = null;
+    }
+
+    if (this._snapshotHandler) {
+      document.removeEventListener('hyperclay:snapshot-ready', this._snapshotHandler);
+      this._snapshotHandler = null;
+    }
+
+    clearTimeout(this.debounceTimer);
+  }
+
+  /**
+   * Auto-detect the current site identifier from the URL
+   * Returns site ID without .html extension
+   *
+   * Handles:
+   * - /                  -> index
+   * - /about             -> about
+   * - /about.html        -> about
+   * - /about/            -> about/index
+   * - /pages/contact     -> pages/contact
+   * - /pages/contact/    -> pages/contact/index
    */
   detectCurrentFile() {
-    const pathname = window.location.pathname;
+    let pathname = window.location.pathname;
 
-    if (pathname === '/') return 'index.html';
+    // Root path
+    if (pathname === '/') {
+      return 'index';
+    }
 
-    const name = pathname.replace(/^\//, '').replace(/\.html$/, '');
-    return `${name}.html`;
+    // Remove leading slash
+    pathname = pathname.replace(/^\//, '');
+
+    // Handle trailing slash -> directory index
+    if (pathname.endsWith('/')) {
+      return pathname + 'index';
+    }
+
+    // Remove .html extension if present
+    if (pathname.endsWith('.html')) {
+      return pathname.slice(0, -5);
+    }
+
+    // Already a site identifier
+    return pathname;
   }
 
   /**
    * Connect to the SSE endpoint
+   * Uses native EventSource reconnection behavior
    */
   connect() {
     if (this.isDestroyed) return;
@@ -99,78 +172,93 @@ class LiveSync {
 
     this.sse.onopen = () => {
       console.log('[LiveSync] Connected');
-      this.reconnectAttempts = 0;
       if (this.onConnect) this.onConnect();
     };
 
     this.sse.onmessage = (event) => {
-      const { body, headHash, sender } = JSON.parse(event.data);
+      const data = JSON.parse(event.data);
+
+      // Handle error events from server
+      if (data.error) {
+        console.error('[LiveSync] Server error:', data.error);
+        if (this.onError) this.onError(new Error(data.error));
+        return;
+      }
+
+      const { body, headHash, sender } = data;
 
       // Ignore own changes
       if (sender === this.clientId) return;
 
-      // Check for head changes -> full reload
-      if (this.lastHeadHash && headHash !== this.lastHeadHash) {
-        console.log('[LiveSync] Head changed, reloading');
-        location.reload();
+      // Guard against invalid body - never apply non-string
+      if (typeof body !== 'string') {
+        console.error('[LiveSync] Received invalid body (not a string), ignoring');
         return;
       }
-      this.lastHeadHash = headHash;
+
+      // Check for head changes -> full reload
+      // Only compare when BOTH hashes exist (server must send headHash)
+      // Only set lastHeadHash when incoming hash is valid
+      if (headHash) {
+        if (this.lastHeadHash && headHash !== this.lastHeadHash) {
+          console.log('[LiveSync] Head changed, reloading');
+          location.reload();
+          return;
+        }
+        this.lastHeadHash = headHash;
+      }
 
       console.log('[LiveSync] Received update from:', sender);
       this.applyUpdate(body);
       if (this.onUpdate) this.onUpdate({ body, sender });
     };
 
+    // Native EventSource auto-reconnects on transient errors
+    // We just surface the status via callbacks
     this.sse.onerror = () => {
-      console.log('[LiveSync] Connection error');
-      if (this.onDisconnect) this.onDisconnect();
-
-      if (this.sse.readyState === EventSource.CLOSED) {
-        this.handleReconnect();
+      if (this.sse.readyState === EventSource.CONNECTING) {
+        console.log('[LiveSync] Reconnecting...');
+      } else if (this.sse.readyState === EventSource.CLOSED) {
+        console.log('[LiveSync] Connection closed');
+        if (this.onError) this.onError(new Error('Connection closed'));
       }
+      if (this.onDisconnect) this.onDisconnect();
     };
   }
 
   /**
-   * Start observing the DOM for changes
+   * Listen for snapshot-ready events from the save system.
+   * This replaces DOM observation — we sync when save happens.
    */
-  observeChanges() {
-    this.observer = new MutationObserver(() => {
+  listenForSnapshots() {
+    this._snapshotHandler = (event) => {
       if (this.isPaused) return;
-      this.sendUpdate();
-    });
 
-    this.observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      characterData: true
-    });
+      const { body } = event.detail;
+      if (!body) return;
 
-    // Form input listener (MutationObserver misses value changes)
-    document.body.addEventListener('input', (e) => {
-      if (this.isPaused) return;
-      if (e.target.matches('input, textarea, select')) {
-        this.sendUpdate();
-      }
-    });
+      this.sendBody(body);
+    };
+
+    document.addEventListener('hyperclay:snapshot-ready', this._snapshotHandler);
   }
 
   /**
-   * Send the current body HTML to the server (debounced)
+   * Send body HTML to the server (debounced)
+   * Only updates lastBodyHtml after successful save
    */
-  sendUpdate() {
+  sendBody(body) {
     clearTimeout(this.debounceTimer);
 
     this.debounceTimer = setTimeout(() => {
-      const body = document.body.innerHTML;
-
       // Skip if unchanged
       if (body === this.lastBodyHtml) return;
-      this.lastBodyHtml = body;
 
       console.log('[LiveSync] Sending update');
+
+      // Compute head hash to send to server (for hosted mode)
+      const headHash = this.computeHeadHash();
+      this.lastHeadHash = headHash; // Track local head changes
 
       fetch('/live-sync/save', {
         method: 'POST',
@@ -178,9 +266,19 @@ class LiveSync {
         body: JSON.stringify({
           file: this.currentFile,
           body: body,
-          sender: this.clientId
+          sender: this.clientId,
+          headHash: headHash
         })
+      }).then(response => {
+        if (response.ok) {
+          // Only update lastBodyHtml after successful save
+          this.lastBodyHtml = body;
+        } else {
+          // Log non-OK responses but don't suppress future sends
+          console.warn('[LiveSync] Save returned status:', response.status);
+        }
       }).catch(err => {
+        // Network error - don't update lastBodyHtml so next mutation will retry
         console.error('[LiveSync] Save failed:', err);
         if (this.onError) this.onError(err);
       });
@@ -188,9 +286,34 @@ class LiveSync {
   }
 
   /**
+   * Compute MD5-like hash of head content (first 8 hex chars)
+   * Uses a simple string hash since we don't have crypto in browser
+   */
+  computeHeadHash() {
+    const head = document.head?.innerHTML;
+    if (!head) return null;
+
+    // Simple hash function (djb2)
+    let hash = 5381;
+    for (let i = 0; i < head.length; i++) {
+      hash = ((hash << 5) + hash) + head.charCodeAt(i);
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    // Convert to hex and take first 8 chars
+    return Math.abs(hash).toString(16).padStart(8, '0').slice(0, 8);
+  }
+
+  /**
    * Apply an update received from the server
+   * Guards against non-string values
    */
   applyUpdate(bodyHtml) {
+    // Guard against non-string values
+    if (typeof bodyHtml !== 'string') {
+      console.error('[LiveSync] applyUpdate called with non-string value, ignoring');
+      return;
+    }
+
     this.isPaused = true;
     this.lastBodyHtml = bodyHtml;
 
@@ -246,41 +369,12 @@ class LiveSync {
   }
 
   /**
-   * Handle reconnection with exponential backoff
-   */
-  handleReconnect() {
-    if (this.isDestroyed) return;
-
-    if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-      console.error('[LiveSync] Max reconnection attempts reached');
-      if (this.onError) this.onError(new Error('Max reconnection attempts'));
-      return;
-    }
-
-    const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000);
-    this.reconnectAttempts++;
-
-    console.log(`[LiveSync] Reconnecting in ${delay}ms`);
-    setTimeout(() => this.connect(), delay);
-  }
-
-  /**
    * Stop LiveSync and clean up resources
+   * Can call start() again to restart
    */
   stop() {
+    this.cleanup();
     this.isDestroyed = true;
-
-    if (this.sse) {
-      this.sse.close();
-      this.sse = null;
-    }
-
-    if (this.observer) {
-      this.observer.disconnect();
-      this.observer = null;
-    }
-
-    clearTimeout(this.debounceTimer);
     console.log('[LiveSync] Stopped');
   }
 }
