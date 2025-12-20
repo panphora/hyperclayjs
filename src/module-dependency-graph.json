@@ -178,7 +178,7 @@
       "files": [
         "core/savePage.js"
       ],
-      "description": "Manual save: keyboard shortcut (CMD+S), save button, change tracking",
+      "description": "CMD+S, [trigger-save] button, savestatus attribute",
       "exports": {
         "beforeSave": [
           "hyperclay"

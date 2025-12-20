@@ -63,7 +63,7 @@ import 'hyperclayjs/presets/standard.js';
 | option-visibility | 5.3KB | Dynamic show/hide based on ancestor state with option:attribute="value" |
 | persist | 2.4KB | Persist input/select/textarea values to the DOM with [persist] attribute |
 | save-core | 6.8KB | Basic save function only - hyperclay.savePage() |
-| save-system | 7.1KB | Manual save: keyboard shortcut (CMD+S), save button, change tracking |
+| save-system | 7.1KB | CMD+S, [trigger-save] button, savestatus attribute |
 | save-toast | 0.9KB | Toast notifications for save events |
 | snapshot | 7.5KB | Source of truth for page state - captures DOM snapshots for save and sync |
 | unsaved-warning | 0.8KB | Warn before leaving page with unsaved changes |

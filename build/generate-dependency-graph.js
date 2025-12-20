@@ -49,7 +49,7 @@ const MODULE_DEFINITIONS = {
   'core/savePage.js': {
     name: 'save-system',
     moduleId: 'save-system',
-    description: 'Manual save: keyboard shortcut (CMD+S), save button, change tracking',
+    description: 'CMD+S, [trigger-save] button, savestatus attribute',
     exports: {
       beforeSave: ['hyperclay'],
       savePage: ['hyperclay'],
