@@ -62,10 +62,10 @@ import 'hyperclayjs/presets/standard.js';
 | edit-mode-helpers | 7.5KB | Admin-only functionality: [edit-mode-input], [edit-mode-resource], [edit-mode-onclick] |
 | option-visibility | 5.3KB | Dynamic show/hide based on ancestor state with option:attribute="value" |
 | persist | 2.4KB | Persist input/select/textarea values to the DOM with [persist] attribute |
-| save-core | 6.7KB | Basic save function only - hyperclay.savePage() |
+| save-core | 6.8KB | Basic save function only - hyperclay.savePage() |
 | save-system | 7.1KB | Manual save: keyboard shortcut (CMD+S), save button, change tracking |
 | save-toast | 0.9KB | Toast notifications for save events |
-| snapshot | 7.4KB | Source of truth for page state - captures DOM snapshots for save and sync |
+| snapshot | 7.5KB | Source of truth for page state - captures DOM snapshots for save and sync |
 | unsaved-warning | 0.8KB | Warn before leaving page with unsaved changes |
 
 ### Custom Attributes (HTML enhancements)
@@ -120,7 +120,7 @@ import 'hyperclayjs/presets/standard.js';
 | Module | Size | Description |
 |--------|------|-------------|
 | file-upload | 10.7KB | File upload with progress |
-| live-sync | 11.9KB | Real-time DOM sync across browsers and with file system |
+| live-sync | 12KB | Real-time DOM sync across browsers and with file system |
 | send-message | 1.3KB | Message sending utility |
 
 ### Vendor Libraries (Third-party libraries)
@@ -131,17 +131,17 @@ import 'hyperclayjs/presets/standard.js';
 
 ## Presets
 
-### Minimal (~30.3KB)
+### Minimal (~30.4KB)
 Essential features for basic editing
 
 **Modules:** `save-core`, `save-system`, `edit-mode-helpers`, `toast`, `save-toast`, `export-to-window`
 
-### Standard (~48.3KB)
+### Standard (~48.4KB)
 Standard feature set for most use cases
 
 **Modules:** `save-core`, `save-system`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `save-toast`, `export-to-window`
 
-### Everything (~176.2KB)
+### Everything (~176.5KB)
 All available features
 
 Includes all available modules across all categories.

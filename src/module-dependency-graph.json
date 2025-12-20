@@ -160,7 +160,7 @@
     "save-core": {
       "name": "save-core",
       "category": "core",
-      "size": 6.7,
+      "size": 6.8,
       "files": [
         "core/savePageCore.js"
       ],
@@ -251,7 +251,7 @@
     "snapshot": {
       "name": "snapshot",
       "category": "core",
-      "size": 7.4,
+      "size": 7.5,
       "files": [
         "core/snapshot.js"
       ],
@@ -724,7 +724,7 @@
     "live-sync": {
       "name": "live-sync",
       "category": "communication",
-      "size": 11.9,
+      "size": 12,
       "files": [
         "communication/live-sync.js"
       ],

@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.9.0] - 2025-12-19
+
+### Added
+- snapshot.js as source of truth for page state
+- save, cache bust, and live-sync functionality
+
+### Changed
+- Update build scripts and regenerate docs
+- Misc improvements
+- Rename insertStyleTag to insertStyles with backwards compatibility
+- Improved timeout handling
+- More accurate documentation
+- Update index.html
+
+### Fixed
+- live-sync headHash handling
+- build/load-jsdelivr.html
+
+
+
 ## [1.8.0] - 2025-12-12
 
 ### Added
