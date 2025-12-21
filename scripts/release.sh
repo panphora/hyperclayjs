@@ -333,7 +333,7 @@ if [[ $accept_commit_msg =~ ^[Nn]$ ]]; then
 fi
 
 # Stage changes
-git add package.json CHANGELOG.md src/module-dependency-graph.json src/hyperclay.js README.md build/load-jsdelivr.html
+git add package.json CHANGELOG.md src/module-dependency-graph.json src/hyperclay.js README.md website/load-jsdelivr.html
 
 # Commit
 git commit -m "$(cat <<EOF
