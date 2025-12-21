@@ -228,26 +228,34 @@ class LiveSync {
 
   /**
    * Listen for snapshot-ready events from the save system.
-   * This replaces DOM observation — we sync when save happens.
+   * Receives the full cloned documentElement and extracts head/body.
    */
   listenForSnapshots() {
-    this._snapshotHandler = (event) => {
+    this._snapshotHandler = async (event) => {
       if (this.isPaused) return;
 
-      const { body } = event.detail;
-      if (!body) return;
+      const { documentElement } = event.detail;
+      if (!documentElement) return;
 
-      this.sendBody(body);
+      // Extract head and body directly from cloned element
+      const head = documentElement.querySelector('head')?.innerHTML || '';
+      const body = documentElement.querySelector('body')?.innerHTML || '';
+
+      // Compute headHash using SHA-256 (async)
+      const headHash = await this.computeHeadHash(head);
+
+      // Send update even if body is empty (allows clearing content)
+      this.sendUpdate(body, headHash);
     };
 
     document.addEventListener('hyperclay:snapshot-ready', this._snapshotHandler);
   }
 
   /**
-   * Send body HTML to the server (debounced)
+   * Send body and headHash to the server (debounced)
    * Only updates lastBodyHtml after successful save
    */
-  sendBody(body) {
+  sendUpdate(body, headHash) {
     clearTimeout(this.debounceTimer);
 
     this.debounceTimer = setTimeout(() => {
@@ -256,9 +264,8 @@ class LiveSync {
 
       console.log('[LiveSync] Sending update');
 
-      // Compute head hash to send to server (for hosted mode)
-      const headHash = this.computeHeadHash();
-      this.lastHeadHash = headHash; // Track local head changes
+      // Track local head changes
+      this.lastHeadHash = headHash;
 
       fetch('/live-sync/save', {
         method: 'POST',
@@ -286,21 +293,30 @@ class LiveSync {
   }
 
   /**
-   * Compute MD5-like hash of head content (first 8 hex chars)
-   * Uses a simple string hash since we don't have crypto in browser
+   * Compute SHA-256 hash of head content (first 16 hex chars)
+   * Uses SubtleCrypto API (async)
+   * @param {string} head - Head innerHTML
+   * @returns {Promise<string|null>} 16-char hex hash or null if unavailable
    */
-  computeHeadHash() {
-    const head = document.head?.innerHTML;
+  async computeHeadHash(head) {
     if (!head) return null;
 
-    // Simple hash function (djb2)
-    let hash = 5381;
-    for (let i = 0; i < head.length; i++) {
-      hash = ((hash << 5) + hash) + head.charCodeAt(i);
-      hash = hash & hash; // Convert to 32bit integer
+    // SubtleCrypto requires secure context (HTTPS or localhost)
+    if (!crypto?.subtle?.digest) {
+      console.warn('[LiveSync] SHA-256 unavailable (non-secure context), skipping headHash');
+      return null;
     }
-    // Convert to hex and take first 8 chars
-    return Math.abs(hash).toString(16).padStart(8, '0').slice(0, 8);
+
+    try {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(head);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 16);
+    } catch (e) {
+      console.warn('[LiveSync] SHA-256 hash failed, skipping headHash:', e);
+      return null;
+    }
   }
 
   /**

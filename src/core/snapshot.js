@@ -128,10 +128,10 @@ export function captureForSave({ emitForSync = true } = {}) {
   const clone = captureSnapshot();
 
   // Emit for live-sync before stripping admin elements
+  // Sends full cloned documentElement so live-sync can extract head and body
   if (emitForSync) {
-    const bodyForSync = clone.querySelector('body').innerHTML;
     document.dispatchEvent(new CustomEvent('hyperclay:snapshot-ready', {
-      detail: { body: bodyForSync }
+      detail: { documentElement: clone }
     }));
   }
 
