@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.10.0] - 2025-12-20
+
+### Added
+- live-sync feature with documentation
+- Content Mirror demo (renamed from Live Sync)
+
+### Changed
+- live-sync to extract head/body from snapshot clone
+- save-system description updated
+- load-jsdelivr.html tracked in git for CI builds
+
+### Fixed
+- release script path for load-jsdelivr.html
+- config.html to load module data from CDN in production
+- build script to update website/load-jsdelivr.html directly
+
+
+
 ## [1.9.0] - 2025-12-19
 
 ### Added

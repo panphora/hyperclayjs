@@ -724,7 +724,7 @@
     "live-sync": {
       "name": "live-sync",
       "category": "communication",
-      "size": 12,
+      "size": 12.7,
       "files": [
         "communication/live-sync.js"
       ],
