@@ -22,13 +22,15 @@ const FOLDERS_TO_COPY = [
   'vendor'
 ];
 
-// Files to copy to website/dist
+// Files to copy to website/dist (from src/)
 const SRC_FILES_TO_COPY = [
-  'hyperclay.js',
-  'module-dependency-graph.json'
+  'hyperclay.js'
 ];
 
-const ROOT_FILES_TO_COPY = [];
+// Files to copy to website/dist (from root, with optional rename)
+const ROOT_FILES_TO_COPY = [
+  { src: 'module-dependency-graph.generated.json', dest: 'module-dependency-graph.json' }
+];
 
 // Build files to copy to website/ (not dist/)
 const BUILD_FILES_TO_COPY = [];
@@ -68,16 +70,18 @@ async function main() {
     }
   }
 
-  // Copy files from root
+  // Copy files from root (with optional rename)
   for (const file of ROOT_FILES_TO_COPY) {
-    const src = path.join(ROOT_DIR, file);
-    const dest = path.join(WEBSITE_DIST, file);
+    const srcName = typeof file === 'string' ? file : file.src;
+    const destName = typeof file === 'string' ? file : file.dest;
+    const srcPath = path.join(ROOT_DIR, srcName);
+    const destPath = path.join(WEBSITE_DIST, destName);
 
-    if (fs.existsSync(src)) {
-      fs.copyFileSync(src, dest);
-      console.log(`  Copied ${file}`);
+    if (fs.existsSync(srcPath)) {
+      fs.copyFileSync(srcPath, destPath);
+      console.log(`  Copied ${srcName} → ${destName}`);
     } else {
-      console.warn(`  Warning: ${file} not found`);
+      console.warn(`  Warning: ${srcName} not found`);
     }
   }
 

@@ -7,7 +7,7 @@ const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.join(__dirname, '..');
 
 const DOCS_API_DIR = path.join(ROOT_DIR, 'docs/api');
-const MODULE_GRAPH = path.join(ROOT_DIR, 'src', 'module-dependency-graph.json');
+const MODULE_GRAPH = path.join(ROOT_DIR, 'module-dependency-graph.generated.json');
 const OUTPUT_FILE = path.join(ROOT_DIR, 'website', 'docs.html');
 
 // Function order (matches index.html demos)
