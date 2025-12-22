@@ -217,6 +217,16 @@
             color: var(--red);
         }
 
+        .feature-badge {
+            font-size: 0.625rem;
+            padding: 0.15rem 0.4rem;
+            background: var(--yellow);
+            color: white;
+            font-weight: bold;
+            margin-left: 0.5rem;
+            text-transform: uppercase;
+        }
+
         /* Preset Buttons */
         .preset-section {
             margin-bottom: 2rem;
@@ -787,6 +797,11 @@
                             const dependencies = getDependencies(moduleId);
                             const requiresAttr = dependencies.length > 0 ? `data-requires="${dependencies.join(',')}"` : '';
 
+                            // Edit-only badge
+                            const editOnlyBadge = module.isEditModeOnly
+                                ? '<span class="feature-badge">edit only</span>'
+                                : '';
+
                             // Filter out hidden dependencies (not in any category)
                             const visibleDependencies = dependencies.filter(depId => isVisibleModule(depId));
                             const dependenciesText = visibleDependencies.length > 0
@@ -811,7 +826,7 @@
                                            data-size="${module.size}"
                                            ${requiresAttr}>
                                     <div class="feature-info">
-                                        <div class="feature-name">${module.name}</div>
+                                        <div class="feature-name">${module.name}${editOnlyBadge}</div>
                                         <div class="feature-description">${module.description}</div>
                                         ${exportsText}
                                         ${dependenciesText}

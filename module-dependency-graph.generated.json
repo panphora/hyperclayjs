@@ -83,6 +83,10 @@
       "dom-utilities/onDomReady.js"
     ],
     "core/snapshot.js": [],
+    "core/tailwindInject.js": [
+      "dom-utilities/insertStyleTag.js",
+      "utilities/cookie.js"
+    ],
     "core/unsavedWarning.js": [
       "core/isAdminOfCurrentResource.js",
       "core/savePage.js"
@@ -161,6 +165,7 @@
       "name": "save-core",
       "category": "core",
       "size": 6.8,
+      "isEditModeOnly": true,
       "files": [
         "core/savePageCore.js"
       ],
@@ -175,6 +180,7 @@
       "name": "save-system",
       "category": "core",
       "size": 7.1,
+      "isEditModeOnly": true,
       "files": [
         "core/savePage.js"
       ],
@@ -198,6 +204,7 @@
       "name": "autosave",
       "category": "core",
       "size": 0.9,
+      "isEditModeOnly": true,
       "files": [
         "core/autosave.js"
       ],
@@ -208,6 +215,7 @@
       "name": "unsaved-warning",
       "category": "core",
       "size": 0.8,
+      "isEditModeOnly": true,
       "files": [
         "core/unsavedWarning.js"
       ],
@@ -218,6 +226,7 @@
       "name": "save-toast",
       "category": "core",
       "size": 0.9,
+      "isEditModeOnly": true,
       "files": [
         "core/saveToast.js"
       ],
@@ -228,6 +237,7 @@
       "name": "edit-mode-helpers",
       "category": "core",
       "size": 7.500000000000001,
+      "isEditModeOnly": true,
       "files": [
         "core/adminSystem.js",
         "core/adminContenteditable.js",
@@ -242,6 +252,7 @@
       "name": "persist",
       "category": "core",
       "size": 2.4,
+      "isEditModeOnly": true,
       "files": [
         "core/enablePersistentFormInputValues.js"
       ],
@@ -252,6 +263,7 @@
       "name": "snapshot",
       "category": "core",
       "size": 7.5,
+      "isEditModeOnly": true,
       "files": [
         "core/snapshot.js"
       ],
@@ -340,6 +352,7 @@
       "name": "sortable",
       "category": "custom-attributes",
       "size": 3.4,
+      "isEditModeOnly": true,
       "files": [
         "custom-attributes/sortable.js"
       ],
@@ -372,6 +385,7 @@
       "name": "onaftersave",
       "category": "custom-attributes",
       "size": 1,
+      "isEditModeOnly": true,
       "files": [
         "custom-attributes/onaftersave.js"
       ],
@@ -527,6 +541,7 @@
       "name": "cache-bust",
       "category": "utilities",
       "size": 0.6,
+      "isEditModeOnly": true,
       "files": [
         "utilities/cacheBust.js"
       ],
@@ -584,7 +599,7 @@
     "style-injection": {
       "name": "style-injection",
       "category": "dom-utilities",
-      "size": 1.9,
+      "size": 2.4,
       "files": [
         "dom-utilities/insertStyleTag.js"
       ],
@@ -705,6 +720,7 @@
       "name": "file-upload",
       "category": "communication",
       "size": 10.7,
+      "isEditModeOnly": true,
       "files": [
         "communication/uploadFile.js"
       ],
@@ -725,6 +741,7 @@
       "name": "live-sync",
       "category": "communication",
       "size": 12.7,
+      "isEditModeOnly": true,
       "files": [
         "communication/live-sync.js"
       ],
@@ -734,6 +751,17 @@
           "hyperclay"
         ]
       }
+    },
+    "tailwind-inject": {
+      "name": "tailwind-inject",
+      "category": "core",
+      "size": 0.4,
+      "isEditModeOnly": true,
+      "files": [
+        "core/tailwindInject.js"
+      ],
+      "description": "Injects tailwind CSS link with cache-bust on save",
+      "exports": {}
     },
     "export-to-window": {
       "name": "export-to-window",
@@ -786,6 +814,7 @@
     "send-message": "./communication/sendMessage.js",
     "file-upload": "./communication/uploadFile.js",
     "live-sync": "./communication/live-sync.js",
+    "tailwind-inject": "./core/tailwindInject.js",
     "export-to-window": "./core/exportToWindow.js"
   },
   "categories": {
@@ -802,7 +831,8 @@
         "persist",
         "snapshot",
         "option-visibility",
-        "edit-mode"
+        "edit-mode",
+        "tailwind-inject"
       ]
     },
     "custom-attributes": {
@@ -946,6 +976,7 @@
         "send-message",
         "file-upload",
         "live-sync",
+        "tailwind-inject",
         "export-to-window"
       ]
     }

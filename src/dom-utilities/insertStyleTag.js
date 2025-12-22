@@ -6,24 +6,33 @@
  * duplicates. This ensures:
  *   - No flickering: new styles are applied before old ones are removed
  *   - Always upgrades: we default to the new styles/approach
+ *
+ * Usage:
+ *   insertStyles('/path/to/file.css')                    // External stylesheet
+ *   insertStyles('/path/to/file.css', (link) => { ... }) // With callback
+ *   insertStyles('my-styles', '.foo { ... }')            // Inline CSS
+ *   insertStyles('my-styles', '.foo { ... }', (style) => { ... }) // With callback
  */
-function insertStyles(nameOrHref, css) {
-  if (css !== undefined) {
-    // Inline style: insertStyles('my-styles', '.foo { ... }')
+function insertStyles(nameOrHref, cssOrCallback, callback) {
+  if (typeof cssOrCallback === 'string') {
+    // Inline style: insertStyles('my-styles', '.foo { ... }', optionalCallback)
     const name = nameOrHref;
+    const css = cssOrCallback;
     const oldStyles = document.querySelectorAll(`style[data-name="${name}"]`);
 
     const style = document.createElement('style');
     style.dataset.name = name;
     style.textContent = css;
+    if (callback) callback(style);
     document.head.appendChild(style);
 
     oldStyles.forEach(el => el.remove());
     return style;
   }
 
-  // External stylesheet: insertStyles('/path/to/file.css')
+  // External stylesheet: insertStyles('/path/to/file.css', optionalCallback)
   const href = nameOrHref;
+  const cb = typeof cssOrCallback === 'function' ? cssOrCallback : undefined;
 
   let identifier;
   try {
@@ -40,6 +49,7 @@ function insertStyles(nameOrHref, css) {
   const link = document.createElement('link');
   link.rel = 'stylesheet';
   link.href = href;
+  if (cb) cb(link);
   document.head.appendChild(link);
 
   oldLinks.forEach(el => el.remove());

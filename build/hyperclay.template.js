@@ -26,6 +26,7 @@ window.__hyperclayNoAutoExport = true;
 
 const MODULE_PATHS = __MODULE_PATHS__;
 const PRESETS = __PRESETS__;
+const EDIT_MODE_ONLY = new Set(__EDIT_MODE_ONLY__);
 
 // Parse URL (use import.meta.url for ES modules since document.currentScript is null)
 const url = new URL(import.meta.url);
@@ -49,6 +50,17 @@ if (preset && PRESETS[preset]) {
 if (exclude) {
   const excluded = new Set(exclude.split(',').map(f => f.trim()));
   requested = requested.filter(f => !excluded.has(f));
+}
+
+// view-mode-excludes-edit-modules: skip edit-only modules when not in edit mode
+const viewModeExcludesEdit = requested.includes('view-mode-excludes-edit-modules');
+if (viewModeExcludesEdit) {
+  requested = requested.filter(f => f !== 'view-mode-excludes-edit-modules');
+  const { isEditMode } = await import('./core/isAdminOfCurrentResource.js');
+  if (!isEditMode) {
+    requested = requested.filter(f => !EDIT_MODE_ONLY.has(f));
+    if (debug) console.log('HyperclayJS: View mode - excluding edit-only modules');
+  }
 }
 
 // Modules that extend prototypes must load before modules that execute user code

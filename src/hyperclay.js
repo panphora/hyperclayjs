@@ -64,6 +64,7 @@ const MODULE_PATHS = {
   "send-message": "./communication/sendMessage.js",
   "file-upload": "./communication/uploadFile.js",
   "live-sync": "./communication/live-sync.js",
+  "tailwind-inject": "./core/tailwindInject.js",
   "export-to-window": "./core/exportToWindow.js"
 };
 const PRESETS = {
@@ -138,10 +139,27 @@ const PRESETS = {
       "send-message",
       "file-upload",
       "live-sync",
+      "tailwind-inject",
       "export-to-window"
     ]
   }
 };
+const EDIT_MODE_ONLY = new Set([
+  "save-core",
+  "save-system",
+  "autosave",
+  "unsaved-warning",
+  "save-toast",
+  "edit-mode-helpers",
+  "persist",
+  "snapshot",
+  "sortable",
+  "onaftersave",
+  "cache-bust",
+  "file-upload",
+  "live-sync",
+  "tailwind-inject"
+]);
 
 // Parse URL (use import.meta.url for ES modules since document.currentScript is null)
 const url = new URL(import.meta.url);
@@ -165,6 +183,17 @@ if (preset && PRESETS[preset]) {
 if (exclude) {
   const excluded = new Set(exclude.split(',').map(f => f.trim()));
   requested = requested.filter(f => !excluded.has(f));
+}
+
+// view-mode-excludes-edit-modules: skip edit-only modules when not in edit mode
+const viewModeExcludesEdit = requested.includes('view-mode-excludes-edit-modules');
+if (viewModeExcludesEdit) {
+  requested = requested.filter(f => f !== 'view-mode-excludes-edit-modules');
+  const { isEditMode } = await import('./core/isAdminOfCurrentResource.js');
+  if (!isEditMode) {
+    requested = requested.filter(f => !EDIT_MODE_ONLY.has(f));
+    if (debug) console.log('HyperclayJS: View mode - excluding edit-only modules');
+  }
 }
 
 // Modules that extend prototypes must load before modules that execute user code

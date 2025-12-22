@@ -19,7 +19,7 @@ async function generateReadme() {
   const template = fs.readFileSync(templatePath, 'utf-8');
 
   // Read module dependency graph
-  const graphPath = path.join(ROOT_DIR, 'src', 'module-dependency-graph.json');
+  const graphPath = path.join(ROOT_DIR, 'module-dependency-graph.generated.json');
   const graph = JSON.parse(fs.readFileSync(graphPath, 'utf-8'));
 
   // Generate module tables by category

@@ -17,13 +17,17 @@ This project uses a build system that generates several files from source templa
 
 | File | Generated from |
 |------|----------------|
-| `module-dependency-graph.json` | `generate-dependency-graph.js` |
-| `hyperclay.js` | `build-loader.js` + `module-dependency-graph.json` |
-| `README.md` | `README.template.md` + `module-dependency-graph.json` |
+| `module-dependency-graph.generated.json` | `generate-dependency-graph.js` |
+| `hyperclay.js` | `build-loader.js` + `module-dependency-graph.generated.json` |
+| `README.md` | `README.template.md` + `module-dependency-graph.generated.json` |
 
 ### Special Case: index.html
 
-`index.html` loads `module-dependency-graph.json` at runtime and dynamically renders module information. The module data (names, descriptions, exports) comes from the JSON file, but the rendering template is in `index.html` itself.
+`index.html` loads `module-dependency-graph.json` at runtime (copied from `module-dependency-graph.generated.json` during website build) and dynamically renders module information. The module data (names, descriptions, exports) comes from the JSON file, but the rendering template is in `index.html` itself.
+
+## How Dependencies Are Tracked
+
+Dependencies between modules are **automatically detected** by [Madge](https://github.com/pahen/madge), which analyzes the `import` statements in each file. You don't need to manually declare dependencies anywhere - just import what you need and run the build.
 
 ## Making Changes
 

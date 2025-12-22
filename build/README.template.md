@@ -143,7 +143,7 @@ The project uses Madge to automatically analyze dependencies and generate rich m
 npm run generate:deps
 ```
 
-This creates `module-dependency-graph.json` with:
+This creates `module-dependency-graph.generated.json` with:
 - Complete dependency tree
 - Actual file sizes
 - Category assignments

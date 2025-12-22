@@ -66,6 +66,7 @@ import 'hyperclayjs/presets/standard.js';
 | save-system | 7.1KB | CMD+S, [trigger-save] button, savestatus attribute |
 | save-toast | 0.9KB | Toast notifications for save events |
 | snapshot | 7.5KB | Source of truth for page state - captures DOM snapshots for save and sync |
+| tailwind-inject | 0.4KB | Injects tailwind CSS link with cache-bust on save |
 | unsaved-warning | 0.8KB | Warn before leaving page with unsaved changes |
 
 ### Custom Attributes (HTML enhancements)
@@ -105,7 +106,7 @@ import 'hyperclayjs/presets/standard.js';
 | all-js | 14.4KB | Full DOM manipulation library |
 | dom-ready | 0.4KB | DOM ready callback |
 | form-data | 2KB | Extract form data as an object |
-| style-injection | 1.9KB | Dynamic stylesheet injection |
+| style-injection | 2.4KB | Dynamic stylesheet injection |
 
 ### String Utilities (String manipulation helpers)
 
@@ -141,7 +142,7 @@ Standard feature set for most use cases
 
 **Modules:** `save-core`, `save-system`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `save-toast`, `export-to-window`
 
-### Everything (~177.2KB)
+### Everything (~178.1KB)
 All available features
 
 Includes all available modules across all categories.
@@ -230,7 +231,7 @@ The project uses Madge to automatically analyze dependencies and generate rich m
 npm run generate:deps
 ```
 
-This creates `module-dependency-graph.json` with:
+This creates `module-dependency-graph.generated.json` with:
 - Complete dependency tree
 - Actual file sizes
 - Category assignments

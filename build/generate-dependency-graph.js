@@ -42,6 +42,7 @@ const MODULE_DEFINITIONS = {
     name: 'save-core',
     moduleId: 'save-core',
     description: 'Basic save function only - hyperclay.savePage()',
+    isEditModeOnly: true,
     exports: {
       savePage: ['hyperclay']
     }
@@ -50,6 +51,7 @@ const MODULE_DEFINITIONS = {
     name: 'save-system',
     moduleId: 'save-system',
     description: 'CMD+S, [trigger-save] button, savestatus attribute',
+    isEditModeOnly: true,
     exports: {
       beforeSave: ['hyperclay'],
       savePage: ['hyperclay'],
@@ -60,38 +62,44 @@ const MODULE_DEFINITIONS = {
   'core/autosave.js': {
     name: 'autosave',
     moduleId: 'autosave',
-    description: 'Auto-save on DOM changes'
+    description: 'Auto-save on DOM changes',
+    isEditModeOnly: true
     // No exports - auto-inits on load, savePageThrottled is in save-system
   },
   'core/unsavedWarning.js': {
     name: 'unsaved-warning',
     moduleId: 'unsaved-warning',
-    description: 'Warn before leaving page with unsaved changes'
+    description: 'Warn before leaving page with unsaved changes',
+    isEditModeOnly: true
     // No exports - auto-inits on load
   },
   'core/saveToast.js': {
     name: 'save-toast',
     moduleId: 'save-toast',
-    description: 'Toast notifications for save events'
+    description: 'Toast notifications for save events',
+    isEditModeOnly: true
     // No exports - auto-inits on load, listens for save events
   },
   'core/adminSystem.js': {
     name: 'edit-mode-helpers',
     moduleId: 'edit-mode-helpers',
     description: 'Admin-only functionality: [edit-mode-input], [edit-mode-resource], [edit-mode-onclick]',
+    isEditModeOnly: true,
     relatedFiles: ['core/adminContenteditable.js', 'core/adminInputs.js', 'core/adminOnClick.js', 'core/adminResources.js']
     // No exports - side effects only (init function)
   },
   'core/enablePersistentFormInputValues.js': {
     name: 'persist',
     moduleId: 'persist',
-    description: 'Persist input/select/textarea values to the DOM with [persist] attribute'
+    description: 'Persist input/select/textarea values to the DOM with [persist] attribute',
+    isEditModeOnly: true
     // No exports - auto-inits on load
   },
   'core/snapshot.js': {
     name: 'snapshot',
     moduleId: 'snapshot',
     description: 'Source of truth for page state - captures DOM snapshots for save and sync',
+    isEditModeOnly: true,
     exports: {
       captureSnapshot: ['hyperclay'],
       captureForSave: ['hyperclay'],
@@ -135,7 +143,8 @@ const MODULE_DEFINITIONS = {
   'custom-attributes/sortable.js': {
     name: 'sortable',
     moduleId: 'sortable',
-    description: 'Drag-drop sorting with [sortable], lazy-loads ~118KB Sortable.js in edit mode'
+    description: 'Drag-drop sorting with [sortable], lazy-loads ~118KB Sortable.js in edit mode',
+    isEditModeOnly: true
     // No exports - Sortable.js is loaded via script tag in edit mode only
   },
   'custom-attributes/domHelpers.js': {
@@ -154,7 +163,8 @@ const MODULE_DEFINITIONS = {
   'custom-attributes/onaftersave.js': {
     name: 'onaftersave',
     moduleId: 'onaftersave',
-    description: '[onaftersave] attribute - run JS when save status changes'
+    description: '[onaftersave] attribute - run JS when save status changes',
+    isEditModeOnly: true
     // No exports - auto-inits on load
   },
   'ui/prompts.js': {
@@ -237,6 +247,7 @@ const MODULE_DEFINITIONS = {
     name: 'cache-bust',
     moduleId: 'cache-bust',
     description: 'Cache-bust href/src attributes',
+    isEditModeOnly: true,
     exports: {
       cacheBust: ['window', 'hyperclay']
     }
@@ -336,6 +347,7 @@ const MODULE_DEFINITIONS = {
     name: 'file-upload',
     moduleId: 'file-upload',
     description: 'File upload with progress',
+    isEditModeOnly: true,
     exports: {
       uploadFile: ['hyperclay'],
       createFile: ['hyperclay'],
@@ -346,16 +358,23 @@ const MODULE_DEFINITIONS = {
     name: 'live-sync',
     moduleId: 'live-sync',
     description: 'Real-time DOM sync across browsers',
-    dependencies: ['idiomorph'],
+    isEditModeOnly: true,
     exports: {
       liveSync: ['hyperclay']
     }
+  },
+  'core/tailwindInject.js': {
+    name: 'tailwind-inject',
+    moduleId: 'tailwind-inject',
+    description: 'Injects tailwind CSS link with cache-bust on save',
+    isEditModeOnly: true
+    // No exports - auto-inits on load
   },
   'core/exportToWindow.js': {
     name: 'export-to-window',
     moduleId: 'export-to-window',
     description: 'Export all modules to window.hyperclay and window globals',
-    hidden: true,
+    hidden: true
     // No exports - this module flips the auto-export flag
   }
 };
@@ -497,6 +516,7 @@ async function generateDependencyGraph() {
       name: definition.name,
       category: category,
       size: totalSize,
+      ...(definition.isEditModeOnly && { isEditModeOnly: true }),
       files: files,
       description: definition.description,
       exports: definition.exports || {}
@@ -527,10 +547,10 @@ async function generateDependencyGraph() {
   };
 
   // Write to file
-  const outputPath = path.join(SRC_DIR, 'module-dependency-graph.json');
+  const outputPath = path.join(ROOT_DIR, 'module-dependency-graph.generated.json');
   fs.writeFileSync(outputPath, JSON.stringify(graph, null, 2));
 
-  console.log('✅ Generated module-dependency-graph.json');
+  console.log('✅ Generated module-dependency-graph.generated.json');
   console.log(`📊 Total modules: ${Object.keys(modules).length}`);
   console.log(`📂 Categories: ${Object.keys(CATEGORIES).length}`);
   console.log(`🎯 Presets: ${Object.keys(PRESETS).length}`);

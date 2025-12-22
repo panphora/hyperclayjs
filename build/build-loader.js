@@ -19,7 +19,7 @@ const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
 const version = packageJson.version;
 
 // Read module dependency graph
-const depGraphPath = path.join(__dirname, '../src/module-dependency-graph.json');
+const depGraphPath = path.join(__dirname, '../module-dependency-graph.generated.json');
 const depGraph = JSON.parse(fs.readFileSync(depGraphPath, 'utf8'));
 
 // Read template
@@ -49,15 +49,31 @@ function generateExports() {
   return exportLines.join('\n');
 }
 
+// Generate the edit-mode-only modules set
+function generateEditModeOnly() {
+  const modules = depGraph.modules || {};
+  const editModeOnly = [];
+
+  for (const [moduleId, module] of Object.entries(modules)) {
+    if (module.isEditModeOnly) {
+      editModeOnly.push(moduleId);
+    }
+  }
+
+  return editModeOnly;
+}
+
 // Generate the loader
 function generateLoader() {
   const modulePaths = depGraph.modulePaths || {};
   const presets = depGraph.presets;
+  const editModeOnly = generateEditModeOnly();
 
   let output = template;
   output = output.replace('__VERSION__', version);
   output = output.replace('__MODULE_PATHS__', JSON.stringify(modulePaths, null, 2));
   output = output.replace('__PRESETS__', JSON.stringify(presets, null, 2));
+  output = output.replace('__EDIT_MODE_ONLY__', JSON.stringify(editModeOnly, null, 2));
   output = output.replace('__EXPORTS__', generateExports());
 
   return output;
