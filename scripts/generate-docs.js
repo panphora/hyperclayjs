@@ -15,7 +15,7 @@ const FUNCTION_ORDER = [
   // UI
   'toast', 'ask', 'consent', 'tell', 'snippet', 'themodal',
   // DOM
-  'All', 'insertStyles', 'getDataFromForm', 'onDomReady', 'onLoad',
+  'All', 'insertStyles', 'getDataFromForm', 'onDomReady', 'onLoad', 'dom-helpers',
   // String
   'slugify', 'copyToClipboard', 'query',
   // Utilities
@@ -23,7 +23,11 @@ const FUNCTION_ORDER = [
   // Communication
   'sendMessage', 'uploadFile', 'createFile', 'uploadFileBasic', 'live-sync',
   // Event Attributes
-  'onclickaway', 'onclickchildren', 'onclone', 'onmutation', 'onpagemutation', 'onrender'
+  'onclickaway', 'onclickchildren', 'onclone', 'onmutation', 'onpagemutation', 'onrender',
+  // Custom Attributes
+  'persist', 'onaftersave', 'prevent-enter', 'autosize', 'sortable', 'option-visibility',
+  // Save/Edit Features
+  'edit-mode', 'edit-mode-helpers', 'save-system', 'save-toast', 'unsaved-warning', 'autosave', 'tailwind-inject'
 ];
 
 // Category definitions with display order
@@ -34,7 +38,7 @@ const CATEGORIES = {
   },
   dom: {
     name: 'DOM Utilities',
-    functions: ['All', 'insertStyles', 'getDataFromForm', 'onDomReady', 'onLoad']
+    functions: ['All', 'insertStyles', 'getDataFromForm', 'onDomReady', 'onLoad', 'dom-helpers']
   },
   string: {
     name: 'String Utilities',
@@ -51,6 +55,14 @@ const CATEGORIES = {
   events: {
     name: 'Event Attributes',
     functions: ['onclickaway', 'onclickchildren', 'onclone', 'onmutation', 'onpagemutation', 'onrender']
+  },
+  customAttrs: {
+    name: 'Custom Attributes',
+    functions: ['persist', 'onaftersave', 'prevent-enter', 'autosize', 'sortable', 'option-visibility']
+  },
+  saveEdit: {
+    name: 'Save/Edit Features',
+    functions: ['edit-mode', 'edit-mode-helpers', 'save-system', 'save-toast', 'unsaved-warning', 'autosave', 'tailwind-inject']
   }
 };
 

@@ -1232,7 +1232,7 @@ themodal.open();</code></pre>
             const before = fakeLink.href;
             cacheBust(fakeLink);
             const after = fakeLink.href;
-            document.getElementById('cache-bust-log').textContent = `${before} → ${after.split('?')[0]}?v=...`;
+            document.getElementById('cache-bust-log').textContent = `${before} → ${after}`;
         };
 
         // Save system - update savestatus on edit

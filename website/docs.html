@@ -396,11 +396,13 @@
       <button class="sidebar-close" onclick="closeSidebar()" aria-label="Close menu">&times;</button>
       <h2>API Reference</h2><div class="sidebar-section">
       <h3>UI Components</h3><a href="#fn-toast">toast</a><a href="#fn-ask">ask</a><a href="#fn-consent">consent</a><a href="#fn-tell">tell</a><a href="#fn-snippet">snippet</a><a href="#fn-themodal">themodal</a></div><div class="sidebar-section">
-      <h3>DOM Utilities</h3><a href="#fn-All">All</a><a href="#fn-insertStyles">insertStyles</a><a href="#fn-getDataFromForm">getDataFromForm</a><a href="#fn-onDomReady">onDomReady</a><a href="#fn-onLoad">onLoad</a></div><div class="sidebar-section">
+      <h3>DOM Utilities</h3><a href="#fn-All">All</a><a href="#fn-insertStyles">insertStyles</a><a href="#fn-getDataFromForm">getDataFromForm</a><a href="#fn-onDomReady">onDomReady</a><a href="#fn-onLoad">onLoad</a><a href="#fn-dom-helpers">dom-helpers</a></div><div class="sidebar-section">
       <h3>String Utilities</h3><a href="#fn-slugify">slugify</a><a href="#fn-copyToClipboard">copyToClipboard</a><a href="#fn-query">query</a></div><div class="sidebar-section">
       <h3>Utilities</h3><a href="#fn-throttle">throttle</a><a href="#fn-debounce">debounce</a><a href="#fn-cacheBust">cacheBust</a><a href="#fn-cookie">cookie</a><a href="#fn-Mutation">Mutation</a><a href="#fn-nearest">nearest</a></div><div class="sidebar-section">
       <h3>Communication</h3><a href="#fn-sendMessage">sendMessage</a><a href="#fn-uploadFile">uploadFile</a><a href="#fn-createFile">createFile</a><a href="#fn-uploadFileBasic">uploadFileBasic</a><a href="#fn-live-sync">live-sync</a></div><div class="sidebar-section">
-      <h3>Event Attributes</h3><a href="#fn-onclickaway">onclickaway</a><a href="#fn-onclickchildren">onclickchildren</a><a href="#fn-onclone">onclone</a><a href="#fn-onmutation">onmutation</a><a href="#fn-onpagemutation">onpagemutation</a><a href="#fn-onrender">onrender</a></div>
+      <h3>Event Attributes</h3><a href="#fn-onclickaway">onclickaway</a><a href="#fn-onclickchildren">onclickchildren</a><a href="#fn-onclone">onclone</a><a href="#fn-onmutation">onmutation</a><a href="#fn-onpagemutation">onpagemutation</a><a href="#fn-onrender">onrender</a></div><div class="sidebar-section">
+      <h3>Custom Attributes</h3><a href="#fn-persist">persist</a><a href="#fn-onaftersave">onaftersave</a><a href="#fn-prevent-enter">prevent-enter</a><a href="#fn-autosize">autosize</a><a href="#fn-sortable">sortable</a><a href="#fn-option-visibility">option-visibility</a></div><div class="sidebar-section">
+      <h3>Save/Edit Features</h3><a href="#fn-edit-mode">edit-mode</a><a href="#fn-edit-mode-helpers">edit-mode-helpers</a><a href="#fn-save-system">save-system</a><a href="#fn-save-toast">save-toast</a><a href="#fn-unsaved-warning">unsaved-warning</a><a href="#fn-autosave">autosave</a><a href="#fn-tailwind-inject">tailwind-inject</a></div>
     </div>
     <main class="content">
       <h1>HyperclayJS API Reference</h1>
@@ -905,6 +907,55 @@ onLoad(() =&gt; {
 // Difference from onDomReady:
 // - onDomReady: DOM structure ready, images may still be loading
 // - onLoad: Everything loaded including images, fonts, iframes</pre></div>
+  </div><div class="function-card" id="fn-dom-helpers">
+    <h3>dom-helpers</h3>
+    <p class="function-description">Adds convenience methods to all HTML elements for finding and manipulating nearby elements. Built on top of the `nearest` utility.</p>
+    
+    
+    
+    <h4>Methods</h4>
+    <table class="params-table">
+      <tr><th>Method</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>el.cycle(order, attr)</code></td>
+          <td>Replace element with next element having same attribute</td>
+        </tr>
+      
+        <tr>
+          <td><code>el.cycleAttr(order, setAttr, lookupAttr?)</code></td>
+          <td>Cycle through attribute values</td>
+        </tr>
+      
+    </table>
+    
+    <h4>Example</h4><div class="example"><pre>// Find nearest element with [project] or .project
+const projectEl = this.nearest.project;
+
+// Get/set values (smart: uses .value for form elements, attribute otherwise)
+const projectName = this.val.project;
+this.val.project = &quot;New Name&quot;;
+
+// Get/set innerText
+const label = this.text.title;
+this.text.title = &quot;Updated Title&quot;;
+
+// Execute code from an attribute
+// If &lt;div sync_out=&quot;savePage()&quot;&gt; exists nearby, this runs savePage()
+this.exec.sync_out();
+
+// Cycle through elements
+// Replaces current element with next element having [variant] attribute
+this.cycle(1, 'variant');   // forward
+this.cycle(-1, 'variant');  // backward
+
+// Cycle through attribute values
+// Sets theme to next value found on any [theme] element
+this.cycleAttr(1, 'theme');
+
+// Cycle with different lookup attribute
+// Sets color based on values from [option:color] elements
+this.cycleAttr(1, 'color', 'option:color');</pre></div>
   </div></div><div class="category-section" id="cat-string">
       <h2>String Utilities</h2><div class="function-card" id="fn-slugify">
     <h3>slugify</h3>
@@ -1594,6 +1645,162 @@ try {
   </div><div class="function-card" id="fn-onrender">
     <h3>onrender</h3>
     <p class="function-description">Execute code once when an element is rendered (added to the DOM).</p>
+    
+    
+    
+    
+    
+    
+  </div></div><div class="category-section" id="cat-customAttrs">
+      <h2>Custom Attributes</h2><div class="function-card" id="fn-persist">
+    <h3>persist</h3>
+    <p class="function-description">Sync form input values to the saved/synced page snapshot.</p>
+    
+    
+    
+    
+    
+    
+  </div><div class="function-card" id="fn-onaftersave">
+    <h3>onaftersave</h3>
+    <p class="function-description">Execute code after a successful page save.</p>
+    
+    
+    
+    
+    
+    
+  </div><div class="function-card" id="fn-prevent-enter">
+    <h3>prevent-enter</h3>
+    <p class="function-description">Prevent the Enter key from creating newlines in an element.</p>
+    
+    
+    
+    
+    
+    
+  </div><div class="function-card" id="fn-autosize">
+    <h3>autosize</h3>
+    <p class="function-description">Automatically grow textarea height to fit content.</p>
+    
+    
+    
+    
+    
+    
+  </div><div class="function-card" id="fn-sortable">
+    <h3>sortable</h3>
+    <p class="function-description">Enable drag-and-drop sorting on child elements.</p>
+    
+    
+    
+    
+    
+    
+  </div><div class="function-card" id="fn-option-visibility">
+    <h3>option-visibility</h3>
+    <p class="function-description">Show or hide elements based on ancestor attribute values.</p>
+    
+    
+    
+    
+    
+    
+  </div></div><div class="category-section" id="cat-saveEdit">
+      <h2>Save/Edit Features</h2><div class="function-card" id="fn-edit-mode">
+    <h3>edit-mode</h3>
+    <p class="function-description">Provides edit mode detection and toggling for page editing.</p>
+    
+    
+    
+    <h4>Methods</h4>
+    <table class="params-table">
+      <tr><th>Method</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>toggleEditMode()</code></td>
+          <td>Toggle edit mode on/off (reloads page)</td>
+        </tr>
+      
+    </table>
+    
+    <h4>Example</h4><div class="example"><pre>// Check if in edit mode
+if (hyperclay.isEditMode) {
+  // Show edit UI
+}
+
+// Check if user owns the resource
+if (hyperclay.isOwner) {
+  // Show owner-only controls
+}
+
+// Toggle edit mode (reloads page with ?editmode=true/false)
+hyperclay.toggleEditMode();</pre></div>
+  </div><div class="function-card" id="fn-edit-mode-helpers">
+    <h3>edit-mode-helpers</h3>
+    <p class="function-description">Combines edit mode detection with page type attribute. Automatically sets `pagetype` attribute on `&lt;html&gt;` based on URL.</p>
+    
+    
+    
+    
+    
+    
+  </div><div class="function-card" id="fn-save-system">
+    <h3>save-system</h3>
+    <p class="function-description">Manual save with change detection, state management, keyboard shortcuts, and save button support.</p>
+    
+    
+    
+    
+    
+    <h4>Example</h4><div class="example"><pre>// Manual save
+hyperclay.savePage();
+
+// Save with callback
+hyperclay.savePage(({msg, msgType}) =&gt; {
+  if (msgType === 'error') {
+    console.error('Save failed:', msg);
+  }
+});
+
+// Register before-save hook
+hyperclay.beforeSave((clone) =&gt; {
+  // Modify the snapshot clone before saving
+  clone.querySelectorAll('.temp').forEach(el =&gt; el.remove());
+});
+
+// Replace page with template
+hyperclay.replacePageWith('/templates/blog.html');</pre></div>
+  </div><div class="function-card" id="fn-save-toast">
+    <h3>save-toast</h3>
+    <p class="function-description">Shows toast notifications for save lifecycle events.</p>
+    
+    
+    
+    
+    
+    
+  </div><div class="function-card" id="fn-unsaved-warning">
+    <h3>unsaved-warning</h3>
+    <p class="function-description">Warns users before leaving the page if there are unsaved changes.</p>
+    
+    
+    
+    
+    
+    
+  </div><div class="function-card" id="fn-autosave">
+    <h3>autosave</h3>
+    <p class="function-description">Automatically saves the page when DOM changes are detected.</p>
+    
+    
+    
+    
+    
+    
+  </div><div class="function-card" id="fn-tailwind-inject">
+    <h3>tailwind-inject</h3>
+    <p class="function-description">Automatically injects the Tailwind CSS link with cache-busting on save.</p>
     
     
     
