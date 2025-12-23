@@ -427,7 +427,7 @@
     "toast": {
       "name": "toast",
       "category": "ui",
-      "size": 7.7,
+      "size": 7.9,
       "files": [
         "ui/toast.js"
       ],
@@ -457,7 +457,7 @@
     "the-modal": {
       "name": "the-modal",
       "category": "ui",
-      "size": 21.8,
+      "size": 20.8,
       "files": [
         "ui/theModal.js"
       ],

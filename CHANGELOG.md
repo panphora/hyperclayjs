@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.0] - 2025-12-22
+
+### Added
+- CSS variables for modal and toast font customization
+
+
+
 ## [1.12.0] - 2025-12-22
 
 ### Added
