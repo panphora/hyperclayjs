@@ -101,6 +101,7 @@
     ],
     "custom-attributes/events.js": [
       "custom-attributes/onclickaway.js",
+      "custom-attributes/onclickchildren.js",
       "custom-attributes/onclone.js",
       "custom-attributes/onmutation.js",
       "custom-attributes/onpagemutation.js",
@@ -112,6 +113,7 @@
     ],
     "custom-attributes/onaftersave.js": [],
     "custom-attributes/onclickaway.js": [],
+    "custom-attributes/onclickchildren.js": [],
     "custom-attributes/onclone.js": [],
     "custom-attributes/onmutation.js": [
       "utilities/mutation.js"
@@ -329,15 +331,16 @@
     "event-attrs": {
       "name": "event-attrs",
       "category": "custom-attributes",
-      "size": 4.1000000000000005,
+      "size": 4.6,
       "files": [
         "custom-attributes/events.js",
         "custom-attributes/onclickaway.js",
+        "custom-attributes/onclickchildren.js",
         "custom-attributes/onclone.js",
         "custom-attributes/onpagemutation.js",
         "custom-attributes/onrender.js"
       ],
-      "description": "[onclickaway], [onclone], [onpagemutation], [onrender]",
+      "description": "[onclickaway], [onclickchildren], [onclone], [onpagemutation], [onrender]",
       "exports": {}
     },
     "ajax-elements": {

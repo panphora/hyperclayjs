@@ -130,8 +130,8 @@ const MODULE_DEFINITIONS = {
   'custom-attributes/events.js': {
     name: 'event-attrs',
     moduleId: 'event-attrs',
-    description: '[onclickaway], [onclone], [onpagemutation], [onrender]',
-    relatedFiles: ['custom-attributes/onclickaway.js', 'custom-attributes/onclone.js', 'custom-attributes/onpagemutation.js', 'custom-attributes/onrender.js']
+    description: '[onclickaway], [onclickchildren], [onclone], [onpagemutation], [onrender]',
+    relatedFiles: ['custom-attributes/onclickaway.js', 'custom-attributes/onclickchildren.js', 'custom-attributes/onclone.js', 'custom-attributes/onpagemutation.js', 'custom-attributes/onrender.js']
     // No exports - side effects only (init function)
   },
   'custom-attributes/ajaxElements.js': {

@@ -75,7 +75,7 @@ import 'hyperclayjs/presets/standard.js';
 |--------|------|-------------|
 | ajax-elements | 2.6KB | [ajax-form], [ajax-button] for async form submissions |
 | dom-helpers | 6.2KB | el.nearest, el.val, el.text, el.exec, el.cycle |
-| event-attrs | 4.1KB | [onclickaway], [onclone], [onpagemutation], [onrender] |
+| event-attrs | 4.6KB | [onclickaway], [onclickchildren], [onclone], [onpagemutation], [onrender] |
 | input-helpers | 1.2KB | [prevent-enter], [autosize] for textareas |
 | onaftersave | 1KB | [onaftersave] attribute - run JS when save status changes |
 | sortable | 3.4KB | Drag-drop sorting with [sortable], lazy-loads ~118KB Sortable.js in edit mode |
@@ -137,12 +137,12 @@ Essential features for basic editing
 
 **Modules:** `save-core`, `save-system`, `edit-mode-helpers`, `toast`, `save-toast`, `export-to-window`
 
-### Standard (~48.4KB)
+### Standard (~48.9KB)
 Standard feature set for most use cases
 
 **Modules:** `save-core`, `save-system`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `save-toast`, `export-to-window`
 
-### Everything (~178.1KB)
+### Everything (~178.6KB)
 All available features
 
 Includes all available modules across all categories.
