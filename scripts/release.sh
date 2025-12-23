@@ -98,16 +98,7 @@ if [ -n "$LAST_TAG" ]; then
         echo "Generated changelog:"
         echo "$CHANGELOG_ENTRIES"
         echo ""
-
-        read -p "Accept this changelog? [Y/n]: " accept_changelog
-        if [[ $accept_changelog =~ ^[Nn]$ ]]; then
-            echo ""
-            info "Enter changelog entries manually (Ctrl+D when done):"
-            echo "Format: Type: Description"
-            echo "Types: Added, Changed, Fixed, Breaking"
-            echo ""
-            CHANGELOG_ENTRIES=$(cat)
-        fi
+        success "Changelog auto-accepted"
     fi
 else
     warn "No previous tags found"
@@ -119,10 +110,8 @@ else
     CHANGELOG_ENTRIES=$(cat)
 fi
 
-# Publish tag (latest, beta, alpha)
-echo ""
-read -p "NPM publish tag [latest/beta/alpha] (default: latest): " NPM_TAG
-NPM_TAG=${NPM_TAG:-latest}
+# Publish tag - default to latest
+NPM_TAG="latest"
 
 # ============================================
 # STEP 2: Pre-Release Checks
@@ -137,12 +126,11 @@ echo ""
 # Check git status
 info "Checking git status..."
 if [ -n "$(git status --porcelain)" ]; then
-    warn "You have uncommitted changes:"
+    error "You have uncommitted changes:"
     git status --short
-    read -p "Continue anyway? [y/N]: " continue_dirty
-    if [[ ! $continue_dirty =~ ^[Yy]$ ]]; then
-        exit 1
-    fi
+    echo ""
+    error "Commit or stash changes before releasing"
+    exit 1
 else
     success "Working directory clean"
 fi
@@ -150,11 +138,9 @@ fi
 # Check current branch
 CURRENT_BRANCH=$(git branch --show-current)
 if [ "$CURRENT_BRANCH" != "main" ]; then
-    warn "Not on main branch (currently on: $CURRENT_BRANCH)"
-    read -p "Continue anyway? [y/N]: " continue_branch
-    if [[ ! $continue_branch =~ ^[Yy]$ ]]; then
-        exit 1
-    fi
+    error "Not on main branch (currently on: $CURRENT_BRANCH)"
+    error "Switch to main branch before releasing"
+    exit 1
 else
     success "On main branch"
 fi
@@ -178,11 +164,8 @@ info "Running tests..."
 if npm test; then
     success "All tests passed"
 else
-    error "Tests failed"
-    read -p "Continue anyway? [y/N]: " continue_tests
-    if [[ ! $continue_tests =~ ^[Yy]$ ]]; then
-        exit 1
-    fi
+    error "Tests failed - aborting release"
+    exit 1
 fi
 
 # ============================================
@@ -321,15 +304,7 @@ info "Generating commit message with Claude..."
 COMMIT_MSG=$(echo "$CHANGELOG_ENTRIES" | npx @anthropic-ai/claude-code -p "Based on these changelog entries, generate a single-line commit message (max 72 chars) for a release. Start with 'chore: release v$NEW_VERSION - ' followed by a brief summary of the main changes. Output only the commit message, nothing else.")
 
 echo ""
-echo "Generated commit message:"
-echo "  $COMMIT_MSG"
-echo ""
-
-read -p "Accept this commit message? [Y/n]: " accept_commit_msg
-if [[ $accept_commit_msg =~ ^[Nn]$ ]]; then
-    echo ""
-    read -p "Enter custom commit message: " COMMIT_MSG
-fi
+echo "Commit message: $COMMIT_MSG"
 
 # Stage changes
 git add package.json CHANGELOG.md module-dependency-graph.generated.json src/hyperclay.js README.md website/load-jsdelivr.html
@@ -359,9 +334,6 @@ echo ""
 
 info "Running npm publish --dry-run..."
 npm publish --dry-run --tag "$NPM_TAG"
-
-echo ""
-warn "Review the output above carefully!"
 echo ""
 
 # ============================================
@@ -373,22 +345,8 @@ echo "Step 9: Publish to npm"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
-echo "Summary:"
-echo "  Version: $CURRENT_VERSION → $NEW_VERSION"
-echo "  Tag: $NPM_TAG"
-echo "  Git tag: v$NEW_VERSION"
+echo "Publishing: $CURRENT_VERSION → $NEW_VERSION (tag: $NPM_TAG)"
 echo ""
-
-read -p "Publish to npm? [y/N]: " confirm_publish
-if [[ ! $confirm_publish =~ ^[Yy]$ ]]; then
-    warn "Publish cancelled"
-    echo ""
-    echo "To manually publish later:"
-    echo "  git push origin main"
-    echo "  git push origin --tags"
-    echo "  npm publish --tag $NPM_TAG"
-    exit 0
-fi
 
 # Publish to npm
 info "Publishing to npm..."
