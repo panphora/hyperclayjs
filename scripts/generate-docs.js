@@ -21,7 +21,9 @@ const FUNCTION_ORDER = [
   // Utilities
   'throttle', 'debounce', 'cacheBust', 'cookie', 'Mutation', 'nearest',
   // Communication
-  'sendMessage', 'uploadFile', 'createFile', 'uploadFileBasic', 'live-sync'
+  'sendMessage', 'uploadFile', 'createFile', 'uploadFileBasic', 'live-sync',
+  // Event Attributes
+  'onclickaway', 'onclickchildren', 'onclone', 'onmutation', 'onpagemutation', 'onrender'
 ];
 
 // Category definitions with display order
@@ -45,6 +47,10 @@ const CATEGORIES = {
   communication: {
     name: 'Communication',
     functions: ['sendMessage', 'uploadFile', 'createFile', 'uploadFileBasic', 'live-sync']
+  },
+  events: {
+    name: 'Event Attributes',
+    functions: ['onclickaway', 'onclickchildren', 'onclone', 'onmutation', 'onpagemutation', 'onrender']
   }
 };
 
