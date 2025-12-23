@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.11.0] - 2025-12-22
+
+### Added
+- tailwindInject module for injecting Tailwind CSS
+- view-mode optimization
+
+
+
 ## [1.10.0] - 2025-12-20
 
 ### Added

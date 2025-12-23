@@ -134,7 +134,9 @@
     "dom-utilities/insertStyleTag.js": [],
     "dom-utilities/onDomReady.js": [],
     "dom-utilities/onLoad.js": [],
-    "hyperclay.js": [],
+    "hyperclay.js": [
+      "core/isAdminOfCurrentResource.js"
+    ],
     "string-utilities/copy-to-clipboard.js": [],
     "string-utilities/query.js": [],
     "string-utilities/slugify.js": [],
