@@ -1,11 +1,11 @@
 #!/bin/bash
 set -e  # Exit on error
 
-# HyperclayJS Automated Release Script
-# Automates most of the release process with command-line prompts
+# NPM Release Automation Script
+# Generic release script for any npm package
 
 echo "╔════════════════════════════════════════╗"
-echo "║   HyperclayJS Release Automation      ║"
+echo "║      NPM Release Automation           ║"
 echo "╚════════════════════════════════════════╝"
 echo ""
 
@@ -22,11 +22,14 @@ success() { echo -e "${GREEN}✓${NC} $1"; }
 warn() { echo -e "${YELLOW}⚠${NC} $1"; }
 error() { echo -e "${RED}✗${NC} $1"; }
 
-# Check if we're in the right directory
-if [ ! -f "package.json" ] || ! grep -q '"name": "hyperclayjs"' package.json; then
-    error "Must run from hyperclayjs root directory"
+# Check if we're in an npm package directory
+if [ ! -f "package.json" ]; then
+    error "No package.json found - must run from npm package root"
     exit 1
 fi
+
+# Get package name for messaging
+PACKAGE_NAME=$(node -p "require('./package.json').name")
 
 # ============================================
 # STEP 1: Collect Release Information
@@ -202,9 +205,14 @@ echo "Step 5: Build with New Version"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
-info "Running full build..."
-npm run build
-success "Build complete"
+# Check if build script exists
+if node -e "process.exit(require('./package.json').scripts?.build ? 0 : 1)" 2>/dev/null; then
+    info "Running build..."
+    npm run build
+    success "Build complete"
+else
+    info "No build script found, skipping"
+fi
 
 # ============================================
 # STEP 6: Update CHANGELOG
@@ -306,8 +314,8 @@ COMMIT_MSG=$(echo "$CHANGELOG_ENTRIES" | npx @anthropic-ai/claude-code -p "Based
 echo ""
 echo "Commit message: $COMMIT_MSG"
 
-# Stage changes
-git add package.json CHANGELOG.md module-dependency-graph.generated.json src/hyperclay.js README.md website/load-jsdelivr.html
+# Stage all changes
+git add -A
 
 # Commit
 git commit -m "$(cat <<EOF
@@ -350,7 +358,7 @@ echo ""
 
 # Publish to npm
 info "Publishing to npm..."
-SKIP_POSTPUBLISH=1 npm publish --tag "$NPM_TAG"
+npm publish --tag "$NPM_TAG"
 success "Published to npm!"
 
 # Push to git
@@ -372,7 +380,7 @@ echo ""
 sleep 5  # Give npm a moment to update
 
 info "Verifying npm publication..."
-NPM_VERSION=$(npm view hyperclayjs version 2>/dev/null || echo "unknown")
+NPM_VERSION=$(npm view "$PACKAGE_NAME" version 2>/dev/null || echo "unknown")
 if [ "$NPM_VERSION" = "$NEW_VERSION" ]; then
     success "npm shows version: $NPM_VERSION"
 else
@@ -389,15 +397,9 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 success "Release Complete!"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
-echo "Released: hyperclayjs@$NEW_VERSION"
+echo "Released: $PACKAGE_NAME@$NEW_VERSION"
 echo "npm tag: $NPM_TAG"
 echo "Git tag: v$NEW_VERSION"
 echo ""
-echo "Next steps:"
-echo "  • Test installation: npm install hyperclayjs@$NPM_TAG"
-echo "  • Check jsDelivr CDN: https://cdn.jsdelivr.net/npm/hyperclayjs@$NEW_VERSION/src/hyperclay.js"
-echo "  • Announce the release"
-echo ""
-echo "CDN URL:"
-echo "  https://cdn.jsdelivr.net/npm/hyperclayjs@$NEW_VERSION/src/hyperclay.js?preset=everything"
+echo "Test: npm install $PACKAGE_NAME@$NEW_VERSION"
 echo ""
