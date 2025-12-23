@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.12.0] - 2025-12-22
+
+### Added
+- Documentation for Custom Attributes and Save/Edit Features
+- Documentation for all event attributes
+- onclickchildren event attribute
+
+
+
 ## [1.11.0] - 2025-12-22
 
 ### Added
