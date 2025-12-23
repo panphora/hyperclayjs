@@ -71,8 +71,8 @@ const modernStyles = `
     align-items: center;
     gap: 12px;
     padding: 16px 24px 16px 16px;
-    font-size: 16px;
-    font-family: monospace;
+    font-size: var(--hyperclay-toast-font-size, 16px);
+    font-family: var(--hyperclay-toast-font-family, monospace);
     font-weight: bold;
     color: white;
     border-width: 1px;
@@ -155,6 +155,8 @@ export const hyperclayStyles = `
     background-color: #0B0C12;
     border: 2px dashed rgba(255,255,255,.6);
     transition: right 0.5s ease-in-out;
+    font-size: var(--hyperclay-toast-font-size, inherit);
+    font-family: var(--hyperclay-toast-font-family, inherit);
   }
 
   [data-toast-theme="hyperclay"] .toast svg {
