@@ -164,29 +164,14 @@ info "Pulling latest changes..."
 git pull origin main || warn "Could not pull (may need to merge)"
 
 # ============================================
-# STEP 3: Build and Test
+# STEP 3: Run Tests
 # ============================================
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "Step 3: Build and Test"
+echo "Step 3: Run Tests"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
-
-# Generate dependency graph
-info "Generating dependency graph..."
-npm run generate:deps
-success "Dependency graph generated"
-
-# Build loader
-info "Building loader..."
-npm run build:loader
-success "Loader built"
-
-# Build README
-info "Generating README..."
-npm run build:readme
-success "README generated"
 
 # Run tests
 info "Running tests..."
@@ -225,12 +210,26 @@ fi
 success "Version bumped to: $NEW_VERSION"
 
 # ============================================
-# STEP 5: Update CHANGELOG
+# STEP 5: Build with New Version
 # ============================================
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "Step 5: Update CHANGELOG"
+echo "Step 5: Build with New Version"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+
+info "Running full build..."
+npm run build
+success "Build complete"
+
+# ============================================
+# STEP 6: Update CHANGELOG
+# ============================================
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "Step 6: Update CHANGELOG"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
@@ -308,12 +307,12 @@ $CHANGELOG_ENTRY" > CHANGELOG.md
 fi
 
 # ============================================
-# STEP 6: Commit and Tag
+# STEP 7: Commit and Tag
 # ============================================
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "Step 6: Commit and Tag"
+echo "Step 7: Commit and Tag"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
@@ -349,12 +348,12 @@ git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION"
 success "Tag created: v$NEW_VERSION"
 
 # ============================================
-# STEP 7: Dry Run
+# STEP 8: Dry Run
 # ============================================
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "Step 7: Pre-Publish Verification"
+echo "Step 8: Pre-Publish Verification"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
@@ -366,11 +365,11 @@ warn "Review the output above carefully!"
 echo ""
 
 # ============================================
-# STEP 8: Publish
+# STEP 9: Publish
 # ============================================
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "Step 8: Publish to npm"
+echo "Step 9: Publish to npm"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
@@ -403,12 +402,12 @@ git push origin --tags
 success "Pushed to GitHub"
 
 # ============================================
-# STEP 9: Verify
+# STEP 10: Verify
 # ============================================
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "Step 9: Verification"
+echo "Step 10: Verification"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
