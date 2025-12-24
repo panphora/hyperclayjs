@@ -166,8 +166,10 @@ const MicroModal = (() => {
     }
 
     removeEventListeners () {
-      this.modal.removeEventListener('touchstart', this.onClick)
-      this.modal.removeEventListener('click', this.onClick)
+      if (this.modal) {
+        this.modal.removeEventListener('touchstart', this.onClick)
+        this.modal.removeEventListener('click', this.onClick)
+      }
       document.removeEventListener('keydown', this.onKeydown)
     }
 
@@ -303,7 +305,9 @@ const MicroModal = (() => {
   }
 
   const close = targetModal => {
+    if (!activeModal) return
     targetModal ? activeModal.closeModalById(targetModal) : activeModal.closeModal()
+    activeModal = null
   }
 
   return { init, show, close }
@@ -364,6 +368,7 @@ const modalCss = `<style class="micromodal-css">
 
 .micromodal__container {
   position: relative;
+  max-width: 600px;
   box-sizing: border-box;
   overflow-y: auto;
   padding: 26px 40px 40px 40px;
@@ -465,7 +470,7 @@ const modalCss = `<style class="micromodal-css">
   background-color: #1D1F2F;
   color: #E5E7EB;
   font-family: inherit;
-  font-size: 16px;
+  font-size: inherit;
   font-weight: bold;
 }
 
@@ -495,7 +500,7 @@ const modalCss = `<style class="micromodal-css">
 
 .micromodal .snippet-code-block pre {
   color: white;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--hyperclay-modal-code-font-family, var(--hyperclay-modal-font-family, monospace));
   font-size: 0.875rem;
   white-space: nowrap;
   margin: 0;
@@ -540,21 +545,21 @@ const modalCss = `<style class="micromodal-css">
 }
 
 .micromodal .micromodal__tell-title {
-  font-size: 20px;
+  font-size: var(--hyperclay-modal-title-font-size, 20px);
   font-weight: bold;
 }
 
 .micromodal .micromodal__tell-content {
-  font-size: 16px;
+  font-size: var(--hyperclay-modal-font-size, 16px);
   font-weight: normal;
 }
 
 @media (min-width: 640px) {
   .micromodal .micromodal__tell-title {
-    font-size: 22px;
+    font-size: var(--hyperclay-modal-title-font-size, 22px);
   }
   .micromodal .micromodal__tell-content {
-    font-size: 18px;
+    font-size: var(--hyperclay-modal-font-size, 18px);
   }
 }
 </style>`;

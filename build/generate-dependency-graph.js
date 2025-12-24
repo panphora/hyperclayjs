@@ -55,8 +55,7 @@ const MODULE_DEFINITIONS = {
     exports: {
       beforeSave: ['hyperclay'],
       savePage: ['hyperclay'],
-      savePageThrottled: ['hyperclay'],
-      replacePageWith: ['hyperclay']
+      savePageThrottled: ['hyperclay']
     }
   },
   'core/autosave.js': {
@@ -101,11 +100,6 @@ const MODULE_DEFINITIONS = {
     description: 'Source of truth for page state - captures DOM snapshots for save and sync',
     isEditModeOnly: true,
     exports: {
-      captureSnapshot: ['hyperclay'],
-      captureForSave: ['hyperclay'],
-      captureBodyForSync: ['hyperclay'],
-      onSnapshot: ['hyperclay'],
-      onPrepareForSave: ['hyperclay'],
       beforeSave: ['hyperclay'],
       getPageContents: ['hyperclay']
     }
@@ -190,10 +184,8 @@ const MODULE_DEFINITIONS = {
     name: 'toast-hyperclay',
     moduleId: 'toast-hyperclay',
     description: 'toastHyperclay() with legacy Hyperclay platform styling (hidden feature)',
-    hidden: true,
-    exports: {
-      toastHyperclay: ['window', 'hyperclay']
-    }
+    hidden: true
+    // No exports - hidden internal feature
   },
   'ui/theModal.js': {
     name: 'the-modal',
@@ -282,8 +274,7 @@ const MODULE_DEFINITIONS = {
     moduleId: 'style-injection',
     description: 'Dynamic stylesheet injection',
     exports: {
-      insertStyles: ['window', 'hyperclay'],
-      insertStyleTag: ['window', 'hyperclay']  // backwards-compat alias
+      insertStyles: ['window', 'hyperclay']
     }
   },
   'dom-utilities/getDataFromForm.js': {
@@ -330,10 +321,8 @@ const MODULE_DEFINITIONS = {
     name: 'behavior-collector',
     moduleId: 'behavior-collector',
     description: 'Tracks user interactions (mouse, scroll, keyboard)',
-    hidden: true,
-    exports: {
-      behaviorCollector: ['hyperclay']
-    }
+    hidden: true
+    // No exports - hidden internal feature
   },
   'communication/sendMessage.js': {
     name: 'send-message',
@@ -428,17 +417,17 @@ const PRESETS = {
   'minimal': {
     name: 'Minimal',
     description: 'Essential features for basic editing',
-    modules: ['save-core', 'save-system', 'edit-mode-helpers', 'toast', 'save-toast', 'export-to-window']
+    modules: ['save-core', 'snapshot', 'save-system', 'edit-mode-helpers', 'toast', 'save-toast', 'export-to-window', 'view-mode-excludes-edit-modules']
   },
   'standard': {
     name: 'Standard',
     description: 'Standard feature set for most use cases',
-    modules: ['save-core', 'save-system', 'edit-mode-helpers', 'persist', 'option-visibility', 'event-attrs', 'dom-helpers', 'toast', 'save-toast', 'export-to-window']
+    modules: ['save-core', 'snapshot', 'save-system', 'unsaved-warning', 'edit-mode-helpers', 'persist', 'option-visibility', 'event-attrs', 'dom-helpers', 'toast', 'save-toast', 'export-to-window', 'view-mode-excludes-edit-modules']
   },
   'everything': {
     name: 'Everything',
     description: 'All available features',
-    modules: [] // Will be populated with all module IDs (including export-to-window)
+    modules: [] // Will be populated with all module IDs (including export-to-window and view-mode-excludes-edit-modules)
   }
 };
 
@@ -531,8 +520,8 @@ async function generateDependencyGraph() {
     }
   }
 
-  // Populate "everything" preset with all module IDs
-  PRESETS.everything.modules = Object.keys(modules);
+  // Populate "everything" preset with all module IDs plus special flags
+  PRESETS.everything.modules = [...Object.keys(modules), 'view-mode-excludes-edit-modules'];
 
   // Generate module paths for the simplified loader
   const modulePaths = generateModulePaths(modules);

@@ -73,11 +73,13 @@ const PRESETS = {
     "description": "Essential features for basic editing",
     "modules": [
       "save-core",
+      "snapshot",
       "save-system",
       "edit-mode-helpers",
       "toast",
       "save-toast",
-      "export-to-window"
+      "export-to-window",
+      "view-mode-excludes-edit-modules"
     ]
   },
   "standard": {
@@ -85,7 +87,9 @@ const PRESETS = {
     "description": "Standard feature set for most use cases",
     "modules": [
       "save-core",
+      "snapshot",
       "save-system",
+      "unsaved-warning",
       "edit-mode-helpers",
       "persist",
       "option-visibility",
@@ -93,7 +97,8 @@ const PRESETS = {
       "dom-helpers",
       "toast",
       "save-toast",
-      "export-to-window"
+      "export-to-window",
+      "view-mode-excludes-edit-modules"
     ]
   },
   "everything": {
@@ -140,7 +145,8 @@ const PRESETS = {
       "file-upload",
       "live-sync",
       "tailwind-inject",
-      "export-to-window"
+      "export-to-window",
+      "view-mode-excludes-edit-modules"
     ]
   }
 };

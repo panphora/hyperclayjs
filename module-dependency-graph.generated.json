@@ -198,9 +198,6 @@
         ],
         "savePageThrottled": [
           "hyperclay"
-        ],
-        "replacePageWith": [
-          "hyperclay"
         ]
       }
     },
@@ -273,21 +270,6 @@
       ],
       "description": "Source of truth for page state - captures DOM snapshots for save and sync",
       "exports": {
-        "captureSnapshot": [
-          "hyperclay"
-        ],
-        "captureForSave": [
-          "hyperclay"
-        ],
-        "captureBodyForSync": [
-          "hyperclay"
-        ],
-        "onSnapshot": [
-          "hyperclay"
-        ],
-        "onPrepareForSave": [
-          "hyperclay"
-        ],
         "beforeSave": [
           "hyperclay"
         ],
@@ -447,17 +429,12 @@
         "ui/toast-hyperclay.js"
       ],
       "description": "toastHyperclay() with legacy Hyperclay platform styling (hidden feature)",
-      "exports": {
-        "toastHyperclay": [
-          "window",
-          "hyperclay"
-        ]
-      }
+      "exports": {}
     },
     "the-modal": {
       "name": "the-modal",
       "category": "ui",
-      "size": 20.8,
+      "size": 21,
       "files": [
         "ui/theModal.js"
       ],
@@ -613,10 +590,6 @@
         "insertStyles": [
           "window",
           "hyperclay"
-        ],
-        "insertStyleTag": [
-          "window",
-          "hyperclay"
         ]
       }
     },
@@ -701,11 +674,7 @@
         "communication/behaviorCollector.js"
       ],
       "description": "Tracks user interactions (mouse, scroll, keyboard)",
-      "exports": {
-        "behaviorCollector": [
-          "hyperclay"
-        ]
-      }
+      "exports": {}
     },
     "send-message": {
       "name": "send-message",
@@ -915,11 +884,13 @@
       "description": "Essential features for basic editing",
       "modules": [
         "save-core",
+        "snapshot",
         "save-system",
         "edit-mode-helpers",
         "toast",
         "save-toast",
-        "export-to-window"
+        "export-to-window",
+        "view-mode-excludes-edit-modules"
       ]
     },
     "standard": {
@@ -927,7 +898,9 @@
       "description": "Standard feature set for most use cases",
       "modules": [
         "save-core",
+        "snapshot",
         "save-system",
+        "unsaved-warning",
         "edit-mode-helpers",
         "persist",
         "option-visibility",
@@ -935,7 +908,8 @@
         "dom-helpers",
         "toast",
         "save-toast",
-        "export-to-window"
+        "export-to-window",
+        "view-mode-excludes-edit-modules"
       ]
     },
     "everything": {
@@ -982,7 +956,8 @@
         "file-upload",
         "live-sync",
         "tailwind-inject",
-        "export-to-window"
+        "export-to-window",
+        "view-mode-excludes-edit-modules"
       ]
     }
   }

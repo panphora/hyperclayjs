@@ -183,6 +183,8 @@
         }
 
         .feature-name {
+            display: flex;
+            align-items: center;
             font-weight: bold;
             color: var(--primary-blue);
             margin-bottom: 0.25rem;
@@ -227,6 +229,10 @@
             text-transform: uppercase;
         }
 
+        .hide-edit-badges .feature-badge {
+            display: none;
+        }
+
         /* Preset Buttons */
         .preset-section {
             margin-bottom: 2rem;
@@ -264,8 +270,9 @@
         /* Sidebar */
         .sidebar {
             position: sticky;
-            top: 2rem;
-            height: fit-content;
+            top: 1.5rem;
+            max-height: calc(100vh - 3rem);
+            overflow-y: auto;
         }
 
         .summary-box {
@@ -695,7 +702,17 @@
                         </label>
                         <div class="toggle-label">
                             <strong>Export to window</strong>
-                            Attach modules to window.hyperclay
+                            Attach modules to window and window.hyperclay
+                        </div>
+                    </div>
+                    <div class="toggle-option">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="view-mode-excludes-edit-toggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <div class="toggle-label">
+                            <strong>Skip edit-only in view mode</strong>
+                            Don't load edit-only modules for non-admins
                         </div>
                     </div>
                     <button class="copy-button" id="copy-button">COPY</button>
@@ -878,7 +895,7 @@
         const ORIGINAL_SIZE = 2100; // 2.1MB in KB
 
         // Initialize state
-        let selectedFeatures = new Set(['export-to-window']);
+        let selectedFeatures = new Set(['export-to-window', 'view-mode-excludes-edit-modules']);
         let currentPreset = null;
 
         function initializeEventListeners() {
@@ -908,6 +925,18 @@
             const exportToggle = document.getElementById('export-to-window-toggle');
             exportToggle.checked = selectedFeatures.has('export-to-window');
 
+            // Sync view-mode-excludes-edit toggle
+            const viewModeToggle = document.getElementById('view-mode-excludes-edit-toggle');
+            viewModeToggle.checked = selectedFeatures.has('view-mode-excludes-edit-modules');
+
+            // Show/hide edit-only badges based on toggle
+            const featuresColumn = document.querySelector('.features-column');
+            if (selectedFeatures.has('view-mode-excludes-edit-modules')) {
+                featuresColumn.classList.remove('hide-edit-badges');
+            } else {
+                featuresColumn.classList.add('hide-edit-badges');
+            }
+
             // Update exports text based on toggle state
             const hasExportToWindow = selectedFeatures.has('export-to-window');
             document.querySelectorAll('.feature-exports[data-exports]').forEach(el => {
@@ -924,10 +953,12 @@
                 el.textContent = allExports.join(', ');
             });
 
-            // Calculate total size
+            // Calculate total size (skip special flags that aren't real modules)
             let totalSize = 0;
             selectedFeatures.forEach(feature => {
-                totalSize += features[feature].size;
+                if (features[feature]) {
+                    totalSize += features[feature].size;
+                }
             });
 
             // Update summary
@@ -980,8 +1011,9 @@
             if (currentPreset) {
                 urlParams = `?preset=${currentPreset}`;
             } else if (selectedFeatures.size > 0) {
-                // Filter out hidden modules from the URL, but keep export-to-window
-                const featuresArray = Array.from(selectedFeatures).filter(f => isVisibleModule(f) || f === 'export-to-window');
+                // Filter out hidden modules from the URL, but keep special flags
+                const specialFlags = ['export-to-window', 'view-mode-excludes-edit-modules'];
+                const featuresArray = Array.from(selectedFeatures).filter(f => isVisibleModule(f) || specialFlags.includes(f));
                 urlParams = `?features=${featuresArray.join(',')}`;
             }
 
@@ -1120,6 +1152,20 @@
                     selectedFeatures.add('export-to-window');
                 } else {
                     selectedFeatures.delete('export-to-window');
+                }
+                // Clear preset since we're customizing
+                currentPreset = null;
+                presetButtons.forEach(btn => btn.classList.remove('active'));
+                updateUI();
+            });
+
+            // Handle view-mode-excludes-edit toggle
+            const viewModeToggle = document.getElementById('view-mode-excludes-edit-toggle');
+            viewModeToggle.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    selectedFeatures.add('view-mode-excludes-edit-modules');
+                } else {
+                    selectedFeatures.delete('view-mode-excludes-edit-modules');
                 }
                 // Clear preset since we're customizing
                 currentPreset = null;
