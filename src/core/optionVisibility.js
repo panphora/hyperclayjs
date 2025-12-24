@@ -118,7 +118,9 @@ const optionVisibility = {
     try {
       const attributes = this.findOptionAttributes();
       const css = this.generateCSS(attributes);
-      insertStyles(STYLE_NAME, css);
+      insertStyles(STYLE_NAME, css, (style) => {
+        style.setAttribute('mutations-ignore', '');
+      });
       this.log(`Generated ${attributes.length} rules`);
     } catch (error) {
       console.error('[OptionVisibility:Layer] Error generating rules:', error);

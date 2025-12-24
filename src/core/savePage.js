@@ -11,6 +11,7 @@
  */
 
 import throttle from "../utilities/throttle.js";
+import Mutation from "../utilities/mutation.js";
 import { isEditMode, isOwner } from "./isAdminOfCurrentResource.js";
 import {
   savePage as savePageCore,
@@ -18,6 +19,11 @@ import {
   replacePageWith as replacePageWithCore,
   beforeSave
 } from "./savePageCore.js";
+
+// Reset savestatus to 'saved' in snapshots (each module cleans up its own attrs)
+beforeSave(clone => {
+  clone.setAttribute('savestatus', 'saved');
+});
 
 // ============================================
 // SAVE STATE MANAGEMENT
@@ -93,17 +99,6 @@ export function getUnsavedChanges() { return unsavedChanges; }
 export function setUnsavedChanges(val) { unsavedChanges = val; }
 export function getLastSavedContents() { return lastSavedContents; }
 export function setLastSavedContents(val) { lastSavedContents = val; }
-
-// Initialize lastSavedContents on page load to match what's on disk
-// This prevents unnecessary save attempts when content hasn't changed
-document.addEventListener('DOMContentLoaded', () => {
-  if (isEditMode) {
-    // Capture initial state immediately for comparison
-    lastSavedContents = getPageContents();
-    // Set initial save status to 'saved'
-    document.documentElement.setAttribute('savestatus', 'saved');
-  }
-});
 
 /**
  * Save the current page with change detection and state management
@@ -185,14 +180,78 @@ const throttledSave = throttle(savePage, 1200);
 // Baseline for autosave comparison
 let baselineContents = '';
 
-// Capture baseline after setup mutations settle
-document.addEventListener('DOMContentLoaded', () => {
-  if (isEditMode) {
-    setTimeout(() => {
-      baselineContents = getPageContents();
-    }, 1500);
-  }
-});
+// ============================================
+// BASELINE CAPTURE (Settled Signal)
+// ============================================
+// Wait until DOM mutations settle before capturing baseline.
+// This prevents false "unsaved changes" from initial setup mutations.
+
+const SETTLE_MS = 500;        // Wait for no mutations for this long
+const MAX_SETTLE_MS = 3000;   // Max time to wait before forcing capture
+
+function initBaselineCapture() {
+  if (!isEditMode) return;
+
+  let userEdited = false;
+  let settled = false;
+  let unsubscribeMutation = null;
+
+  // Take immediate snapshot and set as baseline right away
+  // This ensures saves during settle window work correctly
+  const immediateContents = getPageContents();
+  lastSavedContents = immediateContents;
+  baselineContents = immediateContents;
+
+  // Track user edits to avoid overwriting real changes
+  const userEditEvents = ['input', 'change', 'paste'];
+  const markUserEdited = (e) => {
+    const target = e.target;
+    const isEditable = target.isContentEditable ||
+                       target.tagName === 'INPUT' ||
+                       target.tagName === 'TEXTAREA' ||
+                       target.tagName === 'SELECT';
+    if (isEditable) userEdited = true;
+  };
+  userEditEvents.forEach(evt => document.addEventListener(evt, markUserEdited, true));
+
+  // Called when mutations settle OR max timeout reached
+  const captureBaseline = () => {
+    if (settled) return;
+    settled = true;
+
+    // Cleanup listeners
+    if (unsubscribeMutation) unsubscribeMutation();
+    userEditEvents.forEach(evt => document.removeEventListener(evt, markUserEdited, true));
+
+    // Only update if no user edits AND no saves occurred during settle
+    // (if a save happened, lastSavedContents would differ from immediateContents)
+    if (!userEdited && lastSavedContents === immediateContents) {
+      const contents = getPageContents();
+      lastSavedContents = contents;
+      baselineContents = contents;
+    }
+
+    document.documentElement.setAttribute('savestatus', 'saved');
+  };
+
+  // Start settle observer - fires when no mutations for SETTLE_MS
+  unsubscribeMutation = Mutation.onAnyChange(
+    { debounce: SETTLE_MS, omitChangeDetails: true },
+    captureBaseline
+  );
+
+  // Max timeout fallback
+  setTimeout(() => {
+    if (!settled) captureBaseline();
+  }, MAX_SETTLE_MS);
+}
+
+// Run when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initBaselineCapture);
+} else {
+  initBaselineCapture();
+}
 
 /**
  * Save the page with throttling, for use with auto-save
