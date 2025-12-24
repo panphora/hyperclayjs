@@ -118,6 +118,8 @@ const optionVisibility = {
     try {
       const attributes = this.findOptionAttributes();
       const css = this.generateCSS(attributes);
+      // mutations-ignore: This style tag is regenerated on load. Without this,
+      // the mutation observer would detect it as a change, delaying the settled signal.
       insertStyles(STYLE_NAME, css, (style) => {
         style.setAttribute('mutations-ignore', '');
       });

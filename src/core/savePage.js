@@ -183,8 +183,17 @@ let baselineContents = '';
 // ============================================
 // BASELINE CAPTURE (Settled Signal)
 // ============================================
-// Wait until DOM mutations settle before capturing baseline.
-// This prevents false "unsaved changes" from initial setup mutations.
+//
+// WHY SETTLED SIGNAL:
+// Modules run on load and mutate the DOM (add styles, modify attributes).
+// A fixed delay (e.g., 1500ms) is arbitrary and either too short (misses slow
+// mutations) or too long (delays baseline). Instead, we wait for mutations to
+// stop, meaning all modules have finished their setup work.
+//
+// WHY IMMEDIATE + CONDITIONAL UPDATE:
+// We set baseline immediately as a safety net. If the user edits or saves
+// before settle completes, we don't overwrite their work. The settled snapshot
+// only replaces baseline if nothing changed (lastSavedContents === immediateContents).
 
 const SETTLE_MS = 500;        // Wait for no mutations for this long
 const MAX_SETTLE_MS = 3000;   // Max time to wait before forcing capture

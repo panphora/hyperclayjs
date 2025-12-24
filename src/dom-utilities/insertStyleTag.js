@@ -11,6 +11,12 @@
  *   - No duplicates: removes any duplicate style/link elements
  *   - Callback always runs: attributes can be updated on existing elements
  *
+ * WHY REUSE IN-PLACE:
+ * In a persistent DOM (hyperclay), removing and re-adding elements changes their
+ * position and surrounding whitespace. This causes snapshot diffs even when content
+ * is identical, triggering false "unsaved changes" warnings. Reusing existing
+ * elements preserves DOM structure for stable snapshots.
+ *
  * Usage:
  *   insertStyles('/path/to/file.css')                    // External stylesheet
  *   insertStyles('/path/to/file.css', (link) => { ... }) // With callback
