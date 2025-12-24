@@ -42,6 +42,34 @@ import insertStyles from "../dom-utilities/insertStyleTag.js";
 
 const STYLE_NAME = 'option-visibility';
 
+/**
+ * Parse an option:/option-not: attribute into a pattern object.
+ * Pure function for easy testing.
+ *
+ * @param {string} attrName - Attribute name (e.g., 'option:editmode', 'option-not:status')
+ * @param {string} attrValue - Attribute value (e.g., 'true', 'a|b|c')
+ * @returns {Object|null} Pattern object or null if not a valid option attribute
+ */
+export function parseOptionAttribute(attrName, attrValue) {
+  let negated = false;
+  let name;
+
+  if (attrName.startsWith('option-not:')) {
+    negated = true;
+    name = attrName.slice(11);
+  } else if (attrName.startsWith('option:')) {
+    name = attrName.slice(7);
+  } else {
+    return null;
+  }
+
+  const rawValue = attrValue;
+  const values = rawValue.split('|').filter(Boolean);
+  if (!values.length) return null;
+
+  return { name, rawValue, values, negated };
+}
+
 const optionVisibility = {
   debug: false,
   _started: false,
@@ -79,25 +107,12 @@ const optionVisibility = {
       for (let i = 0; i < snapshot.snapshotLength; i++) {
         const el = snapshot.snapshotItem(i);
         for (const attr of el.attributes) {
-          let negated = false;
-          let name;
+          const pattern = parseOptionAttribute(attr.name, attr.value);
+          if (!pattern) continue;
 
-          if (attr.name.startsWith('option-not:')) {
-            negated = true;
-            name = attr.name.slice(11);
-          } else if (attr.name.startsWith('option:')) {
-            name = attr.name.slice(7);
-          } else {
-            continue;
-          }
-
-          const rawValue = attr.value;
-          const values = rawValue.split('|').filter(Boolean);
-          if (!values.length) continue;
-
-          const key = `${negated ? '!' : ''}${name}=${rawValue}`;
+          const key = `${pattern.negated ? '!' : ''}${pattern.name}=${pattern.rawValue}`;
           if (!patterns.has(key)) {
-            patterns.set(key, { name, rawValue, values, negated });
+            patterns.set(key, pattern);
           }
         }
       }
