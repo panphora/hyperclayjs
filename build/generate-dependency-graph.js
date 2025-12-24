@@ -55,8 +55,10 @@ const MODULE_DEFINITIONS = {
     exports: {
       beforeSave: ['hyperclay'],
       savePage: ['hyperclay'],
-      savePageThrottled: ['hyperclay']
-    }
+      savePageThrottled: ['hyperclay'],
+      replacePageWith: ['hyperclay']
+    },
+    hiddenExports: ['replacePageWith']
   },
   'core/autosave.js': {
     name: 'autosave',
@@ -100,9 +102,15 @@ const MODULE_DEFINITIONS = {
     description: 'Source of truth for page state - captures DOM snapshots for save and sync',
     isEditModeOnly: true,
     exports: {
+      captureSnapshot: ['hyperclay'],
+      captureForSave: ['hyperclay'],
+      captureBodyForSync: ['hyperclay'],
+      onSnapshot: ['hyperclay'],
+      onPrepareForSave: ['hyperclay'],
       beforeSave: ['hyperclay'],
       getPageContents: ['hyperclay']
-    }
+    },
+    hiddenExports: ['captureSnapshot', 'captureForSave', 'captureBodyForSync', 'onSnapshot', 'onPrepareForSave']
   },
   'core/optionVisibility.js': {
     name: 'option-visibility',
@@ -184,8 +192,10 @@ const MODULE_DEFINITIONS = {
     name: 'toast-hyperclay',
     moduleId: 'toast-hyperclay',
     description: 'toastHyperclay() with legacy Hyperclay platform styling (hidden feature)',
-    hidden: true
-    // No exports - hidden internal feature
+    hidden: true,
+    exports: {
+      toastHyperclay: ['window', 'hyperclay']
+    }
   },
   'ui/theModal.js': {
     name: 'the-modal',
@@ -274,8 +284,10 @@ const MODULE_DEFINITIONS = {
     moduleId: 'style-injection',
     description: 'Dynamic stylesheet injection',
     exports: {
-      insertStyles: ['window', 'hyperclay']
-    }
+      insertStyles: ['window', 'hyperclay'],
+      insertStyleTag: ['window', 'hyperclay']
+    },
+    hiddenExports: ['insertStyleTag']
   },
   'dom-utilities/getDataFromForm.js': {
     name: 'form-data',
@@ -321,8 +333,10 @@ const MODULE_DEFINITIONS = {
     name: 'behavior-collector',
     moduleId: 'behavior-collector',
     description: 'Tracks user interactions (mouse, scroll, keyboard)',
-    hidden: true
-    // No exports - hidden internal feature
+    hidden: true,
+    exports: {
+      behaviorCollector: ['hyperclay']
+    }
   },
   'communication/sendMessage.js': {
     name: 'send-message',
@@ -508,7 +522,8 @@ async function generateDependencyGraph() {
       ...(definition.isEditModeOnly && { isEditModeOnly: true }),
       files: files,
       description: definition.description,
-      exports: definition.exports || {}
+      exports: definition.exports || {},
+      ...(definition.hiddenExports && { hiddenExports: definition.hiddenExports })
     };
 
     // Mark files as processed

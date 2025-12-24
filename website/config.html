@@ -826,11 +826,16 @@
                                 : '';
 
                             // Generate exports text (will be updated dynamically based on export-to-window toggle)
-                            const exports = module.exports || {};
-                            const exportEntries = Object.entries(exports);
+                            const allExports = module.exports || {};
+                            const hiddenExports = module.hiddenExports || [];
+                            // Filter out hidden exports for display
+                            const visibleExports = Object.fromEntries(
+                                Object.entries(allExports).filter(([name]) => !hiddenExports.includes(name))
+                            );
+                            const exportEntries = Object.entries(visibleExports);
                             let exportsText = '';
                             if (exportEntries.length > 0) {
-                                const exportData = JSON.stringify(exports);
+                                const exportData = JSON.stringify(visibleExports);
                                 const exportNames = exportEntries.map(([fnName]) => fnName);
                                 exportsText = `<div class="feature-exports" data-exports='${exportData}'>${exportNames.join(', ')}</div>`;
                             }

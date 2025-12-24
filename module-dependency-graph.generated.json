@@ -198,8 +198,14 @@
         ],
         "savePageThrottled": [
           "hyperclay"
+        ],
+        "replacePageWith": [
+          "hyperclay"
         ]
-      }
+      },
+      "hiddenExports": [
+        "replacePageWith"
+      ]
     },
     "autosave": {
       "name": "autosave",
@@ -270,13 +276,35 @@
       ],
       "description": "Source of truth for page state - captures DOM snapshots for save and sync",
       "exports": {
+        "captureSnapshot": [
+          "hyperclay"
+        ],
+        "captureForSave": [
+          "hyperclay"
+        ],
+        "captureBodyForSync": [
+          "hyperclay"
+        ],
+        "onSnapshot": [
+          "hyperclay"
+        ],
+        "onPrepareForSave": [
+          "hyperclay"
+        ],
         "beforeSave": [
           "hyperclay"
         ],
         "getPageContents": [
           "hyperclay"
         ]
-      }
+      },
+      "hiddenExports": [
+        "captureSnapshot",
+        "captureForSave",
+        "captureBodyForSync",
+        "onSnapshot",
+        "onPrepareForSave"
+      ]
     },
     "option-visibility": {
       "name": "option-visibility",
@@ -429,7 +457,12 @@
         "ui/toast-hyperclay.js"
       ],
       "description": "toastHyperclay() with legacy Hyperclay platform styling (hidden feature)",
-      "exports": {}
+      "exports": {
+        "toastHyperclay": [
+          "window",
+          "hyperclay"
+        ]
+      }
     },
     "the-modal": {
       "name": "the-modal",
@@ -590,8 +623,15 @@
         "insertStyles": [
           "window",
           "hyperclay"
+        ],
+        "insertStyleTag": [
+          "window",
+          "hyperclay"
         ]
-      }
+      },
+      "hiddenExports": [
+        "insertStyleTag"
+      ]
     },
     "form-data": {
       "name": "form-data",
@@ -674,7 +714,11 @@
         "communication/behaviorCollector.js"
       ],
       "description": "Tracks user interactions (mouse, scroll, keyboard)",
-      "exports": {}
+      "exports": {
+        "behaviorCollector": [
+          "hyperclay"
+        ]
+      }
     },
     "send-message": {
       "name": "send-message",
