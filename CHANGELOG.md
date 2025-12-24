@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.15.0] - 2025-12-24
+
+### Added
+- Multi-value OR and negation syntax to option visibility conditions
+- Empty value matching support in option visibility
+
+### Changed
+- Extracted parseOptionAttribute function for improved testability
+
+
+
 ## [1.14.1] - 2025-12-24
 
 ### Added
