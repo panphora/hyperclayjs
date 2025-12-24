@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.14.1] - 2025-12-24
+
+### Added
+- Documentation comments explaining key design decisions
+
+### Changed
+- Improved baseline capture and insertStyles stability
+
+
+
 ## [1.14.0] - 2025-12-24
 
 ### Added

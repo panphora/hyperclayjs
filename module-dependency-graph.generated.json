@@ -66,6 +66,7 @@
     "core/savePage.js": [
       "core/isAdminOfCurrentResource.js",
       "core/savePageCore.js",
+      "utilities/mutation.js",
       "utilities/throttle.js"
     ],
     "core/savePageCore.js": [
@@ -183,7 +184,7 @@
     "save-system": {
       "name": "save-system",
       "category": "core",
-      "size": 7.1,
+      "size": 9.6,
       "isEditModeOnly": true,
       "files": [
         "core/savePage.js"
@@ -309,7 +310,7 @@
     "option-visibility": {
       "name": "option-visibility",
       "category": "core",
-      "size": 5.3,
+      "size": 5.5,
       "files": [
         "core/optionVisibility.js"
       ],
@@ -614,7 +615,7 @@
     "style-injection": {
       "name": "style-injection",
       "category": "dom-utilities",
-      "size": 2.4,
+      "size": 4,
       "files": [
         "dom-utilities/insertStyleTag.js"
       ],

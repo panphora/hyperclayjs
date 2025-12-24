@@ -60,10 +60,10 @@ import 'hyperclayjs/presets/standard.js';
 | autosave | 0.9KB | Auto-save on DOM changes |
 | edit-mode | 1.8KB | Toggle edit mode on hyperclay on/off |
 | edit-mode-helpers | 7.5KB | Admin-only functionality: [edit-mode-input], [edit-mode-resource], [edit-mode-onclick] |
-| option-visibility | 5.3KB | Dynamic show/hide based on ancestor state with option:attribute="value" |
+| option-visibility | 5.5KB | Dynamic show/hide based on ancestor state with option:attribute="value" |
 | persist | 2.4KB | Persist input/select/textarea values to the DOM with [persist] attribute |
 | save-core | 6.8KB | Basic save function only - hyperclay.savePage() |
-| save-system | 7.1KB | CMD+S, [trigger-save] button, savestatus attribute |
+| save-system | 9.6KB | CMD+S, [trigger-save] button, savestatus attribute |
 | save-toast | 0.9KB | Toast notifications for save events |
 | snapshot | 7.5KB | Source of truth for page state - captures DOM snapshots for save and sync |
 | tailwind-inject | 0.4KB | Injects tailwind CSS link with cache-bust on save |
@@ -106,7 +106,7 @@ import 'hyperclayjs/presets/standard.js';
 | all-js | 14.4KB | Full DOM manipulation library |
 | dom-ready | 0.4KB | DOM ready callback |
 | form-data | 2KB | Extract form data as an object |
-| style-injection | 2.4KB | Dynamic stylesheet injection |
+| style-injection | 4KB | Dynamic stylesheet injection |
 
 ### String Utilities (String manipulation helpers)
 
@@ -132,17 +132,17 @@ import 'hyperclayjs/presets/standard.js';
 
 ## Presets
 
-### Minimal (~38.1KB)
+### Minimal (~40.6KB)
 Essential features for basic editing
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `edit-mode-helpers`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Standard (~57.4KB)
+### Standard (~60.1KB)
 Standard feature set for most use cases
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `unsaved-warning`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Everything (~178KB)
+### Everything (~182.3KB)
 All available features
 
 Includes all available modules across all categories.
