@@ -1,18 +1,24 @@
 /**
  * Option Visibility (CSS Layers Implementation)
  *
- * Shows/hides elements based on `option:` attributes and ancestor matches.
+ * Shows/hides elements based on `option:` and `option-not:` attributes.
  *
- * Usage:
+ * SYNTAX:
+ *   option:name="value"       - Show when ancestor has name="value"
+ *   option:name="a|b|c"       - Show when ancestor has name="a" OR "b" OR "c"
+ *   option-not:name="value"   - Show when ancestor has name attr but ≠ "value"
+ *   option-not:name="a|b"     - Show when ancestor has name attr but ≠ "a" AND ≠ "b"
+ *
+ * EXAMPLES:
  *   <div editmode="true">
- *     <button option:editmode="true">Visible</button>
+ *     <button option:editmode="true">Visible in edit mode</button>
  *     <button option:editmode="false">Hidden</button>
  *   </div>
  *
- * An element with `option:name="value"` is hidden by default.
- * It becomes visible when ANY ancestor has `name="value"`.
- *
- * ---
+ *   <div savestatus="error">
+ *     <span option:savestatus="saved|error">Visible (matches error)</span>
+ *     <span option-not:savestatus="saving">Visible (error ≠ saving)</span>
+ *   </div>
  *
  * HOW IT WORKS:
  * 1. Uses `display: none !important` to forcefully hide elements
@@ -21,13 +27,14 @@
  * 3. This preserves the user's original `display` (flex, grid, block) without us knowing what it is
  *
  * BROWSER SUPPORT:
- * Requires `@layer` and `revert-layer` support (~92% of browsers, 2022+).
+ * Requires `@layer`, `revert-layer`, and `:not()` selector lists (~92% of browsers, 2022+).
  * Falls back gracefully - elements remain visible if unsupported.
  *
  * TRADEOFFS:
  * - Pro: Pure CSS after generation, zero JS overhead for toggling
  * - Pro: Simple code, similar to original approach
  * - Con: Loses to user `!important` rules (layered !important < unlayered !important)
+ * - Con: Pipe character `|` cannot be used as a literal value (reserved as OR delimiter)
  */
 
 import Mutation from "../utilities/mutation.js";
@@ -54,14 +61,15 @@ const optionVisibility = {
   },
 
   /**
-   * Find all unique option:name="value" patterns using XPath (faster than regex on HTML)
+   * Find all unique option:/option-not: patterns using XPath
+   * Returns array of { name, rawValue, values, negated }
    */
   findOptionAttributes() {
     const patterns = new Map();
 
     try {
       const snapshot = document.evaluate(
-        '//*[@*[starts-with(name(), "option:")]]',
+        '//*[@*[starts-with(name(), "option:") or starts-with(name(), "option-not:")]]',
         document.documentElement,
         null,
         XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
@@ -71,13 +79,25 @@ const optionVisibility = {
       for (let i = 0; i < snapshot.snapshotLength; i++) {
         const el = snapshot.snapshotItem(i);
         for (const attr of el.attributes) {
-          if (attr.name.startsWith('option:')) {
-            const name = attr.name.slice(7);
-            const value = attr.value;
-            const key = `${name}=${value}`;
-            if (!patterns.has(key)) {
-              patterns.set(key, { name, value });
-            }
+          let negated = false;
+          let name;
+
+          if (attr.name.startsWith('option-not:')) {
+            negated = true;
+            name = attr.name.slice(11);
+          } else if (attr.name.startsWith('option:')) {
+            name = attr.name.slice(7);
+          } else {
+            continue;
+          }
+
+          const rawValue = attr.value;
+          const values = rawValue.split('|').filter(Boolean);
+          if (!values.length) continue;
+
+          const key = `${negated ? '!' : ''}${name}=${rawValue}`;
+          if (!patterns.has(key)) {
+            patterns.set(key, { name, rawValue, values, negated });
           }
         }
       }
@@ -91,16 +111,34 @@ const optionVisibility = {
   /**
    * Generate CSS rules wrapped in @layer
    */
-  generateCSS(attributes) {
-    if (!attributes.length) return '';
+  generateCSS(patterns) {
+    if (!patterns.length) return '';
 
-    const rules = attributes.map(({ name, value }) => {
+    const rules = patterns.map(({ name, rawValue, values, negated }) => {
       const safeName = CSS.escape(name);
-      const safeValue = CSS.escape(value);
+      const safeRawValue = CSS.escape(rawValue);
+      const prefix = negated ? 'option-not' : 'option';
+      const attrSelector = `[${prefix}\\:${safeName}="${safeRawValue}"]`;
 
-      // Hidden by default, visible when ancestor matches
-      // Both rules need !important for consistency within the layer
-      return `[option\\:${safeName}="${safeValue}"]{display:none!important}[${safeName}="${safeValue}"] [option\\:${safeName}="${safeValue}"]{display:revert-layer!important}`;
+      // Hide rule (same for both types)
+      const hideRule = `${attrSelector}{display:none!important}`;
+
+      // Show rule depends on type
+      let showRule;
+      if (negated) {
+        // option-not: show when ancestor has attr but NOT any of the values
+        // Uses :not(sel1, sel2) selector list syntax
+        const notList = values.map(v => `[${safeName}="${CSS.escape(v)}"]`).join(',');
+        showRule = `[${safeName}]:not(${notList}) ${attrSelector}{display:revert-layer!important}`;
+      } else {
+        // option: show when ancestor has ANY of the values
+        const showSelectors = values.map(v =>
+          `[${safeName}="${CSS.escape(v)}"] ${attrSelector}`
+        ).join(',');
+        showRule = `${showSelectors}{display:revert-layer!important}`;
+      }
+
+      return hideRule + showRule;
     }).join('');
 
     return `@layer ${STYLE_NAME}{${rules}}`;
@@ -146,12 +184,14 @@ const optionVisibility = {
 
     this.update();
 
-    // selectorFilter only triggers on option:* attribute changes (new patterns).
+    // selectorFilter only triggers on option:/option-not: attribute changes (new patterns).
     // Ancestor attribute changes (e.g., editmode="true" -> "false") are handled
     // automatically by the browser - CSS rules re-evaluate when attributes change.
     this._unsubscribe = Mutation.onAnyChange({
       debounce: 200,
-      selectorFilter: el => [...el.attributes].some(attr => attr.name.startsWith('option:')),
+      selectorFilter: el => [...el.attributes].some(attr =>
+        attr.name.startsWith('option:') || attr.name.startsWith('option-not:')
+      ),
       omitChangeDetails: true
     }, () => this.update());
 
