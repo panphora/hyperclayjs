@@ -132,15 +132,15 @@ import 'hyperclayjs/presets/standard.js';
 
 ## Presets
 
-### Minimal (~30.6KB)
+### Minimal (~38.1KB)
 Essential features for basic editing
 
-**Modules:** `save-core`, `save-system`, `edit-mode-helpers`, `toast`, `save-toast`, `export-to-window`
+**Modules:** `save-core`, `snapshot`, `save-system`, `edit-mode-helpers`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Standard (~49.1KB)
+### Standard (~57.4KB)
 Standard feature set for most use cases
 
-**Modules:** `save-core`, `save-system`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `save-toast`, `export-to-window`
+**Modules:** `save-core`, `snapshot`, `save-system`, `unsaved-warning`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
 ### Everything (~178KB)
 All available features

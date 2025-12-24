@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.14.0] - 2025-12-24
+
+### Added
+- hiddenExports configuration option
+- view-mode-excludes-edit toggle
+
+### Changed
+- release.sh to be generic for any npm package
+- release.sh to auto-accept after version selection
+
+### Fixed
+- cacheBust and tailwindInject bugs
+- release.sh to build after version bump
+
+
+
 ## [1.13.0] - 2025-12-22
 
 ### Added
