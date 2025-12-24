@@ -6,6 +6,8 @@
  * SYNTAX:
  *   option:name="value"       - Show when ancestor has name="value"
  *   option:name="a|b|c"       - Show when ancestor has name="a" OR "b" OR "c"
+ *   option:name=""            - Show when ancestor has name="" (empty value)
+ *   option:name="|saved"      - Show when ancestor has name="" OR name="saved"
  *   option-not:name="value"   - Show when ancestor has name attr but ≠ "value"
  *   option-not:name="a|b"     - Show when ancestor has name attr but ≠ "a" AND ≠ "b"
  *
@@ -64,8 +66,8 @@ export function parseOptionAttribute(attrName, attrValue) {
   }
 
   const rawValue = attrValue;
-  const values = rawValue.split('|').filter(Boolean);
-  if (!values.length) return null;
+  // Split by pipe, keep empty strings (they match empty attribute values)
+  const values = rawValue.split('|');
 
   return { name, rawValue, values, negated };
 }

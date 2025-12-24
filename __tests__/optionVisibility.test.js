@@ -53,24 +53,46 @@ describe('optionVisibility', () => {
         });
       });
 
-      test('filters empty values from pipes', () => {
+      test('keeps empty values in pipes for empty string matching', () => {
         const result = parseOptionAttribute('option:foo', 'a||b');
 
         expect(result).toEqual({
           name: 'foo',
           rawValue: 'a||b',
-          values: ['a', 'b'],
+          values: ['a', '', 'b'],
           negated: false
         });
       });
 
-      test('filters leading/trailing empty values', () => {
+      test('keeps leading/trailing empty values', () => {
         const result = parseOptionAttribute('option:foo', '|a|b|');
 
         expect(result).toEqual({
           name: 'foo',
           rawValue: '|a|b|',
-          values: ['a', 'b'],
+          values: ['', 'a', 'b', ''],
+          negated: false
+        });
+      });
+
+      test('parses empty value for matching empty attribute', () => {
+        const result = parseOptionAttribute('option:status', '');
+
+        expect(result).toEqual({
+          name: 'status',
+          rawValue: '',
+          values: [''],
+          negated: false
+        });
+      });
+
+      test('parses empty OR value with leading pipe', () => {
+        const result = parseOptionAttribute('option:status', '|saved');
+
+        expect(result).toEqual({
+          name: 'status',
+          rawValue: '|saved',
+          values: ['', 'saved'],
           negated: false
         });
       });
@@ -105,16 +127,6 @@ describe('optionVisibility', () => {
         expect(parseOptionAttribute('data-foo', 'bar')).toBeNull();
         expect(parseOptionAttribute('class', 'foo')).toBeNull();
         expect(parseOptionAttribute('id', 'test')).toBeNull();
-      });
-
-      test('returns null for empty value', () => {
-        expect(parseOptionAttribute('option:foo', '')).toBeNull();
-      });
-
-      test('returns null for only pipes', () => {
-        expect(parseOptionAttribute('option:foo', '|')).toBeNull();
-        expect(parseOptionAttribute('option:foo', '||')).toBeNull();
-        expect(parseOptionAttribute('option:foo', '|||')).toBeNull();
       });
 
       test('returns null for option prefix without colon', () => {
@@ -217,6 +229,34 @@ describe('optionVisibility', () => {
         expect(css).toContain('[x="a"] [option\\:x="a\\|b\\|c"]');
         expect(css).toContain('[x="b"] [option\\:x="a\\|b\\|c"]');
         expect(css).toContain('[x="c"] [option\\:x="a\\|b\\|c"]');
+      });
+
+      test('generates CSS for empty value', () => {
+        const patterns = [{
+          name: 'status',
+          rawValue: '',
+          values: [''],
+          negated: false
+        }];
+
+        const css = optionVisibility.generateCSS(patterns);
+
+        expect(css).toContain('[option\\:status=""]');
+        expect(css).toContain('[status=""] [option\\:status=""]');
+      });
+
+      test('generates CSS for empty OR value', () => {
+        const patterns = [{
+          name: 'status',
+          rawValue: '|saved',
+          values: ['', 'saved'],
+          negated: false
+        }];
+
+        const css = optionVisibility.generateCSS(patterns);
+
+        expect(css).toContain('[status=""] [option\\:status="\\|saved"]');
+        expect(css).toContain('[status="saved"] [option\\:status="\\|saved"]');
       });
     });
 
