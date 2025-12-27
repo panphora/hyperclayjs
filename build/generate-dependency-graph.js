@@ -159,7 +159,7 @@ const MODULE_DEFINITIONS = {
     name: 'input-helpers',
     moduleId: 'input-helpers',
     description: '[prevent-enter], [autosize] for textareas',
-    relatedFiles: ['custom-attributes/preventEnter.js', 'custom-attributes/autosize.js']
+    relatedFiles: ['custom-attributes/preventEnter.js', 'custom-attributes/autosize.js', 'custom-attributes/autosize.esm.js']
     // No exports - side effects only (init function)
   },
   'custom-attributes/onaftersave.js': {

@@ -1,17 +1,20 @@
-function init () {
-  document.addEventListener('input', event => {
-    const target = event.target;
-    if (target.matches('textarea[autosize]')) {
-      target.style.overflowY = 'hidden';
-      target.style.height = 'auto';
-      target.style.height = target.scrollHeight + 'px';
-    }
-  });
+import autosize from './autosize.esm.js';
 
-  document.querySelectorAll('textarea[autosize]').forEach(textarea => {
-    textarea.style.overflowY = 'hidden';
-    textarea.style.height = textarea.scrollHeight + 'px';
+function init() {
+  document.querySelectorAll('textarea[autosize]').forEach(autosize);
+
+  const observer = new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+      mutation.addedNodes.forEach(node => {
+        if (node.nodeType === 1) {
+          if (node.matches?.('textarea[autosize]')) autosize(node);
+          node.querySelectorAll?.('textarea[autosize]').forEach(autosize);
+        }
+      });
+    });
   });
+  observer.observe(document.body, { childList: true, subtree: true });
 }
+
 export { init };
 export default init;
