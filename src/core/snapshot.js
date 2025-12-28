@@ -21,7 +21,7 @@
  *   │  3a. PREPARE HOOKS      │     │  3b. DONE               │
  *   │  onPrepareForSave       │     │  (live-sync stops here) │
  *   │  [onbeforesave]         │     │                         │
- *   │  [save-ignore]          │     │  → emits snapshot-ready │
+ *   │  [save-remove]          │     │  → emits snapshot-ready │
  *   │                         │     └─────────────────────────┘
  *   │  ✓ Used by: SAVE only   │
  *   └─────────────────────────┘
@@ -102,7 +102,36 @@ function prepareCloneForSave(clone) {
   }
 
   // Remove elements that shouldn't be saved
-  for (const el of clone.querySelectorAll('[save-ignore]')) {
+  for (const el of clone.querySelectorAll('[save-remove]')) {
+    el.remove();
+  }
+
+  // Run registered prepare hooks
+  for (const hook of prepareForSaveHooks) {
+    hook(clone);
+  }
+
+  return "<!DOCTYPE html>" + clone.outerHTML;
+}
+
+/**
+ * Capture snapshot prepared for dirty/change comparison.
+ *
+ * Like captureForSave but also strips [save-ignore] elements.
+ * Use this for comparing current state against baselines.
+ *
+ * @returns {string} HTML string with [save-remove] and [save-ignore] stripped
+ */
+export function captureForComparison() {
+  const clone = captureSnapshot();
+
+  // Run inline [onbeforesave] handlers (same as prepareCloneForSave)
+  for (const el of clone.querySelectorAll('[onbeforesave]')) {
+    new Function(el.getAttribute('onbeforesave')).call(el);
+  }
+
+  // Strip both [save-remove] and [save-ignore] for comparison
+  for (const el of clone.querySelectorAll('[save-remove], [save-ignore]')) {
     el.remove();
   }
 

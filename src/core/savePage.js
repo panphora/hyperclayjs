@@ -19,6 +19,29 @@ import {
   replacePageWith as replacePageWithCore,
   beforeSave
 } from "./savePageCore.js";
+import { captureForComparison } from "./snapshot.js";
+import { logSaveCheck, logBaseline } from "../utilities/autosaveDebug.js";
+
+/**
+ * Strip [save-remove] and [save-ignore] from a stored HTML string for comparison.
+ *
+ * Use this for stored strings (lastSavedContents, baselineContents).
+ * For current document state, use captureForComparison() instead to avoid
+ * the serialize→parse round-trip.
+ *
+ * @param {string} html - Full HTML string
+ * @returns {string} HTML with excluded elements removed
+ */
+export function stripForComparison(html) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+
+  for (const el of doc.querySelectorAll('[save-remove], [save-ignore]')) {
+    el.remove();
+  }
+
+  return '<!DOCTYPE html>' + doc.documentElement.outerHTML;
+}
 
 // Reset savestatus to 'saved' in snapshots (each module cleans up its own attrs)
 beforeSave(clone => {
@@ -88,6 +111,22 @@ window.addEventListener('online', () => {
   }
 });
 
+// ============================================
+// POST-SAVE BASELINE RECAPTURE
+// ============================================
+// After a successful save, onaftersave handlers may modify the live DOM
+// (e.g., cacheBust updates ?v= query params). We recapture the baseline
+// after these sync handlers complete to prevent false "unsaved changes" warnings.
+
+document.addEventListener('hyperclay:save-saved', () => {
+  // Use setTimeout(0) to run after all sync onaftersave handlers complete
+  setTimeout(() => {
+    const contents = getPageContents();
+    lastSavedContents = contents;
+    logBaseline('recaptured after onaftersave', `${contents.length} chars`);
+  }, 0);
+});
+
 // Re-export from core for backward compatibility
 export { beforeSave, getPageContents };
 
@@ -117,10 +156,11 @@ export function savePage(callback = () => {}) {
     setOfflineStateQuiet();
   }
 
-  const currentContents = getPageContents();
-
-  // Track whether there are unsaved changes
-  unsavedChanges = (currentContents !== lastSavedContents);
+  // Check for unsaved changes using stripped comparison (avoids serialize→parse for current)
+  const currentForCompare = captureForComparison();
+  const lastSavedForCompare = stripForComparison(lastSavedContents);
+  unsavedChanges = (currentForCompare !== lastSavedForCompare);
+  logSaveCheck('savePage dirty check', !unsavedChanges);
 
   // Skip if content hasn't changed
   if (!unsavedChanges) {
@@ -132,10 +172,11 @@ export function savePage(callback = () => {}) {
 
   savePageCore(({msg, msgType}) => {
     if (msgType !== 'error') {
-      // SUCCESS
-      lastSavedContents = currentContents;
+      // SUCCESS - capture current state for baseline (savePageCore uses its own snapshot)
+      lastSavedContents = getPageContents();
       unsavedChanges = false;
       setSaveState('saved', msg);
+      logBaseline('updated after save', `${lastSavedContents.length} chars`);
     } else {
       // FAILED - determine if it's offline or server error
       if (!navigator.onLine) {
@@ -210,6 +251,7 @@ function initBaselineCapture() {
   const immediateContents = getPageContents();
   lastSavedContents = immediateContents;
   baselineContents = immediateContents;
+  logBaseline('immediate capture', `${immediateContents.length} chars`);
 
   // Track user edits to avoid overwriting real changes
   const userEditEvents = ['input', 'change', 'paste'];
@@ -238,6 +280,9 @@ function initBaselineCapture() {
       const contents = getPageContents();
       lastSavedContents = contents;
       baselineContents = contents;
+      logBaseline('settled capture', `${contents.length} chars`);
+    } else {
+      logBaseline('settled skipped', userEdited ? 'user edited' : 'save occurred during settle');
     }
 
     document.documentElement.setAttribute('savestatus', 'saved');
@@ -271,10 +316,17 @@ if (document.readyState === 'loading') {
 export function savePageThrottled(callback = () => {}) {
   if (!isEditMode) return;
 
-  const currentContents = getPageContents();
   // For autosave: check both that content changed from baseline AND from last save
   // This prevents saves from initial setup mutations
-  if (currentContents !== baselineContents && currentContents !== lastSavedContents) {
+  // Use captureForComparison() for current (avoids serialize→parse round-trip)
+  const currentForCompare = captureForComparison();
+  const differsFromBaseline = currentForCompare !== stripForComparison(baselineContents);
+  const differsFromLastSave = currentForCompare !== stripForComparison(lastSavedContents);
+
+  logSaveCheck('throttled vs baseline', !differsFromBaseline);
+  logSaveCheck('throttled vs lastSave', !differsFromLastSave);
+
+  if (differsFromBaseline && differsFromLastSave) {
     unsavedChanges = true;
     throttledSave(callback);
   }

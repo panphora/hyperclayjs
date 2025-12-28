@@ -191,7 +191,7 @@ export function injectToastStyles(styles, theme) {
 
   const styleSheet = document.createElement('style');
   styleSheet.className = `toast-styles-${theme}`;
-  styleSheet.setAttribute('save-ignore', '');
+  styleSheet.setAttribute('save-remove', '');
   styleSheet.textContent = styles;
   document.head.appendChild(styleSheet);
 
@@ -210,7 +210,7 @@ export function toastCore(message, messageType = "success", config = {}) {
     toastContainer = document.createElement('div');
     toastContainer.className = 'toast-container';
     toastContainer.setAttribute('data-toast-theme', theme);
-    toastContainer.setAttribute('save-ignore', '');
+    toastContainer.setAttribute('save-remove', '');
     document.body.append(toastContainer);
   }
 
