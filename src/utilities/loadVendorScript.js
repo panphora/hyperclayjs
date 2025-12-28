@@ -1,8 +1,8 @@
 /*
   Lazy-load vendor scripts in edit mode only
 
-  Injects a <script save-ignore> tag that loads the vendor script.
-  The save-ignore attribute ensures it's stripped when the page is saved.
+  Injects a <script save-remove> tag that loads the vendor script.
+  The save-remove attribute ensures it's stripped when the page is saved.
 
   Usage:
     import { loadVendorScript } from '../utilities/loadVendorScript.js';
@@ -15,7 +15,7 @@
 */
 
 /**
- * Load a vendor script via script tag with save-ignore
+ * Load a vendor script via script tag with save-remove
  * @param {string} url - URL to the vendor script
  * @param {Object} [options] - Options
  * @param {string} [options.globalName] - Window property to return when loaded (for classic scripts)
@@ -33,7 +33,7 @@ export function loadVendorScript(url, options = {}) {
   return new Promise((resolve, reject) => {
     const script = document.createElement('script');
     script.src = url;
-    script.setAttribute('save-ignore', '');
+    script.setAttribute('save-remove', '');
     if (isModule) {
       script.type = 'module';
     }

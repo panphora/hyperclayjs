@@ -16,4 +16,4 @@ Syncing starts automatically.
 - Syncs `<body>` content between browsers
 - Reloads the page when `<head>` changes (stylesheets, scripts, etc.)
 - Preserves focus on active inputs during sync
-- Uses Idiomorph for smooth DOM updates without flicker
+- Uses HyperMorph for smooth DOM updates with content-based element matching

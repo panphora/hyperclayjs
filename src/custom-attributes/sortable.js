@@ -11,7 +11,7 @@
    - e.g. <ul sortable onsorted="console.log('Items reordered!')"></ul>
 
    This wrapper conditionally loads the full Sortable.js vendor script (~118KB)
-   only when in edit mode. The script is injected with save-ignore so it's
+   only when in edit mode. The script is injected with save-remove so it's
    stripped from the page before saving.
 
 */

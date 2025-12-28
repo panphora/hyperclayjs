@@ -22,7 +22,7 @@ Enable drag-and-drop sorting on child elements.
 
 ## Edit Mode Only
 
-Sortable.js (~118KB) is only loaded in edit mode. The vendor script is injected with `save-ignore` so it's stripped from saved pages.
+Sortable.js (~118KB) is only loaded in edit mode. The vendor script is injected with `save-remove` so it's stripped from saved pages.
 
 ## Example
 

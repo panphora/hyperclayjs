@@ -22,11 +22,11 @@
  *                              │
  *                              ▼
  *   ┌─────────────────────────────────────────────────────────┐
- *   │  4. MORPH              Idiomorph to update DOM          │
+ *   │  4. MORPH              HyperMorph to update DOM          │
  *   │                        (preserves focus, input values)  │
  *   └─────────────────────────────────────────────────────────┘
  *
- * DEPENDS ON: Idiomorph (for intelligent DOM morphing)
+ * DEPENDS ON: HyperMorph (for intelligent DOM morphing with content-based matching)
  * INTEGRATES WITH: snapshot.js (receives snapshot-ready events)
  */
 
@@ -337,8 +337,8 @@ class LiveSync {
       const temp = document.createElement('div');
       temp.innerHTML = bodyHtml;
 
-      // Use Idiomorph if available
-      const morphFn = window.Idiomorph?.morph;
+      // Use HyperMorph if available
+      const morphFn = window.HyperMorph?.morph;
 
       if (morphFn) {
         morphFn(document.body, temp, {
@@ -347,7 +347,7 @@ class LiveSync {
         });
       } else {
         // Fallback to innerHTML
-        console.warn('[LiveSync] Idiomorph not available, using innerHTML fallback');
+        console.warn('[LiveSync] HyperMorph not available, using innerHTML fallback');
         document.body.innerHTML = bodyHtml;
       }
 

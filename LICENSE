@@ -26,10 +26,10 @@ SOFTWARE.
 
 This project includes the following third-party libraries:
 
-### Idiomorph
-- Copyright (c) Big Sky Software
+### HyperMorph
+- Copyright (c) Hyperclay
 - License: 0BSD (Zero-Clause BSD)
-- https://github.com/bigskysoftware/idiomorph
+- https://github.com/hyperclay/hyper-morph
 
 ### Sortable.js
 - Copyright (c) All contributors to Sortable

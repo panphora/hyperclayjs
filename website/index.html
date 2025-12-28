@@ -958,11 +958,11 @@ hyperclay.isEditMode;</code></pre>
             <div class="category-label">Utilities</div>
             <p class="desc" style="flex: 1 1 100%; margin-top: 0.5rem; font-size: 0.85rem;">Standalone helpers for common tasks: DOM morphing, clipboard, slugs, query params, and style injection.</p>
 
-            <!-- Idiomorph -->
-            <div class="demo-card" id="idiomorph">
-                <h3>Idiomorph</h3>
-                <p class="desc">Morph DOM preserving state/focus</p>
-                <pre><code>Idiomorph.morph(el, newHtml);</code></pre>
+            <!-- HyperMorph -->
+            <div class="demo-card" id="hyper-morph">
+                <h3>HyperMorph</h3>
+                <p class="desc">DOM morphing with content-based matching</p>
+                <pre><code>HyperMorph.morph(el, newHtml);</code></pre>
                 <div class="demo-area" style="flex-direction: column; align-items: stretch;">
                     <div class="flex-row" id="morph-container">
                         <div class="morph-box">A</div>
@@ -1335,7 +1335,7 @@ themodal.open();</code></pre>
             morphIndex = (morphIndex + 1) % 26;
             const letter = String.fromCharCode(65 + morphIndex);
             const target = document.getElementById('morph-target');
-            hyperclay.Idiomorph?.morph(target, `<div class="morph-box" id="morph-target">${letter}</div>`);
+            hyperclay.HyperMorph?.morph(target, `<div class="morph-box" id="morph-target">${letter}</div>`);
         };
 
         // Query display

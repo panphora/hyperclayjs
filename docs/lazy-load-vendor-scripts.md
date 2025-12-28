@@ -6,7 +6,7 @@ Large vendor scripts (Sortable.js ~118KB) were bundled directly into modules, fo
 
 ## Solution
 
-Conditionally load heavy vendor scripts only when in edit mode via dynamically injected `<script save-ignore>` tags.
+Conditionally load heavy vendor scripts only when in edit mode via dynamically injected `<script save-remove>` tags.
 
 ## How It Works
 
@@ -41,10 +41,10 @@ Conditionally load heavy vendor scripts only when in edit mode via dynamically i
    - If `true`: Continue to step 3
 3. **Inject script tag** into `<head>`:
    ```html
-   <script save-ignore src="...vendor.js"></script>
+   <script save-remove src="...vendor.js"></script>
    ```
 4. **Vendor script loads and initializes**
-5. **On save**: `save-ignore` attribute causes script tag to be stripped from saved HTML
+5. **On save**: `save-remove` attribute causes script tag to be stripped from saved HTML
 
 ### Code Pattern
 
@@ -89,7 +89,7 @@ async function init() {
 
 - **Viewers** never download heavy vendor scripts
 - **Editors** get full functionality when needed
-- **Saved pages** stay clean (script tags stripped via `save-ignore`)
+- **Saved pages** stay clean (script tags stripped via `save-remove`)
 - **CDN caching** still works for vendor scripts
 - **Module graph** stays small and fast
 

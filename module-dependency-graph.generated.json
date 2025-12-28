@@ -66,6 +66,7 @@
     "core/savePage.js": [
       "core/isAdminOfCurrentResource.js",
       "core/savePageCore.js",
+      "utilities/autosaveDebug.js",
       "utilities/mutation.js",
       "utilities/throttle.js"
     ],
@@ -90,12 +91,16 @@
     ],
     "core/unsavedWarning.js": [
       "core/isAdminOfCurrentResource.js",
-      "core/savePage.js"
+      "core/savePage.js",
+      "utilities/autosaveDebug.js"
     ],
     "custom-attributes/ajaxElements.js": [
       "dom-utilities/getDataFromForm.js"
     ],
-    "custom-attributes/autosize.js": [],
+    "custom-attributes/autosize.esm.js": [],
+    "custom-attributes/autosize.js": [
+      "custom-attributes/autosize.esm.js"
+    ],
     "custom-attributes/domHelpers.js": [
       "utilities/nearest.js",
       "utilities/pipe.js"
@@ -154,6 +159,7 @@
       "ui/toast.js"
     ],
     "ui/toast.js": [],
+    "utilities/autosaveDebug.js": [],
     "utilities/cacheBust.js": [],
     "utilities/cookie.js": [],
     "utilities/debounce.js": [],
@@ -163,7 +169,7 @@
     "utilities/pipe.js": [],
     "utilities/throttle.js": [],
     "vendor/Sortable.vendor.js": [],
-    "vendor/idiomorph.min.js": []
+    "vendor/hyper-morph.vendor.js": []
   },
   "modules": {
     "save-core": {
@@ -184,7 +190,7 @@
     "save-system": {
       "name": "save-system",
       "category": "core",
-      "size": 9.6,
+      "size": 10.9,
       "isEditModeOnly": true,
       "files": [
         "core/savePage.js"
@@ -222,7 +228,7 @@
     "unsaved-warning": {
       "name": "unsaved-warning",
       "category": "core",
-      "size": 0.8,
+      "size": 2.3,
       "isEditModeOnly": true,
       "files": [
         "core/unsavedWarning.js"
@@ -388,11 +394,12 @@
     "input-helpers": {
       "name": "input-helpers",
       "category": "custom-attributes",
-      "size": 1.2,
+      "size": 3.9,
       "files": [
         "custom-attributes/inputHelpers.js",
         "custom-attributes/preventEnter.js",
-        "custom-attributes/autosize.js"
+        "custom-attributes/autosize.js",
+        "custom-attributes/autosize.esm.js"
       ],
       "description": "[prevent-enter], [autosize] for textareas",
       "exports": {}
@@ -483,7 +490,7 @@
     "mutation": {
       "name": "mutation",
       "category": "utilities",
-      "size": 13,
+      "size": 13.1,
       "files": [
         "utilities/mutation.js"
       ],
@@ -649,16 +656,21 @@
         ]
       }
     },
-    "idiomorph": {
-      "name": "idiomorph",
+    "hyper-morph": {
+      "name": "hyper-morph",
       "category": "vendor",
-      "size": 8.3,
+      "size": 16.3,
       "files": [
-        "vendor/idiomorph.min.js"
+        "vendor/hyper-morph.vendor.js"
       ],
-      "description": "Efficient DOM morphing library",
+      "description": "DOM morphing with content-based element matching",
       "exports": {
-        "Idiomorph": [
+        "HyperMorph": [
+          "window",
+          "hyperclay"
+        ],
+        "morph": [
+          "window",
           "hyperclay"
         ]
       }
@@ -759,7 +771,7 @@
     "live-sync": {
       "name": "live-sync",
       "category": "communication",
-      "size": 12.7,
+      "size": 12.8,
       "isEditModeOnly": true,
       "files": [
         "communication/live-sync.js"
@@ -825,7 +837,7 @@
     "all-js": "./dom-utilities/All.js",
     "style-injection": "./dom-utilities/insertStyleTag.js",
     "form-data": "./dom-utilities/getDataFromForm.js",
-    "idiomorph": "./vendor/idiomorph.min.js",
+    "hyper-morph": "./vendor/hyper-morph.vendor.js",
     "slugify": "./string-utilities/slugify.js",
     "copy-to-clipboard": "./string-utilities/copy-to-clipboard.js",
     "query-params": "./string-utilities/query.js",
@@ -919,7 +931,7 @@
       "name": "Vendor Libraries",
       "description": "Third-party libraries",
       "modules": [
-        "idiomorph"
+        "hyper-morph"
       ]
     }
   },
@@ -992,7 +1004,7 @@
         "all-js",
         "style-injection",
         "form-data",
-        "idiomorph",
+        "hyper-morph",
         "slugify",
         "copy-to-clipboard",
         "query-params",

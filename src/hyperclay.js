@@ -56,7 +56,7 @@ const MODULE_PATHS = {
   "all-js": "./dom-utilities/All.js",
   "style-injection": "./dom-utilities/insertStyleTag.js",
   "form-data": "./dom-utilities/getDataFromForm.js",
-  "idiomorph": "./vendor/idiomorph.min.js",
+  "hyper-morph": "./vendor/hyper-morph.vendor.js",
   "slugify": "./string-utilities/slugify.js",
   "copy-to-clipboard": "./string-utilities/copy-to-clipboard.js",
   "query-params": "./string-utilities/query.js",
@@ -136,7 +136,7 @@ const PRESETS = {
       "all-js",
       "style-injection",
       "form-data",
-      "idiomorph",
+      "hyper-morph",
       "slugify",
       "copy-to-clipboard",
       "query-params",
@@ -276,7 +276,7 @@ export const All = window.hyperclayModules['all-js']?.All ?? window.hyperclayMod
 export const insertStyles = window.hyperclayModules['style-injection']?.insertStyles ?? window.hyperclayModules['style-injection']?.default;
 export const insertStyleTag = window.hyperclayModules['style-injection']?.insertStyleTag ?? window.hyperclayModules['style-injection']?.default;
 export const getDataFromForm = window.hyperclayModules['form-data']?.getDataFromForm ?? window.hyperclayModules['form-data']?.default;
-export const Idiomorph = window.hyperclayModules['idiomorph']?.Idiomorph ?? window.hyperclayModules['idiomorph']?.default;
+export const HyperMorph = window.hyperclayModules['hyper-morph']?.HyperMorph ?? window.hyperclayModules['hyper-morph']?.default;
 export const slugify = window.hyperclayModules['slugify']?.slugify ?? window.hyperclayModules['slugify']?.default;
 export const copyToClipboard = window.hyperclayModules['copy-to-clipboard']?.copyToClipboard ?? window.hyperclayModules['copy-to-clipboard']?.default;
 export const query = window.hyperclayModules['query-params']?.query ?? window.hyperclayModules['query-params']?.default;

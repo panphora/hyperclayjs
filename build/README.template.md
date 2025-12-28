@@ -69,9 +69,9 @@ Some modules with large vendor dependencies are **lazy-loaded** to optimize page
 
 **How it works:**
 - The wrapper module checks if the page is in edit mode (`isEditMode`)
-- If true, it injects a `<script save-ignore>` tag that loads the vendor script
+- If true, it injects a `<script save-remove>` tag that loads the vendor script
 - If false, nothing is loaded - viewers don't download the heavy scripts
-- The `save-ignore` attribute strips the script tag when the page is saved
+- The `save-remove` attribute strips the script tag when the page is saved
 
 This means:
 - **Editors** get full functionality when needed
@@ -283,7 +283,7 @@ MIT © Hyperclay
 
 This project includes the following open-source libraries:
 
-- **[Idiomorph](https://github.com/bigskysoftware/idiomorph)** - DOM morphing library by Big Sky Software (0BSD)
+- **[HyperMorph](https://github.com/hyperclay/hyper-morph)** - DOM morphing with content-based element matching (0BSD)
 - **[Sortable.js](https://github.com/SortableJS/Sortable)** - Drag-and-drop library (MIT)
 
 ## Links

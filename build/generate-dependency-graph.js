@@ -297,12 +297,13 @@ const MODULE_DEFINITIONS = {
       getDataFromForm: ['window', 'hyperclay']
     }
   },
-  'vendor/idiomorph.min.js': {
-    name: 'idiomorph',
-    moduleId: 'idiomorph',
-    description: 'Efficient DOM morphing library',
+  'vendor/hyper-morph.vendor.js': {
+    name: 'hyper-morph',
+    moduleId: 'hyper-morph',
+    description: 'DOM morphing with content-based element matching',
     exports: {
-      Idiomorph: ['hyperclay']
+      HyperMorph: ['window', 'hyperclay'],
+      morph: ['window', 'hyperclay']
     }
   },
   'string-utilities/slugify.js': {
