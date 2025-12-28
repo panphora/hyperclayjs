@@ -14,34 +14,13 @@ import throttle from "../utilities/throttle.js";
 import Mutation from "../utilities/mutation.js";
 import { isEditMode, isOwner } from "./isAdminOfCurrentResource.js";
 import {
-  savePage as savePageCore,
+  saveHtml,
   getPageContents,
   replacePageWith as replacePageWithCore,
   beforeSave
 } from "./savePageCore.js";
-import { captureForComparison } from "./snapshot.js";
+import { captureForComparison, captureForSaveAndComparison } from "./snapshot.js";
 import { logSaveCheck, logBaseline } from "../utilities/autosaveDebug.js";
-
-/**
- * Strip [save-remove] and [save-ignore] from a stored HTML string for comparison.
- *
- * Use this for stored strings (lastSavedContents, baselineContents).
- * For current document state, use captureForComparison() instead to avoid
- * the serialize→parse round-trip.
- *
- * @param {string} html - Full HTML string
- * @returns {string} HTML with excluded elements removed
- */
-export function stripForComparison(html) {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, 'text/html');
-
-  for (const el of doc.querySelectorAll('[save-remove], [save-ignore]')) {
-    el.remove();
-  }
-
-  return '<!DOCTYPE html>' + doc.documentElement.outerHTML;
-}
 
 // Reset savestatus to 'saved' in snapshots (each module cleans up its own attrs)
 beforeSave(clone => {
@@ -121,7 +100,8 @@ window.addEventListener('online', () => {
 document.addEventListener('hyperclay:save-saved', () => {
   // Use setTimeout(0) to run after all sync onaftersave handlers complete
   setTimeout(() => {
-    const contents = getPageContents();
+    // Store stripped version so comparisons are direct (no parsing needed)
+    const contents = captureForComparison();
     lastSavedContents = contents;
     logBaseline('recaptured after onaftersave', `${contents.length} chars`);
   }, 0);
@@ -156,10 +136,13 @@ export function savePage(callback = () => {}) {
     setOfflineStateQuiet();
   }
 
-  // Check for unsaved changes using stripped comparison (avoids serialize→parse for current)
-  const currentForCompare = captureForComparison();
-  const lastSavedForCompare = stripForComparison(lastSavedContents);
-  unsavedChanges = (currentForCompare !== lastSavedForCompare);
+  // Single capture: clone once, get both versions
+  // forComparison has [save-remove] and [save-ignore] stripped
+  // forSave has only [save-remove] stripped
+  const { forSave, forComparison } = captureForSaveAndComparison();
+
+  // Compare directly - lastSavedContents is already stripped
+  unsavedChanges = (forComparison !== lastSavedContents);
   logSaveCheck('savePage dirty check', !unsavedChanges);
 
   // Skip if content hasn't changed
@@ -170,25 +153,29 @@ export function savePage(callback = () => {}) {
   // Start debounced 'saving' state (only shows if save takes >500ms)
   setSavingState();
 
-  savePageCore(({msg, msgType}) => {
-    if (msgType !== 'error') {
-      // SUCCESS - capture current state for baseline (savePageCore uses its own snapshot)
-      lastSavedContents = getPageContents();
+  // Use saveHtml directly with our pre-captured content (avoids double capture)
+  saveHtml(forSave, (err, data) => {
+    if (!err) {
+      // SUCCESS - store stripped version for future comparisons
+      lastSavedContents = forComparison;
       unsavedChanges = false;
-      setSaveState('saved', msg);
+      setSaveState('saved', data?.msg || 'Saved');
       logBaseline('updated after save', `${lastSavedContents.length} chars`);
     } else {
       // FAILED - determine if it's offline or server error
       if (!navigator.onLine) {
-        setSaveState('offline', msg);
+        setSaveState('offline', err.message);
       } else {
-        setSaveState('error', msg);
+        setSaveState('error', err.message);
       }
     }
 
-    // Call user callback if provided
-    if (typeof callback === 'function' && msg) {
-      callback({msg, msgType});
+    // Call user callback if provided (preserve server's msgType)
+    if (typeof callback === 'function') {
+      callback({
+        msg: err?.message || data?.msg,
+        msgType: err ? 'error' : (data?.msgType || 'success')
+      });
     }
   });
 }
@@ -248,7 +235,8 @@ function initBaselineCapture() {
 
   // Take immediate snapshot and set as baseline right away
   // This ensures saves during settle window work correctly
-  const immediateContents = getPageContents();
+  // Store stripped version so comparisons are direct (no parsing needed)
+  const immediateContents = captureForComparison();
   lastSavedContents = immediateContents;
   baselineContents = immediateContents;
   logBaseline('immediate capture', `${immediateContents.length} chars`);
@@ -277,7 +265,8 @@ function initBaselineCapture() {
     // Only update if no user edits AND no saves occurred during settle
     // (if a save happened, lastSavedContents would differ from immediateContents)
     if (!userEdited && lastSavedContents === immediateContents) {
-      const contents = getPageContents();
+      // Store stripped version so comparisons are direct (no parsing needed)
+      const contents = captureForComparison();
       lastSavedContents = contents;
       baselineContents = contents;
       logBaseline('settled capture', `${contents.length} chars`);
@@ -318,10 +307,10 @@ export function savePageThrottled(callback = () => {}) {
 
   // For autosave: check both that content changed from baseline AND from last save
   // This prevents saves from initial setup mutations
-  // Use captureForComparison() for current (avoids serialize→parse round-trip)
+  // Compare directly - stored versions are already stripped
   const currentForCompare = captureForComparison();
-  const differsFromBaseline = currentForCompare !== stripForComparison(baselineContents);
-  const differsFromLastSave = currentForCompare !== stripForComparison(lastSavedContents);
+  const differsFromBaseline = currentForCompare !== baselineContents;
+  const differsFromLastSave = currentForCompare !== lastSavedContents;
 
   logSaveCheck('throttled vs baseline', !differsFromBaseline);
   logSaveCheck('throttled vs lastSave', !differsFromLastSave);

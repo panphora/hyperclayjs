@@ -123,14 +123,19 @@ function prepareCloneForSave(clone) {
  * @returns {string} HTML string with [save-remove] and [save-ignore] stripped
  */
 export function captureForComparison() {
+  // CodeMirror pages: return editor content directly (same for save and compare)
+  if (isCodeMirrorPage()) {
+    return getCodeMirrorContents();
+  }
+
   const clone = captureSnapshot();
 
-  // Run inline [onbeforesave] handlers (same as prepareCloneForSave)
+  // Run inline [onbeforesave] handlers
   for (const el of clone.querySelectorAll('[onbeforesave]')) {
     new Function(el.getAttribute('onbeforesave')).call(el);
   }
 
-  // Strip both [save-remove] and [save-ignore] for comparison
+  // Strip before hooks (hooks see the "final" state)
   for (const el of clone.querySelectorAll('[save-remove], [save-ignore]')) {
     el.remove();
   }
@@ -141,6 +146,61 @@ export function captureForComparison() {
   }
 
   return "<!DOCTYPE html>" + clone.outerHTML;
+}
+
+/**
+ * Single-capture function for both saving and comparison.
+ *
+ * Clones the DOM once, then clones that clone for comparison.
+ * More efficient than calling captureForSave() and captureForComparison() separately.
+ *
+ * @param {Object} options
+ * @param {boolean} options.emitForSync - Whether to emit snapshot-ready event (default: true)
+ * @returns {{ forSave: string, forComparison: string }}
+ */
+export function captureForSaveAndComparison({ emitForSync = true } = {}) {
+  // CodeMirror pages: return editor content directly, skip snapshot-ready
+  if (isCodeMirrorPage()) {
+    const contents = getCodeMirrorContents();
+    return { forSave: contents, forComparison: contents };
+  }
+
+  const clone = captureSnapshot();
+
+  // Emit for live-sync before any stripping
+  if (emitForSync) {
+    document.dispatchEvent(new CustomEvent('hyperclay:snapshot-ready', {
+      detail: { documentElement: clone }
+    }));
+  }
+
+  // Run inline [onbeforesave] handlers
+  for (const el of clone.querySelectorAll('[onbeforesave]')) {
+    new Function(el.getAttribute('onbeforesave')).call(el);
+  }
+
+  // Clone for comparison before stripping (cheaper than cloning live DOM)
+  const compareClone = clone.cloneNode(true);
+
+  // Save clone: strip [save-remove], then run hooks
+  for (const el of clone.querySelectorAll('[save-remove]')) {
+    el.remove();
+  }
+  for (const hook of prepareForSaveHooks) {
+    hook(clone);
+  }
+  const forSave = "<!DOCTYPE html>" + clone.outerHTML;
+
+  // Compare clone: strip both, then run hooks
+  for (const el of compareClone.querySelectorAll('[save-remove], [save-ignore]')) {
+    el.remove();
+  }
+  for (const hook of prepareForSaveHooks) {
+    hook(compareClone);
+  }
+  const forComparison = "<!DOCTYPE html>" + compareClone.outerHTML;
+
+  return { forSave, forComparison };
 }
 
 /**
