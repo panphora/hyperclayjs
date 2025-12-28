@@ -26,6 +26,14 @@ import {
 let saveInProgress = false;
 const saveEndpoint = `/save/${cookie.get("currentResource")}`;
 
+/**
+ * Check if a save is currently in progress.
+ * @returns {boolean}
+ */
+export function isSaveInProgress() {
+  return saveInProgress;
+}
+
 // =============================================================================
 // RE-EXPORTS FROM SNAPSHOT (for backwards compat)
 // =============================================================================
@@ -102,7 +110,7 @@ export function savePage(callback = () => {}) {
 
   // Add timeout - abort if server doesn't respond within 12 seconds
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort('Save timeout'), 12000);
+  const timeoutId = setTimeout(() => controller.abort(), 12000);
 
   fetch(saveEndpoint, {
     method: 'POST',
@@ -177,7 +185,7 @@ export function saveHtml(html, callback = () => {}) {
 
   // Add timeout - abort if server doesn't respond within 12 seconds
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort('Save timeout'), 12000);
+  const timeoutId = setTimeout(() => controller.abort(), 12000);
 
   fetch(saveEndpoint, {
     method: 'POST',

@@ -17,7 +17,8 @@ import {
   saveHtml,
   getPageContents,
   replacePageWith as replacePageWithCore,
-  beforeSave
+  beforeSave,
+  isSaveInProgress
 } from "./savePageCore.js";
 import { captureForComparison, captureForSaveAndComparison } from "./snapshot.js";
 import { logSaveCheck, logBaseline } from "../utilities/autosaveDebug.js";
@@ -129,6 +130,11 @@ export function savePage(callback = () => {}) {
     return;
   }
 
+  // Don't start a new save if one is already in progress
+  if (isSaveInProgress()) {
+    return;
+  }
+
   // Check if offline - set DOM state immediately for UI feedback
   // but still try the fetch (navigator.onLine can be wrong)
   const wasOffline = !navigator.onLine;
@@ -139,7 +145,17 @@ export function savePage(callback = () => {}) {
   // Single capture: clone once, get both versions
   // forComparison has [save-remove] and [save-ignore] stripped
   // forSave has only [save-remove] stripped
-  const { forSave, forComparison } = captureForSaveAndComparison();
+  let forSave, forComparison;
+  try {
+    ({ forSave, forComparison } = captureForSaveAndComparison());
+  } catch (err) {
+    console.error('savePage: captureForSaveAndComparison failed', err);
+    setSaveState('error', err.message);
+    if (typeof callback === 'function') {
+      callback({ msg: err.message, msgType: 'error' });
+    }
+    return;
+  }
 
   // Compare directly - lastSavedContents is already stripped
   unsavedChanges = (forComparison !== lastSavedContents);
