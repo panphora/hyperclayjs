@@ -1,7 +1,9 @@
 {
   "rawDependencies": {
     "communication/behaviorCollector.js": [],
-    "communication/live-sync.js": [],
+    "communication/live-sync.js": [
+      "vendor/hyper-morph.vendor.js"
+    ],
     "communication/sendMessage.js": [
       "communication/behaviorCollector.js",
       "dom-utilities/getDataFromForm.js",
@@ -66,6 +68,7 @@
     "core/savePage.js": [
       "core/isAdminOfCurrentResource.js",
       "core/savePageCore.js",
+      "core/snapshot.js",
       "utilities/autosaveDebug.js",
       "utilities/mutation.js",
       "utilities/throttle.js"
@@ -92,6 +95,7 @@
     "core/unsavedWarning.js": [
       "core/isAdminOfCurrentResource.js",
       "core/savePage.js",
+      "core/snapshot.js",
       "utilities/autosaveDebug.js"
     ],
     "custom-attributes/ajaxElements.js": [
@@ -175,7 +179,7 @@
     "save-core": {
       "name": "save-core",
       "category": "core",
-      "size": 6.8,
+      "size": 7.4,
       "isEditModeOnly": true,
       "files": [
         "core/savePageCore.js"
@@ -190,7 +194,7 @@
     "save-system": {
       "name": "save-system",
       "category": "core",
-      "size": 10.9,
+      "size": 12.1,
       "isEditModeOnly": true,
       "files": [
         "core/savePage.js"
@@ -228,7 +232,7 @@
     "unsaved-warning": {
       "name": "unsaved-warning",
       "category": "core",
-      "size": 2.3,
+      "size": 1.3,
       "isEditModeOnly": true,
       "files": [
         "core/unsavedWarning.js"
@@ -276,7 +280,7 @@
     "snapshot": {
       "name": "snapshot",
       "category": "core",
-      "size": 7.5,
+      "size": 10.2,
       "isEditModeOnly": true,
       "files": [
         "core/snapshot.js"
@@ -771,7 +775,7 @@
     "live-sync": {
       "name": "live-sync",
       "category": "communication",
-      "size": 12.8,
+      "size": 12.5,
       "isEditModeOnly": true,
       "files": [
         "communication/live-sync.js"

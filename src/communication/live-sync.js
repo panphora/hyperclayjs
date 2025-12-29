@@ -26,9 +26,10 @@
  *   │                        (preserves focus, input values)  │
  *   └─────────────────────────────────────────────────────────┘
  *
- * DEPENDS ON: HyperMorph (for intelligent DOM morphing with content-based matching)
  * INTEGRATES WITH: snapshot.js (receives snapshot-ready events)
  */
+
+import { HyperMorph } from "../vendor/hyper-morph.vendor.js";
 
 class LiveSync {
   constructor() {
@@ -337,19 +338,10 @@ class LiveSync {
       const temp = document.createElement('div');
       temp.innerHTML = bodyHtml;
 
-      // Use HyperMorph if available
-      const morphFn = window.HyperMorph?.morph;
-
-      if (morphFn) {
-        morphFn(document.body, temp, {
-          morphStyle: 'innerHTML',
-          ignoreActiveValue: true
-        });
-      } else {
-        // Fallback to innerHTML
-        console.warn('[LiveSync] HyperMorph not available, using innerHTML fallback');
-        document.body.innerHTML = bodyHtml;
-      }
+      HyperMorph.morph(document.body, temp, {
+        morphStyle: 'innerHTML',
+        ignoreActiveValue: true
+      });
 
       this.rehydrateFormState(document.body);
     } finally {
