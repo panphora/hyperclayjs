@@ -1,5 +1,5 @@
 /**
- * Build script to generate hyperclay.js from module-dependency-graph.json
+ * Build script to generate hyperclay.js from module-dependency-graph.generated.json
  *
  * Simplified for browser-native ES modules approach.
  * Modules self-export to window.hyperclay when imported.

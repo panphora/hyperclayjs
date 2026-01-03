@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.join(__dirname, '..');
 
 /**
- * Generate README.md from template and module-dependency-graph.json
+ * Generate README.md from template and module-dependency-graph.generated.json
  */
 async function generateReadme() {
   console.log('📝 Generating README.md...');

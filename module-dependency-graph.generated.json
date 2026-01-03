@@ -664,6 +664,7 @@
       "name": "hyper-morph",
       "category": "vendor",
       "size": 16.3,
+      "isEditModeOnly": true,
       "files": [
         "vendor/hyper-morph.vendor.js"
       ],

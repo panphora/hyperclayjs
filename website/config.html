@@ -58,7 +58,8 @@
 
         /* Header */
         .header {
-            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--primary-blue);
         }
 
         .header .nav-link {
@@ -730,7 +731,7 @@
 
         async function loadModuleData() {
             try {
-                const response = await fetch('/dist/module-dependency-graph.json');
+                const response = await fetch('/dist/module-dependency-graph.generated.json');
                 moduleData = await response.json();
 
                 // Transform modules data to features format
@@ -1037,8 +1038,8 @@
             const exportsArray = Array.from(exampleExports).sort();
             let code;
             if (exportsArray.length > 0) {
-                const formatted = exportsArray.map(name => `    ${name}`).join(',\n');
-                code = `<script type="module">\n  const {\n${formatted}\n  } = await import('${fullUrl}');\n<\/script>`;
+                const formatted = exportsArray.join(', ');
+                code = `<script type="module">\n  const { ${formatted} } = await import('${fullUrl}');\n<\/script>`;
             } else {
                 code = `<script type="module">\n  await import('${fullUrl}');\n<\/script>`;
             }

@@ -27,9 +27,9 @@ const SRC_FILES_TO_COPY = [
   'hyperclay.js'
 ];
 
-// Files to copy to website/dist (from root, with optional rename)
+// Files to copy to website/dist (from root)
 const ROOT_FILES_TO_COPY = [
-  { src: 'module-dependency-graph.generated.json', dest: 'module-dependency-graph.json' }
+  'module-dependency-graph.generated.json'
 ];
 
 // Build files to copy to website/ (not dist/)

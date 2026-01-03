@@ -23,7 +23,7 @@ This project uses a build system that generates several files from source templa
 
 ### Special Case: index.html
 
-`index.html` loads `module-dependency-graph.json` at runtime (copied from `module-dependency-graph.generated.json` during website build) and dynamically renders module information. The module data (names, descriptions, exports) comes from the JSON file, but the rendering template is in `index.html` itself.
+`index.html` loads `module-dependency-graph.generated.json` at runtime (copied to `website/dist/` during website build) and dynamically renders module information. The module data (names, descriptions, exports) comes from the JSON file, but the rendering template is in `index.html` itself.
 
 ## How Dependencies Are Tracked
 

@@ -301,6 +301,7 @@ const MODULE_DEFINITIONS = {
     name: 'hyper-morph',
     moduleId: 'hyper-morph',
     description: 'DOM morphing with content-based element matching',
+    isEditModeOnly: true,
     exports: {
       HyperMorph: ['window', 'hyperclay'],
       morph: ['window', 'hyperclay']
