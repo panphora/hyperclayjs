@@ -62,12 +62,12 @@ import 'hyperclayjs/presets/standard.js';
 | edit-mode-helpers | 7.5KB | Admin-only functionality: [edit-mode-input], [edit-mode-resource], [edit-mode-onclick] |
 | option-visibility | 7.8KB | Dynamic show/hide based on ancestor state with option:attribute="value" |
 | persist | 2.4KB | Persist input/select/textarea values to the DOM with [persist] attribute |
-| save-core | 6.8KB | Basic save function only - hyperclay.savePage() |
-| save-system | 9.6KB | CMD+S, [trigger-save] button, savestatus attribute |
+| save-core | 7.4KB | Basic save function only - hyperclay.savePage() |
+| save-system | 12.1KB | CMD+S, [trigger-save] button, savestatus attribute |
 | save-toast | 0.9KB | Toast notifications for save events |
-| snapshot | 7.5KB | Source of truth for page state - captures DOM snapshots for save and sync |
+| snapshot | 10.2KB | Source of truth for page state - captures DOM snapshots for save and sync |
 | tailwind-inject | 0.4KB | Injects tailwind CSS link with cache-bust on save |
-| unsaved-warning | 0.8KB | Warn before leaving page with unsaved changes |
+| unsaved-warning | 1.3KB | Warn before leaving page with unsaved changes |
 
 ### Custom Attributes (HTML enhancements)
 
@@ -76,7 +76,7 @@ import 'hyperclayjs/presets/standard.js';
 | ajax-elements | 2.6KB | [ajax-form], [ajax-button] for async form submissions |
 | dom-helpers | 6.2KB | el.nearest, el.val, el.text, el.exec, el.cycle |
 | event-attrs | 4.6KB | [onclickaway], [onclickchildren], [onclone], [onpagemutation], [onrender] |
-| input-helpers | 1.2KB | [prevent-enter], [autosize] for textareas |
+| input-helpers | 3.9KB | [prevent-enter], [autosize] for textareas |
 | onaftersave | 1KB | [onaftersave] attribute - run JS when save status changes |
 | sortable | 3.4KB | Drag-drop sorting with [sortable], lazy-loads ~118KB Sortable.js in edit mode |
 
@@ -95,7 +95,7 @@ import 'hyperclayjs/presets/standard.js';
 | cache-bust | 0.6KB | Cache-bust href/src attributes |
 | cookie | 1.4KB | Cookie management (often auto-included) |
 | debounce | 0.4KB | Function debouncing |
-| mutation | 13KB | DOM mutation observation (often auto-included) |
+| mutation | 13.1KB | DOM mutation observation (often auto-included) |
 | nearest | 3.4KB | Find nearest elements (often auto-included) |
 | throttle | 0.8KB | Function throttling |
 
@@ -121,28 +121,28 @@ import 'hyperclayjs/presets/standard.js';
 | Module | Size | Description |
 |--------|------|-------------|
 | file-upload | 10.7KB | File upload with progress |
-| live-sync | 12.7KB | Real-time DOM sync across browsers |
+| live-sync | 12.5KB | Real-time DOM sync across browsers |
 | send-message | 1.3KB | Message sending utility |
 
 ### Vendor Libraries (Third-party libraries)
 
 | Module | Size | Description |
 |--------|------|-------------|
-| hyper-morph | 8.7KB | DOM morphing with content-based element matching |
+| hyper-morph | 16.3KB | DOM morphing with content-based element matching |
 
 ## Presets
 
-### Minimal (~40.6KB)
+### Minimal (~46.4KB)
 Essential features for basic editing
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `edit-mode-helpers`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Standard (~62.4KB)
+### Standard (~68.7KB)
 Standard feature set for most use cases
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `unsaved-warning`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Everything (~184.6KB)
+### Everything (~201.5KB)
 All available features
 
 Includes all available modules across all categories.

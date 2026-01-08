@@ -1,5 +1,5 @@
 /**
- * HyperclayJS v1.15.0 - Minimal Browser-Native Loader
+ * HyperclayJS v1.16.0 - Minimal Browser-Native Loader
  *
  * Modules auto-init when imported (no separate init call needed).
  * Include `export-to-window` feature to export to window.hyperclay.
@@ -162,6 +162,7 @@ const EDIT_MODE_ONLY = new Set([
   "sortable",
   "onaftersave",
   "cache-bust",
+  "hyper-morph",
   "file-upload",
   "live-sync",
   "tailwind-inject"
@@ -277,6 +278,7 @@ export const insertStyles = window.hyperclayModules['style-injection']?.insertSt
 export const insertStyleTag = window.hyperclayModules['style-injection']?.insertStyleTag ?? window.hyperclayModules['style-injection']?.default;
 export const getDataFromForm = window.hyperclayModules['form-data']?.getDataFromForm ?? window.hyperclayModules['form-data']?.default;
 export const HyperMorph = window.hyperclayModules['hyper-morph']?.HyperMorph ?? window.hyperclayModules['hyper-morph']?.default;
+export const morph = window.hyperclayModules['hyper-morph']?.morph ?? window.hyperclayModules['hyper-morph']?.default;
 export const slugify = window.hyperclayModules['slugify']?.slugify ?? window.hyperclayModules['slugify']?.default;
 export const copyToClipboard = window.hyperclayModules['copy-to-clipboard']?.copyToClipboard ?? window.hyperclayModules['copy-to-clipboard']?.default;
 export const query = window.hyperclayModules['query-params']?.query ?? window.hyperclayModules['query-params']?.default;

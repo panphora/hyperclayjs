@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.16.0] - 2026-01-07
+
+### Added
+- Autosize functionality
+
+### Changed
+- Updated dependencies for better compatibility
+- Made live-sync depend on hyper-morph directly
+- Optimized save system with single DOM clone and no parsing for comparisons
+- Replaced Idiomorph with HyperMorph for DOM morphing
+
+### Fixed
+- Save system edge cases
+- Unsaved warning false positives and added autosave debug logging
+
+
+
 ## [1.15.0] - 2025-12-24
 
 ### Added
