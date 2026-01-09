@@ -35,7 +35,7 @@ class LiveSync {
   constructor() {
     this.sse = null;
     this.currentFile = null;
-    this.lastHeadHash = null;
+    this.initialHeadHash = null;  // This tab's head hash at startup (for detecting local template changes)
     this.lastBodyHtml = null;
     this.clientId = this.generateClientId();
     this.debounceMs = 150;
@@ -54,21 +54,22 @@ class LiveSync {
   }
 
   /**
-   * Generate or retrieve a persistent client ID
+   * Generate or retrieve a tab-specific client ID
+   * Uses sessionStorage (unique per tab) not localStorage (shared across tabs)
    */
   generateClientId() {
     let id = null;
 
     try {
-      id = localStorage.getItem('livesync-client-id');
+      id = sessionStorage.getItem('livesync-client-id');
     } catch (e) {
-      // localStorage might not be available
+      // sessionStorage might not be available
     }
 
     if (!id) {
       id = Math.random().toString(36).slice(2, 11) + Date.now().toString(36);
       try {
-        localStorage.setItem('livesync-client-id', id);
+        sessionStorage.setItem('livesync-client-id', id);
       } catch (e) {
         // That's okay
       }
@@ -197,17 +198,12 @@ class LiveSync {
         return;
       }
 
-      // Check for head changes -> full reload
-      // Only compare when BOTH hashes exist (server must send headHash)
-      // Only set lastHeadHash when incoming hash is valid
-      if (headHash) {
-        if (this.lastHeadHash && headHash !== this.lastHeadHash) {
-          console.log('[LiveSync] Head changed, reloading');
-          location.reload();
-          return;
-        }
-        this.lastHeadHash = headHash;
-      }
+      // NOTE: We intentionally ignore the received headHash here.
+      // Each tab has its own <head> content which may legitimately differ
+      // (load order, injected scripts, browser extensions). Comparing
+      // headHash across tabs caused false-positive reloads.
+      // Instead, each tab tracks its own initialHeadHash to detect
+      // local template changes when sending.
 
       console.log('[LiveSync] Received update from:', sender);
       this.applyUpdate(body);
@@ -245,6 +241,16 @@ class LiveSync {
       // Compute headHash using SHA-256 (async)
       const headHash = await this.computeHeadHash(head);
 
+      // Track initial head hash for this tab (detect local template changes)
+      if (!this.initialHeadHash) {
+        this.initialHeadHash = headHash;
+        console.log('[LiveSync] Initial head hash:', headHash);
+      } else if (headHash !== this.initialHeadHash) {
+        // Local head changed - template was modified
+        // Log but don't block sync (user may have intentionally edited <head>)
+        console.warn('[LiveSync] Head changed locally (template modified)');
+      }
+
       // Send update even if body is empty (allows clearing content)
       this.sendUpdate(body, headHash);
     };
@@ -264,9 +270,6 @@ class LiveSync {
       if (body === this.lastBodyHtml) return;
 
       console.log('[LiveSync] Sending update');
-
-      // Track local head changes
-      this.lastHeadHash = headHash;
 
       fetch('/live-sync/save', {
         method: 'POST',

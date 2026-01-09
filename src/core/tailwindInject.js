@@ -8,7 +8,7 @@ function init() {
   const href = `/tailwindcss/${currentResource}.css`;
   insertStyles(href, (link) => {
     link.setAttribute('onaftersave', 'cacheBust(this)');
-    link.setAttribute('mutations-ignore', '');
+    link.setAttribute('save-ignore', '');  // Exclude from dirty comparison (cacheBust changes ?v=)
   });
 }
 

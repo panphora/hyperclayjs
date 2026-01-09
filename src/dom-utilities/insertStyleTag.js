@@ -62,14 +62,24 @@ function insertStyles(nameOrHref, cssOrCallback, callback) {
   const href = nameOrHref;
   const cb = typeof cssOrCallback === 'function' ? cssOrCallback : undefined;
 
-  // Normalize href to full URL for comparison
-  const normalizedHref = new URL(href, window.location.href).href;
+  // Helper to get base URL without query params (for comparison)
+  const getBaseUrl = (url) => {
+    try {
+      const parsed = new URL(url, window.location.href);
+      return parsed.origin + parsed.pathname;
+    } catch {
+      return url;
+    }
+  };
 
-  // Find all links with matching normalized path
+  // Normalize href to full URL path (without query params) for comparison
+  const normalizedHref = getBaseUrl(href);
+
+  // Find all links with matching normalized path (ignoring query params like ?v=)
   const existingLinks = [...document.querySelectorAll('link[rel="stylesheet"]')]
     .filter(el => {
       try {
-        return new URL(el.getAttribute('href'), window.location.href).href === normalizedHref;
+        return getBaseUrl(el.getAttribute('href')) === normalizedHref;
       } catch {
         return false;
       }
