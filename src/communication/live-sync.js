@@ -343,7 +343,9 @@ class LiveSync {
 
       HyperMorph.morph(document.body, temp, {
         morphStyle: 'innerHTML',
-        ignoreActiveValue: true
+        ignoreActiveValue: true,
+        head: { style: 'merge' },
+        scripts: { handle: true, matchMode: 'smart' }
       });
 
       this.rehydrateFormState(document.body);
