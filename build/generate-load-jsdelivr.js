@@ -9,31 +9,38 @@ const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.join(__dirname, '..');
 
 /**
- * Update load-jsdelivr.html with current package version
+ * Update HTML files with current package version
  */
 function generateLoadJsdelivr() {
-  console.log('📝 Updating load-jsdelivr.html...');
+  console.log('📝 Updating website HTML files with version...');
 
   // Read package.json for version
   const packagePath = path.join(ROOT_DIR, 'package.json');
   const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf-8'));
   const version = packageJson.version;
 
-  // Read the HTML file
-  const htmlPath = path.join(ROOT_DIR, 'website', 'load-jsdelivr.html');
-  let html = fs.readFileSync(htmlPath, 'utf-8');
+  // Files to update
+  const filesToUpdate = ['load-jsdelivr.html', 'config.html'];
 
-  // Replace version in jsdelivr URLs (handles both versioned URLs and __VERSION__ placeholder)
-  html = html.replace(
-    /https:\/\/cdn\.jsdelivr\.net\/npm\/hyperclayjs@[\d.]+\/src/g,
-    `https://cdn.jsdelivr.net/npm/hyperclayjs@${version}/src`
-  );
-  html = html.replace(/__VERSION__/g, version);
+  for (const filename of filesToUpdate) {
+    const htmlPath = path.join(ROOT_DIR, 'website', filename);
+    if (!fs.existsSync(htmlPath)) {
+      console.log(`⚠️  Skipping ${filename} (not found)`);
+      continue;
+    }
 
-  // Write it back
-  fs.writeFileSync(htmlPath, html, 'utf-8');
+    let html = fs.readFileSync(htmlPath, 'utf-8');
 
-  console.log(`✅ Updated load-jsdelivr.html with version ${version}`);
+    // Replace version in jsdelivr URLs (handles both versioned URLs and __VERSION__ placeholder)
+    html = html.replace(
+      /https:\/\/cdn\.jsdelivr\.net\/npm\/hyperclayjs@[\d.]+\/src/g,
+      `https://cdn.jsdelivr.net/npm/hyperclayjs@${version}/src`
+    );
+    html = html.replace(/__VERSION__/g, version);
+
+    fs.writeFileSync(htmlPath, html, 'utf-8');
+    console.log(`✅ Updated ${filename} with version ${version}`);
+  }
 }
 
 // Run the generator
