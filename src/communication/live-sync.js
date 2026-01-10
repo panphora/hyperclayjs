@@ -5,12 +5,12 @@
  *
  *   ┌─────────────────────────────────────────────────────────┐
  *   │  1. LISTEN            snapshot-ready event from save    │
- *   │                       (body with form values, no strip) │
+ *   │                       (full document with form values)  │
  *   └─────────────────────────────────────────────────────────┘
  *                              │
  *                              ▼
  *   ┌─────────────────────────────────────────────────────────┐
- *   │  2. SEND               POST body to /live-sync/save     │
+ *   │  2. SEND               POST html to /live-sync/save     │
  *   │                        (debounced, skip if unchanged)   │
  *   └─────────────────────────────────────────────────────────┘
  *                              │
@@ -22,7 +22,7 @@
  *                              │
  *                              ▼
  *   ┌─────────────────────────────────────────────────────────┐
- *   │  4. MORPH              HyperMorph to update DOM          │
+ *   │  4. MORPH              HyperMorph full documentElement  │
  *   │                        (preserves focus, input values)  │
  *   └─────────────────────────────────────────────────────────┘
  *
@@ -30,18 +30,19 @@
  */
 
 import { HyperMorph } from "../vendor/hyper-morph.vendor.js";
+import Mutation from "../utilities/mutation.js";
 
 class LiveSync {
   constructor() {
     this.sse = null;
     this.currentFile = null;
-    this.initialHeadHash = null;  // This tab's head hash at startup (for detecting local template changes)
-    this.lastBodyHtml = null;
+    this.lastHtml = null;
     this.clientId = this.generateClientId();
     this.debounceMs = 150;
     this.debounceTimer = null;
     this.isPaused = false;
     this.isDestroyed = false;
+    this.debug = false;
 
     // Store handler reference for cleanup
     this._snapshotHandler = null;
@@ -51,6 +52,16 @@ class LiveSync {
     this.onDisconnect = null;
     this.onUpdate = null;
     this.onError = null;
+  }
+
+  _log(message, data = null) {
+    if (!this.debug) return;
+    const prefix = `[LiveSync ${new Date().toISOString()}]`;
+    if (data !== null) {
+      console.log(prefix, message, data);
+    } else {
+      console.log(prefix, message);
+    }
   }
 
   /**
@@ -99,8 +110,7 @@ class LiveSync {
     }
 
     // Reset state for new connection
-    this.lastHeadHash = null;
-    this.lastBodyHtml = null;
+    this.lastHtml = null;
 
     console.log('[LiveSync] Starting for:', this.currentFile);
     this.connect();
@@ -187,27 +197,23 @@ class LiveSync {
         return;
       }
 
-      const { body, headHash, sender } = data;
+      const { html, sender } = data;
 
       // Ignore own changes
-      if (sender === this.clientId) return;
-
-      // Guard against invalid body - never apply non-string
-      if (typeof body !== 'string') {
-        console.error('[LiveSync] Received invalid body (not a string), ignoring');
+      if (sender === this.clientId) {
+        this._log('Ignoring own message (sender matches clientId)');
         return;
       }
 
-      // NOTE: We intentionally ignore the received headHash here.
-      // Each tab has its own <head> content which may legitimately differ
-      // (load order, injected scripts, browser extensions). Comparing
-      // headHash across tabs caused false-positive reloads.
-      // Instead, each tab tracks its own initialHeadHash to detect
-      // local template changes when sending.
+      // Guard against invalid html
+      if (typeof html !== 'string') {
+        console.error('[LiveSync] Received invalid html, ignoring');
+        return;
+      }
 
-      console.log('[LiveSync] Received update from:', sender);
-      this.applyUpdate(body);
-      if (this.onUpdate) this.onUpdate({ body, sender });
+      this._log(`Received update from: ${sender} (my clientId: ${this.clientId})`);
+      this.applyUpdate(html);
+      if (this.onUpdate) this.onUpdate({ html, sender });
     };
 
     // Native EventSource auto-reconnects on transient errors
@@ -225,71 +231,57 @@ class LiveSync {
 
   /**
    * Listen for snapshot-ready events from the save system.
-   * Receives the full cloned documentElement and extracts head/body.
+   * Receives the full cloned documentElement and sends it.
    */
   listenForSnapshots() {
-    this._snapshotHandler = async (event) => {
-      if (this.isPaused) return;
+    this._snapshotHandler = (event) => {
+      if (this.isPaused) {
+        this._log('snapshot-ready received but isPaused, skipping');
+        return;
+      }
 
       const { documentElement } = event.detail;
       if (!documentElement) return;
 
-      // Extract head and body directly from cloned element
-      const head = documentElement.querySelector('head')?.innerHTML || '';
-      const body = documentElement.querySelector('body')?.innerHTML || '';
-
-      // Compute headHash using SHA-256 (async)
-      const headHash = await this.computeHeadHash(head);
-
-      // Track initial head hash for this tab (detect local template changes)
-      if (!this.initialHeadHash) {
-        this.initialHeadHash = headHash;
-        console.log('[LiveSync] Initial head hash:', headHash);
-      } else if (headHash !== this.initialHeadHash) {
-        // Local head changed - template was modified
-        // Log but don't block sync (user may have intentionally edited <head>)
-        console.warn('[LiveSync] Head changed locally (template modified)');
-      }
-
-      // Send update even if body is empty (allows clearing content)
-      this.sendUpdate(body, headHash);
+      this._log('snapshot-ready received, preparing to send');
+      const html = documentElement.outerHTML;
+      this.sendUpdate(html);
     };
 
     document.addEventListener('hyperclay:snapshot-ready', this._snapshotHandler);
   }
 
   /**
-   * Send body and headHash to the server (debounced)
-   * Only updates lastBodyHtml after successful save
+   * Send full HTML to the server (debounced)
+   * Only updates lastHtml after successful save
    */
-  sendUpdate(body, headHash) {
+  sendUpdate(html) {
     clearTimeout(this.debounceTimer);
 
     this.debounceTimer = setTimeout(() => {
       // Skip if unchanged
-      if (body === this.lastBodyHtml) return;
+      if (html === this.lastHtml) {
+        this._log('Skipping send - HTML unchanged');
+        return;
+      }
 
-      console.log('[LiveSync] Sending update');
+      this._log(`Sending update (HTML length: ${html.length}, lastHtml length: ${this.lastHtml?.length || 0})`);
 
       fetch('/live-sync/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           file: this.currentFile,
-          body: body,
-          sender: this.clientId,
-          headHash: headHash
+          html: html,
+          sender: this.clientId
         })
       }).then(response => {
         if (response.ok) {
-          // Only update lastBodyHtml after successful save
-          this.lastBodyHtml = body;
+          this.lastHtml = html;
         } else {
-          // Log non-OK responses but don't suppress future sends
           console.warn('[LiveSync] Save returned status:', response.status);
         }
       }).catch(err => {
-        // Network error - don't update lastBodyHtml so next mutation will retry
         console.error('[LiveSync] Save failed:', err);
         if (this.onError) this.onError(err);
       });
@@ -297,88 +289,48 @@ class LiveSync {
   }
 
   /**
-   * Compute SHA-256 hash of head content (first 16 hex chars)
-   * Uses SubtleCrypto API (async)
-   * @param {string} head - Head innerHTML
-   * @returns {Promise<string|null>} 16-char hex hash or null if unavailable
-   */
-  async computeHeadHash(head) {
-    if (!head) return null;
-
-    // SubtleCrypto requires secure context (HTTPS or localhost)
-    if (!crypto?.subtle?.digest) {
-      console.warn('[LiveSync] SHA-256 unavailable (non-secure context), skipping headHash');
-      return null;
-    }
-
-    try {
-      const encoder = new TextEncoder();
-      const data = encoder.encode(head);
-      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 16);
-    } catch (e) {
-      console.warn('[LiveSync] SHA-256 hash failed, skipping headHash:', e);
-      return null;
-    }
-  }
-
-  /**
    * Apply an update received from the server
-   * Guards against non-string values
+   * Morphs the entire document (head and body)
    */
-  applyUpdate(bodyHtml) {
-    // Guard against non-string values
-    if (typeof bodyHtml !== 'string') {
-      console.error('[LiveSync] applyUpdate called with non-string value, ignoring');
+  applyUpdate(html) {
+    if (typeof html !== 'string') {
+      console.error('[LiveSync] applyUpdate called with non-string, ignoring');
       return;
     }
 
+    this._log('applyUpdate - pausing mutations and morphing');
     this.isPaused = true;
-    this.lastBodyHtml = bodyHtml;
+    this.lastHtml = html;
+
+    // Pause mutation observer so morph doesn't trigger autosave
+    Mutation.pause();
 
     try {
-      const temp = document.createElement('div');
-      temp.innerHTML = bodyHtml;
+      // Parse as full document
+      const parser = new DOMParser();
+      const newDoc = parser.parseFromString(html, 'text/html');
 
-      HyperMorph.morph(document.body, temp, {
+      // Validate parsed document
+      if (!newDoc.documentElement || !newDoc.body) {
+        console.error('[LiveSync] Parsed document missing documentElement or body, skipping');
+        return;
+      }
+
+      // Morph entire document (html element)
+      HyperMorph.morph(document.documentElement, newDoc.documentElement, {
         morphStyle: 'innerHTML',
         ignoreActiveValue: true,
         head: { style: 'merge' },
         scripts: { handle: true, matchMode: 'smart' }
       });
 
-      this.rehydrateFormState(document.body);
+      this._log('applyUpdate - morph complete, resuming mutations');
+    } catch (err) {
+      console.error('[LiveSync] Error during morph:', err);
     } finally {
+      Mutation.resume();
       this.isPaused = false;
     }
-  }
-
-  /**
-   * Sync form control attributes to properties after DOM morph
-   */
-  rehydrateFormState(container) {
-    const focused = document.activeElement;
-
-    // Text inputs and textareas
-    container.querySelectorAll('input[value], textarea[value]').forEach(el => {
-      if (el === focused) return;
-      el.value = el.getAttribute('value') || '';
-    });
-
-    // Checkboxes and radios
-    container.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(el => {
-      if (el === focused) return;
-      el.checked = el.hasAttribute('checked');
-    });
-
-    // Select dropdowns
-    container.querySelectorAll('select').forEach(select => {
-      if (select === focused) return;
-      select.querySelectorAll('option').forEach(opt => {
-        opt.selected = opt.hasAttribute('selected');
-      });
-    });
   }
 
   /**

@@ -288,3 +288,32 @@ export const uploadFile = window.hyperclayModules['file-upload']?.uploadFile ?? 
 export const createFile = window.hyperclayModules['file-upload']?.createFile ?? window.hyperclayModules['file-upload']?.default;
 export const uploadFileBasic = window.hyperclayModules['file-upload']?.uploadFileBasic ?? window.hyperclayModules['file-upload']?.default;
 export const liveSync = window.hyperclayModules['live-sync']?.liveSync ?? window.hyperclayModules['live-sync']?.default;
+
+/**
+ * Enable debug logging across all hyperclay modules that support it.
+ * @param {boolean} [enabled=true] - Whether to enable or disable debug logging
+ */
+export function setDebug(enabled = true) {
+  const modules = [
+    { name: 'Mutation', obj: window.hyperclayModules['mutation']?.default },
+    { name: 'LiveSync', obj: window.hyperclayModules['live-sync']?.liveSync },
+    { name: 'OptionVisibility', obj: window.hyperclayModules['option-visibility']?.default },
+  ];
+
+  const enabledModules = [];
+  for (const { name, obj } of modules) {
+    if (obj && 'debug' in obj) {
+      obj.debug = enabled;
+      enabledModules.push(name);
+    }
+  }
+
+  console.log(`[hyperclay] Debug ${enabled ? 'enabled' : 'disabled'} for:`, enabledModules.join(', ') || 'no modules found');
+}
+
+// Export debug to window.hyperclay
+if (!window.__hyperclayNoAutoExport) {
+  window.hyperclay = window.hyperclay || {};
+  window.hyperclay.debug = setDebug;
+  window.h = window.hyperclay;
+}

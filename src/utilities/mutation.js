@@ -67,7 +67,26 @@ const Mutation = {
   },
 
   _observing: false,
+  _paused: false,
   debug: false,
+
+  /**
+   * Pause mutation observation.
+   * Use this when making programmatic DOM changes that shouldn't trigger callbacks.
+   * Always pair with resume() in a try/finally block.
+   */
+  pause() {
+    this._paused = true;
+    this._log('Paused');
+  },
+
+  /**
+   * Resume mutation observation after a pause.
+   */
+  resume() {
+    this._paused = false;
+    this._log('Resumed');
+  },
 
   _log(message, data = null, type = 'log') {
     if (!this.debug) return;
@@ -186,8 +205,14 @@ const Mutation = {
   },
 
   _handleMutations(mutations) {
+    // Skip all mutations while paused (e.g., during live-sync morph)
+    if (this._paused) {
+      this._log(`Skipping ${mutations.length} mutations (paused)`);
+      return;
+    }
+
     this._log(`Processing ${mutations.length} mutations`, { mutations });
-    
+
     const changes = [];
     const changesByType = {
       add: [],
