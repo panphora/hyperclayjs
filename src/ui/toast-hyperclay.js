@@ -1,22 +1,30 @@
 /**
- * Toast Hyperclay - Toast with Hyperclay platform styling
+ * Toast Hyperclay - Configure toast() to use Hyperclay platform styling
  *
- * Provides toastHyperclay() function with Hyperclay platform styling.
- * Use this alongside toast() if you need both styles in the same project.
+ * When this module is loaded, it overrides the default toast styling so that
+ * all toast() calls (including from save-toast) use Hyperclay styling.
  *
- * This is a hidden feature not exposed in the UI - used internally by
- * the Hyperclay platform for backward compatibility.
+ * Also provides toastHyperclay() for backward compatibility.
  */
 
 import {
   toastCore,
   injectToastStyles,
+  setToastTheme,
   hyperclayStyles,
   hyperclayTemplates,
   hyperclayIcons
 } from './toast.js';
 
-// Toast function with Hyperclay styling
+// Configure the base toast() to use hyperclay styling
+setToastTheme({
+  styles: hyperclayStyles,
+  templates: hyperclayTemplates,
+  icons: hyperclayIcons,
+  theme: 'hyperclay'
+});
+
+// Toast function with Hyperclay styling (kept for backward compatibility)
 function toastHyperclay(message, messageType = "success") {
   injectToastStyles(hyperclayStyles, 'hyperclay');
   toastCore(message, messageType, {

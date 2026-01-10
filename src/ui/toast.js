@@ -185,6 +185,19 @@ export const hyperclayStyles = `
 // Track which theme styles have been injected
 const injectedThemes = new Set();
 
+// Global toast configuration (can be overridden by toast-hyperclay module)
+let toastConfig = {
+  styles: modernStyles,
+  templates: defaultTemplates,
+  icons: defaultIcons,
+  theme: 'modern'
+};
+
+// Allow other modules (like toast-hyperclay) to override default toast styling
+export function setToastTheme(config) {
+  Object.assign(toastConfig, config);
+}
+
 // Helper function to inject styles for a theme (additive, not replacing)
 export function injectToastStyles(styles, theme) {
   if (injectedThemes.has(theme)) return;
@@ -242,13 +255,13 @@ export function toastCore(message, messageType = "success", config = {}) {
   }, 6600);
 }
 
-// Main toast function - uses modern styles
+// Main toast function - uses configured theme (default: modern, or hyperclay if toast-hyperclay loaded)
 function toast(message, messageType = "success") {
-  injectToastStyles(modernStyles, 'modern');
+  injectToastStyles(toastConfig.styles, toastConfig.theme);
   toastCore(message, messageType, {
-    templates: defaultTemplates,
-    icons: defaultIcons,
-    theme: 'modern'
+    templates: toastConfig.templates,
+    icons: toastConfig.icons,
+    theme: toastConfig.theme
   });
 }
 
