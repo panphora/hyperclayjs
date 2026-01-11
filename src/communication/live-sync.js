@@ -293,11 +293,6 @@ class LiveSync {
    * Morphs the entire document (head and body)
    */
   applyUpdate(html) {
-    if (typeof html !== 'string') {
-      console.error('[LiveSync] applyUpdate called with non-string, ignoring');
-      return;
-    }
-
     this._log('applyUpdate - pausing mutations and morphing');
     this.isPaused = true;
     this.lastHtml = html;
@@ -305,32 +300,21 @@ class LiveSync {
     // Pause mutation observer so morph doesn't trigger autosave
     Mutation.pause();
 
-    try {
-      // Parse as full document
-      const parser = new DOMParser();
-      const newDoc = parser.parseFromString(html, 'text/html');
+    // Parse as full document
+    const parser = new DOMParser();
+    const newDoc = parser.parseFromString(html, 'text/html');
 
-      // Validate parsed document
-      if (!newDoc.documentElement || !newDoc.body) {
-        console.error('[LiveSync] Parsed document missing documentElement or body, skipping');
-        return;
-      }
+    // Morph entire document (html element)
+    HyperMorph.morph(document.documentElement, newDoc.documentElement, {
+      morphStyle: 'outerHTML',
+      ignoreActiveValue: true,
+      head: { style: 'merge' },
+      scripts: { handle: true, matchMode: 'smart' }
+    });
 
-      // Morph entire document (html element)
-      HyperMorph.morph(document.documentElement, newDoc.documentElement, {
-        morphStyle: 'outerHTML',
-        ignoreActiveValue: true,
-        head: { style: 'merge' },
-        scripts: { handle: true, matchMode: 'smart' }
-      });
-
-      this._log('applyUpdate - morph complete, resuming mutations');
-    } catch (err) {
-      console.error('[LiveSync] Error during morph:', err);
-    } finally {
-      Mutation.resume();
-      this.isPaused = false;
-    }
+    this._log('applyUpdate - morph complete, resuming mutations');
+    Mutation.resume();
+    this.isPaused = false;
   }
 
   /**

@@ -202,9 +202,6 @@ export function setToastTheme(config) {
 export function injectToastStyles(styles, theme) {
   if (injectedThemes.has(theme)) return;
 
-  // Guard against null document.head (can happen during live-sync morph)
-  if (!document.head) return;
-
   const styleSheet = document.createElement('style');
   styleSheet.className = `toast-styles-${theme}`;
   styleSheet.setAttribute('save-remove', '');
@@ -216,9 +213,6 @@ export function injectToastStyles(styles, theme) {
 
 // Core toast function (used by both toast and toastHyperclay)
 export function toastCore(message, messageType = "success", config = {}) {
-  // Guard against null document.body (can happen during live-sync morph)
-  if (!document.body) return;
-
   const templates = config.templates || defaultTemplates;
   const icons = config.icons || defaultIcons;
   const theme = config.theme || 'modern';
