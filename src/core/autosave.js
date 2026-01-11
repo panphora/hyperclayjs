@@ -27,9 +27,23 @@ function initSavePageOnChange() {
   });
 }
 
+/**
+ * Initialize auto-save on input events for [persist] elements
+ * Form input values don't trigger DOM mutations, so we listen for input events
+ */
+let inputSaveTimer = null;
+function initSaveOnPersistInput() {
+  document.addEventListener('input', (e) => {
+    if (!e.target.closest('[persist]')) return;
+    clearTimeout(inputSaveTimer);
+    inputSaveTimer = setTimeout(savePageThrottled, 3333);
+  }, true);
+}
+
 function init() {
   if (!isEditMode) return;
   initSavePageOnChange();
+  initSaveOnPersistInput();
 }
 
 // No window exports - savePageThrottled is exported from save-system
