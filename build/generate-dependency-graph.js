@@ -538,7 +538,11 @@ async function generateDependencyGraph() {
   }
 
   // Populate "everything" preset with all module IDs plus special flags
-  PRESETS.everything.modules = [...Object.keys(modules), 'view-mode-excludes-edit-modules'];
+  // Exclude toast-hyperclay - it's a secret module that overrides default toast styling
+  PRESETS.everything.modules = [
+    ...Object.keys(modules).filter(id => id !== 'toast-hyperclay'),
+    'view-mode-excludes-edit-modules'
+  ];
 
   // Generate module paths for the simplified loader
   const modulePaths = generateModulePaths(modules);

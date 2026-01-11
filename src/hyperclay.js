@@ -123,7 +123,6 @@ const PRESETS = {
       "onaftersave",
       "dialogs",
       "toast",
-      "toast-hyperclay",
       "the-modal",
       "mutation",
       "nearest",
@@ -316,4 +315,9 @@ if (!window.__hyperclayNoAutoExport) {
   window.hyperclay = window.hyperclay || {};
   window.hyperclay.debug = setDebug;
   window.h = window.hyperclay;
+}
+
+// Auto-enable debug for all modules if ?debug=true was passed
+if (debug) {
+  setDebug(true);
 }

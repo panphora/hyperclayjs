@@ -2,6 +2,7 @@
   "rawDependencies": {
     "communication/behaviorCollector.js": [],
     "communication/live-sync.js": [
+      "utilities/mutation.js",
       "vendor/hyper-morph.vendor.js"
     ],
     "communication/sendMessage.js": [
@@ -449,7 +450,7 @@
     "toast": {
       "name": "toast",
       "category": "ui",
-      "size": 7.9,
+      "size": 8.3,
       "files": [
         "ui/toast.js"
       ],
@@ -464,7 +465,7 @@
     "toast-hyperclay": {
       "name": "toast-hyperclay",
       "category": "ui",
-      "size": 1,
+      "size": 1.2,
       "files": [
         "ui/toast-hyperclay.js"
       ],
@@ -494,7 +495,7 @@
     "mutation": {
       "name": "mutation",
       "category": "utilities",
-      "size": 13.1,
+      "size": 13.7,
       "files": [
         "utilities/mutation.js"
       ],
@@ -626,7 +627,7 @@
     "style-injection": {
       "name": "style-injection",
       "category": "dom-utilities",
-      "size": 4,
+      "size": 4.2,
       "files": [
         "dom-utilities/insertStyleTag.js"
       ],
@@ -663,7 +664,7 @@
     "hyper-morph": {
       "name": "hyper-morph",
       "category": "vendor",
-      "size": 16.3,
+      "size": 17.2,
       "isEditModeOnly": true,
       "files": [
         "vendor/hyper-morph.vendor.js"
@@ -776,7 +777,7 @@
     "live-sync": {
       "name": "live-sync",
       "category": "communication",
-      "size": 12.5,
+      "size": 10.9,
       "isEditModeOnly": true,
       "files": [
         "communication/live-sync.js"
@@ -791,7 +792,7 @@
     "tailwind-inject": {
       "name": "tailwind-inject",
       "category": "core",
-      "size": 0.4,
+      "size": 0.5,
       "isEditModeOnly": true,
       "files": [
         "core/tailwindInject.js"
@@ -996,7 +997,6 @@
         "onaftersave",
         "dialogs",
         "toast",
-        "toast-hyperclay",
         "the-modal",
         "mutation",
         "nearest",

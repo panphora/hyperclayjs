@@ -192,7 +192,10 @@ const Mutation = {
     }
   },
 
-  _shouldIgnore(element) {
+  _shouldIgnore(node) {
+    // For non-element nodes (like text nodes), start from parent
+    let element = (node && node.nodeType !== 1) ? node.parentElement : node;
+
     while (element && element.nodeType === 1) {
       if (element.hasAttribute?.('mutations-ignore') ||
           element.hasAttribute?.('save-remove') ||
@@ -211,8 +214,6 @@ const Mutation = {
       return;
     }
 
-    this._log(`Processing ${mutations.length} mutations`, { mutations });
-
     const changes = [];
     const changesByType = {
       add: [],
@@ -224,7 +225,6 @@ const Mutation = {
     for (const mutation of mutations) {
       // Check if the target or any parent has mutations-ignore attribute
       if (this._shouldIgnore(mutation.target)) {
-        this._log('Ignoring mutation due to mutations-ignore attribute', { mutation });
         continue;
       }
 
@@ -271,7 +271,7 @@ const Mutation = {
         }
         
         for (const node of mutation.removedNodes) {
-          if (node.nodeType === 1 && !node.hasAttribute?.('save-remove') && !node.hasAttribute?.('save-ignore') && !node.hasAttribute?.('mutations-ignore')) {
+          if (node.nodeType === 1 && !this._shouldIgnore(node)) {
             const removedNodes = [node, ...node.querySelectorAll('*')];
             this._log(`Processing ${removedNodes.length} removed nodes`, { removedNodes });
             
@@ -336,8 +336,6 @@ const Mutation = {
       if (changesByType.attribute.length) {
         this._notify('attribute', changesByType.attribute);
       }
-    } else {
-      this._log('No changes to process after filtering');
     }
   },
 

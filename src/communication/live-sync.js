@@ -318,7 +318,7 @@ class LiveSync {
 
       // Morph entire document (html element)
       HyperMorph.morph(document.documentElement, newDoc.documentElement, {
-        morphStyle: 'innerHTML',
+        morphStyle: 'outerHTML',
         ignoreActiveValue: true,
         head: { style: 'merge' },
         scripts: { handle: true, matchMode: 'smart' }

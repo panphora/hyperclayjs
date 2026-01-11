@@ -106,3 +106,37 @@ if (debug) console.log('HyperclayJS: Ready');
 
 // ES module exports - allows destructuring from import()
 __EXPORTS__
+
+/**
+ * Enable debug logging across all hyperclay modules that support it.
+ * @param {boolean} [enabled=true] - Whether to enable or disable debug logging
+ */
+export function setDebug(enabled = true) {
+  const modules = [
+    { name: 'Mutation', obj: window.hyperclayModules['mutation']?.default },
+    { name: 'LiveSync', obj: window.hyperclayModules['live-sync']?.liveSync },
+    { name: 'OptionVisibility', obj: window.hyperclayModules['option-visibility']?.default },
+  ];
+
+  const enabledModules = [];
+  for (const { name, obj } of modules) {
+    if (obj && 'debug' in obj) {
+      obj.debug = enabled;
+      enabledModules.push(name);
+    }
+  }
+
+  console.log(`[hyperclay] Debug ${enabled ? 'enabled' : 'disabled'} for:`, enabledModules.join(', ') || 'no modules found');
+}
+
+// Export debug to window.hyperclay
+if (!window.__hyperclayNoAutoExport) {
+  window.hyperclay = window.hyperclay || {};
+  window.hyperclay.debug = setDebug;
+  window.h = window.hyperclay;
+}
+
+// Auto-enable debug for all modules if ?debug=true was passed
+if (debug) {
+  setDebug(true);
+}
