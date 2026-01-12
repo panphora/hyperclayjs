@@ -112,12 +112,31 @@ export function savePage(callback = () => {}) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 12000);
 
-  fetch(saveEndpoint, {
+  // Check if running on Hyperclay Local - send JSON with both versions for platform sync
+  const isHyperclayLocal = window.location.hostname === 'localhost' ||
+                           window.location.hostname === '127.0.0.1';
+
+  const fetchOptions = {
     method: 'POST',
     credentials: 'include',
-    body: currentContents,
     signal: controller.signal
-  })
+  };
+
+  if (isHyperclayLocal && window.__hyperclaySnapshotHtml) {
+    // Send JSON with both stripped content and full snapshot for platform live sync
+    fetchOptions.headers = { 'Content-Type': 'application/json' };
+    fetchOptions.body = JSON.stringify({
+      content: currentContents,
+      snapshotHtml: window.__hyperclaySnapshotHtml
+    });
+    // Clear after use to avoid stale data
+    window.__hyperclaySnapshotHtml = null;
+  } else {
+    // Platform: send plain text as before
+    fetchOptions.body = currentContents;
+  }
+
+  fetch(saveEndpoint, fetchOptions)
     .then(res => {
       clearTimeout(timeoutId);
       return res.json().then(data => {
@@ -187,12 +206,31 @@ export function saveHtml(html, callback = () => {}) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 12000);
 
-  fetch(saveEndpoint, {
+  // Check if running on Hyperclay Local - send JSON with both versions for platform sync
+  const isHyperclayLocal = window.location.hostname === 'localhost' ||
+                           window.location.hostname === '127.0.0.1';
+
+  const fetchOptions = {
     method: 'POST',
     credentials: 'include',
-    body: html,
     signal: controller.signal
-  })
+  };
+
+  if (isHyperclayLocal && window.__hyperclaySnapshotHtml) {
+    // Send JSON with both stripped content and full snapshot for platform live sync
+    fetchOptions.headers = { 'Content-Type': 'application/json' };
+    fetchOptions.body = JSON.stringify({
+      content: html,
+      snapshotHtml: window.__hyperclaySnapshotHtml
+    });
+    // Clear after use to avoid stale data
+    window.__hyperclaySnapshotHtml = null;
+  } else {
+    // Platform: send plain text as before
+    fetchOptions.body = html;
+  }
+
+  fetch(saveEndpoint, fetchOptions)
     .then(res => {
       clearTimeout(timeoutId);
       return res.json().then(data => {

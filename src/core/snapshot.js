@@ -172,6 +172,14 @@ export function captureForSaveAndComparison({ emitForSync = true } = {}) {
     document.dispatchEvent(new CustomEvent('hyperclay:snapshot-ready', {
       detail: { documentElement: clone }
     }));
+
+    // Store snapshot HTML for Hyperclay Local platform sync
+    // This allows the save system to send both stripped and full versions
+    const isHyperclayLocal = window.location.hostname === 'localhost' ||
+                             window.location.hostname === '127.0.0.1';
+    if (isHyperclayLocal) {
+      window.__hyperclaySnapshotHtml = '<!DOCTYPE html>' + clone.outerHTML;
+    }
   }
 
   // Run inline [onbeforesave] handlers
