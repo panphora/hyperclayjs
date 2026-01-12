@@ -222,7 +222,7 @@
     "autosave": {
       "name": "autosave",
       "category": "core",
-      "size": 0.9,
+      "size": 1.4,
       "isEditModeOnly": true,
       "files": [
         "core/autosave.js"
@@ -495,7 +495,7 @@
     "mutation": {
       "name": "mutation",
       "category": "utilities",
-      "size": 13.7,
+      "size": 13.5,
       "files": [
         "utilities/mutation.js"
       ],
@@ -777,7 +777,7 @@
     "live-sync": {
       "name": "live-sync",
       "category": "communication",
-      "size": 10.9,
+      "size": 10.4,
       "isEditModeOnly": true,
       "files": [
         "communication/live-sync.js"
@@ -792,7 +792,7 @@
     "tailwind-inject": {
       "name": "tailwind-inject",
       "category": "core",
-      "size": 0.5,
+      "size": 1.4,
       "isEditModeOnly": true,
       "files": [
         "core/tailwindInject.js"

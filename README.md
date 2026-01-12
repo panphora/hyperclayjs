@@ -57,7 +57,7 @@ import 'hyperclayjs/presets/standard.js';
 
 | Module | Size | Description |
 |--------|------|-------------|
-| autosave | 0.9KB | Auto-save on DOM changes |
+| autosave | 1.4KB | Auto-save on DOM changes |
 | edit-mode | 1.8KB | Toggle edit mode on hyperclay on/off |
 | edit-mode-helpers | 7.5KB | Admin-only functionality: [edit-mode-input], [edit-mode-resource], [edit-mode-onclick] |
 | option-visibility | 7.8KB | Dynamic show/hide based on ancestor state with option:attribute="value" |
@@ -66,7 +66,7 @@ import 'hyperclayjs/presets/standard.js';
 | save-system | 12.1KB | CMD+S, [trigger-save] button, savestatus attribute |
 | save-toast | 0.9KB | Toast notifications for save events |
 | snapshot | 10.2KB | Source of truth for page state - captures DOM snapshots for save and sync |
-| tailwind-inject | 0.4KB | Injects tailwind CSS link with cache-bust on save |
+| tailwind-inject | 1.4KB | Injects tailwind CSS link with cache-bust on save |
 | unsaved-warning | 1.3KB | Warn before leaving page with unsaved changes |
 
 ### Custom Attributes (HTML enhancements)
@@ -86,7 +86,7 @@ import 'hyperclayjs/presets/standard.js';
 |--------|------|-------------|
 | dialogs | 7.7KB | ask(), consent(), tell(), snippet() dialog functions |
 | the-modal | 21KB | Full modal window creation system - window.theModal |
-| toast | 7.9KB | Success/error message notifications, toast(msg, msgType) |
+| toast | 8.3KB | Success/error message notifications, toast(msg, msgType) |
 
 ### Utilities (Core utilities (often auto-included))
 
@@ -95,7 +95,7 @@ import 'hyperclayjs/presets/standard.js';
 | cache-bust | 0.6KB | Cache-bust href/src attributes |
 | cookie | 1.4KB | Cookie management (often auto-included) |
 | debounce | 0.4KB | Function debouncing |
-| mutation | 13.1KB | DOM mutation observation (often auto-included) |
+| mutation | 13.5KB | DOM mutation observation (often auto-included) |
 | nearest | 3.4KB | Find nearest elements (often auto-included) |
 | throttle | 0.8KB | Function throttling |
 
@@ -106,7 +106,7 @@ import 'hyperclayjs/presets/standard.js';
 | all-js | 14.4KB | Full DOM manipulation library |
 | dom-ready | 0.4KB | DOM ready callback |
 | form-data | 2KB | Extract form data as an object |
-| style-injection | 4KB | Dynamic stylesheet injection |
+| style-injection | 4.2KB | Dynamic stylesheet injection |
 
 ### String Utilities (String manipulation helpers)
 
@@ -121,28 +121,28 @@ import 'hyperclayjs/presets/standard.js';
 | Module | Size | Description |
 |--------|------|-------------|
 | file-upload | 10.7KB | File upload with progress |
-| live-sync | 12.5KB | Real-time DOM sync across browsers |
+| live-sync | 10.4KB | Real-time DOM sync across browsers |
 | send-message | 1.3KB | Message sending utility |
 
 ### Vendor Libraries (Third-party libraries)
 
 | Module | Size | Description |
 |--------|------|-------------|
-| hyper-morph | 16.3KB | DOM morphing with content-based element matching |
+| hyper-morph | 17.2KB | DOM morphing with content-based element matching |
 
 ## Presets
 
-### Minimal (~46.4KB)
+### Minimal (~46.8KB)
 Essential features for basic editing
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `edit-mode-helpers`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Standard (~68.7KB)
+### Standard (~69.1KB)
 Standard feature set for most use cases
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `unsaved-warning`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Everything (~201.5KB)
+### Everything (~201.8KB)
 All available features
 
 Includes all available modules across all categories.

@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.17.0] - 2026-01-12
+
+### Added
+- Autosave on [persist] input changes
+- Allow toast-hyperclay to configure default toast styling
+- Full document sync with Mutation.pause/resume
+- Smart script matching for live sync
+
+### Changed
+- Update hyper-morph vendor with head improvements
+- Update hyper-morph vendor with extension element handling
+- Remove unnecessary defensive code in live-sync and toast
+
+### Fixed
+- Prevent FOUC when cache-busting Tailwind CSS after save
+- Live-sync null reference errors and improve debugging
+- Live sync bugs: clientId sharing, headHash false positives, Tailwind duplicates
+- Include config.html in version update build script
+
+
+
 ## [1.16.0] - 2026-01-07
 
 ### Added
