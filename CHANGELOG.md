@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.18.0] - 2026-01-22
+
+### Added
+- Module difficulty levels and notification support
+- Snapshot HTML sent with save for platform live sync
+
+
+
 ## [1.17.0] - 2026-01-12
 
 ### Added

@@ -180,7 +180,7 @@
     "save-core": {
       "name": "save-core",
       "category": "core",
-      "size": 7.4,
+      "size": 8.9,
       "isEditModeOnly": true,
       "files": [
         "core/savePageCore.js"
@@ -224,6 +224,7 @@
       "category": "core",
       "size": 1.4,
       "isEditModeOnly": true,
+      "difficulty": "intermediate",
       "files": [
         "core/autosave.js"
       ],
@@ -281,7 +282,7 @@
     "snapshot": {
       "name": "snapshot",
       "category": "core",
-      "size": 10.2,
+      "size": 10.6,
       "isEditModeOnly": true,
       "files": [
         "core/snapshot.js"
@@ -450,7 +451,7 @@
     "toast": {
       "name": "toast",
       "category": "ui",
-      "size": 8.3,
+      "size": 10.5,
       "files": [
         "ui/toast.js"
       ],
@@ -777,8 +778,9 @@
     "live-sync": {
       "name": "live-sync",
       "category": "communication",
-      "size": 10.4,
+      "size": 11.4,
       "isEditModeOnly": true,
+      "difficulty": "advanced",
       "files": [
         "communication/live-sync.js"
       ],
@@ -794,6 +796,7 @@
       "category": "core",
       "size": 1.4,
       "isEditModeOnly": true,
+      "difficulty": "intermediate",
       "files": [
         "core/tailwindInject.js"
       ],
