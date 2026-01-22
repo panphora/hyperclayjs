@@ -234,6 +234,64 @@
             display: none;
         }
 
+        .difficulty-badge {
+            font-size: 0.625rem;
+            padding: 0.15rem 0.4rem;
+            background: #aa7ee9;
+            color: white;
+            font-weight: bold;
+            margin-left: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        /* Legend */
+        .legend {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border: 2px solid var(--primary-blue);
+            background: white;
+        }
+
+        .legend-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+        }
+
+        .legend-item {
+            margin-bottom: 0.75rem;
+        }
+
+        .legend-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .legend-level {
+            font-weight: bold;
+            color: var(--primary-blue);
+        }
+
+        .legend-description {
+            color: var(--gray);
+        }
+
+        .legend-examples {
+            margin-top: 0.25rem;
+            margin-left: 1rem;
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+
+        .legend-example-item {
+            margin-bottom: 0.25rem;
+        }
+
+        .legend-example-name {
+            color: #aa7ee9;
+            font-weight: bold;
+        }
+
         /* Preset Buttons */
         .preset-section {
             margin-bottom: 2rem;
@@ -720,6 +778,27 @@
                 </div>
             </div>
         </div>
+
+        <!-- Difficulty Legend -->
+        <div class="legend">
+            <h3 class="legend-title">Module Difficulty</h3>
+            <div class="legend-item">
+                <span class="legend-level">Beginner</span> — <span class="legend-description">Safe to include, does nothing unless you use it</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-level">Intermediate</span> — <span class="legend-description">Powerful but has gotchas:</span>
+                <div class="legend-examples">
+                    <div class="legend-example-item"><span class="legend-example-name">Autosave</span> — triggers saves from DOM changes, can cause infinite loops</div>
+                    <div class="legend-example-item"><span class="legend-example-name">Tailwind Inject</span> — only runs on save, not live</div>
+                </div>
+            </div>
+            <div class="legend-item">
+                <span class="legend-level">Advanced</span> — <span class="legend-description">For power users building complex apps:</span>
+                <div class="legend-examples">
+                    <div class="legend-example-item"><span class="legend-example-name">Live Sync</span> — requires understanding the full system, skip for simple sites</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script type="module">
@@ -820,6 +899,11 @@
                                 ? '<span class="feature-badge">edit only</span>'
                                 : '';
 
+                            // Difficulty badge
+                            const difficultyBadge = module.difficulty
+                                ? `<span class="difficulty-badge">${module.difficulty}</span>`
+                                : '';
+
                             // Filter out hidden dependencies (not in any category)
                             const visibleDependencies = dependencies.filter(depId => isVisibleModule(depId));
                             const dependenciesText = visibleDependencies.length > 0
@@ -849,7 +933,7 @@
                                            data-size="${module.size}"
                                            ${requiresAttr}>
                                     <div class="feature-info">
-                                        <div class="feature-name">${module.name}${editOnlyBadge}</div>
+                                        <div class="feature-name">${module.name}${editOnlyBadge}${difficultyBadge}</div>
                                         <div class="feature-description">${module.description}</div>
                                         ${exportsText}
                                         ${dependenciesText}

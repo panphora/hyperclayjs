@@ -64,7 +64,8 @@ const MODULE_DEFINITIONS = {
     name: 'autosave',
     moduleId: 'autosave',
     description: 'Auto-save on DOM changes',
-    isEditModeOnly: true
+    isEditModeOnly: true,
+    difficulty: 'intermediate'
     // No exports - auto-inits on load, savePageThrottled is in save-system
   },
   'core/unsavedWarning.js': {
@@ -364,6 +365,7 @@ const MODULE_DEFINITIONS = {
     moduleId: 'live-sync',
     description: 'Real-time DOM sync across browsers',
     isEditModeOnly: true,
+    difficulty: 'advanced',
     exports: {
       liveSync: ['hyperclay']
     }
@@ -372,7 +374,8 @@ const MODULE_DEFINITIONS = {
     name: 'tailwind-inject',
     moduleId: 'tailwind-inject',
     description: 'Injects tailwind CSS link with cache-bust on save',
-    isEditModeOnly: true
+    isEditModeOnly: true,
+    difficulty: 'intermediate'
     // No exports - auto-inits on load
   },
   'core/exportToWindow.js': {
@@ -522,6 +525,7 @@ async function generateDependencyGraph() {
       category: category,
       size: totalSize,
       ...(definition.isEditModeOnly && { isEditModeOnly: true }),
+      ...(definition.difficulty && { difficulty: definition.difficulty }),
       files: files,
       description: definition.description,
       exports: definition.exports || {},

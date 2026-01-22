@@ -4,13 +4,17 @@
 // Default modern icons (normalized to 48x48 viewBox)
 const defaultIcons = {
   success: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.9404 23.9475L21.9099 31.224L35.1906 15.9045M3 4.5H44.9804V44.309H3V4.5Z" stroke="#33D131" stroke-width="4.3"/></svg>`,
-  error: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M32.7383 14.4045L14 33.1429M32.7451 33.1429L14.0068 14.4046M3.01 4H44.99V43.809H3.01V4Z" stroke="#FF4450" stroke-width="4"/></svg>`
+  error: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M32.7383 14.4045L14 33.1429M32.7451 33.1429L14.0068 14.4046M3.01 4H44.99V43.809H3.01V4Z" stroke="#FF4450" stroke-width="4"/></svg>`,
+  warning: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 8L4 40H44L24 8Z" stroke="#F5A623" stroke-width="4" stroke-linejoin="round"/><path d="M24 20V28M24 34V36" stroke="#F5A623" stroke-width="4" stroke-linecap="round"/></svg>`,
+  info: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="24" r="20" stroke="#4A90D9" stroke-width="4"/><path d="M24 20V32M24 14V16" stroke="#4A90D9" stroke-width="4" stroke-linecap="round"/></svg>`
 };
 
 // Hyperclay icons
 export const hyperclayIcons = {
   success: `<svg viewBox="0 0 33 33" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M32 1h-5v3.5h-2.5V8h-2v3.5H20V15h-2.5v3.5h-2V22H13v3.5H9V22H7v-3.5H6V15H1v3.5h1V22h2v3.5h1.5V29H7v3.5h5V29h3.5v-3.5H18V22h2.5v-3.5h2V15H25v-3.5h2.5V8h2V4.5H32V1Z" fill="#76C824"/></svg>`,
-  error: `<svg viewBox="0 0 33 33" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M33 1h-5v3.5h-3.5V8H21v3.5h-3.5V15h-2v-3.5H12V8H8.5V4.5H5V1H0v3.5h3.5V8H7v3.5h3.5V15H14v3.5h-3.5V22H7v3.5H3.5V29H0v3.5h5V29h3.5v-3.5H12V22h3.5v-3.5h2V22H21v3.5h3.5V29H28v3.5h5V29h-3.5v-3.5H26V22h-3.5v-3.5H19V15h3.5v-3.5H26V8h3.5V4.5H33V1Z" fill="#DD304F"/></svg>`
+  error: `<svg viewBox="0 0 33 33" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M33 1h-5v3.5h-3.5V8H21v3.5h-3.5V15h-2v-3.5H12V8H8.5V4.5H5V1H0v3.5h3.5V8H7v3.5h3.5V15H14v3.5h-3.5V22H7v3.5H3.5V29H0v3.5h5V29h3.5v-3.5H12V22h3.5v-3.5h2V22H21v3.5h3.5V29H28v3.5h5V29h-3.5v-3.5H26V22h-3.5v-3.5H19V15h3.5v-3.5H26V8h3.5V4.5H33V1Z" fill="#DD304F"/></svg>`,
+  warning: `<svg viewBox="0 0 33 33" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M18 1h-3v3h-2v3h-2v3H9v3H7v3H5v3H3v3H1v6h31v-6h-2v-3h-2v-3h-2v-3h-2v-3h-2V7h-2V4h-2V1zm-2 8h1v10h-1V9zm0 13h1v2h-1v-2z" fill="#F5A623"/></svg>`,
+  info: `<svg viewBox="0 0 33 33" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 1v3H9v3H6v3H3v6h3v3h3v3h3v3h9v-3h3v-3h3v-3h3v-6h-3V7h-3V4h-3V1H12zm4 7h1v2h-1V8zm0 5h1v9h-1v-9z" fill="#4A90D9"/></svg>`
 };
 
 // Default templates
@@ -24,6 +28,18 @@ const defaultTemplates = {
     `,
     error: `
       <div class="toast hide error noise-texture">
+        <div class="toast-icon">{icon}</div>
+        <div class="toast-message">{message}</div>
+      </div>
+    `,
+    warning: `
+      <div class="toast hide warning noise-texture">
+        <div class="toast-icon">{icon}</div>
+        <div class="toast-message">{message}</div>
+      </div>
+    `,
+    info: `
+      <div class="toast hide info noise-texture">
         <div class="toast-icon">{icon}</div>
         <div class="toast-message">{message}</div>
       </div>
@@ -42,6 +58,18 @@ export const hyperclayTemplates = {
     `,
     error: `
       <div class="toast hide error">
+        {icon}
+        <span class="message">{message}</span>
+      </div>
+    `,
+    warning: `
+      <div class="toast hide warning">
+        {icon}
+        <span class="message">{message}</span>
+      </div>
+    `,
+    info: `
+      <div class="toast hide info">
         {icon}
         <span class="message">{message}</span>
       </div>
@@ -92,6 +120,16 @@ const modernStyles = `
   [data-toast-theme="modern"] .toast.error {
     border-color: #992930;
     background: radial-gradient(85.86% 68.42% at 50% 68.42%, #240A13 0%, #481826 100%);
+  }
+
+  [data-toast-theme="modern"] .toast.warning {
+    border-color: #B8860B;
+    background: radial-gradient(85.86% 68.42% at 50% 68.42%, #2A2010 0%, #3D3018 100%);
+  }
+
+  [data-toast-theme="modern"] .toast.info {
+    border-color: #2E6B9E;
+    background: radial-gradient(85.86% 68.42% at 50% 68.42%, #0A1A24 0%, #162D3D 100%);
   }
 
   [data-toast-theme="modern"] .toast-icon {
@@ -179,6 +217,16 @@ export const hyperclayStyles = `
   [data-toast-theme="hyperclay"] .toast.error {
     color: #DD304F;
     border: 2px dashed #CD2140;
+  }
+
+  [data-toast-theme="hyperclay"] .toast.warning {
+    color: #F5A623;
+    border: 2px dashed #D4900E;
+  }
+
+  [data-toast-theme="hyperclay"] .toast.info {
+    color: #4A90D9;
+    border: 2px dashed #3A7BBF;
   }
 `;
 

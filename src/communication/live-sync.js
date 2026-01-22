@@ -52,6 +52,7 @@ class LiveSync {
     this.onDisconnect = null;
     this.onUpdate = null;
     this.onError = null;
+    this.onNotification = null;
   }
 
   _log(message, data = null) {
@@ -190,6 +191,12 @@ class LiveSync {
     this.sse.onmessage = (event) => {
       const data = JSON.parse(event.data);
 
+      // Handle notifications (show toast, don't morph)
+      if (data.type === "notification") {
+        this.handleNotification(data);
+        return;
+      }
+
       // Handle error events from server
       if (data.error) {
         console.error('[LiveSync] Server error:', data.error);
@@ -315,6 +322,32 @@ class LiveSync {
     this._log('applyUpdate - morph complete, resuming mutations');
     Mutation.resume();
     this.isPaused = false;
+  }
+
+  /**
+   * Handle a notification message from the server
+   * Shows a toast and emits an event for custom handling
+   * @param {Object} data - { msgType, msg, action? }
+   */
+  handleNotification({ msgType, msg, action }) {
+    this._log(`Notification received: ${msgType} - ${msg}`);
+
+    // Show toast if available
+    if (window.toast) {
+      window.toast(msg, msgType);
+    } else {
+      console.log(`[LiveSync] Notification: ${msg}`);
+    }
+
+    // Emit event for custom handling (e.g., reload button)
+    document.dispatchEvent(new CustomEvent('hyperclay:notification', {
+      detail: { msgType, msg, action }
+    }));
+
+    // Call notification callback if set
+    if (this.onNotification) {
+      this.onNotification({ msgType, msg, action });
+    }
   }
 
   /**
