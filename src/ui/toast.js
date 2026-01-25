@@ -5,7 +5,7 @@
 const defaultIcons = {
   success: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.9404 23.9475L21.9099 31.224L35.1906 15.9045M3 4.5H44.9804V44.309H3V4.5Z" stroke="#33D131" stroke-width="4.3"/></svg>`,
   error: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M32.7383 14.4045L14 33.1429M32.7451 33.1429L14.0068 14.4046M3.01 4H44.99V43.809H3.01V4Z" stroke="#FF4450" stroke-width="4"/></svg>`,
-  warning: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 8L4 40H44L24 8Z" stroke="#F5A623" stroke-width="4" stroke-linejoin="round"/><path d="M24 20V28M24 34V36" stroke="#F5A623" stroke-width="4" stroke-linecap="round"/></svg>`,
+  warning: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke="#F5A623" stroke-width="2" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/></svg>`,
   info: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="24" r="20" stroke="#4A90D9" stroke-width="4"/><path d="M24 20V32M24 14V16" stroke="#4A90D9" stroke-width="4" stroke-linecap="round"/></svg>`
 };
 
