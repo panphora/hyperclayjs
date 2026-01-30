@@ -253,6 +253,7 @@ export function injectToastStyles(styles, theme) {
   const styleSheet = document.createElement('style');
   styleSheet.className = `toast-styles-${theme}`;
   styleSheet.setAttribute('save-remove', '');
+  styleSheet.setAttribute('snapshot-remove', '');
   styleSheet.textContent = styles;
   document.head.appendChild(styleSheet);
 
@@ -272,6 +273,7 @@ export function toastCore(message, messageType = "success", config = {}) {
     toastContainer.className = 'toast-container';
     toastContainer.setAttribute('data-toast-theme', theme);
     toastContainer.setAttribute('save-remove', '');
+    toastContainer.setAttribute('snapshot-remove', '');
     document.body.append(toastContainer);
   }
 

@@ -85,6 +85,14 @@ export function captureSnapshot() {
     hook(clone);
   }
 
+  for (const el of clone.querySelectorAll('[onbeforesnapshot]')) {
+    new Function(el.getAttribute('onbeforesnapshot')).call(el);
+  }
+
+  for (const el of clone.querySelectorAll('[snapshot-remove]')) {
+    el.remove();
+  }
+
   return clone;
 }
 

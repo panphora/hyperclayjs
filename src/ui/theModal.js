@@ -595,7 +595,7 @@ const themodal = (() => {
   const themodalMain = {
     isShowing: false,
     open() {
-      document.body.insertAdjacentHTML("afterbegin", "<div save-remove class='micromodal-parent'>" + modalCss + modalHtml + "</div>");
+      document.body.insertAdjacentHTML("afterbegin", "<div save-remove snapshot-remove class='micromodal-parent'>" + modalCss + modalHtml + "</div>");
 
       const modalOverlayElem = document.querySelector(".micromodal__overlay");
       const modalContentElem = document.querySelector(".micromodal__content");
