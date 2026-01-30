@@ -282,7 +282,7 @@
     "snapshot": {
       "name": "snapshot",
       "category": "core",
-      "size": 10.6,
+      "size": 10.8,
       "isEditModeOnly": true,
       "files": [
         "core/snapshot.js"
@@ -451,7 +451,7 @@
     "toast": {
       "name": "toast",
       "category": "ui",
-      "size": 10.5,
+      "size": 10.7,
       "files": [
         "ui/toast.js"
       ],
@@ -481,7 +481,7 @@
     "the-modal": {
       "name": "the-modal",
       "category": "ui",
-      "size": 21,
+      "size": 21.1,
       "files": [
         "ui/theModal.js"
       ],

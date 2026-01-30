@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.19.0] - 2026-01-30
+
+### Added
+- Snapshot-remove attribute and onbeforesnapshot hook
+
+### Changed
+- Updated website meta descriptions and intro copy
+
+### Fixed
+- Warning toast icon SVG
+
+
+
 ## [1.18.0] - 2026-01-22
 
 ### Added
