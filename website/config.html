@@ -305,6 +305,7 @@
             display: flex;
             gap: 1rem;
             flex-wrap: wrap;
+            align-items: flex-start;
         }
 
         .preset-button {
@@ -881,24 +882,28 @@
                 button.className = 'preset-button';
                 button.dataset.preset = presetId;
                 button.textContent = `${preset.name} (${Math.round(totalSize)}KB)`;
-                container.appendChild(button);
+
+                if (presetId === 'smooth-sailing') {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'preset-button-with-hint';
+                    wrapper.appendChild(button);
+                    const hint = document.createElement('div');
+                    hint.className = 'preset-hint';
+                    hint.textContent = preset.description || '';
+                    wrapper.appendChild(hint);
+                    container.appendChild(wrapper);
+                } else {
+                    container.appendChild(button);
+                }
             }
 
             // Paste button wrapped with last preset to prevent orphans
             const group = document.createElement('div');
             group.className = 'preset-button-group';
 
-            // Move the last preset button into the group
-            const lastPreset = container.lastElementChild;
-            if (lastPreset) {
-                const wrapper = document.createElement('div');
-                wrapper.className = 'preset-button-with-hint';
-                wrapper.appendChild(lastPreset);
-                const hint = document.createElement('div');
-                hint.className = 'preset-hint';
-                hint.textContent = presets[lastPreset.dataset.preset]?.description || '';
-                wrapper.appendChild(hint);
-                group.appendChild(wrapper);
+            const lastChild = container.lastElementChild;
+            if (lastChild) {
+                group.appendChild(lastChild);
             }
 
             const pasteBtn = document.createElement('button');
