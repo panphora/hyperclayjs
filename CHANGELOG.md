@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.3] - 2026-01-31
+
+### Fixed
+- Add preset and features merge to template output, add DO NOT EDIT warning to generated files
+
+
+
 ## [1.19.2] - 2026-01-31
 
 ### Added
