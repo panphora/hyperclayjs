@@ -571,6 +571,7 @@
       "category": "utilities",
       "size": 0.6,
       "isEditModeOnly": true,
+      "difficulty": "intermediate",
       "files": [
         "utilities/cacheBust.js"
       ],
@@ -667,6 +668,7 @@
       "category": "vendor",
       "size": 17.2,
       "isEditModeOnly": true,
+      "difficulty": "intermediate",
       "files": [
         "vendor/hyper-morph.vendor.js"
       ],
