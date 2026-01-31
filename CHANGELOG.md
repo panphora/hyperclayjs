@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.19.1] - 2026-01-30
+
+### Added
+- Smooth Sailing preset — all modules with no difficulty tags
+- Intermediate difficulty to hyper-morph and cache-bust modules, updated config page legend
+
+### Changed
+- Module dependency graph regenerated
+
+
+
 ## [1.19.0] - 2026-01-30
 
 ### Added
