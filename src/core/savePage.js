@@ -429,6 +429,7 @@ export function init() {
 if (!window.__hyperclayNoAutoExport) {
   window.hyperclay = window.hyperclay || {};
   window.hyperclay.savePage = savePage;
+  window.hyperclay.savePageForce = savePageForce;
   window.hyperclay.savePageThrottled = savePageThrottled;
   window.hyperclay.beforeSave = beforeSave;
   window.hyperclay.replacePageWith = replacePageWith;

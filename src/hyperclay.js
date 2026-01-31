@@ -141,7 +141,8 @@ const PRESETS = {
       "behavior-collector",
       "send-message",
       "file-upload",
-      "export-to-window"
+      "export-to-window",
+      "view-mode-excludes-edit-modules"
     ]
   },
   "everything": {

@@ -550,9 +550,9 @@ async function generateDependencyGraph() {
   }
 
   // Populate "smooth-sailing" preset with all non-intermediate/non-advanced modules
-  // Note: export-to-window and view-mode-excludes-edit-modules are controlled by toggles, not preset
   PRESETS['smooth-sailing'].modules = [
-    ...Object.keys(modules).filter(id => id !== 'toast-hyperclay' && !modules[id].difficulty)
+    ...Object.keys(modules).filter(id => id !== 'toast-hyperclay' && !modules[id].difficulty),
+    'view-mode-excludes-edit-modules'
   ];
 
   // Populate "everything" preset with all module IDs plus special flags
