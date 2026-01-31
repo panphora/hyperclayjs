@@ -1,5 +1,5 @@
 /**
- * HyperclayJS v1.19.1 - Minimal Browser-Native Loader
+ * HyperclayJS v1.19.2 - Minimal Browser-Native Loader
  *
  * Modules auto-init when imported (no separate init call needed).
  * Include `export-to-window` feature to export to window.hyperclay.
@@ -224,11 +224,6 @@ if (preset && PRESETS[preset]) {
   requested = features.split(',').map(f => f.trim());
 } else {
   requested = [...PRESETS.minimal.modules];
-}
-
-if (preset && features) {
-  const extras = features.split(',').map(f => f.trim());
-  extras.forEach(f => { if (!requested.includes(f)) requested.push(f); });
 }
 
 // Apply exclusions

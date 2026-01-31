@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.19.2] - 2026-01-31
+
+### Added
+- Allow features param to add modules on top of a preset
+- Description below Smooth Sailing preset
+- Cache headers for improved performance
+
+### Changed
+- Updated wrangler configuration
+- Updated config page
+
+### Fixed
+- Button height in preset UI
+
+
+
 ## [1.19.1] - 2026-01-30
 
 ### Added
