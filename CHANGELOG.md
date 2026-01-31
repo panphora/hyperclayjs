@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.4] - 2026-01-31
+
+### Added
+- `savePageForce()` function that bypasses duplicate content check when saving pages
+
+
+
 ## [1.19.3] - 2026-01-31
 
 ### Fixed
