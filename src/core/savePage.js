@@ -196,6 +196,57 @@ export function savePage(callback = () => {}) {
   });
 }
 
+export function savePageForce(callback = () => {}) {
+  if (!isEditMode && !window.hyperclay?.testMode) {
+    return;
+  }
+
+  if (isSaveInProgress()) {
+    return;
+  }
+
+  const wasOffline = !navigator.onLine;
+  if (wasOffline) {
+    setOfflineStateQuiet();
+  }
+
+  let forSave, forComparison;
+  try {
+    ({ forSave, forComparison } = captureForSaveAndComparison());
+  } catch (err) {
+    console.error('savePageForce: captureForSaveAndComparison failed', err);
+    setSaveState('error', err.message);
+    if (typeof callback === 'function') {
+      callback({ msg: err.message, msgType: 'error' });
+    }
+    return;
+  }
+
+  setSavingState();
+
+  saveHtml(forSave, (err, data) => {
+    if (!err) {
+      lastSavedContents = forComparison;
+      unsavedChanges = false;
+      setSaveState('saved', data?.msg || 'Saved');
+      logBaseline('updated after force save', `${lastSavedContents.length} chars`);
+    } else {
+      if (!navigator.onLine) {
+        setSaveState('offline', err.message);
+      } else {
+        setSaveState('error', err.message);
+      }
+    }
+
+    if (typeof callback === 'function') {
+      callback({
+        msg: err?.message || data?.msg,
+        msgType: err ? 'error' : (data?.msgType || 'success')
+      });
+    }
+  });
+}
+
 /**
  * Fetch HTML from a URL and save it, then reload
  * Emits error event if save fails

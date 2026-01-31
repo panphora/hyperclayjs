@@ -55,10 +55,11 @@ const MODULE_DEFINITIONS = {
     exports: {
       beforeSave: ['hyperclay'],
       savePage: ['hyperclay'],
+      savePageForce: ['hyperclay'],
       savePageThrottled: ['hyperclay'],
       replacePageWith: ['hyperclay']
     },
-    hiddenExports: ['replacePageWith']
+    hiddenExports: ['replacePageWith', 'savePageForce']
   },
   'core/autosave.js': {
     name: 'autosave',

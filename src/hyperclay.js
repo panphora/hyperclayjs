@@ -294,6 +294,7 @@ if (debug) console.log('HyperclayJS: Ready');
 // ES module exports - allows destructuring from import()
 export const savePage = window.hyperclayModules['save-core']?.savePage ?? window.hyperclayModules['save-core']?.default;
 export const beforeSave = window.hyperclayModules['save-system']?.beforeSave ?? window.hyperclayModules['save-system']?.default;
+export const savePageForce = window.hyperclayModules['save-system']?.savePageForce ?? window.hyperclayModules['save-system']?.default;
 export const savePageThrottled = window.hyperclayModules['save-system']?.savePageThrottled ?? window.hyperclayModules['save-system']?.default;
 export const replacePageWith = window.hyperclayModules['save-system']?.replacePageWith ?? window.hyperclayModules['save-system']?.default;
 export const captureSnapshot = window.hyperclayModules['snapshot']?.captureSnapshot ?? window.hyperclayModules['snapshot']?.default;

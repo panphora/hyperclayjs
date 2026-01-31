@@ -195,7 +195,7 @@
     "save-system": {
       "name": "save-system",
       "category": "core",
-      "size": 12.1,
+      "size": 13.4,
       "isEditModeOnly": true,
       "files": [
         "core/savePage.js"
@@ -208,6 +208,9 @@
         "savePage": [
           "hyperclay"
         ],
+        "savePageForce": [
+          "hyperclay"
+        ],
         "savePageThrottled": [
           "hyperclay"
         ],
@@ -216,7 +219,8 @@
         ]
       },
       "hiddenExports": [
-        "replacePageWith"
+        "replacePageWith",
+        "savePageForce"
       ]
     },
     "autosave": {

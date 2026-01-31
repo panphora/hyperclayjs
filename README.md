@@ -63,7 +63,7 @@ import 'hyperclayjs/presets/standard.js';
 | option-visibility | 7.8KB | Dynamic show/hide based on ancestor state with option:attribute="value" |
 | persist | 2.4KB | Persist input/select/textarea values to the DOM with [persist] attribute |
 | save-core | 8.9KB | Basic save function only - hyperclay.savePage() |
-| save-system | 12.1KB | CMD+S, [trigger-save] button, savestatus attribute |
+| save-system | 13.4KB | CMD+S, [trigger-save] button, savestatus attribute |
 | save-toast | 0.9KB | Toast notifications for save events |
 | snapshot | 10.8KB | Source of truth for page state - captures DOM snapshots for save and sync |
 | tailwind-inject | 1.4KB | Injects tailwind CSS link with cache-bust on save |
@@ -132,17 +132,17 @@ import 'hyperclayjs/presets/standard.js';
 
 ## Presets
 
-### Minimal (~51.3KB)
+### Minimal (~52.6KB)
 Essential features for basic editing
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `edit-mode-helpers`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Standard (~73.6KB)
+### Standard (~74.9KB)
 Standard feature set for most use cases
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `unsaved-warning`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Everything (~207.4KB)
+### Everything (~208.7KB)
 All available features
 
 Includes all available modules across all categories.
