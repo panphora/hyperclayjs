@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.5] - 2026-01-31
+
+### Added
+- `savePageForce` and `view-mode-excludes-edit-modules` options in `PRESETS['smooth-sailing']`
+
+
+
 ## [1.19.4] - 2026-01-31
 
 ### Added
