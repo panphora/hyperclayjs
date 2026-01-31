@@ -330,6 +330,25 @@
             color: white;
         }
 
+        .preset-button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: nowrap;
+        }
+
+        .preset-button-with-hint {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .preset-hint {
+            font-size: 13px;
+            color: var(--gray);
+            margin-top: 0.25rem;
+            text-align: center;
+        }
+
         /* Sidebar */
         .sidebar {
             position: sticky;
@@ -865,11 +884,30 @@
                 container.appendChild(button);
             }
 
+            // Paste button wrapped with last preset to prevent orphans
+            const group = document.createElement('div');
+            group.className = 'preset-button-group';
+
+            // Move the last preset button into the group
+            const lastPreset = container.lastElementChild;
+            if (lastPreset) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'preset-button-with-hint';
+                wrapper.appendChild(lastPreset);
+                const hint = document.createElement('div');
+                hint.className = 'preset-hint';
+                hint.textContent = presets[lastPreset.dataset.preset]?.description || '';
+                wrapper.appendChild(hint);
+                group.appendChild(wrapper);
+            }
+
             const pasteBtn = document.createElement('button');
             pasteBtn.className = 'preset-button';
             pasteBtn.id = 'paste-button';
             pasteBtn.textContent = 'Paste';
-            container.appendChild(pasteBtn);
+            group.appendChild(pasteBtn);
+
+            container.appendChild(group);
         }
 
         function renderFeatureSections() {
@@ -1402,7 +1440,7 @@
 
         document.querySelector('.preset-buttons').addEventListener('click', (e) => {
             if (e.target.id !== 'paste-button') return;
-            ask('Paste a HyperclayJS URL or script tag to select the features it uses', (input) => {
+            ask('Paste a HyperclayJS URL or script tag to auto-select the features it uses', (input) => {
                 const result = parseHyperclayURL(input);
                 if (!result) {
                     toast('Could not find features or preset in the pasted text.', 'error');

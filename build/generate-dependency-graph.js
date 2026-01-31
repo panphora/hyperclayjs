@@ -445,6 +445,11 @@ const PRESETS = {
     description: 'Standard feature set for most use cases',
     modules: ['save-core', 'snapshot', 'save-system', 'unsaved-warning', 'edit-mode-helpers', 'persist', 'option-visibility', 'event-attrs', 'dom-helpers', 'toast', 'save-toast', 'export-to-window', 'view-mode-excludes-edit-modules']
   },
+  'smooth-sailing': {
+    name: 'Smooth Sailing',
+    description: 'Every module with no gotchas',
+    modules: [] // Will be populated with all non-intermediate/non-advanced module IDs
+  },
   'everything': {
     name: 'Everything',
     description: 'All available features',
@@ -542,6 +547,12 @@ async function generateDependencyGraph() {
       CATEGORIES[category].modules.push(moduleId);
     }
   }
+
+  // Populate "smooth-sailing" preset with all non-intermediate/non-advanced modules
+  // Note: export-to-window and view-mode-excludes-edit-modules are controlled by toggles, not preset
+  PRESETS['smooth-sailing'].modules = [
+    ...Object.keys(modules).filter(id => id !== 'toast-hyperclay' && !modules[id].difficulty)
+  ];
 
   // Populate "everything" preset with all module IDs plus special flags
   // Exclude toast-hyperclay - it's a secret module that overrides default toast styling
