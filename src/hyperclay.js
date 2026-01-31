@@ -226,6 +226,11 @@ if (preset && PRESETS[preset]) {
   requested = [...PRESETS.minimal.modules];
 }
 
+if (preset && features) {
+  const extras = features.split(',').map(f => f.trim());
+  extras.forEach(f => { if (!requested.includes(f)) requested.push(f); });
+}
+
 // Apply exclusions
 if (exclude) {
   const excluded = new Set(exclude.split(',').map(f => f.trim()));
