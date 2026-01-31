@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.6] - 2026-01-31
+
+### Added
+- postpublish CDN cache purge script
+
+
+
 ## [1.19.5] - 2026-01-31
 
 ### Added
