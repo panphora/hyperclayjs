@@ -251,6 +251,7 @@ const MODULE_DEFINITIONS = {
     moduleId: 'cache-bust',
     description: 'Cache-bust href/src attributes',
     isEditModeOnly: true,
+    difficulty: 'intermediate',
     exports: {
       cacheBust: ['window', 'hyperclay']
     }
@@ -303,6 +304,7 @@ const MODULE_DEFINITIONS = {
     moduleId: 'hyper-morph',
     description: 'DOM morphing with content-based element matching',
     isEditModeOnly: true,
+    difficulty: 'intermediate',
     exports: {
       HyperMorph: ['window', 'hyperclay'],
       morph: ['window', 'hyperclay']

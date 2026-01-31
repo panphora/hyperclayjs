@@ -237,7 +237,7 @@
         .difficulty-badge {
             font-size: 0.625rem;
             padding: 0.15rem 0.4rem;
-            background: #aa7ee9;
+            background: #884edb;
             color: white;
             font-weight: bold;
             margin-left: 0.5rem;
@@ -272,6 +272,10 @@
             color: var(--primary-blue);
         }
 
+        .legend-item .difficulty-badge {
+            margin-left: 0;
+        }
+
         .legend-description {
             color: var(--gray);
         }
@@ -288,7 +292,7 @@
         }
 
         .legend-example-name {
-            color: #aa7ee9;
+            color: #8c5cd1;
             font-weight: bold;
         }
 
@@ -783,24 +787,29 @@
         <div class="legend">
             <h3 class="legend-title">Module Difficulty</h3>
             <div class="legend-item">
-                <span class="legend-level">Beginner</span> — <span class="legend-description">Safe to include, does nothing unless you use it</span>
+                <span class="legend-level">Untagged modules</span> — <span class="legend-description">Safe to include, they do nothing unless you use them</span>
             </div>
             <div class="legend-item">
-                <span class="legend-level">Intermediate</span> — <span class="legend-description">Powerful but has gotchas:</span>
+                <span class="difficulty-badge">intermediate</span> — <span class="legend-description">Powerful but has gotchas:</span>
                 <div class="legend-examples">
-                    <div class="legend-example-item"><span class="legend-example-name">Autosave</span> — triggers saves from DOM changes, can cause infinite loops</div>
-                    <div class="legend-example-item"><span class="legend-example-name">Tailwind Inject</span> — only runs on save, not live</div>
+                    <div class="legend-example-item"><span class="legend-example-name">Autosave</span> — triggers save on DOM changes, possible to infinite loop when combined with live-sync</div>
+                    <div class="legend-example-item"><span class="legend-example-name">Tailwind Inject</span> — only runs on save (i.e. doesn't live update) and injects a stylesheet into the page</div>
+                    <div class="legend-example-item"><span class="legend-example-name">Hyper Morph</span> — DOM morphing requires understanding element matching</div>
+                    <div class="legend-example-item"><span class="legend-example-name">Cache Bust</span> — rewrites href/src attributes on save</div>
                 </div>
             </div>
             <div class="legend-item">
-                <span class="legend-level">Advanced</span> — <span class="legend-description">For power users building complex apps:</span>
+                <span class="difficulty-badge">advanced</span> — <span class="legend-description">For power users building complex apps:</span>
                 <div class="legend-examples">
-                    <div class="legend-example-item"><span class="legend-example-name">Live Sync</span> — requires understanding the full system, skip for simple sites</div>
+                    <div class="legend-example-item"><span class="legend-example-name">Live Sync</span> — sync the full page between browsers, can get complex fast</div>
                 </div>
             </div>
         </div>
     </div>
 
+    <script type="module">
+        const { ask, toast } = await import('/dist/hyperclay.js?features=dialogs,toast,the-modal,export-to-window');
+    </script>
     <script type="module">
         // Load module dependency graph
         let moduleData = null;
@@ -855,6 +864,12 @@
                 button.textContent = `${preset.name} (${Math.round(totalSize)}KB)`;
                 container.appendChild(button);
             }
+
+            const pasteBtn = document.createElement('button');
+            pasteBtn.className = 'preset-button';
+            pasteBtn.id = 'paste-button';
+            pasteBtn.textContent = 'Paste';
+            container.appendChild(pasteBtn);
         }
 
         function renderFeatureSections() {
@@ -1249,6 +1264,9 @@
                 updateUI();
             });
 
+            // Allow external code to trigger UI update
+            document.addEventListener('hyperclayjs-update-ui', () => updateUI());
+
             // Handle view-mode-excludes-edit toggle
             const viewModeToggle = document.getElementById('view-mode-excludes-edit-toggle');
             viewModeToggle.addEventListener('change', (e) => {
@@ -1264,6 +1282,146 @@
             });
 
         }
+
+        // --- Paste / Import feature ---
+
+        const LEGACY_ALIASES = {
+            "idiomorph": "hyper-morph",
+        };
+
+        function parseHyperclayURL(input) {
+            input = input.trim();
+
+            // Extract URL from script tag or import() call
+            const srcMatch = input.match(/src=["']([^"']+)["']/);
+            const importMatch = input.match(/import\(\s*["']([^"']+)["']\s*\)/);
+            const url = srcMatch?.[1] || importMatch?.[1] || input;
+
+            let parsed;
+            try {
+                parsed = new URL(url);
+            } catch {
+                // Maybe just query params like "?features=..."
+                try {
+                    parsed = new URL('https://example.com' + (url.startsWith('?') ? url : '?' + url));
+                } catch {
+                    return null;
+                }
+            }
+
+            const preset = parsed.searchParams.get('preset');
+            if (preset) {
+                return { type: 'preset', preset };
+            }
+
+            const featuresParam = parsed.searchParams.get('features');
+            if (featuresParam) {
+                const featureList = featuresParam.split(',').map(f => f.trim()).filter(Boolean);
+                const resolved = featureList.map(f => LEGACY_ALIASES[f] || f);
+                return { type: 'features', features: resolved };
+            }
+
+            return null;
+        }
+
+        function applyImport(result) {
+            const checkboxes = document.querySelectorAll('.feature-checkbox');
+            const presetButtons = document.querySelectorAll('.preset-button');
+
+            if (result.type === 'preset') {
+                const btn = document.querySelector(`[data-preset="${result.preset}"]`);
+                if (btn) {
+                    btn.click();
+                    return { success: true };
+                }
+                return { success: false, error: `Unknown preset: ${result.preset}` };
+            }
+
+            if (result.type === 'features') {
+                // Clear current selection
+                selectedFeatures.clear();
+                checkboxes.forEach(cb => { cb.checked = false; });
+
+                const unknown = [];
+                for (const feature of result.features) {
+                    // Check if it's a known feature in MODULE_PATHS (via checkboxes or special flags)
+                    const checkbox = document.querySelector(`[data-feature="${feature}"]`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                        selectedFeatures.add(feature);
+
+                        // Also add dependencies
+                        const requires = checkbox.dataset.requires;
+                        if (requires) {
+                            for (const dep of requires.split(',')) {
+                                selectedFeatures.add(dep);
+                                const depCb = document.querySelector(`[data-feature="${dep}"]`);
+                                if (depCb) depCb.checked = true;
+                            }
+                        }
+                    } else if (['export-to-window', 'view-mode-excludes-edit-modules'].includes(feature)) {
+                        selectedFeatures.add(feature);
+                    } else if (features[feature]) {
+                        // Known module but no checkbox (hidden dependency)
+                        selectedFeatures.add(feature);
+                    } else {
+                        unknown.push(feature);
+                    }
+                }
+
+                // Check if selection matches a preset
+                currentPreset = null;
+                for (const [presetName, presetData] of Object.entries(presets)) {
+                    const presetFeatures = presetData.modules || [];
+                    if (presetFeatures.length === selectedFeatures.size &&
+                        presetFeatures.every(f => selectedFeatures.has(f))) {
+                        currentPreset = presetName;
+                        break;
+                    }
+                }
+
+                presetButtons.forEach(btn => {
+                    if (btn.dataset.preset === currentPreset) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+
+                // Re-run updateUI from initializeEventListeners scope
+                document.dispatchEvent(new CustomEvent('hyperclayjs-update-ui'));
+
+                if (unknown.length > 0) {
+                    return { success: true, warning: `Unknown features ignored: ${unknown.join(', ')}` };
+                }
+                return { success: true };
+            }
+
+            return { success: false, error: 'Could not parse input' };
+        }
+
+        document.querySelector('.preset-buttons').addEventListener('click', (e) => {
+            if (e.target.id !== 'paste-button') return;
+            ask('Paste a HyperclayJS URL or script tag to select the features it uses', (input) => {
+                const result = parseHyperclayURL(input);
+                if (!result) {
+                    toast('Could not find features or preset in the pasted text.', 'error');
+                    return;
+                }
+
+                const applied = applyImport(result);
+                if (!applied.success) {
+                    toast(applied.error, 'error');
+                    return;
+                }
+
+                if (applied.warning) {
+                    toast(applied.warning, 'warning');
+                } else {
+                    toast('Configuration imported!', 'success');
+                }
+            });
+        });
 
         // Load data on page load
         loadModuleData();
