@@ -448,7 +448,7 @@ const PRESETS = {
   },
   'smooth-sailing': {
     name: 'Smooth Sailing',
-    description: 'Every module with no gotchas',
+    description: 'Everything, without gotchas',
     modules: [] // Will be populated with all non-intermediate/non-advanced module IDs
   },
   'everything': {

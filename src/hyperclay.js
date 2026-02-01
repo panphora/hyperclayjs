@@ -105,7 +105,7 @@ const PRESETS = {
   },
   "smooth-sailing": {
     "name": "Smooth Sailing",
-    "description": "Every module with no gotchas",
+    "description": "Everything, without gotchas",
     "modules": [
       "save-core",
       "save-system",
