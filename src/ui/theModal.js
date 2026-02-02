@@ -368,17 +368,28 @@ const modalCss = `<style class="micromodal-css">
 
 .micromodal__container {
   position: relative;
-  max-width: 600px;
+  width: 100%;
+  max-width: min(600px, calc(100vw - 2rem));
+  max-height: calc(100vh - 4rem);
+  max-height: calc(100dvh - 2rem);
   box-sizing: border-box;
-  overflow-y: auto;
-  padding: 26px 40px 40px 40px;
+  overflow: hidden;
   border: 2px solid #FFFFFF;
   background-color: #11131E;
-  overflow: visible;
+}
+
+.micromodal__inner {
+  overflow-x: hidden;
+  overflow-y: auto;
+  /* Must subtract container's 4px border (2px top + 2px bottom) from max-height,
+     otherwise inner overflows past container since box-sizing: border-box
+     makes the container's content area smaller than its max-height */
+  max-height: calc(100dvh - 2rem - 4px);
+  padding: 26px 40px 40px 40px;
 }
 
 @media (min-width: 640px) {
-  .micromodal .micromodal__container {
+  .micromodal .micromodal__inner {
     padding: 52px 64px 60px 64px;
   }
 }
@@ -418,7 +429,7 @@ const modalCss = `<style class="micromodal-css">
 }
 
 .micromodal .micromodal__input {
-  width: clamp(300px, calc(100vw - 100px), 420px);
+  width: min(calc(100vw - 100px), 420px);
   padding: 6px 6px 7px;
   font-size: var(--hyperclay-modal-input-font-size, 16px);
   color: #000;
@@ -567,10 +578,12 @@ const modalCss = `<style class="micromodal-css">
 const modalHtml = `<div class="micromodal" id="micromodal" aria-hidden="true">
   <div class="micromodal__overlay" tabindex="-1">
     <form class="micromodal__container" role="dialog" aria-modal="true">
-      <div class="micromodal__content"></div>
-      <div class="micromodal__buttons">
-        <button class="micromodal__no" type="button"></button>
-        <button class="micromodal__yes" type="submit"></button>
+      <div class="micromodal__inner">
+        <div class="micromodal__content"></div>
+        <div class="micromodal__buttons">
+          <button class="micromodal__no" type="button"></button>
+          <button class="micromodal__yes" type="submit"></button>
+        </div>
       </div>
       <button class="micromodal__close" type="button" aria-label="Close modal"></button>
     </form>
