@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.19.7] - 2026-02-02
+
+### Changed
+- Modal input width to use min() instead of clamp() for better responsive behavior
+- Smooth Sailing preset description from "Every module with no gotchas" to "Everything, without gotchas"
+
+### Fixed
+- Modal overflow and sizing on small viewports using inner wrapper for proper scroll containment
+
+
+
 ## [1.19.6] - 2026-01-31
 
 ### Added
