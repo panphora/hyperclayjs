@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.8] - 2026-02-03
+
+### Changed
+- Reduced modal default max-width from 600px to 550px
+
+
+
 ## [1.19.7] - 2026-02-02
 
 ### Changed
