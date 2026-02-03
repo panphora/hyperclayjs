@@ -369,7 +369,7 @@ const modalCss = `<style class="micromodal-css">
 .micromodal__container {
   position: relative;
   width: 100%;
-  max-width: min(600px, calc(100vw - 2rem));
+  max-width: min(550px, calc(100vw - 2rem));
   max-height: calc(100vh - 4rem);
   max-height: calc(100dvh - 2rem);
   box-sizing: border-box;
