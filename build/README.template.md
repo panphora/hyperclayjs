@@ -1,6 +1,6 @@
 # HyperclayJS
 
-A modular JavaScript library for building interactive HTML applications with Hyperclay. Load only what you need with automatic dependency resolution.
+A modular JavaScript library for building interactive malleable HTML files with Hyperclay. Load only what you need with automatic dependency resolution.
 
 ## Features
 
