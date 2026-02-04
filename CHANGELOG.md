@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.9] - 2026-02-04
+
+### Changed
+- Standardized terminology to "malleable HTML files" across documentation and codebase
+
+
+
 ## [1.19.8] - 2026-02-03
 
 ### Changed
