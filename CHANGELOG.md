@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.0] - 2026-02-07
+
+### Added
+- toastPersistent for non-dismissing notifications
+
+
+
 ## [1.19.9] - 2026-02-04
 
 ### Changed
