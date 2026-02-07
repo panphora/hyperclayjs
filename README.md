@@ -86,7 +86,7 @@ import 'hyperclayjs/presets/standard.js';
 |--------|------|-------------|
 | dialogs | 7.7KB | ask(), consent(), tell(), snippet() dialog functions |
 | the-modal | 21.5KB | Full modal window creation system - window.theModal |
-| toast | 10.7KB | Success/error message notifications, toast(msg, msgType) |
+| toast | 15.9KB | Success/error message notifications, toast(msg, msgType) |
 
 ### Utilities (Core utilities (often auto-included))
 
@@ -121,7 +121,7 @@ import 'hyperclayjs/presets/standard.js';
 | Module | Size | Description |
 |--------|------|-------------|
 | file-upload | 10.7KB | File upload with progress |
-| live-sync | 11.4KB | Real-time DOM sync across browsers |
+| live-sync | 11.5KB | Real-time DOM sync across browsers |
 | send-message | 1.3KB | Message sending utility |
 
 ### Vendor Libraries (Third-party libraries)
@@ -132,17 +132,17 @@ import 'hyperclayjs/presets/standard.js';
 
 ## Presets
 
-### Minimal (~52.6KB)
+### Minimal (~57.8KB)
 Essential features for basic editing
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `edit-mode-helpers`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Standard (~74.9KB)
+### Standard (~80.1KB)
 Standard feature set for most use cases
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `unsaved-warning`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Everything (~209.1KB)
+### Everything (~214.4KB)
 All available features
 
 Includes all available modules across all categories.

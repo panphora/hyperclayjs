@@ -455,7 +455,7 @@
     "toast": {
       "name": "toast",
       "category": "ui",
-      "size": 10.7,
+      "size": 15.9,
       "files": [
         "ui/toast.js"
       ],
@@ -784,7 +784,7 @@
     "live-sync": {
       "name": "live-sync",
       "category": "communication",
-      "size": 11.4,
+      "size": 11.5,
       "isEditModeOnly": true,
       "difficulty": "advanced",
       "files": [

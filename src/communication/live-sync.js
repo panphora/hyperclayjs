@@ -327,13 +327,15 @@ class LiveSync {
   /**
    * Handle a notification message from the server
    * Shows a toast and emits an event for custom handling
-   * @param {Object} data - { msgType, msg, action? }
+   * @param {Object} data - { msgType, msg, action?, persistent? }
    */
-  handleNotification({ msgType, msg, action }) {
+  handleNotification({ msgType, msg, action, persistent }) {
     this._log(`Notification received: ${msgType} - ${msg}`);
 
     // Show toast if available
-    if (window.toast) {
+    if (persistent && window.toastPersistent) {
+      window.toastPersistent(msg, msgType);
+    } else if (window.toast) {
       window.toast(msg, msgType);
     } else {
       console.log(`[LiveSync] Notification: ${msg}`);
@@ -341,12 +343,12 @@ class LiveSync {
 
     // Emit event for custom handling (e.g., reload button)
     document.dispatchEvent(new CustomEvent('hyperclay:notification', {
-      detail: { msgType, msg, action }
+      detail: { msgType, msg, action, persistent }
     }));
 
     // Call notification callback if set
     if (this.onNotification) {
-      this.onNotification({ msgType, msg, action });
+      this.onNotification({ msgType, msg, action, persistent });
     }
   }
 

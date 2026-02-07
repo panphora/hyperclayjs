@@ -6,7 +6,7 @@ const defaultIcons = {
   success: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.9404 23.9475L21.9099 31.224L35.1906 15.9045M3 4.5H44.9804V44.309H3V4.5Z" stroke="#33D131" stroke-width="4.3"/></svg>`,
   error: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M32.7383 14.4045L14 33.1429M32.7451 33.1429L14.0068 14.4046M3.01 4H44.99V43.809H3.01V4Z" stroke="#FF4450" stroke-width="4"/></svg>`,
   warning: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke="#F5A623" stroke-width="2" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/></svg>`,
-  info: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="24" r="20" stroke="#4A90D9" stroke-width="4"/><path d="M24 20V32M24 14V16" stroke="#4A90D9" stroke-width="4" stroke-linecap="round"/></svg>`
+  info: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke="#4A90D9" stroke-width="2" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"/></svg>`
 };
 
 // Hyperclay icons
@@ -141,6 +141,11 @@ const modernStyles = `
     display: block;
     width: 22px;
     height: 22px;
+  }
+
+  [data-toast-theme="modern"] .toast.info .toast-icon svg {
+    width: 24px;
+    height: 24px;
   }
 
   [data-toast-theme="modern"] .toast-message {
@@ -315,12 +320,131 @@ function toast(message, messageType = "success") {
   });
 }
 
+// Close button (button with pixel art X icon inside)
+const CLOSE_BUTTON_HTML = `<button class="toast-close" type="button" aria-label="Close"><svg viewBox="0 0 558 558" xmlns="http://www.w3.org/2000/svg"><path d="M0,0h62.02v62.02h-62.02Z M62,0h62.02v62.02h-62.02Z M434,0h62.02v62.02h-62.02Z M496,0h62.02v62.02h-62.02Z M0,62h62.02v62.02h-62.02Z M62,62h62.02v62.02h-62.02Z M124,62h62.02v62.02h-62.02Z M372,62h62.02v62.02h-62.02Z M434,62h62.02v62.02h-62.02Z M496,62h62.02v62.02h-62.02Z M62,124h62.02v62.02h-62.02Z M124,124h62.02v62.02h-62.02Z M186,124h62.02v62.02h-62.02Z M310,124h62.02v62.02h-62.02Z M372,124h62.02v62.02h-62.02Z M434,124h62.02v62.02h-62.02Z M124,186h62.02v62.02h-62.02Z M186,186h62.02v62.02h-62.02Z M248,186h62.02v62.02h-62.02Z M310,186h62.02v62.02h-62.02Z M372,186h62.02v62.02h-62.02Z M186,248h62.02v62.02h-62.02Z M248,248h62.02v62.02h-62.02Z M310,248h62.02v62.02h-62.02Z M124,310h62.02v62.02h-62.02Z M186,310h62.02v62.02h-62.02Z M248,310h62.02v62.02h-62.02Z M310,310h62.02v62.02h-62.02Z M372,310h62.02v62.02h-62.02Z M62,372h62.02v62.02h-62.02Z M124,372h62.02v62.02h-62.02Z M186,372h62.02v62.02h-62.02Z M310,372h62.02v62.02h-62.02Z M372,372h62.02v62.02h-62.02Z M434,372h62.02v62.02h-62.02Z M0,434h62.02v62.02h-62.02Z M62,434h62.02v62.02h-62.02Z M124,434h62.02v62.02h-62.02Z M372,434h62.02v62.02h-62.02Z M434,434h62.02v62.02h-62.02Z M496,434h62.02v62.02h-62.02Z M0,496h62.02v62.02h-62.02Z M62,496h62.02v62.02h-62.02Z M434,496h62.02v62.02h-62.02Z M496,496h62.02v62.02h-62.02Z"/></svg></button>`;
+
+// Persistent toast styles (added once)
+const persistentToastStyles = `
+  .toast.toast-persistent {
+    position: relative;
+    align-items: center;
+    padding-right: 18px;
+  }
+  .toast-persistent .toast-close {
+    background: none;
+    border: none;
+    padding: 0;
+    margin-left: 3px;
+    position: relative;
+    top: -2px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    width: 22px;
+    height: 22px;
+  }
+  .toast-persistent .toast-close:hover {
+    opacity: 1;
+  }
+  .toast-persistent .toast-close svg {
+    width: 11px;
+    height: 11px;
+    fill: currentColor;
+  }
+`;
+
+let persistentStylesInjected = false;
+
+// Track active persistent toasts by message
+const activePersistentToasts = new Map();
+
+// Persistent toast function - doesn't auto-dismiss, requires click to close
+function toastPersistent(message, messageType = "warning") {
+  injectToastStyles(toastConfig.styles, toastConfig.theme);
+
+  // Inject persistent-specific styles once
+  if (!persistentStylesInjected) {
+    const styleSheet = document.createElement('style');
+    styleSheet.className = 'toast-styles-persistent';
+    styleSheet.setAttribute('save-remove', '');
+    styleSheet.setAttribute('snapshot-remove', '');
+    styleSheet.textContent = persistentToastStyles;
+    document.head.appendChild(styleSheet);
+    persistentStylesInjected = true;
+  }
+
+  const templates = toastConfig.templates;
+  const icons = toastConfig.icons;
+  const theme = toastConfig.theme;
+
+  // Get or create container for this theme
+  let toastContainer = document.querySelector(`.toast-container[data-toast-theme="${theme}"]`);
+  if (!toastContainer) {
+    toastContainer = document.createElement('div');
+    toastContainer.className = 'toast-container';
+    toastContainer.setAttribute('data-toast-theme', theme);
+    toastContainer.setAttribute('save-remove', '');
+    toastContainer.setAttribute('snapshot-remove', '');
+    document.body.append(toastContainer);
+  }
+
+  // If same message already showing, animate it out first
+  const existingToast = activePersistentToasts.get(message);
+  if (existingToast) {
+    existingToast.classList.add('hide');
+    setTimeout(() => existingToast.remove(), 500);
+    activePersistentToasts.delete(message);
+  }
+
+  // Create toast element
+  const icon = icons[messageType] || icons.warning;
+  const template = templates.toast[messageType] || templates.toast.warning;
+  const toastHtml = template
+    .replace('{icon}', icon)
+    .replace('{message}', message);
+
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = toastHtml.trim();
+  const toastElement = tempDiv.firstElementChild;
+  toastElement.classList.add('toast-persistent');
+
+  // Add close button as sibling (not inside message)
+  toastElement.insertAdjacentHTML('beforeend', CLOSE_BUTTON_HTML);
+
+  // Close handler - only on close button click
+  const closeBtn = toastElement.querySelector('.toast-close');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toastElement.classList.add('hide');
+      setTimeout(() => {
+        toastElement.remove();
+        activePersistentToasts.delete(message);
+      }, 500);
+    });
+  }
+
+  // Track this toast
+  activePersistentToasts.set(message, toastElement);
+
+  // Add to container and animate in
+  toastContainer.append(toastElement);
+  setTimeout(() => toastElement.classList.remove('hide'), 10);
+}
+
 // Auto-export to window unless suppressed by loader
 if (!window.__hyperclayNoAutoExport) {
   window.toast = toast;
+  window.toastPersistent = toastPersistent;
   window.hyperclay = window.hyperclay || {};
   window.hyperclay.toast = toast;
+  window.hyperclay.toastPersistent = toastPersistent;
   window.h = window.hyperclay;
 }
 
+export { toastPersistent };
 export default toast;
