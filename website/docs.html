@@ -13,14 +13,14 @@
     }
 
     :root {
-      --primary-blue: #6A73B6;
-      --shadow-blue: rgba(106, 115, 182, 0.2);
-      --border-blue: #6A73B6;
-      --bg-dark: #0d0e14;
-      --bg-card: #11131e;
-      --text-primary: #e5e7eb;
-      --text-secondary: #9ca3af;
-      --code-bg: rgba(106, 115, 182, 0.15);
+      --primary-blue: #d79921;
+      --shadow-blue: rgba(215, 153, 33, 0.06);
+      --border-blue: #d79921;
+      --bg-dark: #080808;
+      --bg-card: #0e0e0e;
+      --text-primary: #ffffff;
+      --text-secondary: #c8bca4;
+      --code-bg: rgba(215, 153, 33, 0.1);
       --sidebar-width: 240px;
     }
 
@@ -263,7 +263,7 @@
 
     .params-table td {
       padding: 8px;
-      border-bottom: 1px solid rgba(106, 115, 182, 0.2);
+      border-bottom: 1px solid rgba(215, 153, 33, 0.06);
       vertical-align: top;
       word-break: break-word;
     }
@@ -1589,13 +1589,52 @@ try {
 }</pre></div>
   </div><div class="function-card" id="fn-live-sync">
     <h3>live-sync</h3>
-    <p class="function-description">Real-time DOM sync across browsers. When one user saves, all connected browsers see the changes instantly. Works with Hyperclay Local app as well.</p>
+    <p class="function-description">Real-time DOM sync across browsers via SSE. When one user saves, all connected browsers see the changes instantly via HyperMorph. Works with Hyperclay Local app.</p>
     
     
+    <h4>Parameters</h4>
+    <table class="params-table">
+      <tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>file</code></td>
+          <td><code>string</code></td>
+          <td>—</td>
+          <td>Site identifier to sync (e.g. `'index'`, `'about'`). Auto-detected from URL pathname if omitted</td>
+        </tr>
+      
+    </table>
+    <h4>Methods</h4>
+    <table class="params-table">
+      <tr><th>Method</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>liveSync.start(file?)</code></td>
+          <td>Start syncing. Auto-detects file from URL if not provided</td>
+        </tr>
+      
+        <tr>
+          <td><code>liveSync.stop()</code></td>
+          <td>Stop syncing and clean up SSE connection</td>
+        </tr>
+      
+    </table>
     
-    
-    
-    
+    <h4>Example</h4><div class="example"><pre>// Auto-start (default behavior when module is loaded)
+await import('hyperclay.js?features=live-sync');
+
+// Manual control
+import liveSync from 'hyperclay.js/live-sync';
+liveSync.start('my-page');
+
+// Callbacks
+liveSync.onConnect = () =&gt; console.log('Connected');
+liveSync.onDisconnect = () =&gt; console.log('Disconnected');
+liveSync.onUpdate = ({ html, sender }) =&gt; console.log('Update from', sender);
+liveSync.onError = (err) =&gt; console.error(err);
+
+// Stop syncing
+liveSync.stop();</pre></div>
   </div></div><div class="category-section" id="cat-events">
       <h2>Event Attributes</h2><div class="function-card" id="fn-onclickaway">
     <h3>onclickaway</h3>
@@ -1605,7 +1644,19 @@ try {
     
     
     
-    
+    <h4>Example</h4><div class="example"><pre>&lt;!-- Close dropdown when clicking outside --&gt;
+&lt;div class=&quot;dropdown&quot; onclickaway=&quot;this.classList.add('hidden')&quot;&gt;
+  &lt;button&gt;Menu&lt;/button&gt;
+  &lt;ul class=&quot;dropdown-items&quot;&gt;
+    &lt;li&gt;Option 1&lt;/li&gt;
+    &lt;li&gt;Option 2&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;
+
+&lt;!-- Close modal when clicking backdrop --&gt;
+&lt;div class=&quot;modal-backdrop&quot; onclickaway=&quot;All.modal.remove()&quot;&gt;
+  &lt;div class=&quot;modal&quot;&gt;Modal content&lt;/div&gt;
+&lt;/div&gt;</pre></div>
   </div><div class="function-card" id="fn-onclickchildren">
     <h3>onclickchildren</h3>
     <p class="function-description">Execute code when any direct child of the element is clicked.</p>
@@ -1614,7 +1665,26 @@ try {
     
     
     
-    
+    <h4>Example</h4><div class="example"><pre>&lt;!-- Hide menu when any menu item is clicked --&gt;
+&lt;div menu class=&quot;dropdown&quot; onclickchildren=&quot;All.menu.classList.add('hidden')&quot;&gt;
+  &lt;button&gt;Option 1&lt;/button&gt;
+  &lt;button&gt;Option 2&lt;/button&gt;
+  &lt;button&gt;Option 3&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;!-- Handle click on list items, even with nested content --&gt;
+&lt;ul onclickchildren=&quot;console.log('Clicked:', this.dataset.id)&quot;&gt;
+  &lt;li data-id=&quot;1&quot;&gt;&lt;span&gt;Item 1&lt;/span&gt;&lt;/li&gt;
+  &lt;li data-id=&quot;2&quot;&gt;&lt;span&gt;Item 2&lt;/span&gt;&lt;/li&gt;
+  &lt;li data-id=&quot;3&quot;&gt;&lt;span&gt;Item 3&lt;/span&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;!-- Delegate actions based on which child was clicked --&gt;
+&lt;nav onclickchildren=&quot;this.classList.add('active'); All('nav &gt; *').not(this).classList.remove('active')&quot;&gt;
+  &lt;a href=&quot;#home&quot;&gt;Home&lt;/a&gt;
+  &lt;a href=&quot;#about&quot;&gt;About&lt;/a&gt;
+  &lt;a href=&quot;#contact&quot;&gt;Contact&lt;/a&gt;
+&lt;/nav&gt;</pre></div>
   </div><div class="function-card" id="fn-onclone">
     <h3>onclone</h3>
     <p class="function-description">Execute code when an element is cloned via `cloneNode()`.</p>
@@ -1623,7 +1693,23 @@ try {
     
     
     
-    
+    <h4>Example</h4><div class="example"><pre>&lt;!-- Generate unique IDs for cloned elements --&gt;
+&lt;template id=&quot;item-template&quot;&gt;
+  &lt;div class=&quot;item&quot; onclone=&quot;this.id = 'item-' + Date.now()&quot;&gt;
+    &lt;input type=&quot;text&quot;&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;!-- Clear input values in cloned forms --&gt;
+&lt;form onclone=&quot;All('input', this).value = ''&quot;&gt;
+  &lt;input type=&quot;text&quot; value=&quot;default&quot;&gt;
+  &lt;button type=&quot;submit&quot;&gt;Submit&lt;/button&gt;
+&lt;/form&gt;
+
+&lt;!-- Initialize cloned components --&gt;
+&lt;div class=&quot;widget&quot; onclone=&quot;this.dataset.initialized = 'false'; initWidget(this)&quot;&gt;
+  Widget content
+&lt;/div&gt;</pre></div>
   </div><div class="function-card" id="fn-onmutation">
     <h3>onmutation</h3>
     <p class="function-description">Execute code when the element or its descendants change.</p>
@@ -1632,7 +1718,25 @@ try {
     
     
     
-    
+    <h4>Example</h4><div class="example"><pre>&lt;!-- Update count when list changes --&gt;
+&lt;div onmutation=&quot;All.count.textContent = this.children.length&quot;&gt;
+  &lt;ul&gt;
+    &lt;li&gt;Item 1&lt;/li&gt;
+    &lt;li&gt;Item 2&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;
+&lt;span count&gt;2&lt;/span&gt;
+
+&lt;!-- Auto-save when content is edited --&gt;
+&lt;div contenteditable onmutation=&quot;await saveContent(this.innerHTML)&quot;&gt;
+  Edit this content...
+&lt;/div&gt;
+
+&lt;!-- Sync state with DOM changes --&gt;
+&lt;div class=&quot;todo-list&quot; onmutation=&quot;updateTodoState(this)&quot;&gt;
+  &lt;div class=&quot;todo-item&quot;&gt;Task 1&lt;/div&gt;
+  &lt;div class=&quot;todo-item&quot;&gt;Task 2&lt;/div&gt;
+&lt;/div&gt;</pre></div>
   </div><div class="function-card" id="fn-onpagemutation">
     <h3>onpagemutation</h3>
     <p class="function-description">Execute code when any element on the page changes. Also available as `onglobalmutation`.</p>
@@ -1641,7 +1745,24 @@ try {
     
     
     
-    
+    <h4>Example</h4><div class="example"><pre>&lt;!-- Live counter that updates when items change --&gt;
+&lt;span onpagemutation=&quot;this.textContent = All('li').length&quot;&gt;0&lt;/span&gt;
+&lt;ul&gt;
+  &lt;li&gt;Item 1&lt;/li&gt;
+  &lt;li&gt;Item 2&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;!-- Update totals when table data changes --&gt;
+&lt;tfoot&gt;
+  &lt;tr&gt;
+    &lt;td onglobalmutation=&quot;this.textContent = calculateTotal()&quot;&gt;$0&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tfoot&gt;
+
+&lt;!-- Sync badge count with notifications --&gt;
+&lt;span class=&quot;badge&quot; onpagemutation=&quot;this.textContent = All('.notification:not(.read)').length&quot;&gt;
+  0
+&lt;/span&gt;</pre></div>
   </div><div class="function-card" id="fn-onrender">
     <h3>onrender</h3>
     <p class="function-description">Execute code once when an element is rendered (added to the DOM).</p>
@@ -1650,7 +1771,32 @@ try {
     
     
     
-    
+    <h4>Example</h4><div class="example"><pre>&lt;!-- Initialize a component on render --&gt;
+&lt;div class=&quot;chart&quot; onrender=&quot;initChart(this)&quot;&gt;
+  Loading chart...
+&lt;/div&gt;
+
+&lt;!-- Fetch and display data --&gt;
+&lt;div onrender=&quot;this.innerHTML = await fetchUserProfile()&quot;&gt;
+  Loading profile...
+&lt;/div&gt;
+
+&lt;!-- Set initial state --&gt;
+&lt;input type=&quot;text&quot; onrender=&quot;this.value = localStorage.getItem('draft') || ''&quot;&gt;
+
+&lt;!-- Focus first input in dynamically added forms --&gt;
+&lt;form onrender=&quot;this.querySelector('input')?.focus()&quot;&gt;
+  &lt;input type=&quot;text&quot; placeholder=&quot;Name&quot;&gt;
+  &lt;input type=&quot;email&quot; placeholder=&quot;Email&quot;&gt;
+&lt;/form&gt;
+
+&lt;!-- Load content lazily --&gt;
+&lt;div class=&quot;lazy-section&quot; onrender=&quot;
+  const content = await fetch(this.dataset.src).then(r =&gt; r.text());
+  this.innerHTML = content;
+&quot; data-src=&quot;/partials/sidebar.html&quot;&gt;
+  Loading...
+&lt;/div&gt;</pre></div>
   </div></div><div class="category-section" id="cat-customAttrs">
       <h2>Custom Attributes</h2><div class="function-card" id="fn-persist">
     <h3>persist</h3>
@@ -1660,7 +1806,28 @@ try {
     
     
     
-    
+    <h4>Example</h4><div class="example"><pre>&lt;!-- Text input persists its value --&gt;
+&lt;input type=&quot;text&quot; persist placeholder=&quot;Your name&quot;&gt;
+
+&lt;!-- Checkbox persists checked state --&gt;
+&lt;label&gt;
+  &lt;input type=&quot;checkbox&quot; persist&gt; Remember me
+&lt;/label&gt;
+
+&lt;!-- Textarea persists content --&gt;
+&lt;textarea persist placeholder=&quot;Notes...&quot;&gt;&lt;/textarea&gt;
+
+&lt;!-- Select persists selection (including multiple) --&gt;
+&lt;select persist&gt;
+  &lt;option value=&quot;a&quot;&gt;Option A&lt;/option&gt;
+  &lt;option value=&quot;b&quot;&gt;Option B&lt;/option&gt;
+&lt;/select&gt;
+
+&lt;select multiple persist&gt;
+  &lt;option value=&quot;1&quot;&gt;One&lt;/option&gt;
+  &lt;option value=&quot;2&quot;&gt;Two&lt;/option&gt;
+  &lt;option value=&quot;3&quot;&gt;Three&lt;/option&gt;
+&lt;/select&gt;</pre></div>
   </div><div class="function-card" id="fn-onaftersave">
     <h3>onaftersave</h3>
     <p class="function-description">Execute code after a successful page save.</p>
@@ -1669,7 +1836,24 @@ try {
     
     
     
-    
+    <h4>Example</h4><div class="example"><pre>&lt;!-- Cache-bust a stylesheet after save --&gt;
+&lt;link href=&quot;styles.css&quot; onaftersave=&quot;cacheBust(this)&quot;&gt;
+
+&lt;!-- Show save status --&gt;
+&lt;span onaftersave=&quot;this.textContent = event.detail.msg&quot;&gt;
+  Not saved
+&lt;/span&gt;
+
+&lt;!-- Update timestamp --&gt;
+&lt;span onaftersave=&quot;this.textContent = new Date(event.detail.timestamp).toLocaleTimeString()&quot;&gt;
+  --:--:--
+&lt;/span&gt;
+
+&lt;!-- Trigger custom logic --&gt;
+&lt;div onaftersave=&quot;analytics.track('page_saved')&quot;&gt;&lt;/div&gt;
+
+&lt;!-- Refresh preview after save --&gt;
+&lt;iframe src=&quot;/preview&quot; onaftersave=&quot;this.src = this.src&quot;&gt;&lt;/iframe&gt;</pre></div>
   </div><div class="function-card" id="fn-prevent-enter">
     <h3>prevent-enter</h3>
     <p class="function-description">Prevent the Enter key from creating newlines in an element.</p>
@@ -1678,7 +1862,17 @@ try {
     
     
     
-    
+    <h4>Example</h4><div class="example"><pre>&lt;!-- Single-line contenteditable heading --&gt;
+&lt;h1 contenteditable prevent-enter&gt;Edit this title&lt;/h1&gt;
+
+&lt;!-- Single-line textarea (alternative to input) --&gt;
+&lt;textarea prevent-enter placeholder=&quot;Single line only&quot;&gt;&lt;/textarea&gt;
+
+&lt;!-- Prevent Enter in a specific area --&gt;
+&lt;div prevent-enter&gt;
+  &lt;span contenteditable&gt;Name&lt;/span&gt;
+  &lt;span contenteditable&gt;Email&lt;/span&gt;
+&lt;/div&gt;</pre></div>
   </div><div class="function-card" id="fn-autosize">
     <h3>autosize</h3>
     <p class="function-description">Automatically grow textarea height to fit content.</p>
@@ -1687,7 +1881,17 @@ try {
     
     
     
-    
+    <h4>Example</h4><div class="example"><pre>&lt;!-- Basic auto-growing textarea --&gt;
+&lt;textarea autosize placeholder=&quot;Start typing...&quot;&gt;&lt;/textarea&gt;
+
+&lt;!-- With minimum height via CSS --&gt;
+&lt;textarea autosize style=&quot;min-height: 100px;&quot;&gt;&lt;/textarea&gt;
+
+&lt;!-- Notes field that expands --&gt;
+&lt;label&gt;
+  Notes
+  &lt;textarea autosize name=&quot;notes&quot;&gt;&lt;/textarea&gt;
+&lt;/label&gt;</pre></div>
   </div><div class="function-card" id="fn-sortable">
     <h3>sortable</h3>
     <p class="function-description">Enable drag-and-drop sorting on child elements.</p>
@@ -1696,7 +1900,48 @@ try {
     
     
     
-    
+    <h4>Example</h4><div class="example"><pre>&lt;!-- Basic sortable list --&gt;
+&lt;ul sortable&gt;
+  &lt;li&gt;Drag me&lt;/li&gt;
+  &lt;li&gt;And me&lt;/li&gt;
+  &lt;li&gt;Me too&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;!-- With drag handle --&gt;
+&lt;ul sortable&gt;
+  &lt;li&gt;
+    &lt;span sortable-handle&gt;⋮⋮&lt;/span&gt;
+    Item with handle
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;span sortable-handle&gt;⋮⋮&lt;/span&gt;
+    Another item
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;!-- Grouped lists (drag between) --&gt;
+&lt;div style=&quot;display: flex; gap: 1rem;&quot;&gt;
+  &lt;ul sortable=&quot;shared&quot;&gt;
+    &lt;li&gt;List A - Item 1&lt;/li&gt;
+    &lt;li&gt;List A - Item 2&lt;/li&gt;
+  &lt;/ul&gt;
+  &lt;ul sortable=&quot;shared&quot;&gt;
+    &lt;li&gt;List B - Item 1&lt;/li&gt;
+    &lt;li&gt;List B - Item 2&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;
+
+&lt;!-- With callbacks --&gt;
+&lt;ul sortable onsorted=&quot;console.log('Reordered!'); savePage()&quot;&gt;
+  &lt;li&gt;Item 1&lt;/li&gt;
+  &lt;li&gt;Item 2&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;ul sortable onsorting=&quot;this.classList.add('dragging')&quot;
+             onsorted=&quot;this.classList.remove('dragging')&quot;&gt;
+  &lt;li&gt;Item 1&lt;/li&gt;
+  &lt;li&gt;Item 2&lt;/li&gt;
+&lt;/ul&gt;</pre></div>
   </div><div class="function-card" id="fn-option-visibility">
     <h3>option-visibility</h3>
     <p class="function-description">Show or hide elements based on ancestor attribute values.</p>
@@ -1705,7 +1950,33 @@ try {
     
     
     
-    
+    <h4>Example</h4><div class="example"><pre>&lt;!-- Show/hide based on edit mode --&gt;
+&lt;html editmode=&quot;true&quot;&gt;
+  &lt;body&gt;
+    &lt;button option:editmode=&quot;true&quot;&gt;Edit&lt;/button&gt;   &lt;!-- visible --&gt;
+    &lt;button option:editmode=&quot;false&quot;&gt;View&lt;/button&gt;  &lt;!-- hidden --&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+
+&lt;!-- Theme-based visibility --&gt;
+&lt;html theme=&quot;dark&quot;&gt;
+  &lt;img option:theme=&quot;light&quot; src=&quot;logo-dark.png&quot;&gt;   &lt;!-- hidden --&gt;
+  &lt;img option:theme=&quot;dark&quot; src=&quot;logo-light.png&quot;&gt;   &lt;!-- visible --&gt;
+&lt;/html&gt;
+
+&lt;!-- Role-based UI --&gt;
+&lt;div role=&quot;admin&quot;&gt;
+  &lt;button option:role=&quot;admin&quot;&gt;Delete All&lt;/button&gt;  &lt;!-- visible --&gt;
+  &lt;button option:role=&quot;user&quot;&gt;My Items&lt;/button&gt;     &lt;!-- hidden --&gt;
+&lt;/div&gt;
+
+&lt;!-- Nested contexts --&gt;
+&lt;div editmode=&quot;true&quot;&gt;
+  &lt;div editmode=&quot;false&quot;&gt;
+    &lt;span option:editmode=&quot;true&quot;&gt;A&lt;/span&gt;   &lt;!-- hidden (nearest ancestor is false) --&gt;
+    &lt;span option:editmode=&quot;false&quot;&gt;B&lt;/span&gt;  &lt;!-- visible --&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre></div>
   </div></div><div class="category-section" id="cat-saveEdit">
       <h2>Save/Edit Features</h2><div class="function-card" id="fn-edit-mode">
     <h3>edit-mode</h3>
@@ -1738,20 +2009,57 @@ if (hyperclay.isOwner) {
 hyperclay.toggleEditMode();</pre></div>
   </div><div class="function-card" id="fn-edit-mode-helpers">
     <h3>edit-mode-helpers</h3>
-    <p class="function-description">Combines edit mode detection with page type attribute. Automatically sets `pagetype` attribute on `&lt;html&gt;` based on URL.</p>
+    <p class="function-description">Sets `editmode` and `pageowner` attributes on `&lt;html&gt;` for CSS-based conditional styling.</p>
     
     
     
     
     
-    
+    <h4>Example</h4><div class="example"><pre>&lt;!-- In edit mode as owner --&gt;
+&lt;html editmode=&quot;true&quot; pageowner=&quot;true&quot;&gt;
+  ...
+&lt;/html&gt;
+
+&lt;!-- Viewing as non-owner --&gt;
+&lt;html editmode=&quot;false&quot; pageowner=&quot;false&quot;&gt;
+  ...
+&lt;/html&gt;</pre></div>
   </div><div class="function-card" id="fn-save-system">
     <h3>save-system</h3>
     <p class="function-description">Manual save with change detection, state management, keyboard shortcuts, and save button support.</p>
     
     
     
-    
+    <h4>Methods</h4>
+    <table class="params-table">
+      <tr><th>Method</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>savePage(callback?)</code></td>
+          <td>Save page if content changed</td>
+        </tr>
+      
+        <tr>
+          <td><code>savePageThrottled(callback?)</code></td>
+          <td>Throttled save for auto-save use</td>
+        </tr>
+      
+        <tr>
+          <td><code>replacePageWith(url)</code></td>
+          <td>Fetch HTML from URL and save it</td>
+        </tr>
+      
+        <tr>
+          <td><code>beforeSave(fn)</code></td>
+          <td>Register a hook to modify content before saving</td>
+        </tr>
+      
+        <tr>
+          <td><code>getPageContents()</code></td>
+          <td>Get current page HTML as string</td>
+        </tr>
+      
+    </table>
     
     <h4>Example</h4><div class="example"><pre>// Manual save
 hyperclay.savePage();
@@ -1773,40 +2081,121 @@ hyperclay.beforeSave((clone) =&gt; {
 hyperclay.replacePageWith('/templates/blog.html');</pre></div>
   </div><div class="function-card" id="fn-save-toast">
     <h3>save-toast</h3>
-    <p class="function-description">Shows toast notifications for save lifecycle events.</p>
+    <p class="function-description">Shows toast notifications for save lifecycle events. No configuration needed.</p>
     
     
     
+    <h4>Methods</h4>
+    <table class="params-table">
+      <tr><th>Method</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>hyperclay:save-saved</code></td>
+          <td>Green success toast with &quot;Saved&quot;</td>
+        </tr>
+      
+        <tr>
+          <td><code>hyperclay:save-error</code></td>
+          <td>Red error toast with &quot;Failed to save&quot;</td>
+        </tr>
+      
+        <tr>
+          <td><code>hyperclay:save-offline</code></td>
+          <td>Red error toast with &quot;No internet connection&quot;</td>
+        </tr>
+      
+    </table>
     
-    
-    
+    <h4>Example</h4><div class="example"><pre>&lt;!-- Basic setup --&gt;
+&lt;script src=&quot;hyperclay.js?save-system,save-toast&quot;&gt;&lt;/script&gt;
+
+&lt;!-- Full save stack with auto-save and notifications --&gt;
+&lt;script src=&quot;hyperclay.js?save-system,autosave,save-toast&quot;&gt;&lt;/script&gt;</pre></div>
   </div><div class="function-card" id="fn-unsaved-warning">
     <h3>unsaved-warning</h3>
-    <p class="function-description">Warns users before leaving the page if there are unsaved changes.</p>
+    <p class="function-description">Warns users before leaving the page if there are unsaved changes. On `beforeunload`, compares current page content to last saved content and shows the browser's native dialog if different.</p>
     
     
     
+    <h4>Methods</h4>
+    <table class="params-table">
+      <tr><th>Method</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>beforeunload</code></td>
+          <td>Fires automatically when user tries to leave with unsaved changes</td>
+        </tr>
+      
+        <tr>
+          <td><code>getPageContents()</code></td>
+          <td>Used internally to compare current vs saved state</td>
+        </tr>
+      
+    </table>
     
-    
-    
+    <h4>Example</h4><div class="example"><pre>&lt;!-- Basic setup --&gt;
+&lt;script src=&quot;hyperclay.js?save-system,unsaved-warning&quot;&gt;&lt;/script&gt;
+
+&lt;!-- Full save stack --&gt;
+&lt;script src=&quot;hyperclay.js?save-system,autosave,unsaved-warning,save-toast&quot;&gt;&lt;/script&gt;</pre></div>
   </div><div class="function-card" id="fn-autosave">
     <h3>autosave</h3>
-    <p class="function-description">Automatically saves the page when DOM changes are detected.</p>
+    <p class="function-description">Automatically saves the page when DOM changes are detected. Debounces at 3.3s after last change, throttles saves to max once per 1.2s. Only saves if content actually changed.</p>
     
     
     
+    <h4>Methods</h4>
+    <table class="params-table">
+      <tr><th>Method</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>MutationObserver</code></td>
+          <td>Watches for any DOM mutations automatically</td>
+        </tr>
+      
+        <tr>
+          <td><code>savePageThrottled()</code></td>
+          <td>Called internally after debounce completes</td>
+        </tr>
+      
+    </table>
     
-    
-    
+    <h4>Example</h4><div class="example"><pre>&lt;!-- Basic auto-save --&gt;
+&lt;script src=&quot;hyperclay.js?save-system,autosave&quot;&gt;&lt;/script&gt;
+
+&lt;!-- With toast notifications --&gt;
+&lt;script src=&quot;hyperclay.js?save-system,autosave,save-toast&quot;&gt;&lt;/script&gt;
+
+&lt;!-- Full save stack --&gt;
+&lt;script src=&quot;hyperclay.js?save-system,autosave,unsaved-warning,save-toast&quot;&gt;&lt;/script&gt;</pre></div>
   </div><div class="function-card" id="fn-tailwind-inject">
     <h3>tailwind-inject</h3>
-    <p class="function-description">Automatically injects the Tailwind CSS link with cache-busting on save.</p>
+    <p class="function-description">Injects a Tailwind CSS stylesheet for the current resource and cache-busts it on every save. Edit-mode only.</p>
     
     
+    <h4>Parameters</h4>
+    <table class="params-table">
+      <tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr>
+      
+        <tr>
+          <td><code>currentResource</code></td>
+          <td><code>cookie</code></td>
+          <td>—</td>
+          <td>Read from `currentResource` cookie. Determines the CSS path: `/tailwindcss/{currentResource}.css`</td>
+        </tr>
+      
+    </table>
     
     
-    
-    
+    <h4>Example</h4><div class="example"><pre>&lt;!-- Include with other save features --&gt;
+&lt;script type=&quot;module&quot;&gt;
+  await import('hyperclay.js?features=tailwind-inject,save-system');
+&lt;/script&gt;
+
+&lt;!-- Or use the everything preset --&gt;
+&lt;script type=&quot;module&quot;&gt;
+  await import('hyperclay.js?preset=everything');
+&lt;/script&gt;</pre></div>
   </div></div>
     </main>
   </div>

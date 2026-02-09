@@ -27,14 +27,18 @@
         }
 
         :root {
-            --primary-blue: #3E43EF;
-            --shadow-blue: #F1F2FE;
-            --light-blue: #8A8FEF;
+            --primary-blue: #d79921;
+            --shadow-blue: rgba(215, 153, 33, 0.06);
+            --light-blue: #fabd2f;
             --white: #FFFFFF;
-            --gray: #6B7280;
+            --gray: #c8bca4;
             --green: #00A676;
             --red: #E63946;
             --yellow: #E69500;
+            --bg-dark: #080808;
+            --bg-card: #0e0e0e;
+            --code-bg: rgba(215, 153, 33, 0.1);
+            --text-primary: #ffffff;
         }
 
         * {
@@ -45,8 +49,8 @@
 
         body {
             font-family: 'Berkeley Mono', monospace;
-            background-color: white;
-            color: var(--primary-blue);
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
             padding: 1.5rem;
             line-height: 1.5;
             text-wrap: pretty;
@@ -71,7 +75,7 @@
         h1 {
             font-size: 2.5rem;
             font-weight: 900;
-            color: var(--primary-blue);
+            color: var(--text-primary);
             margin-bottom: 0.25rem;
         }
 
@@ -126,7 +130,7 @@
         }
 
         .intro-section strong {
-            color: var(--primary-blue);
+            color: var(--text-primary);
         }
 
         .feature-list {
@@ -157,11 +161,11 @@
 
         .nav-link {
             font-weight: bold;
-            color: var(--primary-blue);
+            color: var(--text-primary);
             text-decoration: none;
             border: 2px solid var(--primary-blue);
             padding: 0.5rem 1rem;
-            background: white;
+            background: var(--bg-card);
             box-shadow: 4px 4px 0 var(--shadow-blue);
             white-space: nowrap;
         }
@@ -214,14 +218,14 @@
         .demo-card {
             border: 2px solid var(--primary-blue);
             padding: 1rem;
-            background: white;
+            background: var(--bg-card);
         }
 
         .demo-card h3 {
             font-size: 0.95rem;
             font-weight: 700;
             margin-bottom: 0.25rem;
-            color: var(--primary-blue);
+            color: var(--text-primary);
         }
 
         .demo-card .desc {
@@ -259,8 +263,8 @@
             font-size: 0.75rem;
             padding: 0.4rem 0.75rem;
             border: 2px solid var(--primary-blue);
-            background: white;
-            color: var(--primary-blue);
+            background: var(--bg-card);
+            color: var(--text-primary);
             cursor: pointer;
             font-weight: 600;
             transition: all 0.15s;
@@ -286,7 +290,7 @@
         }
 
         input[sum] {
-            border-color: black;
+            border-color: var(--green);
         }
 
         input, textarea, select {
@@ -294,7 +298,8 @@
             font-size: 0.75rem;
             padding: 0.4rem;
             border: 2px solid var(--primary-blue);
-            color: var(--primary-blue);
+            color: var(--text-primary);
+            background: var(--bg-dark);
         }
 
         input:focus, textarea:focus, select:focus {
@@ -318,7 +323,7 @@
             margin-bottom: 0.25rem;
             cursor: move;
             font-size: 0.75rem;
-            border: 1px solid var(--light-blue);
+            border: 1px solid var(--primary-blue);
         }
 
         .output {
@@ -383,8 +388,8 @@
         }
 
         .mini-editor {
-            border: 1px solid var(--light-blue);
-            background: white;
+            border: 1px solid var(--primary-blue);
+            background: var(--bg-card);
             padding: 0.5rem;
             min-height: 50px;
             font-size: 0.75rem;
@@ -397,10 +402,10 @@
 
         .badge {
             display: inline-block;
-            border: 1px solid var(--light-blue);
+            border: 1px solid var(--primary-blue);
             padding: 0.2rem 0.4rem;
             font-size: 0.7rem;
-            background: white;
+            background: var(--bg-card);
         }
 
         .flex-row {
@@ -418,13 +423,13 @@
             background: var(--shadow-blue);
             font-size: 0.7rem;
             text-align: center;
-            border: 1px solid var(--light-blue);
+            border: 1px solid var(--primary-blue);
         }
 
         .sync-card {
-            border: 1px solid var(--light-blue);
+            border: 1px solid var(--primary-blue);
             padding: 0.5rem;
-            background: white;
+            background: var(--bg-card);
             font-size: 0.75rem;
             min-height: 60px;
         }
@@ -439,7 +444,7 @@
             background: var(--shadow-blue);
             font-size: 0.7rem;
             text-align: center;
-            border: 1px solid var(--light-blue);
+            border: 1px solid var(--primary-blue);
             transition: opacity 0.2s, border-style 0.2s;
         }
 
@@ -448,7 +453,7 @@
             background: var(--shadow-blue);
             font-size: 0.75rem;
             text-align: center;
-            border: 1px solid var(--light-blue);
+            border: 1px solid var(--primary-blue);
             min-width: 40px;
         }
     </style>
@@ -472,7 +477,7 @@
                 <li>Pair with <a href="https://hyperclay.com" class="intro-link">Hyperclay</a> to unlock HTML files that edit themselves.</li>
             </ul>
 
-            <div class="intro-section" style="background: #FEF3E6; border-color: #E85D04;">
+            <div class="intro-section" style="background: rgba(232, 93, 4, 0.05); border-color: #E85D04;">
                 <h2 style="color: #E85D04;">What is HyperclayJS?</h2>
                 <p>
                     HyperclayJS is the JavaScript library that powers single-file HTML apps. It gives your HTML files the ability to overwrite themselves, toggles between admin and viewer modes, and blurs the line between document and application.
@@ -684,7 +689,7 @@ hyperclay.isEditMode;</code></pre>
                     <span>+</span>
                     <input type="number" b value="0" oninput="this.val.sum = Number(this.val.a) + Number(this.val.b)" style="width: 60px;">
                     <span>=</span>
-                    <input sum readonly value="0" style="width: 60px; border-color: #006B4D; background: #E6F5F0; color: #006B4D;">
+                    <input sum readonly value="0" style="width: 60px; border-color: #296af8; background: rgba(41, 106, 248, 0.12); color: #6b9aff;">
                 </div>
             </div>
 
@@ -1046,7 +1051,7 @@ themodal.open();</code></pre>
   this.nearest.link.href = res;
 })</code></pre>
                 <div class="demo-area" style="justify-content: space-between;">
-                    <a link href="https://example.com" target="_blank">example.com</a>
+                    <a link href="https://example.com" target="_blank" style="color: white; text-decoration: underline;">example.com</a>
                     <button onclick="ask('New URL:', res => { this.nearest.link.href = res; this.nearest.link.textContent = res.replace(/^https?:\/\//, ''); }, this.nearest.link.href)">Edit Link</button>
                 </div>
             </div>
@@ -1122,7 +1127,7 @@ themodal.open();</code></pre>
                             </select>
                             <label style="font-size: 0.7rem;"><input type="checkbox" name="flags" value="demo" checked> demo</label>
                         </div>
-                        <button type="submit" style="margin-top: 0.5rem; border-color: #006B4D; color: #006B4D; background: #E6F5F0;" onmouseover="this.style.background='#D0EBE3'" onmouseout="this.style.background='#E6F5F0'">Serialize</button>
+                        <button type="submit" style="margin-top: 0.5rem; border-color: #296af8; color: #6b9aff; background: rgba(41, 106, 248, 0.12);" onmouseover="this.style.background='rgba(41, 106, 248, 0.22)'" onmouseout="this.style.background='rgba(41, 106, 248, 0.12)'">Serialize</button>
                     </form>
                     <span class="output" id="form-output" style="margin-top: 0.5rem;">Click serialize</span>
                 </div>
@@ -1180,13 +1185,13 @@ themodal.open();</code></pre>
 
         </div>
 
-        <footer style="margin-top: 3rem; padding: 2rem; border: 2px solid #E85D04; background: #FEF3E6; text-align: center;">
+        <footer style="margin-top: 3rem; padding: 2rem; border: 2px solid #E85D04; background: rgba(232, 93, 4, 0.05); text-align: center;">
             <p style="font-size: 1rem; color: #E85D04; margin-bottom: 0.5rem;"><strong>Build your own apps with HyperclayJS</strong></p>
             <p style="font-size: 0.85rem; color: var(--gray); margin-bottom: 1rem;">Make your HTML files into apps</p>
             <a href="https://hyperclay.com" style="display: inline-block; font-weight: bold; color: white; background: #E85D04; padding: 0.6rem 1.5rem; text-decoration: none;">Use HyperclayJS &rarr;</a>
         </footer>
 
-        <footer style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #ddd; text-align: center;">
+        <footer style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(106, 115, 182, 0.3); text-align: center;">
             <p style="font-size: 0.85rem; color: var(--gray);">HyperclayJS is part of <a href="https://hyperclay.com" style="color: var(--gray);">Hyperclay</a></p>
         </footer>
     </div>
