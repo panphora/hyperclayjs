@@ -576,7 +576,8 @@ function generateStyles() {
       }
 
       .sidebar-col {
-        display: none;
+        width: 0;
+        overflow: visible;
       }
 
       .sidebar {
