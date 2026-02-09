@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.20.1] - 2026-02-09
+
+### Added
+- Dark amber theme redesign for website
+
+### Changed
+- Condensed API docs and updated docs generator
+
+
+
 ## [1.20.0] - 2026-02-07
 
 ### Added
