@@ -93,7 +93,7 @@ function extractDescription(content) {
 }
 
 function extractSignature(content) {
-  const match = content.match(/##\s+Signature\s*\n+```(?:js)?\n([\s\S]+?)```/);
+  const match = content.match(/##\s+Signature\s*\n+```(?:\w+)?\n([\s\S]+?)```/);
   return match ? match[1].trim() : '';
 }
 
@@ -164,7 +164,7 @@ function extractReturns(content) {
 }
 
 function extractExample(content) {
-  const match = content.match(/##\s+Example\s*\n+```(?:js)?\n([\s\S]+?)```/);
+  const match = content.match(/##\s+Example\s*\n+```(?:\w+)?\n([\s\S]+?)```/);
   return match ? match[1].trim() : '';
 }
 
@@ -201,14 +201,14 @@ function generateStyles() {
     }
 
     :root {
-      --primary-blue: #6A73B6;
-      --shadow-blue: rgba(106, 115, 182, 0.2);
-      --border-blue: #6A73B6;
-      --bg-dark: #0d0e14;
-      --bg-card: #11131e;
-      --text-primary: #e5e7eb;
-      --text-secondary: #9ca3af;
-      --code-bg: rgba(106, 115, 182, 0.15);
+      --primary-blue: #d79921;
+      --shadow-blue: rgba(215, 153, 33, 0.06);
+      --border-blue: #d79921;
+      --bg-dark: #080808;
+      --bg-card: #0e0e0e;
+      --text-primary: #ffffff;
+      --text-secondary: #c8bca4;
+      --code-bg: rgba(215, 153, 33, 0.1);
       --sidebar-width: 240px;
     }
 
@@ -451,7 +451,7 @@ function generateStyles() {
 
     .params-table td {
       padding: 8px;
-      border-bottom: 1px solid rgba(106, 115, 182, 0.2);
+      border-bottom: 1px solid rgba(215, 153, 33, 0.06);
       vertical-align: top;
       word-break: break-word;
     }

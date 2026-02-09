@@ -1,42 +1,21 @@
 # save-toast
 
-Shows toast notifications for save lifecycle events.
+Shows toast notifications for save lifecycle events. No configuration needed.
 
-## Events Handled
+## Methods
 
-| Event | Toast Type | Default Message |
-|-------|------------|-----------------|
-| `hyperclay:save-saved` | success | "Saved" |
-| `hyperclay:save-error` | error | "Failed to save" |
-| `hyperclay:save-offline` | error | "No internet connection" |
-
-## Usage
-
-Include this module to automatically show toasts on save events:
-
-```html
-<script src="hyperclay.js?save-system,save-toast"></script>
-```
-
-No configuration needed. The module listens for save events from `save-system` and displays appropriate toasts.
+| Method | Description |
+|--------|-------------|
+| `hyperclay:save-saved` | Green success toast with "Saved" |
+| `hyperclay:save-error` | Red error toast with "Failed to save" |
+| `hyperclay:save-offline` | Red error toast with "No internet connection" |
 
 ## Example
 
-When a save succeeds:
-- A green success toast appears with "Saved" (or custom message from server)
+```html
+<!-- Basic setup -->
+<script src="hyperclay.js?save-system,save-toast"></script>
 
-When a save fails:
-- A red error toast appears with "Failed to save" or the error message
-
-When offline:
-- A red error toast appears with "No internet connection"
-
-## Customization
-
-Toast appearance can be customized via CSS. See the `toast` module for styling options.
-
-## Dependencies
-
-Requires:
-- `save-system` - Emits the save events
-- `toast` - Displays the notifications
+<!-- Full save stack with auto-save and notifications -->
+<script src="hyperclay.js?save-system,autosave,save-toast"></script>
+```

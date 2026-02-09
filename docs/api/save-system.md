@@ -2,7 +2,7 @@
 
 Manual save with change detection, state management, keyboard shortcuts, and save button support.
 
-## Functions
+## Methods
 
 | Function | Description |
 |----------|-------------|
