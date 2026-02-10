@@ -178,8 +178,20 @@
         }
 
         .feature-item.selected {
-            background: var(--shadow-blue);
-            box-shadow: 4px 4px 0 var(--primary-blue);
+            background: rgba(41, 106, 248, 0.08);
+            border-color: #296af8;
+        }
+
+        .feature-item.selected .feature-checkbox {
+            border-color: #296af8;
+        }
+
+        .feature-item.selected .feature-checkbox:checked {
+            background: #296af8;
+        }
+
+        .feature-item.selected .feature-size {
+            color: #6b9aff;
         }
 
         .feature-checkbox {
@@ -335,9 +347,8 @@
 
         .preset-buttons {
             display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            align-items: flex-start;
+            flex-direction: column;
+            gap: 0.75rem;
         }
 
         .preset-button {
@@ -359,27 +370,27 @@
         }
 
         .preset-button.active {
-            background: var(--primary-blue);
+            background: rgba(41, 106, 248, 0.08);
+            border-color: #296af8;
             color: white;
         }
 
-        .preset-button-group {
+        .preset-row {
             display: flex;
+            align-items: center;
             gap: 1rem;
-            flex-wrap: nowrap;
         }
 
-        .preset-button-with-hint {
-            display: flex;
-            flex-direction: column;
-            align-items: stretch;
-        }
-
-        .preset-hint {
-            font-size: 13px;
-            color: var(--gray);
-            margin-top: 0.25rem;
+        .preset-row .preset-button {
+            flex-shrink: 0;
+            min-width: 200px;
             text-align: center;
+        }
+
+        .preset-description {
+            font-size: 0.8rem;
+            color: var(--gray);
+            line-height: 1.4;
         }
 
         /* Sidebar */
@@ -645,7 +656,7 @@
                 <!-- Preset Buttons -->
                 <div class="preset-section">
                     <div class="section-header">
-                        <h2 class="section-title">Quick Presets</h2>
+                        <h2 class="section-title">Presets</h2>
                     </div>
                     <div class="preset-buttons">
                         <button class="preset-button" data-preset="minimal">Minimal (23KB)</button>
@@ -907,6 +918,13 @@
             renderFeatureSections();
         }
 
+        const PRESET_USE_CASES = {
+            'minimal': 'Basic save system, you handle everything else',
+            'standard': '<span style="color: var(--primary-blue)">+</span> Support for initializing and cleaning up edit mode',
+            'smooth-sailing': '<span style="color: var(--primary-blue)">+</span> DOM helpers that don\'t tend to cause issues',
+            'everything': '<span style="color: var(--primary-blue)">+</span> Live-sync so your HTML files stay in sync',
+        };
+
         function renderPresetButtons() {
             const container = document.querySelector('.preset-buttons');
             if (!container) return;
@@ -914,46 +932,42 @@
             container.innerHTML = '';
 
             for (const [presetId, preset] of Object.entries(presets)) {
-                // Calculate preset size
                 const totalSize = preset.modules.reduce((sum, moduleId) => {
                     return sum + (features[moduleId]?.size || 0);
                 }, 0);
+
+                const row = document.createElement('div');
+                row.className = 'preset-row';
 
                 const button = document.createElement('button');
                 button.className = 'preset-button';
                 button.dataset.preset = presetId;
                 button.textContent = `${preset.name} (${Math.round(totalSize)}KB)`;
 
-                if (presetId === 'smooth-sailing') {
-                    const wrapper = document.createElement('div');
-                    wrapper.className = 'preset-button-with-hint';
-                    wrapper.appendChild(button);
-                    const hint = document.createElement('div');
-                    hint.className = 'preset-hint';
-                    hint.textContent = preset.description || '';
-                    wrapper.appendChild(hint);
-                    container.appendChild(wrapper);
-                } else {
-                    container.appendChild(button);
-                }
+                const desc = document.createElement('span');
+                desc.className = 'preset-description';
+                desc.innerHTML = PRESET_USE_CASES[presetId] || preset.description || '';
+
+                row.appendChild(button);
+                row.appendChild(desc);
+                container.appendChild(row);
             }
 
-            // Paste button wrapped with last preset to prevent orphans
-            const group = document.createElement('div');
-            group.className = 'preset-button-group';
-
-            const lastChild = container.lastElementChild;
-            if (lastChild) {
-                group.appendChild(lastChild);
-            }
+            const row = document.createElement('div');
+            row.className = 'preset-row';
 
             const pasteBtn = document.createElement('button');
             pasteBtn.className = 'preset-button';
             pasteBtn.id = 'paste-button';
             pasteBtn.textContent = 'Paste';
-            group.appendChild(pasteBtn);
 
-            container.appendChild(group);
+            const pasteDesc = document.createElement('span');
+            pasteDesc.className = 'preset-description';
+            pasteDesc.textContent = 'Paste an existing script tag or URL to load its config';
+
+            row.appendChild(pasteBtn);
+            row.appendChild(pasteDesc);
+            container.appendChild(row);
         }
 
         function renderFeatureSections() {
