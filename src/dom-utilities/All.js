@@ -207,9 +207,15 @@ const createMethodHandler = (elements, plugins, methods) => ({
   },
 
   set(target, prop, value) {
-    elements.forEach(el => {
-      el[prop] = value;
-    });
+    if (typeof value === 'function') {
+      elements.forEach(el => {
+        el[prop] = value(el);
+      });
+    } else {
+      elements.forEach(el => {
+        el[prop] = value;
+      });
+    }
     return true;
   }
 });
@@ -253,9 +259,15 @@ const createIntermediateProxy = (elements, propName, plugins, methods) => {
     },
 
     set(target, prop, value) {
-      elements.forEach(el => {
-        el[propName][prop] = value;
-      });
+      if (typeof value === 'function') {
+        elements.forEach(el => {
+          el[propName][prop] = value(el);
+        });
+      } else {
+        elements.forEach(el => {
+          el[propName][prop] = value;
+        });
+      }
       return true;
     }
   });

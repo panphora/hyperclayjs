@@ -825,6 +825,144 @@ describe('All.js', () => {
   });
 
   // ========================================
+  // 7b. Function Property Assignment
+  // ========================================
+
+  describe('Function Property Assignment - Direct Properties', () => {
+    test('assigns function return value per element to textContent', () => {
+      const items = All('.item');
+      items.textContent = el => `ID: ${el.getAttribute('data-id')}`;
+
+      expect(items[0].textContent).toBe('ID: 1');
+      expect(items[1].textContent).toBe('ID: 2');
+      expect(items[2].textContent).toBe('ID: 3');
+    });
+
+    test('assigns function return value per element to className', () => {
+      const items = All('.item');
+      items.className = el => el.getAttribute('data-id') === '1' ? 'active highlighted' : 'inactive';
+
+      expect(items[0].className).toBe('active highlighted');
+      expect(items[1].className).toBe('inactive');
+      expect(items[2].className).toBe('inactive');
+    });
+
+    test('assigns function return value per element to value (input)', () => {
+      container.innerHTML = `
+        <input class="field" data-default="hello" />
+        <input class="field" data-default="world" />
+      `;
+      const fields = All('.field');
+      fields.value = el => el.dataset.default.toUpperCase();
+
+      expect(fields[0].value).toBe('HELLO');
+      expect(fields[1].value).toBe('WORLD');
+    });
+
+    test('does not break plain string assignment', () => {
+      const items = All('.item');
+      items.textContent = 'same for all';
+
+      items.forEach(item => {
+        expect(item.textContent).toBe('same for all');
+      });
+    });
+
+    test('does not break plain number assignment', () => {
+      container.innerHTML = `
+        <input class="num-field" />
+        <input class="num-field" />
+      `;
+      const fields = All('.num-field');
+      fields.tabIndex = 5;
+
+      fields.forEach(field => {
+        expect(field.tabIndex).toBe(5);
+      });
+    });
+
+    test('does not break plain boolean assignment', () => {
+      container.innerHTML = `
+        <button class="test-btn"></button>
+        <button class="test-btn"></button>
+      `;
+      const buttons = All('.test-btn');
+      buttons.disabled = true;
+
+      buttons.forEach(btn => {
+        expect(btn.disabled).toBe(true);
+      });
+    });
+
+    test('works on empty collection without error', () => {
+      const none = All('.nonexistent');
+      expect(() => {
+        none.textContent = el => el.id;
+      }).not.toThrow();
+    });
+  });
+
+  describe('Function Property Assignment - Style (Intermediate Proxy)', () => {
+    test('assigns function return value per element to style.display', () => {
+      const items = All('.item');
+      items[0].dataset.active = 'true';
+      items[1].dataset.active = '';
+      items[2].dataset.active = 'true';
+
+      items.style.display = el => el.dataset.active ? '' : 'none';
+
+      expect(items[0].style.display).toBe('');
+      expect(items[1].style.display).toBe('none');
+      expect(items[2].style.display).toBe('');
+    });
+
+    test('assigns function return value per element to style.color', () => {
+      const items = All('.item');
+      items.style.color = el => el.getAttribute('data-id') === '1' ? 'red' : 'blue';
+
+      expect(items[0].style.color).toBe('red');
+      expect(items[1].style.color).toBe('blue');
+      expect(items[2].style.color).toBe('blue');
+    });
+
+    test('does not break plain string style assignment', () => {
+      const items = All('.item');
+      items.style.color = 'green';
+
+      items.forEach(item => {
+        expect(item.style.color).toBe('green');
+      });
+    });
+
+    test('works on empty collection without error', () => {
+      const none = All('.nonexistent');
+      expect(() => {
+        none.style.display = el => 'none';
+      }).not.toThrow();
+    });
+  });
+
+  describe('Function Property Assignment - Dataset (Intermediate Proxy)', () => {
+    test('assigns function return value per element to dataset', () => {
+      const items = All('.item');
+      items.dataset.label = el => `item-${el.getAttribute('data-id')}`;
+
+      expect(items[0].dataset.label).toBe('item-1');
+      expect(items[1].dataset.label).toBe('item-2');
+      expect(items[2].dataset.label).toBe('item-3');
+    });
+
+    test('does not break plain string dataset assignment', () => {
+      const items = All('.item');
+      items.dataset.status = 'active';
+
+      items.forEach(item => {
+        expect(item.dataset.status).toBe('active');
+      });
+    });
+  });
+
+  // ========================================
   // 8. Edge Cases
   // ========================================
 
