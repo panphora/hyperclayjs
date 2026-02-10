@@ -923,7 +923,7 @@
         const PRESET_USE_CASES = {
             'minimal': 'Basic save system, you handle everything else',
             'standard': '<span style="color: var(--primary-blue)">+</span> Support for initializing and cleaning up edit mode',
-            'smooth-sailing': '<span style="color: var(--primary-blue)">+</span> DOM helpers that don\'t tend to cause issues',
+            'smooth-sailing': '<span style="color: var(--primary-blue)">+</span> DOM helpers that give elements superpowers',
             'everything': '<span style="color: var(--primary-blue)">+</span> Live-sync so your HTML files stay in sync',
         };
 
@@ -1176,20 +1176,12 @@
                 totalSizeEl.textContent = (totalSize / 1000).toFixed(2) + 'MB';
             }
 
-            // Color code the size
-            if (totalSize > 200) {
-                totalSizeEl.className = 'stat-value large';
-                sizeBar.className = 'size-bar large';
-            } else if (totalSize > 100) {
-                totalSizeEl.className = 'stat-value medium';
-                sizeBar.className = 'size-bar medium';
-            } else {
-                totalSizeEl.className = 'stat-value small';
-                sizeBar.className = 'size-bar small';
-            }
+            totalSizeEl.className = 'stat-value small';
+            sizeBar.className = 'size-bar small';
 
             // Update size bar
-            const barWidth = Math.min((totalSize / 300) * 100, 100);
+            const maxSize = presets['everything'] ? presets['everything'].modules.reduce((sum, id) => sum + (features[id]?.size || 0), 0) : 300;
+            const barWidth = Math.min((totalSize / maxSize) * 100, 100);
             sizeBar.style.width = barWidth + '%';
 
             // Update selected features list (only show visible modules)
