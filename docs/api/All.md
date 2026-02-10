@@ -66,6 +66,40 @@ All('.container').onclick({
 });
 ```
 
+### Function Property Assignment
+
+Pass a function to any property to run it per element. The function receives the element as its argument and its return value is assigned.
+
+```js
+// Conditional display
+All.item.style.display = el =>
+  el.dataset.active ? '' : 'none'
+
+// Dynamic text
+All.price.textContent = el =>
+  `$${el.dataset.amount}`
+
+// Per-element class
+All.item.className = el =>
+  el.dataset.enabled ? 'active' : 'disabled'
+```
+
+Works great in inline handlers:
+```html
+<!-- Live search filter -->
+<input oninput="All.item.style.display = el =>
+  !this.value || el.textContent.toLowerCase().includes(this.value.toLowerCase())
+    ? '' : 'none'">
+
+<!-- Validate required fields on submit -->
+<form novalidate onsubmit="
+  event.preventDefault();
+  const invalid = All(this, '[required]').filter(el => !el.value);
+  invalid.classList.add('error');
+  if (invalid.length === 0) this.submit();
+">
+```
+
 ### Built-in Methods
 
 | Method | Description |
