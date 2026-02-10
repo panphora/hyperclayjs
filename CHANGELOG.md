@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.20.2] - 2026-02-09
+
+### Added
+- Function property assignment and inline examples to All.js API docs
+- Function property assignment to All.js
+- Consistent nav across website pages, update docs layout
+
+### Changed
+- Config page tag colors to orange theme and improve contrast
+- Config page styling for selected states and preset layout
+
+### Fixed
+- Progress bar to scale against Everything preset, keep bar blue, update preset description
+- Mobile sidebar not showing on hamburger menu tap
+
+
+
 ## [1.20.1] - 2026-02-09
 
 ### Added

@@ -618,7 +618,7 @@
     "all-js": {
       "name": "all-js",
       "category": "dom-utilities",
-      "size": 14.4,
+      "size": 14.7,
       "files": [
         "dom-utilities/All.js"
       ],
