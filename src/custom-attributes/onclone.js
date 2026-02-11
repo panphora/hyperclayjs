@@ -13,8 +13,8 @@ function init() {
     const clonedNode = originalCloneNode.call(this, deep);
 
     if (clonedNode.nodeType === Node.ELEMENT_NODE) {
-      // Process only the top-level cloned element
       processOnclone(clonedNode);
+      clonedNode.querySelectorAll('[onclone]').forEach(processOnclone);
     }
 
     return clonedNode;
