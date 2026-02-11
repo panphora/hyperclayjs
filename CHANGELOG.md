@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.3] - 2026-02-11
+
+### Fixed
+- onclone now processes nested children in cloned nodes
+
+
+
 ## [1.20.2] - 2026-02-09
 
 ### Added

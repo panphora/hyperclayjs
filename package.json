@@ -1,6 +1,6 @@
 {
   "name": "hyperclayjs",
-  "version": "1.20.2",
+  "version": "1.20.3",
   "description": "Modular JavaScript library for building interactive malleable HTML files with Hyperclay",
   "type": "module",
   "main": "src/hyperclay.js",
