@@ -24,7 +24,8 @@
   ],
   "scripts": {
     "dev": "npm run build && npm run build:website && http-server website -p 3535 -c-1 -o /index.html",
-    "build": "npm run generate:deps && npm run build:loader && npm run build:readme && npm run build:load-jsdelivr && npm run build:index-url",
+    "build": "npm run generate:deps && npm run build:loader && npm run build:readme && npm run build:load-jsdelivr && npm run build:index-url && npm run build:llms-txt",
+    "build:llms-txt": "node build/build-llms-txt.js",
     "build:website": "node scripts/build-website.js",
     "generate:deps": "node build/generate-dependency-graph.js",
     "build:loader": "node build/build-loader.js",

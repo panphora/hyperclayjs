@@ -1,0 +1,2567 @@
+# HyperclayJS
+
+> HyperclayJS is a modular JavaScript library for building malleable HTML files on [Hyperclay](https://hyperclay.com) — self-contained HTML files that use the DOM as their database, can modify themselves, and save changes back to the server.
+
+## How It Works
+
+Hyperclay apps use HTML as both the front end and the database. When the page changes, HyperclayJS grabs the DOM, strips admin-only controls, and POSTs the clean HTML to the save endpoint. Anonymous visitors see a static, read-only page. When the owner loads the page, edit controls are restored.
+
+This is the **save lifecycle**: change → strip admin UI → save → restore admin UI on load.
+
+## Quick Start
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/hyperclayjs@latest/src/hyperclay.js?preset=smooth-sailing" type="module"></script>
+```
+
+One script tag gives you: auto-save on DOM changes, edit/view mode toggling, form persistence, DOM helpers, UI dialogs, and more. Start simple with jQuery or vanilla JS for DOM manipulation — HyperclayJS handles the save lifecycle automatically.
+
+## Key Concepts
+
+**Edit Mode vs View Mode** — Every page has an `editmode` attribute on `<html>` set to `true` or `false`. Use `option:editmode="true"` on any element to show it only for editors.
+
+**Persist** — Add `persist` to any `<input>`, `<textarea>`, or `<select>` to save its value to the DOM on save.
+
+**Admin-Only Attributes** — `edit-mode-contenteditable`, `edit-mode-input`, `edit-mode-onclick`, `edit-mode-resource` restrict functionality to editors. `save-ignore` excludes elements from saves entirely.
+
+**Custom Event Attributes** — `onrender`, `onbeforesave`, `onclickaway`, `onpagemutation`, `onclone` for declarative behavior.
+
+**DOM Helpers** — Every element gets `el.nearest`, `el.val`, `el.text`, `el.exec` for navigating to nearby elements without worrying about DOM hierarchy.
+
+**All.js** — jQuery-like DOM manipulation: `All.card.classList.toggle('active')`, `All('.item').filter(fn).remove()`.
+
+**Sortable** — Add `sortable` attribute for drag-and-drop reordering. Use `sortable="group"` for cross-list dragging.
+
+**Template-Clone Pattern** — For lists, keep a hidden template element and clone it: `this.nearest.task.before(this.nearest.task.cloneNode(true))`.
+
+**Tailwind CSS** — Add `<link rel="stylesheet" href="/tailwindcss/YOUR-APP-NAME.css">` and CSS auto-generates on save.
+
+## Detailed API Reference
+
+The sections below document each HyperclayJS module in detail.
+
+---
+
+# All
+
+A lightweight DOM manipulation library with jQuery-like syntax. Select elements, chain methods, handle events with delegation, and more.
+
+## Signature
+
+```js
+All(selector)
+All(selector, context)
+All(element)
+All(elements)
+```
+
+## Parameters
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| selector | string | — | CSS selector to match elements |
+| context | string \| Element \| Element[] \| Document | — | Optional context to limit search scope |
+| element | Element | — | Wrap a single DOM element |
+| elements | Element[] | — | Wrap an array of DOM elements |
+
+## Returns
+
+`Proxy<Element[]>` - A proxied array of elements with chainable methods
+
+## Core Features
+
+### Selection
+```js
+// By selector
+All('.card')
+All('#header')
+All('button[type="submit"]')
+
+// By attribute or class shorthand
+All.myAttribute  // same as All('[myAttribute], .myAttribute')
+
+// With context
+All('li', '.menu')  // find li elements within .menu
+```
+
+### Chaining DOM Methods
+```js
+// All native DOM methods work and chain
+All('.item')
+  .classList.add('active')
+  .setAttribute('data-ready', 'true')
+  .style.opacity = '1';
+```
+
+### Event Handling
+```js
+// Direct binding
+All('button').onclick(e => console.log('clicked'));
+
+// Event delegation
+All('.list').onclick('li', function(e) {
+  console.log('clicked:', this.textContent);
+});
+
+// Multiple delegated handlers
+All('.container').onclick({
+  '.edit-btn': (e) => edit(e.target),
+  '.delete-btn': (e) => remove(e.target)
+});
+```
+
+### Function Property Assignment
+
+Pass a function to any property to run it per element. The function receives the element as its argument and its return value is assigned.
+
+```js
+// Conditional display
+All.item.style.display = el =>
+  el.dataset.active ? '' : 'none'
+
+// Dynamic text
+All.price.textContent = el =>
+  `$${el.dataset.amount}`
+
+// Per-element class
+All.item.className = el =>
+  el.dataset.enabled ? 'active' : 'disabled'
+```
+
+Works great in inline handlers:
+```html
+<!-- Live search filter -->
+<input oninput="All.item.style.display = el =>
+  !this.value || el.textContent.toLowerCase().includes(this.value.toLowerCase())
+    ? '' : 'none'">
+
+<!-- Validate required fields on submit -->
+<form novalidate onsubmit="
+  event.preventDefault();
+  const invalid = All(this, '[required]').filter(el => !el.value);
+  invalid.classList.add('error');
+  if (invalid.length === 0) this.submit();
+">
+```
+
+### Built-in Methods
+
+| Method | Description |
+|--------|-------------|
+| `eq(index)` | Get element at index (supports negative), returns wrapped array |
+| `at(index)` | Get raw element at index (supports negative) |
+| `prop(obj)` | Set multiple properties: `All('input').prop({ disabled: true })` |
+| `css(obj)` | Set multiple styles: `All('.box').css({ color: 'red' })` |
+| `pluck(attr)` | Get array of attribute values |
+| `unique()` | Remove duplicate elements |
+| `sortBy(fn\|attr)` | Sort elements by function or attribute |
+
+### Array Methods
+All standard array methods work and maintain chainability for element arrays:
+```js
+All('li').filter(el => el.classList.contains('active'))
+All('.item').map(el => el.id)
+All('p').forEach(el => console.log(el.textContent))
+```
+
+## Example
+
+```js
+// Toggle visibility on all cards
+All('.card').classList.toggle('hidden');
+
+// Get values from all inputs
+const values = All('input').map(el => el.value);
+
+// Event delegation for dynamic content
+All(document).onclick('.dynamic-btn', function() {
+  console.log('Button clicked:', this.dataset.id);
+});
+
+// Chained operations
+All('.notification')
+  .classList.add('fade-out')
+  .style.opacity = '0';
+
+// Iterate with for...of
+for (const el of All('.item')) {
+  el.textContent = 'Updated';
+}
+```
+
+---
+
+# ask
+
+Display a modal with an input field to prompt the user for text input.
+
+## Signature
+
+```js
+ask(promptText, yesCallback, defaultValue, extraContent)
+```
+
+## Parameters
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| promptText | string | — | The question or prompt to display |
+| yesCallback | function | — | Called with the input value when user confirms |
+| defaultValue | string | `''` | Pre-filled value in the input field |
+| extraContent | string | `''` | Additional HTML content to display below the input |
+
+## Returns
+
+`Promise<string>` - Resolves with the input value, rejects if user closes modal
+
+## Example
+
+```js
+// Basic usage with async/await
+const name = await ask('What is your name?');
+console.log('Hello, ' + name);
+
+// With a default value
+const title = await ask('Enter title:', null, 'Untitled');
+
+// With callback
+ask('Enter your email:', (email) => {
+  console.log('Email:', email);
+});
+
+// With extra content
+ask('Confirm action:', null, '', '<p class="warning">This cannot be undone</p>');
+```
+
+---
+
+# autosave
+
+Automatically saves the page when DOM changes are detected. Debounces at 3.3s after last change, throttles saves to max once per 1.2s. Only saves if content actually changed.
+
+## Methods
+
+| Method | Description |
+|--------|-------------|
+| `MutationObserver` | Watches for any DOM mutations automatically |
+| `savePageThrottled()` | Called internally after debounce completes |
+
+## Example
+
+```html
+<!-- Basic auto-save -->
+<script src="hyperclay.js?save-system,autosave"></script>
+
+<!-- With toast notifications -->
+<script src="hyperclay.js?save-system,autosave,save-toast"></script>
+
+<!-- Full save stack -->
+<script src="hyperclay.js?save-system,autosave,unsaved-warning,save-toast"></script>
+```
+
+---
+
+# autosize
+
+Automatically grow textarea height to fit content.
+
+## Usage
+
+```html
+<textarea autosize></textarea>
+```
+
+## How It Works
+
+1. On page load, sets initial height to match content
+2. On input, recalculates height based on `scrollHeight`
+3. Hides vertical overflow to prevent scrollbar flicker
+
+The textarea grows as you type and shrinks when content is deleted.
+
+## Example
+
+```html
+<!-- Basic auto-growing textarea -->
+<textarea autosize placeholder="Start typing..."></textarea>
+
+<!-- With minimum height via CSS -->
+<textarea autosize style="min-height: 100px;"></textarea>
+
+<!-- Notes field that expands -->
+<label>
+  Notes
+  <textarea autosize name="notes"></textarea>
+</label>
+```
+
+## Styling Tips
+
+```css
+/* Set a minimum height */
+textarea[autosize] {
+  min-height: 80px;
+}
+
+/* Set a maximum height (enables scrolling beyond) */
+textarea[autosize] {
+  max-height: 300px;
+  overflow-y: auto !important;
+}
+```
+
+---
+
+# cacheBust
+
+Cache-bust an element's href or src attribute by adding or updating a version query parameter. Useful for reloading stylesheets or scripts after dynamic changes.
+
+## Signature
+
+```js
+cacheBust(element)
+```
+
+## Parameters
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| element | HTMLElement | — | Element with href or src attribute to cache-bust |
+
+## Returns
+
+`void`
+
+## Example
+
+```js
+// Cache-bust a stylesheet link
+const link = document.querySelector('link[rel="stylesheet"]');
+cacheBust(link);
+// href="/styles.css" becomes "/styles.css?v=1702847291234"
+
+// Cache-bust an image
+const img = document.querySelector('img');
+cacheBust(img);
+// src="/photo.jpg?v=123" becomes "/photo.jpg?v=1702847291234"
+
+// Use with onaftersave to reload Tailwind CSS after save
+// <link href="/tailwindcss/mysite.css" onaftersave="cacheBust(this)">
+```
+
+---
+
+# consent
+
+Display a confirmation modal to get user consent before an action.
+
+## Signature
+
+```js
+consent(promptText, yesCallback, extraContent)
+```
+
+## Parameters
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| promptText | string | — | The question or prompt to display |
+| yesCallback | function | — | Called when user confirms |
+| extraContent | string | `''` | Additional HTML content to display |
+
+## Returns
+
+`Promise<void>` - Resolves when user confirms, rejects if user closes modal
+
+## Example
+
+```js
+// Basic usage with async/await
+try {
+  await consent('Delete this item?');
+  deleteItem();
+} catch (e) {
+  // User cancelled
+}
+
+// With callback
+consent('Are you sure?', () => {
+  performAction();
+});
+
+// With extra content
+consent('Publish changes?', null, '<p>This will be visible to all users.</p>');
+```
+
+---
+
+# cookie
+
+Utility object for reading and removing browser cookies.
+
+## Signature
+
+```js
+cookie.get(name)
+cookie.remove(name)
+```
+
+## Methods
+
+| Method | Description |
+|--------|-------------|
+| `get(name)` | Get cookie value. Returns parsed JSON if valid, otherwise decoded string, or `null` if not found. |
+| `remove(name)` | Remove cookie from current path, host domain, and apex domain. |
+
+## Example
+
+```js
+// Get a cookie value
+const userId = cookie.get('userId');
+
+// Get JSON cookie (auto-parsed)
+const preferences = cookie.get('userPrefs');
+// { theme: 'dark', lang: 'en' }
+
+// Check if cookie exists
+if (cookie.get('authToken')) {
+  showLoggedInUI();
+}
+
+// Remove a cookie
+cookie.remove('sessionId');
+
+// Clear authentication
+cookie.remove('authToken');
+cookie.remove('userId');
+```
+
+---
+
+# copyToClipboard
+
+Copy text to the system clipboard.
+
+## Signature
+
+```js
+copyToClipboard(text)
+```
+
+## Parameters
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| text | string | — | The text to copy to clipboard |
+
+## Returns
+
+`void`
+
+## Example
+
+```js
+// Copy a URL
+copyToClipboard('https://example.com/share/123');
+
+// Copy with user feedback
+copyToClipboard(embedCode);
+toast('Copied to clipboard!');
+
+// Copy from an element
+const code = document.querySelector('pre').textContent;
+copyToClipboard(code);
+```
+
+---
+
+# createFile
+
+Create and upload a file from text content. Automatically detects content type (HTML, CSS, JS, JSON, etc.) and adjusts the file extension.
+
+## Signature
+
+```js
+createFile(eventOrData)
+createFile(fileName, fileBody)
+```
+
+## Parameters
+
+### From event:
+| Name | Type | Description |
+|------|------|-------------|
+| eventOrData | Event | Form submit event with `file_name` and `file_body` inputs |
+
+### From object:
+| Name | Type | Description |
+|------|------|-------------|
+| eventOrData | object | `{ fileName: string, fileBody: string }` |
+
+### From arguments:
+| Name | Type | Description |
+|------|------|-------------|
+| fileName | string | Name for the file |
+| fileBody | string | Content of the file |
+
+## Returns
+
+`Promise<object>` - Resolves with server response containing URLs
+
+## Validation
+
+Filenames are validated before upload:
+- Must be non-empty and ≤ 255 characters
+- Cannot contain: `< > : " / \ | ? *` or control characters
+
+Invalid filenames reject the promise with an error (and show a toast for form submissions).
+
+## Example
+
+```js
+// From form submission
+document.querySelector('#create-file-form').onsubmit = (e) => {
+  createFile(e);
+};
+
+// From object
+createFile({
+  fileName: 'styles.css',
+  fileBody: '.container { max-width: 1200px; }'
+});
+
+// From arguments
+createFile('config.json', JSON.stringify({ theme: 'dark' }));
+
+// Content type auto-detection:
+// - HTML content → .html
+// - CSS content → .css
+// - JavaScript → .js
+// - Valid JSON → .json
+// - Unknown → .txt
+```
+
+---
+
+# debounce
+
+Delay function execution until after a period of inactivity. The timer resets each time the function is called.
+
+## Signature
+
+```js
+debounce(callback, delay)
+```
+
+## Parameters
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| callback | function | — | The function to debounce |
+| delay | number | — | Wait time in milliseconds after last call |
+
+## Returns
+
+`function` - Debounced version of the callback
+
+## Example
+
+```js
+// Debounce search input
+const searchInput = document.querySelector('#search');
+const handleSearch = debounce((query) => {
+  fetchSearchResults(query);
+}, 300);
+
+searchInput.addEventListener('input', (e) => {
+  handleSearch(e.target.value);
+});
+
+// Debounce window resize
+const handleResize = debounce(() => {
+  recalculateLayout();
+}, 250);
+
+window.addEventListener('resize', handleResize);
+
+// Auto-save after user stops typing
+const autoSave = debounce(() => {
+  saveDraft();
+}, 1000);
+```
+
+---
+
+# dom-helpers
+
+Adds convenience methods to all HTML elements for finding and manipulating nearby elements. Built on top of the `nearest` utility.
+
+## Properties
+
+| Property | Description |
+|----------|-------------|
+| `el.nearest.name` | Find nearest element with `[name]` attribute or `.name` class |
+| `el.val.name` | Get/set value of nearest element (form value or attribute) |
+| `el.text.name` | Get/set innerText of nearest element |
+| `el.exec.name()` | Execute code from `name` attribute on nearest element |
+
+## Methods
+
+| Method | Description |
+|--------|-------------|
+| `el.cycle(order, attr)` | Replace element with next element having same attribute |
+| `el.cycleAttr(order, setAttr, lookupAttr?)` | Cycle through attribute values |
+
+## Example
+
+```js
+// Find nearest element with [project] or .project
+const projectEl = this.nearest.project;
+
+// Get/set values (smart: uses .value for form elements, attribute otherwise)
+const projectName = this.val.project;
+this.val.project = "New Name";
+
+// Get/set innerText
+const label = this.text.title;
+this.text.title = "Updated Title";
+
+// Execute code from an attribute
+// If <div sync_out="savePage()"> exists nearby, this runs savePage()
+this.exec.sync_out();
+
+// Cycle through elements
+// Replaces current element with next element having [variant] attribute
+this.cycle(1, 'variant');   // forward
+this.cycle(-1, 'variant');  // backward
+
+// Cycle through attribute values
+// Sets theme to next value found on any [theme] element
+this.cycleAttr(1, 'theme');
+
+// Cycle with different lookup attribute
+// Sets color based on values from [option:color] elements
+this.cycleAttr(1, 'color', 'option:color');
+```
+
+## How It Works
+
+All properties use `nearest()` to search outward from the element, checking siblings, children, and ancestors. The search pattern finds visually nearby elements first.
+
+### val Behavior
+
+- For `<input>`, `<select>`, `<textarea>`: uses the `.value` property
+- For other elements: uses the attribute value
+
+### cycle vs cycleAttr
+
+- `cycle()` replaces the entire element with a clone of the next matching element
+- `cycleAttr()` only changes an attribute value on the current element
+
+---
+
+# edit-mode-helpers
+
+Sets `editmode` and `pageowner` attributes on `<html>` for CSS-based conditional styling.
+
+## Attributes Set
+
+| Attribute | Value | Description |
+|-----------|-------|-------------|
+| `editmode` | `"true"` / `"false"` | Whether edit mode is active |
+| `pageowner` | `"true"` / `"false"` | Whether user owns the resource |
+
+## How It Works
+
+1. On page load: sets both attributes based on current state
+2. Before save: sets both to `"false"` so saved pages show viewer state
+
+## Example
+
+```html
+<!-- In edit mode as owner -->
+<html editmode="true" pageowner="true">
+  ...
+</html>
+
+<!-- Viewing as non-owner -->
+<html editmode="false" pageowner="false">
+  ...
+</html>
+```
+
+```css
+/* Show edit controls only in edit mode */
+html[editmode="false"] .edit-toolbar {
+  display: none;
+}
+
+/* Owner-only features */
+html[pageowner="false"] .delete-btn {
+  display: none;
+}
+```
+
+## Exports
+
+Re-exports from `edit-mode`:
+- `toggleEditMode()`
+- `isEditMode`
+- `isOwner`
+
+## Usage
+
+```html
+<script src="hyperclay.js?edit-mode-helpers"></script>
+```
+
+---
+
+# edit-mode
+
+Provides edit mode detection and toggling for page editing.
+
+## Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `isEditMode` | boolean | True if currently in edit mode |
+| `isOwner` | boolean | True if user owns the current resource |
+
+## Methods
+
+| Method | Description |
+|--------|-------------|
+| `toggleEditMode()` | Toggle edit mode on/off (reloads page) |
+
+## How It Works
+
+Edit mode is determined by:
+1. `?editmode=true` query parameter (takes precedence)
+2. `isAdminOfCurrentResource` cookie (fallback)
+
+Ownership is determined solely by the cookie.
+
+## Example
+
+```js
+// Check if in edit mode
+if (hyperclay.isEditMode) {
+  // Show edit UI
+}
+
+// Check if user owns the resource
+if (hyperclay.isOwner) {
+  // Show owner-only controls
+}
+
+// Toggle edit mode (reloads page with ?editmode=true/false)
+hyperclay.toggleEditMode();
+```
+
+```html
+<!-- Toggle button -->
+<button onclick="hyperclay.toggleEditMode()">
+  Toggle Edit Mode
+</button>
+
+<!-- Conditional visibility with option-visibility -->
+<button option:editmode="true">Edit</button>
+<span option:editmode="false">Read Only</span>
+```
+
+## URL Behavior
+
+`toggleEditMode()` modifies the URL's `editmode` query parameter and reloads:
+- If edit mode is on → sets `?editmode=false`
+- If edit mode is off → sets `?editmode=true`
+
+---
+
+# getDataFromForm
+
+Extract all form field values as a plain JavaScript object. Works with `<form>` elements or any container with named inputs.
+
+## Signature
+
+```js
+getDataFromForm(container)
+```
+
+## Parameters
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| container | HTMLFormElement\|Element | — | Form element or container with named inputs |
+
+## Returns
+
+`object` - Key-value pairs of field names and their values
+
+## Supported Input Types
+
+- Text inputs, textareas, selects
+- Checkboxes (collected as arrays)
+- Radio buttons (single value)
+- Multi-select (collected as arrays)
+- Disabled fields are skipped
+
+## Example
+
+```js
+// From a form element
+const form = document.querySelector('form');
+const data = getDataFromForm(form);
+// { username: 'john', email: 'john@example.com' }
+
+// From any container
+const container = document.querySelector('.filter-panel');
+const filters = getDataFromForm(container);
+
+// Checkbox handling
+// <input type="checkbox" name="tags" value="js" checked>
+// <input type="checkbox" name="tags" value="css" checked>
+// Result: { tags: ['js', 'css'] }
+
+// Use with fetch
+const formData = getDataFromForm(form);
+fetch('/api/submit', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(formData)
+});
+```
+
+---
+
+# insertStyles
+
+Insert styles into the document — either an external stylesheet or inline CSS. With a persistent DOM (hyperclay), new styles are inserted first, then duplicates are removed to prevent flickering.
+
+## Signature
+
+```js
+insertStyles(href)
+insertStyles(name, css)
+```
+
+## Parameters
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| href | string | — | URL of the stylesheet to inject (1-arg form) |
+| name | string | — | Unique name for inline styles, used as data-name attribute (2-arg form) |
+| css | string | — | CSS content to inject inline (2-arg form) |
+
+## Returns
+
+`HTMLElement` — The created link or style element
+
+## Example
+
+```js
+// External stylesheet
+insertStyles('/styles/theme.css');
+
+// Load from CDN
+insertStyles('https://cdn.example.com/lib.css');
+
+// Inline CSS with a name (for deduplication)
+insertStyles('my-theme', `
+  .dark-mode { background: #1a1a1a; color: #fff; }
+`);
+
+// Safe to call multiple times - old duplicates are removed
+insertStyles('/styles/theme.css'); // Replaces previous
+```
+
+---
+
+# live-sync
+
+Real-time DOM sync across browsers via SSE. When one user saves, all connected browsers see the changes instantly via HyperMorph. Works with Hyperclay Local app.
+
+## Methods
+
+| Method | Description |
+|--------|-------------|
+| `liveSync.start(file?)` | Start syncing. Auto-detects file from URL if not provided |
+| `liveSync.stop()` | Stop syncing and clean up SSE connection |
+
+## Parameters
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| file | string | — | Site identifier to sync (e.g. `'index'`, `'about'`). Auto-detected from URL pathname if omitted |
+
+## Example
+
+```js
+// Auto-start (default behavior when module is loaded)
+await import('hyperclay.js?features=live-sync');
+
+// Manual control
+import liveSync from 'hyperclay.js/live-sync';
+liveSync.start('my-page');
+
+// Callbacks
+liveSync.onConnect = () => console.log('Connected');
+liveSync.onDisconnect = () => console.log('Disconnected');
+liveSync.onUpdate = ({ html, sender }) => console.log('Update from', sender);
+liveSync.onError = (err) => console.error(err);
+
+// Stop syncing
+liveSync.stop();
+```
+
+---
+
+# Mutation
+
+A lightweight wrapper around MutationObserver for watching DOM changes. Provides methods to observe element additions, removals, and attribute changes.
+
+## Signature
+
+```js
+Mutation.onAnyChange(options, callback)
+Mutation.onAddOrRemove(options, callback)
+Mutation.onAddElement(options, callback)
+Mutation.onRemoveElement(options, callback)
+Mutation.onAttribute(options, callback)
+```
+
+## Methods
+
+All methods share the same signature and return an unsubscribe function.
+
+| Method | Description |
+|--------|-------------|
+| `onAnyChange` | Watch all DOM changes |
+| `onAddOrRemove` | Watch element additions and removals |
+| `onAddElement` | Watch only element additions |
+| `onRemoveElement` | Watch only element removals |
+| `onAttribute` | Watch attribute changes |
+
+## Parameters
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| options | object | `{}` | Configuration options |
+| options.debounce | number | `0` | Debounce delay in milliseconds |
+| options.selectorFilter | string\|function | — | Filter changes to matching elements |
+| options.omitChangeDetails | boolean | `false` | Call callback without change data |
+| callback | function | — | Called with array of changes |
+
+## Change Object
+
+```js
+{
+  type: 'add' | 'remove' | 'attribute',
+  element: Element,
+  parent: Element,
+  previousSibling: Element | null,
+  nextSibling: Element | null,
+  // For attribute changes:
+  attribute: string,
+  oldValue: string,
+  newValue: string
+}
+```
+
+## Returns
+
+`function` - Call to stop observing
+
+## Example
+
+```js
+// Watch for any DOM changes (debounced)
+const unsubscribe = Mutation.onAnyChange({ debounce: 200 }, (changes) => {
+  changes.forEach(change => {
+    console.log(change.type, change.element);
+  });
+});
+
+// Watch for new elements matching a selector
+Mutation.onAddElement({ selectorFilter: '.card' }, (changes) => {
+  changes.forEach(({ element }) => {
+    initializeCard(element);
+  });
+});
+
+// Watch for attribute changes
+Mutation.onAttribute({ debounce: 100 }, (changes) => {
+  changes.forEach(({ element, attribute, oldValue, newValue }) => {
+    console.log(`${attribute} changed from ${oldValue} to ${newValue}`);
+  });
+});
+
+// Simple debounced callback without change details
+Mutation.onAnyChange({ debounce: 500, omitChangeDetails: true }, () => {
+  console.log('DOM changed');
+});
+
+// Stop observing
+unsubscribe();
+```
+
+---
+
+# nearest
+
+Search for elements matching a CSS selector by exploring outward from a starting point. Unlike `element.closest()` which only searches ancestors, this explores siblings, cousins, and nearby elements in visual proximity.
+
+## Signature
+
+```js
+nearest(startElem, selector, elementFoundReturnValue)
+```
+
+## Parameters
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| startElem | Element | — | Starting element for the search |
+| selector | string | — | CSS selector to match |
+| elementFoundReturnValue | function | `x => x` | Transform function for the found element |
+
+## Returns
+
+`Element | any | null` - Found element (or transformed value), or `null` if not found
+
+## Search Order
+
+1. Current element
+2. All children (deeply)
+3. Previous siblings and their descendants
+4. Next siblings and their descendants
+5. Move to parent and repeat
+
+## Example
+
+```js
+// Find the nearest button
+const btn = nearest(clickedElement, 'button');
+
+// Find nearest input field from a label
+const input = nearest(label, 'input');
+
+// Find nearest and get its value
+const value = nearest(el, '[data-value]', el => el.dataset.value);
+
+// Find related UI elements
+const card = nearest(deleteBtn, '.card');
+card.remove();
+
+// Find next input in reading order
+const nextInput = nearest(currentInput, 'input:not(:disabled)');
+nextInput?.focus();
+```
+
+---
+
+# onaftersave
+
+Execute code after a successful page save.
+
+## Usage
+
+```html
+<element onaftersave="code">
+```
+
+## this Context
+
+`this` refers to the element with the `onaftersave` attribute.
+
+## Event Object
+
+The handler receives an `event` object with:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `event.detail.status` | string | Always `'saved'` |
+| `event.detail.msg` | string | Success message (e.g., `'Saved'`) |
+| `event.detail.timestamp` | number | `Date.now()` when saved |
+
+## How It Works
+
+Listens for `hyperclay:save-saved` events on the document. When fired, all elements with `onaftersave` execute their code. Only fires on successful saves, not on errors.
+
+## Example
+
+```html
+<!-- Cache-bust a stylesheet after save -->
+<link href="styles.css" onaftersave="cacheBust(this)">
+
+<!-- Show save status -->
+<span onaftersave="this.textContent = event.detail.msg">
+  Not saved
+</span>
+
+<!-- Update timestamp -->
+<span onaftersave="this.textContent = new Date(event.detail.timestamp).toLocaleTimeString()">
+  --:--:--
+</span>
+
+<!-- Trigger custom logic -->
+<div onaftersave="analytics.track('page_saved')"></div>
+
+<!-- Refresh preview after save -->
+<iframe src="/preview" onaftersave="this.src = this.src"></iframe>
+```
+
+---
+
+# onclickaway
+
+Execute code when a click occurs outside the element.
+
+## Usage
+
+```html
+<div onclickaway="code">...</div>
+```
+
+## this Context
+
+`this` refers to the element with the `onclickaway` attribute.
+
+## How It Works
+
+A global click listener checks if the click target is outside each element with `onclickaway`. If the click is outside (not on the element or any of its descendants), the attribute code executes.
+
+## Example
+
+```html
+<!-- Close dropdown when clicking outside -->
+<div class="dropdown" onclickaway="this.classList.add('hidden')">
+  <button>Menu</button>
+  <ul class="dropdown-items">
+    <li>Option 1</li>
+    <li>Option 2</li>
+  </ul>
+</div>
+
+<!-- Close modal when clicking backdrop -->
+<div class="modal-backdrop" onclickaway="All.modal.remove()">
+  <div class="modal">Modal content</div>
+</div>
+```
+
+---
+
+# onclickchildren
+
+Execute code when any direct child of the element is clicked.
+
+## Usage
+
+```html
+<div onclickchildren="code">...</div>
+```
+
+## this Context
+
+`this` refers to the direct child that was clicked (or contains the clicked element). If a nested element is clicked, `this` is set to the immediate child of the `onclickchildren` element.
+
+## How It Works
+
+Uses `event.composedPath()` to find the direct child of the parent that contains the click target. This means clicking a `<span>` inside a `<button>` will set `this` to the `<button>` if the button is the direct child.
+
+## Example
+
+```html
+<!-- Hide menu when any menu item is clicked -->
+<div menu class="dropdown" onclickchildren="All.menu.classList.add('hidden')">
+  <button>Option 1</button>
+  <button>Option 2</button>
+  <button>Option 3</button>
+</div>
+
+<!-- Handle click on list items, even with nested content -->
+<ul onclickchildren="console.log('Clicked:', this.dataset.id)">
+  <li data-id="1"><span>Item 1</span></li>
+  <li data-id="2"><span>Item 2</span></li>
+  <li data-id="3"><span>Item 3</span></li>
+</ul>
+
+<!-- Delegate actions based on which child was clicked -->
+<nav onclickchildren="this.classList.add('active'); All('nav > *').not(this).classList.remove('active')">
+  <a href="#home">Home</a>
+  <a href="#about">About</a>
+  <a href="#contact">Contact</a>
+</nav>
+```
+
+---
+
+# onclone
+
+Execute code when an element is cloned via `cloneNode()`.
+
+## Usage
+
+```html
+<div onclone="code">...</div>
+```
+
+## this Context
+
+`this` refers to the newly cloned element (not the original).
+
+## How It Works
+
+Patches `Node.prototype.cloneNode` to detect when elements with `onclone` are cloned. The attribute code runs on the clone immediately after cloning, allowing you to modify the clone before it's inserted into the DOM.
+
+## Example
+
+```html
+<!-- Generate unique IDs for cloned elements -->
+<template id="item-template">
+  <div class="item" onclone="this.id = 'item-' + Date.now()">
+    <input type="text">
+  </div>
+</template>
+
+<!-- Clear input values in cloned forms -->
+<form onclone="All('input', this).value = ''">
+  <input type="text" value="default">
+  <button type="submit">Submit</button>
+</form>
+
+<!-- Initialize cloned components -->
+<div class="widget" onclone="this.dataset.initialized = 'false'; initWidget(this)">
+  Widget content
+</div>
+```
+
+---
+
+# onDomReady
+
+Execute a callback when the DOM is ready. If the DOM is already loaded, the callback runs immediately.
+
+## Signature
+
+```js
+onDomReady(callback)
+```
+
+## Parameters
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| callback | function | — | Function to execute when DOM is ready |
+
+## Returns
+
+`void`
+
+## Example
+
+```js
+// Initialize app when DOM is ready
+onDomReady(() => {
+  initializeApp();
+  setupEventListeners();
+});
+
+// Safe to call after page load - runs immediately
+onDomReady(() => {
+  console.log('This runs right away if DOM is already loaded');
+});
+```
+
+---
+
+# onLoad
+
+Execute a callback when the window load event fires (all resources loaded). If already loaded, the callback runs immediately.
+
+## Signature
+
+```js
+onLoad(callback)
+```
+
+## Parameters
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| callback | function | — | Function to execute when window is fully loaded |
+
+## Returns
+
+`void`
+
+## Example
+
+```js
+// Wait for all images and resources to load
+onLoad(() => {
+  initializeImageGallery();
+  calculateLayoutDimensions();
+});
+
+// Difference from onDomReady:
+// - onDomReady: DOM structure ready, images may still be loading
+// - onLoad: Everything loaded including images, fonts, iframes
+```
+
+---
+
+# onmutation
+
+Execute code when the element or its descendants change.
+
+## Usage
+
+```html
+<div onmutation="code">...</div>
+```
+
+## this Context
+
+`this` refers to the element with the `onmutation` attribute.
+
+## How It Works
+
+Creates a `MutationObserver` for each element with the attribute. The observer watches for:
+- Child list changes (elements added/removed)
+- Subtree changes (descendants)
+- Character data changes (text content)
+- Attribute changes
+
+The code supports async/await. Observers are automatically cleaned up when elements are removed from the DOM.
+
+## Example
+
+```html
+<!-- Update count when list changes -->
+<div onmutation="All.count.textContent = this.children.length">
+  <ul>
+    <li>Item 1</li>
+    <li>Item 2</li>
+  </ul>
+</div>
+<span count>2</span>
+
+<!-- Auto-save when content is edited -->
+<div contenteditable onmutation="await saveContent(this.innerHTML)">
+  Edit this content...
+</div>
+
+<!-- Sync state with DOM changes -->
+<div class="todo-list" onmutation="updateTodoState(this)">
+  <div class="todo-item">Task 1</div>
+  <div class="todo-item">Task 2</div>
+</div>
+```
+
+## Comparison with onpagemutation
+
+| Attribute | Fires when |
+|-----------|------------|
+| `onmutation` | This element or its descendants change |
+| `onpagemutation` | Any element on the page changes |
+
+---
+
+# onpagemutation
+
+Execute code when any element on the page changes. Also available as `onglobalmutation`.
+
+## Usage
+
+```html
+<span onpagemutation="code">...</span>
+<span onglobalmutation="code">...</span>
+```
+
+## this Context
+
+`this` refers to the element with the attribute.
+
+## How It Works
+
+Uses a global `MutationObserver` on the document. When any DOM change occurs (element added/removed, attribute changed, text modified), all elements with `onpagemutation` or `onglobalmutation` execute their code. Changes are debounced at 200ms to prevent excessive execution.
+
+The code supports async/await.
+
+## Example
+
+```html
+<!-- Live counter that updates when items change -->
+<span onpagemutation="this.textContent = All('li').length">0</span>
+<ul>
+  <li>Item 1</li>
+  <li>Item 2</li>
+</ul>
+
+<!-- Update totals when table data changes -->
+<tfoot>
+  <tr>
+    <td onglobalmutation="this.textContent = calculateTotal()">$0</td>
+  </tr>
+</tfoot>
+
+<!-- Sync badge count with notifications -->
+<span class="badge" onpagemutation="this.textContent = All('.notification:not(.read)').length">
+  0
+</span>
+```
+
+## Comparison with onmutation
+
+| Attribute | Fires when |
+|-----------|------------|
+| `onpagemutation` | Any element on the page changes |
+| `onmutation` | Only the specific element or its descendants change |
+
+Use `onpagemutation` for global reactive values. Use `onmutation` for scoped reactions.
+
+---
+
+# onrender
+
+Execute code once when an element is rendered (added to the DOM).
+
+## Usage
+
+```html
+<div onrender="code">...</div>
+```
+
+## this Context
+
+`this` refers to the element with the `onrender` attribute.
+
+## How It Works
+
+Runs on two occasions:
+1. **Page load**: All elements with `onrender` execute on initial page load
+2. **Dynamic insertion**: When new elements with `onrender` are added to the DOM
+
+The code supports async/await. Each element's `onrender` only fires once.
+
+## Example
+
+```html
+<!-- Initialize a component on render -->
+<div class="chart" onrender="initChart(this)">
+  Loading chart...
+</div>
+
+<!-- Fetch and display data -->
+<div onrender="this.innerHTML = await fetchUserProfile()">
+  Loading profile...
+</div>
+
+<!-- Set initial state -->
+<input type="text" onrender="this.value = localStorage.getItem('draft') || ''">
+
+<!-- Focus first input in dynamically added forms -->
+<form onrender="this.querySelector('input')?.focus()">
+  <input type="text" placeholder="Name">
+  <input type="email" placeholder="Email">
+</form>
+
+<!-- Load content lazily -->
+<div class="lazy-section" onrender="
+  const content = await fetch(this.dataset.src).then(r => r.text());
+  this.innerHTML = content;
+" data-src="/partials/sidebar.html">
+  Loading...
+</div>
+```
+
+---
+
+# option-visibility
+
+Show or hide elements based on ancestor attribute values.
+
+## Usage
+
+```html
+<element option:name="value">
+```
+
+The element is hidden by default. It becomes visible when any ancestor has `name="value"`.
+
+## How It Works
+
+1. Scans the DOM for `option:*` attributes
+2. Generates CSS rules using `@layer` and `revert-layer`
+3. Elements are hidden with `display: none !important`
+4. When ancestor matches, `display: revert-layer !important` restores original display
+
+This is pure CSS after initialization - no JS overhead for toggling.
+
+## Example
+
+```html
+<!-- Show/hide based on edit mode -->
+<html editmode="true">
+  <body>
+    <button option:editmode="true">Edit</button>   <!-- visible -->
+    <button option:editmode="false">View</button>  <!-- hidden -->
+  </body>
+</html>
+
+<!-- Theme-based visibility -->
+<html theme="dark">
+  <img option:theme="light" src="logo-dark.png">   <!-- hidden -->
+  <img option:theme="dark" src="logo-light.png">   <!-- visible -->
+</html>
+
+<!-- Role-based UI -->
+<div role="admin">
+  <button option:role="admin">Delete All</button>  <!-- visible -->
+  <button option:role="user">My Items</button>     <!-- hidden -->
+</div>
+
+<!-- Nested contexts -->
+<div editmode="true">
+  <div editmode="false">
+    <span option:editmode="true">A</span>   <!-- hidden (nearest ancestor is false) -->
+    <span option:editmode="false">B</span>  <!-- visible -->
+  </div>
+</div>
+```
+
+## Browser Support
+
+Requires `@layer` and `revert-layer` support (95.18% of browsers, 2025). Falls back gracefully - elements remain visible if unsupported.
+
+## API
+
+```js
+// Manual control (rarely needed)
+optionVisibility.start();   // Start observing
+optionVisibility.stop();    // Stop and remove styles
+optionVisibility.update();  // Regenerate CSS rules
+optionVisibility.debug = true;  // Enable logging
+```
+
+---
+
+# persist
+
+Sync form input values to the saved/synced page snapshot.
+
+## Usage
+
+```html
+<input type="text" persist>
+<input type="checkbox" persist>
+<textarea persist></textarea>
+<select persist>...</select>
+```
+
+## How It Works
+
+Browser form values exist only in JavaScript (`.value`), not in the DOM attributes. Without `persist`, saving or syncing the page would lose user-entered data.
+
+When a snapshot is captured (for save or live-sync), `persist` copies values from the live DOM to the snapshot clone:
+
+| Element | What's synced |
+|---------|--------------|
+| `<input type="text">` | `.value` → `value` attribute |
+| `<input type="checkbox/radio">` | `.checked` → `checked` attribute |
+| `<textarea>` | `.value` → `textContent` |
+| `<select>` | `.selectedIndex` → `selected` attribute on option |
+
+The live DOM is unchanged - only the snapshot clone is modified.
+
+## Excluded Types
+
+These input types are automatically excluded:
+- `type="password"` - security
+- `type="hidden"` - typically set by JS
+- `type="file"` - cannot be serialized
+
+## Example
+
+```html
+<!-- Text input persists its value -->
+<input type="text" persist placeholder="Your name">
+
+<!-- Checkbox persists checked state -->
+<label>
+  <input type="checkbox" persist> Remember me
+</label>
+
+<!-- Textarea persists content -->
+<textarea persist placeholder="Notes..."></textarea>
+
+<!-- Select persists selection (including multiple) -->
+<select persist>
+  <option value="a">Option A</option>
+  <option value="b">Option B</option>
+</select>
+
+<select multiple persist>
+  <option value="1">One</option>
+  <option value="2">Two</option>
+  <option value="3">Three</option>
+</select>
+```
+
+---
+
+# prevent-enter
+
+Prevent the Enter key from creating newlines in an element.
+
+## Usage
+
+```html
+<element prevent-enter>
+```
+
+## How It Works
+
+A global keydown listener intercepts Enter key presses. If the event target (or any ancestor) has `prevent-enter`, the default action is prevented.
+
+Works with:
+- `contenteditable` elements
+- `<textarea>` elements
+- Any focusable element
+
+## Example
+
+```html
+<!-- Single-line contenteditable heading -->
+<h1 contenteditable prevent-enter>Edit this title</h1>
+
+<!-- Single-line textarea (alternative to input) -->
+<textarea prevent-enter placeholder="Single line only"></textarea>
+
+<!-- Prevent Enter in a specific area -->
+<div prevent-enter>
+  <span contenteditable>Name</span>
+  <span contenteditable>Email</span>
+</div>
+```
+
+## Use Cases
+
+- **Inline editable text**: Titles, labels, single-line fields
+- **Form fields**: Where Enter should submit instead of add newlines
+- **Chat inputs**: Combined with custom Enter-to-send logic
+
+---
+
+# query
+
+An object containing parsed URL query parameters from the current page URL.
+
+## Signature
+
+```js
+query
+```
+
+## Type
+
+`object` - Key-value pairs of URL search parameters
+
+## Example
+
+```js
+// URL: https://example.com/page?name=john&page=2&active=true
+
+query.name;    // 'john'
+query.page;    // '2'
+query.active;  // 'true'
+
+// Check if parameter exists
+if (query.debug) {
+  enableDebugMode();
+}
+
+// Use with defaults
+const page = query.page || '1';
+const sort = query.sort || 'date';
+
+// Destructure parameters
+const { name, page, sort = 'date' } = query;
+```
+
+---
+
+# save-system
+
+Manual save with change detection, state management, keyboard shortcuts, and save button support.
+
+## Methods
+
+| Function | Description |
+|----------|-------------|
+| `savePage(callback?)` | Save page if content changed |
+| `savePageThrottled(callback?)` | Throttled save for auto-save use |
+| `replacePageWith(url)` | Fetch HTML from URL and save it |
+| `beforeSave(fn)` | Register a hook to modify content before saving |
+| `getPageContents()` | Get current page HTML as string |
+
+## Save States
+
+The `<html>` element gets a `savestatus` attribute:
+
+| State | Description |
+|-------|-------------|
+| `saving` | Save in progress (shows after 500ms delay) |
+| `saved` | Save completed successfully |
+| `offline` | No network connection |
+| `error` | Save failed |
+
+## Events
+
+| Event | Description |
+|-------|-------------|
+| `hyperclay:save-saving` | Fired when save starts |
+| `hyperclay:save-saved` | Fired on successful save |
+| `hyperclay:save-offline` | Fired when offline |
+| `hyperclay:save-error` | Fired on save error |
+
+## Example
+
+```js
+// Manual save
+hyperclay.savePage();
+
+// Save with callback
+hyperclay.savePage(({msg, msgType}) => {
+  if (msgType === 'error') {
+    console.error('Save failed:', msg);
+  }
+});
+
+// Register before-save hook
+hyperclay.beforeSave((clone) => {
+  // Modify the snapshot clone before saving
+  clone.querySelectorAll('.temp').forEach(el => el.remove());
+});
+
+// Replace page with template
+hyperclay.replacePageWith('/templates/blog.html');
+```
+
+```html
+<!-- Save button -->
+<button trigger-save>Save</button>
+
+<!-- Keyboard shortcut: Cmd/Ctrl+S is enabled automatically -->
+
+<!-- Style based on save state -->
+<style>
+  html[savestatus="saving"] .save-indicator { color: orange; }
+  html[savestatus="saved"] .save-indicator { color: green; }
+  html[savestatus="error"] .save-indicator { color: red; }
+</style>
+```
+
+## Change Detection
+
+- Tracks content changes since last save
+- Skips save if content hasn't changed
+- Compares against baseline captured after page load (1.5s delay)
+
+## Related Modules
+
+- `autosave` - Auto-save on DOM changes
+- `save-toast` - Toast notifications for save events
+- `unsaved-warning` - Warn before leaving with unsaved changes
+
+---
+
+# save-toast
+
+Shows toast notifications for save lifecycle events. No configuration needed.
+
+## Methods
+
+| Method | Description |
+|--------|-------------|
+| `hyperclay:save-saved` | Green success toast with "Saved" |
+| `hyperclay:save-error` | Red error toast with "Failed to save" |
+| `hyperclay:save-offline` | Red error toast with "No internet connection" |
+
+## Example
+
+```html
+<!-- Basic setup -->
+<script src="hyperclay.js?save-system,save-toast"></script>
+
+<!-- Full save stack with auto-save and notifications -->
+<script src="hyperclay.js?save-system,autosave,save-toast"></script>
+```
+
+---
+
+# sendMessage
+
+Send form data or a custom object to the `/message` endpoint. Automatically collects form data, includes behavior tracking, and handles success/error toasts.
+
+## Signature
+
+```js
+sendMessage(eventOrObj, successMessage, callback)
+```
+
+## Parameters
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| eventOrObj | Event\|object | — | Form submit event, click event, or data object to send |
+| successMessage | string | `'Successfully sent'` | Toast message on success |
+| callback | function | — | Called with response data on success |
+
+## Returns
+
+`Promise<object>` - Resolves with server response, rejects on error
+
+## Example
+
+```js
+// Handle form submission
+document.querySelector('form').onsubmit = (e) => {
+  sendMessage(e, 'Message sent!');
+};
+
+// Event outside a form (sends behavior data only)
+document.querySelector('#contact-btn').onclick = (e) => {
+  sendMessage(e, 'Contact request sent!');
+};
+
+// Send custom data object
+sendMessage({
+  name: 'John',
+  email: 'john@example.com'
+}, 'Contact form submitted');
+
+// With async/await
+try {
+  const result = await sendMessage(formEvent);
+  redirectToThankYou();
+} catch (error) {
+  console.error('Failed:', error);
+}
+```
+
+---
+
+# slugify
+
+Convert text into a URL-friendly slug. Handles accents, spaces, and special characters.
+
+## Signature
+
+```js
+slugify(text)
+```
+
+## Parameters
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| text | string | — | The text to convert to a slug |
+
+## Returns
+
+`string` - URL-friendly slug
+
+## Example
+
+```js
+slugify('Hello World');
+// 'hello-world'
+
+slugify('Café & Restaurant');
+// 'cafe-restaurant'
+
+slugify('  Multiple   Spaces  ');
+// 'multiple-spaces'
+
+slugify('Ñoño with Accénts');
+// 'nono-with-accents'
+
+// Use for URLs
+const title = 'My Blog Post Title!';
+const url = `/posts/${slugify(title)}`;
+// '/posts/my-blog-post-title'
+```
+
+---
+
+# snippet
+
+Display a modal with a code snippet and a copy-to-clipboard button.
+
+## Signature
+
+```js
+snippet(title, content, extraContent)
+```
+
+## Parameters
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| title | string | — | The modal heading |
+| content | string | — | The code/text to display and copy |
+| extraContent | string | `''` | Optional warning or info text below the copy button |
+
+## Returns
+
+`Promise<void>` - Resolves when modal is closed
+
+## Example
+
+```js
+// Show embed code
+snippet('Embed Code', '<iframe src="https://example.com"></iframe>');
+
+// With a warning message
+snippet(
+  'API Key',
+  'sk-1234567890abcdef',
+  'Keep this key secret. Do not share it publicly.'
+);
+
+// Show configuration
+const config = JSON.stringify({ theme: 'dark', lang: 'en' }, null, 2);
+snippet('Your Settings', config);
+```
+
+---
+
+# sortable
+
+Enable drag-and-drop sorting on child elements.
+
+## Usage
+
+```html
+<ul sortable>
+  <li>Item 1</li>
+  <li>Item 2</li>
+</ul>
+```
+
+## Attributes
+
+| Attribute | Description |
+|-----------|-------------|
+| `sortable` | Enable sorting. Optional value sets group name for cross-list dragging. |
+| `sortable-handle` | Restrict dragging to this element |
+| `onsorting` | Code to run during drag |
+| `onsorted` | Code to run after drop |
+
+## Edit Mode Only
+
+Sortable.js (~118KB) is only loaded in edit mode. The vendor script is injected with `save-remove` so it's stripped from saved pages.
+
+## Example
+
+```html
+<!-- Basic sortable list -->
+<ul sortable>
+  <li>Drag me</li>
+  <li>And me</li>
+  <li>Me too</li>
+</ul>
+
+<!-- With drag handle -->
+<ul sortable>
+  <li>
+    <span sortable-handle>⋮⋮</span>
+    Item with handle
+  </li>
+  <li>
+    <span sortable-handle>⋮⋮</span>
+    Another item
+  </li>
+</ul>
+
+<!-- Grouped lists (drag between) -->
+<div style="display: flex; gap: 1rem;">
+  <ul sortable="shared">
+    <li>List A - Item 1</li>
+    <li>List A - Item 2</li>
+  </ul>
+  <ul sortable="shared">
+    <li>List B - Item 1</li>
+    <li>List B - Item 2</li>
+  </ul>
+</div>
+
+<!-- With callbacks -->
+<ul sortable onsorted="console.log('Reordered!'); savePage()">
+  <li>Item 1</li>
+  <li>Item 2</li>
+</ul>
+
+<ul sortable onsorting="this.classList.add('dragging')"
+             onsorted="this.classList.remove('dragging')">
+  <li>Item 1</li>
+  <li>Item 2</li>
+</ul>
+```
+
+## Callback Context
+
+Both `onsorting` and `onsorted` receive:
+- `this` - the sortable container element
+- `evt` - the Sortable.js event object
+
+```html
+<ul sortable onsorted="console.log('Moved', evt.item, 'to index', evt.newIndex)">
+  ...
+</ul>
+```
+
+---
+
+# tailwind-inject
+
+Injects a Tailwind CSS stylesheet for the current resource and cache-busts it on every save. Edit-mode only.
+
+## Parameters
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| currentResource | cookie | — | Read from `currentResource` cookie. Determines the CSS path: `/tailwindcss/{currentResource}.css` |
+
+## Example
+
+```html
+<!-- Include with other save features -->
+<script type="module">
+  await import('hyperclay.js?features=tailwind-inject,save-system');
+</script>
+
+<!-- Or use the everything preset -->
+<script type="module">
+  await import('hyperclay.js?preset=everything');
+</script>
+```
+
+---
+
+# tell
+
+Display an informational modal with a title and optional content paragraphs.
+
+## Signature
+
+```js
+tell(promptText, ...content)
+```
+
+## Parameters
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| promptText | string | — | The title/heading text |
+| ...content | string[] | — | Additional content paragraphs (variadic) |
+
+## Returns
+
+`Promise<void>` - Resolves when user confirms, rejects on close
+
+## Example
+
+```js
+// Simple message
+await tell('Welcome!');
+
+// With additional content
+await tell(
+  'About This App',
+  'This is a collaborative editing platform.',
+  'Changes are saved automatically.',
+  'Press CMD+S to save manually.'
+);
+
+// Informational popup
+tell('Tip', 'You can drag and drop items to reorder them.');
+```
+
+---
+
+# themodal
+
+A flexible modal window creation system. Configure and display custom modals with full control over content and behavior.
+
+## Signature
+
+```js
+themodal.html = content;
+themodal.yes = buttonContent;
+themodal.no = buttonContent;
+themodal.open();
+themodal.close();
+```
+
+## Properties
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| html | string | `''` | Main content HTML |
+| yes | string | `''` | Confirm button HTML (hidden if empty) |
+| no | string | `''` | Cancel button HTML (hidden if empty) |
+| closeHtml | string | `''` | Close button HTML |
+| zIndex | string | `'100'` | CSS z-index for the modal |
+| fontFamily | string | system monospace | Font family for modal text |
+| fontSize | string | `'18px'` | Base font size |
+| inputFontSize | string | `'16px'` | Font size for inputs |
+| disableFocus | boolean | `false` | Disable auto-focus on first input |
+| disableScroll | boolean | `true` | Disable body scroll when modal is open |
+| isShowing | boolean | `false` | Whether modal is currently visible (read-only) |
+
+## Methods
+
+| Method | Description |
+|--------|-------------|
+| `open()` | Show the modal |
+| `close()` | Close the modal (triggers onNo callbacks) |
+| `onYes(callback)` | Add callback for confirm action. Return `false` to prevent closing |
+| `onNo(callback)` | Add callback for cancel/close action |
+| `onOpen(callback)` | Add callback for when modal opens |
+
+## Example
+
+```js
+// Basic custom modal
+themodal.html = '<h2>Custom Title</h2><p>Your content here</p>';
+themodal.yes = 'Confirm';
+themodal.no = 'Cancel';
+
+themodal.onYes(() => {
+  console.log('User confirmed');
+});
+
+themodal.onNo(() => {
+  console.log('User cancelled');
+});
+
+themodal.open();
+
+// Modal with form validation
+themodal.html = '<input class="micromodal__input" type="email" required>';
+themodal.yes = 'Submit';
+
+themodal.onYes(() => {
+  const email = document.querySelector('.micromodal__input').value;
+  if (!email.includes('@')) {
+    toast('Invalid email', 'error');
+    return false; // Prevent modal from closing
+  }
+  processEmail(email);
+});
+
+themodal.open();
+```
+
+---
+
+# throttle
+
+Limit how often a function can be called. The function executes at most once per specified delay period.
+
+## Signature
+
+```js
+throttle(callback, delay, executeFirst)
+```
+
+## Parameters
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| callback | function | — | The function to throttle |
+| delay | number | — | Minimum time between calls in milliseconds |
+| executeFirst | boolean | `true` | Execute immediately on first call |
+
+## Returns
+
+`function` - Throttled version of the callback
+
+## Example
+
+```js
+// Throttle scroll handler to once per 100ms
+const handleScroll = throttle(() => {
+  updateScrollPosition();
+}, 100);
+
+window.addEventListener('scroll', handleScroll);
+
+// Throttle resize handler
+const handleResize = throttle(() => {
+  recalculateLayout();
+}, 200);
+
+window.addEventListener('resize', handleResize);
+
+// Don't execute immediately on first call
+const lazyUpdate = throttle(updateUI, 500, false);
+```
+
+---
+
+# toast
+
+Display a toast notification for success or error messages.
+
+## Signature
+
+```js
+toast(message, messageType)
+```
+
+## Parameters
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| message | string | — | The message to display |
+| messageType | string | `'success'` | Either `'success'` or `'error'` |
+
+## Returns
+
+`void`
+
+## Example
+
+```js
+// Show a success message
+toast('Changes saved!', 'success');
+
+// Show an error message
+toast('Something went wrong', 'error');
+
+// Success is the default type
+toast('Uploaded successfully');
+```
+
+---
+
+# unsaved-warning
+
+Warns users before leaving the page if there are unsaved changes. On `beforeunload`, compares current page content to last saved content and shows the browser's native dialog if different.
+
+## Methods
+
+| Method | Description |
+|--------|-------------|
+| `beforeunload` | Fires automatically when user tries to leave with unsaved changes |
+| `getPageContents()` | Used internally to compare current vs saved state |
+
+## Example
+
+```html
+<!-- Basic setup -->
+<script src="hyperclay.js?save-system,unsaved-warning"></script>
+
+<!-- Full save stack -->
+<script src="hyperclay.js?save-system,autosave,unsaved-warning,save-toast"></script>
+```
+
+---
+
+# uploadFile
+
+Upload a file to the `/upload` endpoint with progress toasts and automatic clipboard copy of the resulting URL.
+
+## Signature
+
+```js
+uploadFile(eventOrFile, callback, extraData)
+```
+
+## Parameters
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| eventOrFile | Event\|File | — | File input change event or File object |
+| callback | function | `() => {}` | Called with response on success |
+| extraData | object | `{}` | Additional data to include in the request |
+
+## Returns
+
+`Promise<object>` - Resolves with server response containing URLs
+
+## Limits
+
+- Maximum file size: **10 MB**. Larger files are rejected with an error toast.
+
+## Example
+
+```js
+// Handle file input
+document.querySelector('input[type="file"]').onchange = (e) => {
+  uploadFile(e, (response) => {
+    console.log('Uploaded to:', response.urls);
+  });
+};
+
+// Upload a File object directly
+const file = new File(['content'], 'test.txt', { type: 'text/plain' });
+uploadFile(file);
+
+// With extra metadata
+uploadFile(event, null, {
+  folder: 'images',
+  public: true
+});
+
+// Progress is shown automatically via toasts:
+// "10% uploaded" → "50% uploaded" → "80% uploaded" → "Uploaded! URL copied"
+```
+
+---
+
+# uploadFileBasic
+
+Upload a file with custom progress, completion, and error callbacks. A lower-level alternative to `uploadFile` without progress toasts (HTTP errors still trigger toast notifications).
+
+## Signature
+
+```js
+uploadFileBasic(eventOrFile, options)
+```
+
+## Parameters
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| eventOrFile | Event\|File | — | File input change event or File object |
+| options | object | `{}` | Callback options |
+| options.onProgress | function | `() => {}` | Called with percent complete (0-100) |
+| options.onComplete | function | `() => {}` | Called with response on success |
+| options.onError | function | `() => {}` | Called with error on failure |
+
+## Returns
+
+`Promise<object>` - Resolves with server response, rejects on error
+
+## Limits
+
+- Maximum file size: **10 MB**. Larger files are rejected with an error.
+
+## Example
+
+```js
+// With custom progress UI
+uploadFileBasic(fileInput.files[0], {
+  onProgress: (percent) => {
+    progressBar.style.width = percent + '%';
+    progressText.textContent = percent + '%';
+  },
+  onComplete: (response) => {
+    progressBar.classList.add('complete');
+    showSuccessMessage(response.urls[0]);
+  },
+  onError: (error) => {
+    progressBar.classList.add('error');
+    showErrorMessage(error.message);
+  }
+});
+
+// Minimal usage
+uploadFileBasic(event, {
+  onComplete: (res) => console.log('Done:', res.urls)
+});
+
+// With async/await
+try {
+  const result = await uploadFileBasic(file, {
+    onProgress: p => console.log(p + '%')
+  });
+  console.log('Uploaded:', result);
+} catch (err) {
+  console.error('Failed:', err);
+}
+```
+
+---
+
+# Lazy-Loading Vendor Scripts
+
+## Problem
+
+Large vendor scripts (Sortable.js ~118KB) were bundled directly into modules, forcing all users to download them even if they were just viewing the page.
+
+## Solution
+
+Conditionally load heavy vendor scripts only when in edit mode via dynamically injected `<script save-remove>` tags.
+
+## How It Works
+
+### Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Module System                                              │
+│  ┌─────────────────────┐                                    │
+│  │ sortable.js (~3KB)  │                                    │
+│  │ (wrapper)           │                                    │
+│  └──────────┬──────────┘                                    │
+└─────────────┼───────────────────────────────────────────────┘
+              │
+              │ if (isEditMode)
+              │ inject <script>
+              ▼
+┌─────────────────────────────────────────────────────────────┐
+│  CDN / Vendor Files (not in module graph)                   │
+│  ┌─────────────────────┐                                    │
+│  │ Sortable.vendor.js  │                                    │
+│  │ (~118KB)            │                                    │
+│  └─────────────────────┘                                    │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Flow
+
+1. **User includes module** (e.g., `sortable`)
+2. **Wrapper checks `isEditMode`**
+   - If `false`: Do nothing (0 bytes loaded)
+   - If `true`: Continue to step 3
+3. **Inject script tag** into `<head>`:
+   ```html
+   <script save-remove src="...vendor.js"></script>
+   ```
+4. **Vendor script loads and initializes**
+5. **On save**: `save-remove` attribute causes script tag to be stripped from saved HTML
+
+### Code Pattern
+
+Wrappers use a shared utility (`utilities/loadVendorScript.js`):
+
+```js
+import { isEditMode } from "../core/isAdminOfCurrentResource.js";
+import { loadVendorScript, getVendorUrl } from "../utilities/loadVendorScript.js";
+
+function init() {
+  if (!isEditMode) return;
+  loadVendorScript(getVendorUrl(import.meta.url, 'example.vendor.js'));
+}
+
+init();
+```
+
+For scripts that need the loaded global:
+
+```js
+async function init() {
+  if (!isEditMode) return;
+  const Lib = await loadVendorScript(url, 'LibGlobalName');
+  // Use Lib...
+}
+```
+
+## File Naming Convention
+
+| File | Purpose |
+|------|---------|
+| `module.js` | Lightweight wrapper (~1-3KB) in module graph |
+| `module.vendor.js` | Heavy vendor script, loaded via script tag |
+
+## Results
+
+| Module | Before | After | Savings |
+|--------|--------|-------|---------|
+| sortable | 118.1KB | 3.1KB | ~115KB |
+
+## Benefits
+
+- **Viewers** never download heavy vendor scripts
+- **Editors** get full functionality when needed
+- **Saved pages** stay clean (script tags stripped via `save-remove`)
+- **CDN caching** still works for vendor scripts
+- **Module graph** stays small and fast
+
+## Files Changed
+
+- `vendor/Sortable.js` → `vendor/Sortable.vendor.js`
+- `utilities/loadVendorScript.js` (shared utility)
+- `custom-attributes/sortable.js` (rewritten as wrapper)
+- `build/generate-dependency-graph.js` (updated module definitions)
+
+---
+
+# view-mode-excludes-edit-modules
+
+A feature flag that skips edit-only modules when the page is in view mode, reducing bundle size for viewers.
+
+## Usage
+
+Add `view-mode-excludes-edit-modules` to your features list:
+
+```html
+<script type="module">
+  await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/src/hyperclay.js?preset=standard&features=view-mode-excludes-edit-modules');
+</script>
+```
+
+Or with custom features:
+
+```html
+<script type="module">
+  await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/src/hyperclay.js?features=toast,dialogs,view-mode-excludes-edit-modules');
+</script>
+```
+
+## How It Works
+
+1. **Detects edit mode** using the same logic as hyperclay:
+   - URL parameter `?editmode=true` (highest priority)
+   - Cookie `isAdminOfCurrentResource` (fallback)
+
+2. **In edit mode**: All requested modules load normally
+
+3. **In view mode**: Modules marked as `isEditModeOnly` are automatically excluded
+
+## Edit-Only Modules
+
+These modules are skipped in view mode when this feature is enabled:
+
+| Module | Description |
+|--------|-------------|
+| `save-core` | Basic save function |
+| `save-system` | CMD+S, [trigger-save] button |
+| `autosave` | Auto-save on DOM changes |
+| `unsaved-warning` | Warn before leaving with unsaved changes |
+| `save-toast` | Toast notifications for save events |
+| `edit-mode-helpers` | [edit-mode-input], [edit-mode-resource], [edit-mode-onclick] |
+| `persist` | Persist input/select/textarea values to DOM |
+| `snapshot` | DOM snapshots for save and sync |
+| `sortable` | Drag-drop sorting |
+| `onaftersave` | Run JS when save status changes |
+| `cache-bust` | Cache-bust href/src attributes |
+| `file-upload` | File upload with progress |
+| `live-sync` | Real-time DOM sync across browsers |
+
+## Size Savings
+
+When using the `standard` preset:
+
+| Mode | Modules Loaded | Approximate Size |
+|------|----------------|------------------|
+| Edit mode | All standard modules | ~50KB |
+| View mode | Only view-compatible modules | ~15KB |
+
+## When to Use
+
+- **Production sites** where most visitors are viewers, not editors
+- **Performance-critical pages** where every KB matters
+- **Sites with heavy edit features** (live-sync, sortable, file-upload)
+
+## When NOT to Use
+
+- **Development** - you want full functionality regardless of mode
+- **Admin-only pages** - all users are editors anyway
+- **Simple sites** - if you're already using minimal preset, savings are small
