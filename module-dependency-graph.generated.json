@@ -122,6 +122,10 @@
       "custom-attributes/autosize.js",
       "custom-attributes/preventEnter.js"
     ],
+    "custom-attributes/movable.js": [
+      "core/isAdminOfCurrentResource.js",
+      "utilities/mutation.js"
+    ],
     "custom-attributes/onaftersave.js": [],
     "custom-attributes/onclickaway.js": [],
     "custom-attributes/onclickchildren.js": [],
@@ -260,7 +264,7 @@
     "edit-mode-helpers": {
       "name": "edit-mode-helpers",
       "category": "core",
-      "size": 7.500000000000001,
+      "size": 8.3,
       "isEditModeOnly": true,
       "files": [
         "core/adminSystem.js",
