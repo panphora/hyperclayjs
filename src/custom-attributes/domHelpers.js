@@ -8,7 +8,23 @@ function init () {
     return;
   }
 
+  // elem.el.menu returns nearest element with a "menu" attribute (alias for elem.nearest.menu)
   // elem.nearest.project returns nearest element with a "project" attribute
+  Object.defineProperty(HTMLElement.prototype, 'el', {
+    configurable: true,
+    get: function() {
+      let element = this;
+
+      const handler = {
+        get(target, prop) {
+          return nearest(element, `[${prop}], .${prop}`);
+        }
+      };
+
+      return new Proxy({}, handler);
+    }
+  });
+
   Object.defineProperty(HTMLElement.prototype, 'nearest', {
     configurable: true,
     get: function() {
@@ -181,6 +197,16 @@ function init () {
     )();
    
     if (next) this.setAttribute(setAttr, next);
+  };
+
+  Element.prototype.show = function() {
+    this.style.display = '';
+    return this;
+  };
+
+  Element.prototype.hide = function() {
+    this.style.display = 'none';
+    return this;
   };
 
 }
