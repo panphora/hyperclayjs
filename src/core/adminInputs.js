@@ -2,14 +2,23 @@ import { isEditMode, isOwner } from "./isAdminOfCurrentResource.js";
 import onDomReady from "../dom-utilities/onDomReady.js";
 import { beforeSave } from "./savePage.js";
 
+const SELECTOR_DISABLED = '[edit-mode-input], [viewmode\\:disabled]';
+const SELECTOR_READONLY = '[viewmode\\:readonly]';
+const SELECTOR_ALL = '[edit-mode-input], [viewmode\\:disabled], [viewmode\\:readonly]';
+
 export function disableAdminInputsBeforeSave() {
   beforeSave(docElem => {
-    docElem.querySelectorAll('[edit-mode-input]').forEach(input => {
-      if (supportsReadonly(input)) {
+    docElem.querySelectorAll(SELECTOR_DISABLED).forEach(input => {
+      if (input.hasAttribute('viewmode:disabled')) {
+        input.setAttribute('disabled', '');
+      } else if (supportsReadonly(input)) {
         input.setAttribute('readonly', '');
       } else {
         input.setAttribute('disabled', '');
       }
+    });
+    docElem.querySelectorAll(SELECTOR_READONLY).forEach(input => {
+      input.setAttribute('readonly', '');
     });
   });
 }
@@ -24,22 +33,32 @@ export function enableAdminInputsOnPageLoad() {
 
 // Runtime toggle functions
 export function enableAdminInputs() {
-  document.querySelectorAll('[edit-mode-input]').forEach(input => {
-    if (supportsReadonly(input)) {
+  document.querySelectorAll(SELECTOR_DISABLED).forEach(input => {
+    if (input.hasAttribute('viewmode:disabled')) {
+      input.removeAttribute('disabled');
+    } else if (supportsReadonly(input)) {
       input.removeAttribute('readonly');
     } else {
       input.removeAttribute('disabled');
     }
   });
+  document.querySelectorAll(SELECTOR_READONLY).forEach(input => {
+    input.removeAttribute('readonly');
+  });
 }
 
 export function disableAdminInputs() {
-  document.querySelectorAll('[edit-mode-input]').forEach(input => {
-    if (supportsReadonly(input)) {
+  document.querySelectorAll(SELECTOR_DISABLED).forEach(input => {
+    if (input.hasAttribute('viewmode:disabled')) {
+      input.setAttribute('disabled', '');
+    } else if (supportsReadonly(input)) {
       input.setAttribute('readonly', '');
     } else {
       input.setAttribute('disabled', '');
     }
+  });
+  document.querySelectorAll(SELECTOR_READONLY).forEach(input => {
+    input.setAttribute('readonly', '');
   });
 }
 
@@ -47,22 +66,16 @@ export function disableAdminInputs() {
 const readonlyTypes = ['text', 'search', 'url', 'tel', 'email', 'password', 'date', 'month', 'week', 'time', 'datetime-local', 'number'];
 
 function supportsReadonly(element) {
-  // Handle different element types
   const tagName = element.tagName?.toUpperCase();
 
-  // TEXTAREA supports readonly
   if (tagName === 'TEXTAREA') return true;
-
-  // SELECT, BUTTON, FIELDSET use disabled
   if (tagName === 'SELECT' || tagName === 'BUTTON' || tagName === 'FIELDSET') return false;
 
-  // For INPUT elements, check the type
   if (tagName === 'INPUT') {
     const type = element.type || 'text';
     return readonlyTypes.includes(type);
   }
 
-  // Default to disabled for unknown elements
   return false;
 }
 

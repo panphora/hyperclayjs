@@ -2,11 +2,13 @@ import { isEditMode, isOwner } from "./isAdminOfCurrentResource.js";
 import onDomReady from "../dom-utilities/onDomReady.js";
 import {beforeSave} from "./savePage.js";
 
+const SELECTOR = '[edit-mode-resource]:is(style, link, script), [editmode\\:resource]:is(style, link, script)';
+const SELECTOR_INERT = '[edit-mode-resource]:is(style, link, script)[type^="inert/"], [editmode\\:resource]:is(style, link, script)[type^="inert/"]';
+
 export function disableAdminResourcesBeforeSave () {
   beforeSave(docElem => {
-    docElem.querySelectorAll('[edit-mode-resource]:is(style, link, script)').forEach(resource => {
+    docElem.querySelectorAll(SELECTOR).forEach(resource => {
       const currentType = resource.getAttribute('type') || 'text/javascript';
-      // Only add the inert/ prefix if it's not already there
       if (!currentType.startsWith('inert/')) {
         resource.setAttribute('type', `inert/${currentType}`);
       }
@@ -24,14 +26,14 @@ export function enableAdminResourcesOnPageLoad () {
 
 // Runtime toggle functions
 export function enableAdminResources() {
-  document.querySelectorAll('[edit-mode-resource]:is(style, link, script)[type^="inert/"]').forEach(resource => {
+  document.querySelectorAll(SELECTOR_INERT).forEach(resource => {
     resource.type = resource.type.replace(/inert\//g, '');
     resource.replaceWith(resource.cloneNode(true));
   });
 }
 
 export function disableAdminResources() {
-  document.querySelectorAll('[edit-mode-resource]:is(style, link, script)').forEach(resource => {
+  document.querySelectorAll(SELECTOR).forEach(resource => {
     const currentType = resource.getAttribute('type') || 'text/javascript';
     if (!currentType.startsWith('inert/')) {
       resource.setAttribute('type', `inert/${currentType}`);

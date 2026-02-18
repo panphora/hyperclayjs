@@ -2,9 +2,11 @@ import { isEditMode, isOwner } from "./isAdminOfCurrentResource.js";
 import onDomReady from "../dom-utilities/onDomReady.js";
 import {beforeSave} from "./savePage.js";
 
+const SELECTOR = '[edit-mode-onclick], [editmode\\:onclick]';
+
 export function disableOnClickBeforeSave () {
   beforeSave(docElem => {
-    docElem.querySelectorAll('[edit-mode-onclick]').forEach(resource => {
+    docElem.querySelectorAll(SELECTOR).forEach(resource => {
       const originalValue = resource.getAttribute("onclick");
       resource.setAttribute("inert-onclick", originalValue);
       resource.removeAttribute("onclick");
@@ -22,7 +24,7 @@ export function enableOnClickForAdminOnPageLoad () {
 
 // Runtime toggle functions
 export function enableOnClick() {
-  document.querySelectorAll('[edit-mode-onclick]').forEach(el => {
+  document.querySelectorAll(SELECTOR).forEach(el => {
     const val = el.getAttribute("inert-onclick");
     if (val) {
       el.setAttribute("onclick", val);
@@ -32,7 +34,7 @@ export function enableOnClick() {
 }
 
 export function disableOnClick() {
-  document.querySelectorAll('[edit-mode-onclick]').forEach(el => {
+  document.querySelectorAll(SELECTOR).forEach(el => {
     const val = el.getAttribute("onclick");
     if (val) {
       el.setAttribute("inert-onclick", val);

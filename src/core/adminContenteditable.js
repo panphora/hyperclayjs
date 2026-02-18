@@ -2,9 +2,11 @@ import { isEditMode, isOwner } from "./isAdminOfCurrentResource.js";
 import onDomReady from "../dom-utilities/onDomReady.js";
 import {beforeSave} from "./savePage.js";
 
+const SELECTOR = '[edit-mode-contenteditable], [editmode\\:contenteditable]';
+
 export function disableContentEditableBeforeSave () {
   beforeSave(docElem => {
-    docElem.querySelectorAll('[edit-mode-contenteditable]').forEach(resource => {
+    docElem.querySelectorAll(SELECTOR).forEach(resource => {
       const originalValue = resource.getAttribute("contenteditable");
       resource.setAttribute("inert-contenteditable", originalValue);
       resource.removeAttribute("contenteditable");
@@ -22,7 +24,7 @@ export function enableContentEditableForAdminOnPageLoad () {
 
 // Runtime toggle functions
 export function enableContentEditable() {
-  document.querySelectorAll('[edit-mode-contenteditable]').forEach(el => {
+  document.querySelectorAll(SELECTOR).forEach(el => {
     let val = el.getAttribute("inert-contenteditable");
     if (!["false", "plaintext-only"].includes(val)) val = "true";
     el.setAttribute("contenteditable", val);
@@ -31,7 +33,7 @@ export function enableContentEditable() {
 }
 
 export function disableContentEditable() {
-  document.querySelectorAll('[edit-mode-contenteditable]').forEach(el => {
+  document.querySelectorAll(SELECTOR).forEach(el => {
     const val = el.getAttribute("contenteditable") || "true";
     el.setAttribute("inert-contenteditable", val);
     el.removeAttribute("contenteditable");
