@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.22.0] - 2026-02-18
+
+### Added
+- `this.el` alias and `.show()` / `.hide()` DOM helper methods
+
+
+
 ## [1.21.0] - 2026-02-17
 
 

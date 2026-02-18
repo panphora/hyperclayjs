@@ -398,7 +398,7 @@
     "dom-helpers": {
       "name": "dom-helpers",
       "category": "custom-attributes",
-      "size": 6.2,
+      "size": 6.8,
       "files": [
         "custom-attributes/domHelpers.js"
       ],
