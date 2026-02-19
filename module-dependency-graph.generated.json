@@ -395,6 +395,17 @@
       "description": "Drag-drop sorting with [sortable], lazy-loads ~118KB Sortable.js in edit mode",
       "exports": {}
     },
+    "movable": {
+      "name": "movable",
+      "category": "custom-attributes",
+      "size": 2.5,
+      "isEditModeOnly": true,
+      "files": [
+        "custom-attributes/movable.js"
+      ],
+      "description": "Free-positioning drag with [movable] and [movable-handle], edit mode only",
+      "exports": {}
+    },
     "dom-helpers": {
       "name": "dom-helpers",
       "category": "custom-attributes",
@@ -838,6 +849,7 @@
     "event-attrs": "./custom-attributes/events.js",
     "ajax-elements": "./custom-attributes/ajaxElements.js",
     "sortable": "./custom-attributes/sortable.js",
+    "movable": "./custom-attributes/movable.js",
     "dom-helpers": "./custom-attributes/domHelpers.js",
     "input-helpers": "./custom-attributes/inputHelpers.js",
     "onaftersave": "./custom-attributes/onaftersave.js",
@@ -892,6 +904,7 @@
         "event-attrs",
         "ajax-elements",
         "sortable",
+        "movable",
         "dom-helpers",
         "input-helpers",
         "onaftersave"
@@ -1004,6 +1017,7 @@
         "event-attrs",
         "ajax-elements",
         "sortable",
+        "movable",
         "dom-helpers",
         "input-helpers",
         "onaftersave",
@@ -1047,6 +1061,7 @@
         "event-attrs",
         "ajax-elements",
         "sortable",
+        "movable",
         "dom-helpers",
         "input-helpers",
         "onaftersave",

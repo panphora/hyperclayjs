@@ -151,6 +151,13 @@ const MODULE_DEFINITIONS = {
     isEditModeOnly: true
     // No exports - Sortable.js is loaded via script tag in edit mode only
   },
+  'custom-attributes/movable.js': {
+    name: 'movable',
+    moduleId: 'movable',
+    description: 'Free-positioning drag with [movable] and [movable-handle], edit mode only',
+    isEditModeOnly: true
+    // No exports - side effects only (init function)
+  },
   'custom-attributes/domHelpers.js': {
     name: 'dom-helpers',
     moduleId: 'dom-helpers',
