@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.22.1] - 2026-02-18
+
+### Added
+- Registered movable module in loader and presets
+
+
+
 ## [1.22.0] - 2026-02-18
 
 ### Added
