@@ -1,5 +1,5 @@
 /**
- * Option Visibility (CSS Layers Implementation)
+ * Option Visibility
  *
  * Shows/hides elements based on `option:` and `option-not:` attributes.
  *
@@ -23,19 +23,19 @@
  *   </div>
  *
  * HOW IT WORKS:
- * 1. Uses `display: none !important` to forcefully hide elements
- * 2. Uses `display: revert-layer !important` to un-hide when ancestor matches
- *    `revert-layer` tells the browser: "Ignore rules in this layer, fall back to author styles"
- * 3. This preserves the user's original `display` (flex, grid, block) without us knowing what it is
+ * Uses a single conditional-hide rule per pattern. Elements get `display: none !important`
+ * ONLY when they are NOT inside a matching ancestor scope. When the ancestor condition
+ * IS met, the hide rule doesn't match, so the author's original display value
+ * (flex, grid, block, etc.) applies naturally — no recovery needed.
  *
  * BROWSER SUPPORT:
- * Requires `@layer`, `revert-layer`, and `:not()` selector lists (~92% of browsers, 2022+).
+ * Requires `:is()` and `:not()` with selector lists (~96% of browsers, 2021+).
  * Falls back gracefully - elements remain visible if unsupported.
  *
  * TRADEOFFS:
  * - Pro: Pure CSS after generation, zero JS overhead for toggling
- * - Pro: Simple code, similar to original approach
- * - Con: Loses to user `!important` rules (layered !important < unlayered !important)
+ * - Pro: No @layer or revert-layer — works with any author CSS (layered or unlayered)
+ * - Pro: One rule per pattern instead of two
  * - Con: Pipe character `|` cannot be used as a literal value (reserved as OR delimiter)
  */
 
@@ -78,16 +78,7 @@ const optionVisibility = {
   _unsubscribe: null,
 
   log(...args) {
-    if (this.debug) console.log('[OptionVisibility:Layer]', ...args);
-  },
-
-  /**
-   * Check if browser supports the layer approach
-   */
-  isSupported() {
-    return typeof CSS !== 'undefined'
-      && typeof CSS.supports === 'function'
-      && CSS.supports('display', 'revert-layer');
+    if (this.debug) console.log('[OptionVisibility]', ...args);
   },
 
   /**
@@ -126,61 +117,51 @@ const optionVisibility = {
   },
 
   /**
-   * Generate CSS rules wrapped in @layer
+   * Generate CSS rules for conditional hiding.
+   *
+   * Each pattern produces a single rule that hides the element ONLY when
+   * it's NOT inside a matching ancestor scope. When the condition IS met,
+   * the rule doesn't match, so the author's original display value applies.
    */
   generateCSS(patterns) {
     if (!patterns.length) return '';
 
-    const rules = patterns.map(({ name, rawValue, values, negated }) => {
+    return patterns.map(({ name, rawValue, values, negated }) => {
       const safeName = CSS.escape(name);
       const safeRawValue = CSS.escape(rawValue);
       const prefix = negated ? 'option-not' : 'option';
       const attrSelector = `[${prefix}\\:${safeName}="${safeRawValue}"]`;
 
-      // Hide rule (same for both types)
-      const hideRule = `${attrSelector}{display:none!important}`;
-
-      // Show rule depends on type
-      let showRule;
+      let scopeSelectors;
       if (negated) {
-        // option-not: show when ancestor has attr but NOT any of the values
-        // Uses :not(sel1, sel2) selector list syntax
+        // option-not: active when ancestor has attr but NOT any of the values
         const notList = values.map(v => `[${safeName}="${CSS.escape(v)}"]`).join(',');
-        showRule = `[${safeName}]:not(${notList}) ${attrSelector}{display:revert-layer!important}`;
+        const scope = `[${safeName}]:not(${notList})`;
+        scopeSelectors = `${scope},${scope} *`;
       } else {
-        // option: show when ancestor has ANY of the values
-        const showSelectors = values.map(v =>
-          `[${safeName}="${CSS.escape(v)}"] ${attrSelector}`
-        ).join(',');
-        showRule = `${showSelectors}{display:revert-layer!important}`;
+        // option: active when ancestor has ANY of the values
+        const self = values.map(v => `[${safeName}="${CSS.escape(v)}"]`);
+        const desc = values.map(v => `[${safeName}="${CSS.escape(v)}"] *`);
+        scopeSelectors = [...self, ...desc].join(',');
       }
 
-      return hideRule + showRule;
+      return `${attrSelector}:not(:is(${scopeSelectors})){display:none!important}`;
     }).join('');
-
-    return `@layer ${STYLE_NAME}{${rules}}`;
   },
 
   /**
    * Update the style element with current rules
    */
   update() {
-    if (!this.isSupported()) {
-      this.log('Browser lacks revert-layer support, skipping');
-      return;
-    }
-
     try {
       const attributes = this.findOptionAttributes();
       const css = this.generateCSS(attributes);
-      // mutations-ignore: This style tag is regenerated on load. Without this,
-      // the mutation observer would detect it as a change, delaying the settled signal.
       insertStyles(STYLE_NAME, css, (style) => {
         style.setAttribute('mutations-ignore', '');
       });
       this.log(`Generated ${attributes.length} rules`);
     } catch (error) {
-      console.error('[OptionVisibility:Layer] Error generating rules:', error);
+      console.error('[OptionVisibility] Error generating rules:', error);
     }
   },
 
@@ -193,11 +174,6 @@ const optionVisibility = {
     }
 
     this._started = true;
-
-    if (!this.isSupported()) {
-      console.warn('[OptionVisibility:Layer] Browser lacks revert-layer support. Elements will remain visible.');
-      return;
-    }
 
     this.update();
 

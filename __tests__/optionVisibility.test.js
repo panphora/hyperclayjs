@@ -181,7 +181,7 @@ describe('optionVisibility', () => {
     });
 
     describe('option: (positive matching)', () => {
-      test('generates CSS for single value', () => {
+      test('generates conditional-hide rule for single value', () => {
         const patterns = [{
           name: 'editmode',
           rawValue: 'true',
@@ -191,14 +191,16 @@ describe('optionVisibility', () => {
 
         const css = optionVisibility.generateCSS(patterns);
 
-        expect(css).toContain('@layer option-visibility');
-        expect(css).toContain('[option\\:editmode="true"]');
+        // Single rule: hide when NOT inside matching ancestor
+        expect(css).not.toContain('@layer');
+        expect(css).not.toContain('revert-layer');
+        expect(css).toContain('[option\\:editmode="true"]:not(:is(');
+        expect(css).toContain('[editmode="true"]');
+        expect(css).toContain('[editmode="true"] *');
         expect(css).toContain('display:none!important');
-        expect(css).toContain('[editmode="true"] [option\\:editmode="true"]');
-        expect(css).toContain('display:revert-layer!important');
       });
 
-      test('generates comma-separated selectors for multi-value', () => {
+      test('generates scope selectors for multi-value', () => {
         const patterns = [{
           name: 'status',
           rawValue: 'saved|error',
@@ -208,14 +210,16 @@ describe('optionVisibility', () => {
 
         const css = optionVisibility.generateCSS(patterns);
 
-        // Hide rule uses raw value (pipe is escaped by CSS.escape)
+        // Attribute selector uses escaped pipe
         expect(css).toContain('[option\\:status="saved\\|error"]');
-        // Show rule has comma-separated ancestor selectors
-        expect(css).toContain('[status="saved"] [option\\:status="saved\\|error"]');
-        expect(css).toContain('[status="error"] [option\\:status="saved\\|error"]');
+        // :not(:is(...)) contains both self and descendant matchers
+        expect(css).toContain('[status="saved"]');
+        expect(css).toContain('[status="error"]');
+        expect(css).toContain('[status="saved"] *');
+        expect(css).toContain('[status="error"] *');
       });
 
-      test('generates CSS for three values', () => {
+      test('generates scope selectors for three values', () => {
         const patterns = [{
           name: 'x',
           rawValue: 'a|b|c',
@@ -225,10 +229,12 @@ describe('optionVisibility', () => {
 
         const css = optionVisibility.generateCSS(patterns);
 
-        // Pipes are escaped in the attribute selector
-        expect(css).toContain('[x="a"] [option\\:x="a\\|b\\|c"]');
-        expect(css).toContain('[x="b"] [option\\:x="a\\|b\\|c"]');
-        expect(css).toContain('[x="c"] [option\\:x="a\\|b\\|c"]');
+        expect(css).toContain('[x="a"]');
+        expect(css).toContain('[x="b"]');
+        expect(css).toContain('[x="c"]');
+        expect(css).toContain('[x="a"] *');
+        expect(css).toContain('[x="b"] *');
+        expect(css).toContain('[x="c"] *');
       });
 
       test('generates CSS for empty value', () => {
@@ -242,7 +248,8 @@ describe('optionVisibility', () => {
         const css = optionVisibility.generateCSS(patterns);
 
         expect(css).toContain('[option\\:status=""]');
-        expect(css).toContain('[status=""] [option\\:status=""]');
+        expect(css).toContain('[status=""]');
+        expect(css).toContain('[status=""] *');
       });
 
       test('generates CSS for empty OR value', () => {
@@ -255,13 +262,15 @@ describe('optionVisibility', () => {
 
         const css = optionVisibility.generateCSS(patterns);
 
-        expect(css).toContain('[status=""] [option\\:status="\\|saved"]');
-        expect(css).toContain('[status="saved"] [option\\:status="\\|saved"]');
+        expect(css).toContain('[status=""]');
+        expect(css).toContain('[status="saved"]');
+        expect(css).toContain('[status=""] *');
+        expect(css).toContain('[status="saved"] *');
       });
     });
 
     describe('option-not: (negation)', () => {
-      test('generates CSS for single negation', () => {
+      test('generates conditional-hide rule for single negation', () => {
         const patterns = [{
           name: 'status',
           rawValue: 'saving',
@@ -271,11 +280,12 @@ describe('optionVisibility', () => {
 
         const css = optionVisibility.generateCSS(patterns);
 
+        expect(css).not.toContain('revert-layer');
         expect(css).toContain('[option-not\\:status="saving"]');
         expect(css).toContain('display:none!important');
-        // Uses :not() syntax with ancestor requirement
+        // Scope: ancestor has attr but not the excluded value
         expect(css).toContain('[status]:not([status="saving"])');
-        expect(css).toContain('display:revert-layer!important');
+        expect(css).toContain('[status]:not([status="saving"]) *');
       });
 
       test('generates CSS for multi-value negation with :not() selector list', () => {
@@ -288,8 +298,8 @@ describe('optionVisibility', () => {
 
         const css = optionVisibility.generateCSS(patterns);
 
-        // Uses :not(sel1, sel2) selector list syntax
         expect(css).toContain('[status]:not([status="saving"],[status="error"])');
+        expect(css).toContain('[status]:not([status="saving"],[status="error"]) *');
       });
     });
 
@@ -318,7 +328,6 @@ describe('optionVisibility', () => {
 
         const css = optionVisibility.generateCSS(patterns);
 
-        // CSS.escape should handle the hyphen
         expect(css).toContain('my-attr');
       });
     });
