@@ -28,6 +28,13 @@ echo ""
 echo "Waiting 30s for npm registry to update..."
 sleep 30
 
+printf "  Purging @latest alias... "
+if curl -fsS "https://purge.jsdelivr.net/npm/hyperclayjs@latest" > /dev/null 2>&1; then
+  echo "✓"
+else
+  echo "✗"
+fi
+
 for file in $FILES; do
   url="https://purge.jsdelivr.net/npm/hyperclayjs@latest/$file"
   printf "  %s " "$url"
