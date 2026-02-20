@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.23.0] - 2026-02-20
+
+### Changed
+- Replaced revert-layer with conditional-hide pattern for option visibility
+
+
+
 ## [1.22.1] - 2026-02-18
 
 ### Added

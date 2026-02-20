@@ -330,7 +330,7 @@
     "option-visibility": {
       "name": "option-visibility",
       "category": "core",
-      "size": 7.8,
+      "size": 7.1,
       "files": [
         "core/optionVisibility.js"
       ],
