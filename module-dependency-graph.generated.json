@@ -273,7 +273,7 @@
         "core/adminOnClick.js",
         "core/adminResources.js"
       ],
-      "description": "Admin-only functionality: [edit-mode-input], [edit-mode-resource], [edit-mode-onclick]",
+      "description": "Admin-only functionality: [viewmode:disabled], [editmode:resource], [editmode:onclick]",
       "exports": {}
     },
     "persist": {

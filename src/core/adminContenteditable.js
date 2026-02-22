@@ -2,7 +2,7 @@ import { isEditMode, isOwner } from "./isAdminOfCurrentResource.js";
 import onDomReady from "../dom-utilities/onDomReady.js";
 import {beforeSave} from "./savePage.js";
 
-const SELECTOR = '[edit-mode-contenteditable], [editmode\\:contenteditable]';
+const SELECTOR = '[editmode\\:contenteditable]';
 
 export function disableContentEditableBeforeSave () {
   beforeSave(docElem => {

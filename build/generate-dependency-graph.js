@@ -86,7 +86,7 @@ const MODULE_DEFINITIONS = {
   'core/adminSystem.js': {
     name: 'edit-mode-helpers',
     moduleId: 'edit-mode-helpers',
-    description: 'Admin-only functionality: [edit-mode-input], [edit-mode-resource], [edit-mode-onclick]',
+    description: 'Admin-only functionality: [viewmode:disabled], [editmode:resource], [editmode:onclick]',
     isEditModeOnly: true,
     relatedFiles: ['core/adminContenteditable.js', 'core/adminInputs.js', 'core/adminOnClick.js', 'core/adminResources.js']
     // No exports - side effects only (init function)

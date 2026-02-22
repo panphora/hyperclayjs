@@ -227,9 +227,9 @@ tell("Welcome to Hyperclay!");
 
 ```html
 <!-- Only visible/editable in edit mode -->
-<div contenteditable edit-mode-contenteditable>Admin can edit this</div>
-<input type="text" edit-mode-input>
-<script edit-mode-resource>console.log('Admin only');</script>
+<div contenteditable editmode:contenteditable>Admin can edit this</div>
+<input type="text" viewmode:disabled>
+<script editmode:resource>console.log('Admin only');</script>
 ```
 
 ## Module Creation

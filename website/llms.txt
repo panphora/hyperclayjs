@@ -22,7 +22,7 @@ One script tag gives you: auto-save on DOM changes, edit/view mode toggling, for
 
 **Persist** — Add `persist` to any `<input>`, `<textarea>`, or `<select>` to save its value to the DOM on save.
 
-**Admin-Only Attributes** — `edit-mode-contenteditable`, `edit-mode-input`, `edit-mode-onclick`, `edit-mode-resource` restrict functionality to editors. `save-ignore` excludes elements from saves entirely.
+**Admin-Only Attributes** — `editmode:contenteditable`, `viewmode:disabled`, `editmode:onclick`, `editmode:resource` restrict functionality to editors. `save-ignore` excludes elements from saves entirely.
 
 **Custom Event Attributes** — `onrender`, `onbeforesave`, `onclickaway`, `onpagemutation`, `onclone` for declarative behavior.
 
@@ -2536,7 +2536,7 @@ These modules are skipped in view mode when this feature is enabled:
 | `autosave` | Auto-save on DOM changes |
 | `unsaved-warning` | Warn before leaving with unsaved changes |
 | `save-toast` | Toast notifications for save events |
-| `edit-mode-helpers` | [edit-mode-input], [edit-mode-resource], [edit-mode-onclick] |
+| `edit-mode-helpers` | [viewmode:disabled], [editmode:resource], [editmode:onclick] |
 | `persist` | Persist input/select/textarea values to DOM |
 | `snapshot` | DOM snapshots for save and sync |
 | `sortable` | Drag-drop sorting |

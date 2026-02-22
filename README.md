@@ -59,7 +59,7 @@ import 'hyperclayjs/presets/standard.js';
 |--------|------|-------------|
 | autosave | 1.4KB | Auto-save on DOM changes |
 | edit-mode | 1.8KB | Toggle edit mode on hyperclay on/off |
-| edit-mode-helpers | 8.3KB | Admin-only functionality: [edit-mode-input], [edit-mode-resource], [edit-mode-onclick] |
+| edit-mode-helpers | 8.3KB | Admin-only functionality: [viewmode:disabled], [editmode:resource], [editmode:onclick] |
 | option-visibility | 7.1KB | Dynamic show/hide based on ancestor state with option:attribute="value" |
 | persist | 2.4KB | Persist input/select/textarea values to the DOM with [persist] attribute |
 | save-core | 8.9KB | Basic save function only - hyperclay.savePage() |
@@ -316,9 +316,9 @@ tell("Welcome to Hyperclay!");
 
 ```html
 <!-- Only visible/editable in edit mode -->
-<div contenteditable edit-mode-contenteditable>Admin can edit this</div>
-<input type="text" edit-mode-input>
-<script edit-mode-resource>console.log('Admin only');</script>
+<div contenteditable editmode:contenteditable>Admin can edit this</div>
+<input type="text" viewmode:disabled>
+<script editmode:resource>console.log('Admin only');</script>
 ```
 
 ## Module Creation

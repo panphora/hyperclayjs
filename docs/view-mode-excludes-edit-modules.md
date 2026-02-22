@@ -41,7 +41,7 @@ These modules are skipped in view mode when this feature is enabled:
 | `autosave` | Auto-save on DOM changes |
 | `unsaved-warning` | Warn before leaving with unsaved changes |
 | `save-toast` | Toast notifications for save events |
-| `edit-mode-helpers` | [edit-mode-input], [edit-mode-resource], [edit-mode-onclick] |
+| `edit-mode-helpers` | [viewmode:disabled], [editmode:resource], [editmode:onclick] |
 | `persist` | Persist input/select/textarea values to DOM |
 | `snapshot` | DOM snapshots for save and sync |
 | `sortable` | Drag-drop sorting |

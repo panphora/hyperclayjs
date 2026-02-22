@@ -604,54 +604,54 @@ hyperclay.isEditMode;</code></pre>
                 </div>
             </div>
 
-            <!-- edit-mode-contenteditable -->
-            <div class="demo-card" id="edit-mode-contenteditable">
-                <h3>[edit-mode-contenteditable]</h3>
+            <!-- editmode:contenteditable -->
+            <div class="demo-card" id="editmode:contenteditable">
+                <h3>[editmode:contenteditable]</h3>
                 <p class="desc">Only editable in edit mode, otherwise readonly</p>
-                <pre><code>&lt;div edit-mode-contenteditable&gt;
+                <pre><code>&lt;div editmode:contenteditable&gt;
   Editable in edit mode
 &lt;/div&gt;</code></pre>
                 <div class="demo-area">
-                    <div class="mini-editor" edit-mode-contenteditable contenteditable style="width: 100%;">Only editable in edit mode, otherwise readonly</div>
+                    <div class="mini-editor" editmode:contenteditable contenteditable style="width: 100%;">Only editable in edit mode, otherwise readonly</div>
                 </div>
             </div>
 
-            <!-- edit-mode-input -->
-            <div class="demo-card" id="edit-mode-input">
-                <h3>[edit-mode-input]</h3>
+            <!-- viewmode:disabled -->
+            <div class="demo-card" id="viewmode:disabled">
+                <h3>[viewmode:disabled]</h3>
                 <p class="desc">Inputs/selects editable only in edit mode</p>
-                <pre><code>&lt;input edit-mode-input&gt;
-&lt;select edit-mode-input&gt;</code></pre>
+                <pre><code>&lt;input viewmode:disabled&gt;
+&lt;select viewmode:disabled&gt;</code></pre>
                 <div class="demo-area flex-row">
-                    <input edit-mode-input value="Admin only" style="flex: 1;">
-                    <select edit-mode-input>
+                    <input viewmode:disabled value="Admin only" style="flex: 1;">
+                    <select viewmode:disabled>
                         <option>Option A</option>
                         <option>Option B</option>
                     </select>
                 </div>
             </div>
 
-            <!-- edit-mode-onclick -->
-            <div class="demo-card" id="edit-mode-onclick">
-                <h3>[edit-mode-onclick]</h3>
+            <!-- editmode:onclick -->
+            <div class="demo-card" id="editmode:onclick">
+                <h3>[editmode:onclick]</h3>
                 <p class="desc">onclick handlers active only in edit mode</p>
-                <pre><code>&lt;button edit-mode-onclick
+                <pre><code>&lt;button editmode:onclick
   onclick="alert('Admin!')"&gt;</code></pre>
                 <div class="demo-area">
-                    <button edit-mode-onclick edit-mode-input onclick="alert('Admin action triggered!')">Admin Action</button>
+                    <button editmode:onclick viewmode:disabled onclick="alert('Admin action triggered!')">Admin Action</button>
                     <span class="output">Only works in edit mode</span>
                 </div>
             </div>
 
-            <!-- edit-mode-resource -->
-            <div class="demo-card" id="edit-mode-resource">
-                <h3>[edit-mode-resource]</h3>
+            <!-- editmode:resource -->
+            <div class="demo-card" id="editmode:resource">
+                <h3>[editmode:resource]</h3>
                 <p class="desc">Scripts/styles active only in edit mode</p>
-                <pre><code>&lt;style edit-mode-resource&gt;
+                <pre><code>&lt;style editmode:resource&gt;
   .edit-outline { outline: 2px dashed blue; }
 &lt;/style&gt;</code></pre>
                 <div class="demo-area">
-                    <style edit-mode-resource type="text/css">.edit-outline { outline: 2px dashed #E85D04; border: none; }</style>
+                    <style editmode:resource type="text/css">.edit-outline { outline: 2px dashed #E85D04; border: none; }</style>
                     <div class="edit-outline badge">Dashed outline in edit mode</div>
                 </div>
             </div>
