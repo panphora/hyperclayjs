@@ -235,9 +235,6 @@ export const hyperclayStyles = `
   }
 `;
 
-// Track which theme styles have been injected
-const injectedThemes = new Set();
-
 // Global toast configuration (can be overridden by toast-hyperclay module)
 let toastConfig = {
   styles: modernStyles,
@@ -253,7 +250,7 @@ export function setToastTheme(config) {
 
 // Helper function to inject styles for a theme (additive, not replacing)
 export function injectToastStyles(styles, theme) {
-  if (injectedThemes.has(theme)) return;
+  if (document.querySelector(`style.toast-styles-${theme}`)) return;
 
   const styleSheet = document.createElement('style');
   styleSheet.className = `toast-styles-${theme}`;
@@ -261,8 +258,6 @@ export function injectToastStyles(styles, theme) {
   styleSheet.setAttribute('snapshot-remove', '');
   styleSheet.textContent = styles;
   document.head.appendChild(styleSheet);
-
-  injectedThemes.add(theme);
 }
 
 // Core toast function (used by both toast and toastHyperclay)
@@ -357,8 +352,6 @@ const persistentToastStyles = `
   }
 `;
 
-let persistentStylesInjected = false;
-
 // Track active persistent toasts by message
 const activePersistentToasts = new Map();
 
@@ -367,14 +360,13 @@ function toastPersistent(message, messageType = "warning") {
   injectToastStyles(toastConfig.styles, toastConfig.theme);
 
   // Inject persistent-specific styles once
-  if (!persistentStylesInjected) {
+  if (!document.querySelector('style.toast-styles-persistent')) {
     const styleSheet = document.createElement('style');
     styleSheet.className = 'toast-styles-persistent';
     styleSheet.setAttribute('save-remove', '');
     styleSheet.setAttribute('snapshot-remove', '');
     styleSheet.textContent = persistentToastStyles;
     document.head.appendChild(styleSheet);
-    persistentStylesInjected = true;
   }
 
   const templates = toastConfig.templates;
