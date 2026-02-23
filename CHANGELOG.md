@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.23.1] - 2026-02-23
+
+### Changed
+- Replaced edit-mode-* attributes with editmode:/viewmode: API
+
+### Fixed
+- A few bugs caused by live sync
+- Toast to use live DOM instead of Set
+- Purge @latest alias before per-file CDN cache purges
+
+
+
 ## [1.23.0] - 2026-02-20
 
 ### Changed

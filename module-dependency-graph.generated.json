@@ -264,7 +264,7 @@
     "edit-mode-helpers": {
       "name": "edit-mode-helpers",
       "category": "core",
-      "size": 8.3,
+      "size": 6.8,
       "isEditModeOnly": true,
       "files": [
         "core/adminSystem.js",
@@ -470,7 +470,7 @@
     "toast": {
       "name": "toast",
       "category": "ui",
-      "size": 15.9,
+      "size": 15.8,
       "files": [
         "ui/toast.js"
       ],
@@ -500,7 +500,7 @@
     "the-modal": {
       "name": "the-modal",
       "category": "ui",
-      "size": 21.5,
+      "size": 22.4,
       "files": [
         "ui/theModal.js"
       ],
@@ -515,7 +515,7 @@
     "mutation": {
       "name": "mutation",
       "category": "utilities",
-      "size": 13.5,
+      "size": 13.7,
       "files": [
         "utilities/mutation.js"
       ],
@@ -799,7 +799,7 @@
     "live-sync": {
       "name": "live-sync",
       "category": "communication",
-      "size": 11.5,
+      "size": 11.7,
       "isEditModeOnly": true,
       "difficulty": "advanced",
       "files": [
