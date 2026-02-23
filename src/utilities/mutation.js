@@ -84,6 +84,11 @@ const Mutation = {
    * Resume mutation observation after a pause.
    */
   resume() {
+    // Drain pending mutation records — observer stays connected during pause,
+    // so morph mutations are recorded and would fire async after _paused=false
+    if (this._observer) {
+      this._observer.takeRecords();
+    }
     this._paused = false;
     this._log('Resumed');
   },

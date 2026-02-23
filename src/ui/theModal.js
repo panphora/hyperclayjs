@@ -608,6 +608,24 @@ const themodal = (() => {
   const themodalMain = {
     isShowing: false,
     open() {
+      // Clean up stale modal if DOM was removed externally (e.g. live-sync morph)
+      if (this.isShowing && !document.querySelector('.micromodal-parent')) {
+        this._cleanupListeners?.();
+        html = "";
+        yes = "";
+        no = "";
+        zIndex = "100";
+        closeHtml = "";
+        enableClickOutsideCloses = true;
+        disableScroll = true;
+        disableFocus = false;
+        onYes = [];
+        onNo = [];
+        onOpen = [];
+        this.isShowing = false;
+        document.body.style.overflow = '';
+      }
+
       document.body.insertAdjacentHTML("afterbegin", "<div save-remove snapshot-remove class='micromodal-parent'>" + modalCss + modalHtml + "</div>");
 
       const modalOverlayElem = document.querySelector(".micromodal__overlay");
@@ -682,6 +700,13 @@ const themodal = (() => {
       document.addEventListener("click", handleClick);
       document.addEventListener("submit", handleSubmit);
 
+      // Store cleanup so stale listeners can be removed if DOM is yanked externally
+      this._cleanupListeners = () => {
+        document.removeEventListener("mousedown", handleMousedown);
+        document.removeEventListener("click", handleClick);
+        document.removeEventListener("submit", handleSubmit);
+      };
+
       function setButtonsVisibility () {
         modalButtonsElem.classList.toggle("micromodal__hide", !yes && !no);
         modalYesElem.classList.toggle("micromodal__hide", !yes);
@@ -718,6 +743,7 @@ const themodal = (() => {
           document.removeEventListener("mousedown", handleMousedown);
           document.removeEventListener("click", handleClick);
           document.removeEventListener("submit", handleSubmit);
+          this._cleanupListeners = null;
         }
       });
 

@@ -321,7 +321,9 @@ class LiveSync {
 
     this._log('applyUpdate - morph complete, resuming mutations');
     Mutation.resume();
-    this.isPaused = false;
+    // Defer past microtask boundary — MutationObserver callbacks and any async
+    // morph side-effects fire before this, so isPaused catches stray snapshots
+    setTimeout(() => { this.isPaused = false; }, 0);
   }
 
   /**
