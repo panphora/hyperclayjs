@@ -79,6 +79,7 @@ import 'hyperclayjs/presets/standard.js';
 | input-helpers | 3.9KB | [prevent-enter], [autosize] for textareas |
 | movable | 2.5KB | Free-positioning drag with [movable] and [movable-handle], edit mode only |
 | onaftersave | 1KB | [onaftersave] attribute - run JS when save status changes |
+| save-freeze | 1.9KB | [save-freeze] attribute - freeze element innerHTML for saves, live DOM changes freely |
 | sortable | 3.4KB | Drag-drop sorting with [sortable], lazy-loads ~118KB Sortable.js in edit mode |
 
 ### UI Components (User interface elements)
@@ -96,7 +97,7 @@ import 'hyperclayjs/presets/standard.js';
 | cache-bust | 0.6KB | Cache-bust href/src attributes |
 | cookie | 1.4KB | Cookie management (often auto-included) |
 | debounce | 0.4KB | Function debouncing |
-| mutation | 13.7KB | DOM mutation observation (often auto-included) |
+| mutation | 13.8KB | DOM mutation observation (often auto-included) |
 | nearest | 3.4KB | Find nearest elements (often auto-included) |
 | throttle | 0.8KB | Function throttling |
 
@@ -143,7 +144,7 @@ Standard feature set for most use cases
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `unsaved-warning`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Everything (~217.6KB)
+### Everything (~219.6KB)
 All available features
 
 Includes all available modules across all categories.

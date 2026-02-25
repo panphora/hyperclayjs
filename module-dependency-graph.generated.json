@@ -141,6 +141,10 @@
       "utilities/mutation.js"
     ],
     "custom-attributes/preventEnter.js": [],
+    "custom-attributes/saveFreeze.js": [
+      "core/isAdminOfCurrentResource.js",
+      "core/snapshot.js"
+    ],
     "custom-attributes/sortable.js": [
       "core/isAdminOfCurrentResource.js",
       "utilities/loadVendorScript.js",
@@ -440,6 +444,17 @@
       "description": "[onaftersave] attribute - run JS when save status changes",
       "exports": {}
     },
+    "save-freeze": {
+      "name": "save-freeze",
+      "category": "custom-attributes",
+      "size": 1.9,
+      "isEditModeOnly": true,
+      "files": [
+        "custom-attributes/saveFreeze.js"
+      ],
+      "description": "[save-freeze] attribute - freeze element innerHTML for saves, live DOM changes freely",
+      "exports": {}
+    },
     "dialogs": {
       "name": "dialogs",
       "category": "ui",
@@ -515,7 +530,7 @@
     "mutation": {
       "name": "mutation",
       "category": "utilities",
-      "size": 13.7,
+      "size": 13.8,
       "files": [
         "utilities/mutation.js"
       ],
@@ -853,6 +868,7 @@
     "dom-helpers": "./custom-attributes/domHelpers.js",
     "input-helpers": "./custom-attributes/inputHelpers.js",
     "onaftersave": "./custom-attributes/onaftersave.js",
+    "save-freeze": "./custom-attributes/saveFreeze.js",
     "dialogs": "./ui/prompts.js",
     "toast": "./ui/toast.js",
     "toast-hyperclay": "./ui/toast-hyperclay.js",
@@ -907,7 +923,8 @@
         "movable",
         "dom-helpers",
         "input-helpers",
-        "onaftersave"
+        "onaftersave",
+        "save-freeze"
       ]
     },
     "ui": {
@@ -1021,6 +1038,7 @@
         "dom-helpers",
         "input-helpers",
         "onaftersave",
+        "save-freeze",
         "dialogs",
         "toast",
         "the-modal",
@@ -1065,6 +1083,7 @@
         "dom-helpers",
         "input-helpers",
         "onaftersave",
+        "save-freeze",
         "dialogs",
         "toast",
         "the-modal",

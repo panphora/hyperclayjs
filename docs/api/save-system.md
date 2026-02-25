@@ -75,8 +75,20 @@ hyperclay.replacePageWith('/templates/blog.html');
 - Skips save if content hasn't changed
 - Compares against baseline captured after page load (1.5s delay)
 
+## Save Lifecycle Attributes
+
+| Attribute | Effect |
+|-----------|--------|
+| `save-remove` | Element is removed from saved HTML entirely |
+| `save-ignore` | Element is excluded from dirty-checking but still saved as-is |
+| `save-freeze` | Element is saved with its original content, ignoring runtime changes |
+| `onbeforesave` | Inline JS that runs on the snapshot clone before save |
+| `onaftersave` | Inline JS that runs on the live DOM after a successful save |
+| `trigger-save` | Click triggers a save |
+
 ## Related Modules
 
 - `autosave` - Auto-save on DOM changes
+- `save-freeze` - Freeze element content for saves
 - `save-toast` - Toast notifications for save events
 - `unsaved-warning` - Warn before leaving with unsaved changes

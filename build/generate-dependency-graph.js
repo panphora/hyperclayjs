@@ -178,6 +178,13 @@ const MODULE_DEFINITIONS = {
     isEditModeOnly: true
     // No exports - auto-inits on load
   },
+  'custom-attributes/saveFreeze.js': {
+    name: 'save-freeze',
+    moduleId: 'save-freeze',
+    description: '[save-freeze] attribute - freeze element innerHTML for saves, live DOM changes freely',
+    isEditModeOnly: true
+    // No exports - auto-inits on load
+  },
   'ui/prompts.js': {
     name: 'dialogs',
     moduleId: 'dialogs',

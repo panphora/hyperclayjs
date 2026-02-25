@@ -204,7 +204,8 @@ const Mutation = {
     while (element && element.nodeType === 1) {
       if (element.hasAttribute?.('mutations-ignore') ||
           element.hasAttribute?.('save-remove') ||
-          element.hasAttribute?.('save-ignore')) {
+          element.hasAttribute?.('save-ignore') ||
+          element.hasAttribute?.('save-freeze')) {
         return true;
       }
       element = element.parentElement;
