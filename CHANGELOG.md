@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.24.0] - 2026-02-24
+
+### Added
+- Save-freeze functionality
+
+
+
 ## [1.23.1] - 2026-02-23
 
 ### Changed
