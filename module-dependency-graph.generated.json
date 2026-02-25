@@ -447,7 +447,7 @@
     "save-freeze": {
       "name": "save-freeze",
       "category": "custom-attributes",
-      "size": 1.9,
+      "size": 2.8,
       "isEditModeOnly": true,
       "files": [
         "custom-attributes/saveFreeze.js"

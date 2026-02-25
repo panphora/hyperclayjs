@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.24.1] - 2026-02-24
+
+### Changed
+- Updated saveFreeze.js functionality
+
+
+
 ## [1.24.0] - 2026-02-24
 
 ### Added
