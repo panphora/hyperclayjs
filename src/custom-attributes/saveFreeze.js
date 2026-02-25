@@ -16,24 +16,54 @@
  * Changes inside [save-freeze] elements do not trigger autosave dirty checks.
  */
 
-import { onPrepareForSave } from "../core/snapshot.js";
+import { onSnapshot, onPrepareForSave } from "../core/snapshot.js";
 import { isEditMode } from "../core/isAdminOfCurrentResource.js";
 
 const originals = new WeakMap();
 
+const saveFreeze = { debug: false };
+
+function log(...args) {
+  if (saveFreeze.debug) console.log('[save-freeze]', ...args);
+}
+
 function capture(el) {
   if (!originals.has(el)) {
     originals.set(el, el.innerHTML);
+    log('captured original', el.innerHTML.substring(0, 80) + '...');
   }
 }
 
 function captureAll() {
-  for (const el of document.querySelectorAll('[save-freeze]')) {
+  const els = document.querySelectorAll('[save-freeze]');
+  log('captureAll found', els.length, 'elements');
+  for (const el of els) {
     capture(el);
   }
 }
 
+function freezeClone(clone) {
+  const liveElements = document.querySelectorAll('[save-freeze]');
+  const cloneElements = clone.querySelectorAll('[save-freeze]');
+
+  log('freezing clone — live:', liveElements.length, 'clone:', cloneElements.length);
+
+  for (let i = 0; i < cloneElements.length; i++) {
+    const liveEl = liveElements[i];
+    const hasOriginal = liveEl && originals.has(liveEl);
+    if (hasOriginal) {
+      const original = originals.get(liveEl);
+      const current = cloneElements[i].innerHTML;
+      if (original !== current) {
+        log('element', i, '— restoring original');
+        cloneElements[i].innerHTML = original;
+      }
+    }
+  }
+}
+
 function init() {
+  log('init, isEditMode:', isEditMode);
   if (!isEditMode) return;
 
   captureAll();
@@ -51,19 +81,15 @@ function init() {
   });
   observer.observe(document.documentElement, { childList: true, subtree: true });
 
-  onPrepareForSave(clone => {
-    const liveElements = document.querySelectorAll('[save-freeze]');
-    const cloneElements = clone.querySelectorAll('[save-freeze]');
+  // Phase 2: Freeze in snapshot — before snapshot-ready fires.
+  // This prevents live-sync from writing unfrozen content to disk.
+  onSnapshot(freezeClone);
 
-    for (let i = 0; i < cloneElements.length; i++) {
-      const liveEl = liveElements[i];
-      if (liveEl && originals.has(liveEl)) {
-        cloneElements[i].innerHTML = originals.get(liveEl);
-      }
-    }
-  });
+  // Phase 3a: Freeze again in prepare — belt-and-suspenders.
+  // Catches any modifications made between phase 2 and 3a (e.g., onbeforesave handlers).
+  onPrepareForSave(freezeClone);
 }
 
 init();
 
-export default init;
+export default saveFreeze;
