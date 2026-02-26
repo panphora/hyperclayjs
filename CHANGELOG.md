@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.24.2] - 2026-02-25
+
+### Added
+- save-ignore, save-freeze, save-remove, and movable demos to website
+
+### Changed
+- rewrite persist module with live DOM sync
+
+### Fixed
+- poll npm registry before purging jsdelivr cache
+
+
+
 ## [1.24.1] - 2026-02-24
 
 ### Changed
