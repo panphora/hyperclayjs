@@ -331,6 +331,39 @@
             border: 1px solid var(--primary-blue);
         }
 
+        .movable-demo-area {
+            position: relative;
+            height: 140px;
+            border: 1px dashed var(--light-blue);
+            overflow: hidden;
+        }
+
+        .movable-box {
+            position: absolute;
+            width: 80px;
+            height: 50px;
+            background: var(--shadow-blue);
+            border: 1px solid var(--primary-blue);
+            font-size: 0.65rem;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            user-select: none;
+        }
+
+        .movable-box[movable-dragging] {
+            cursor: grabbing;
+            border-color: var(--light-blue);
+        }
+
+        .movable-box [movable-handle] {
+            cursor: grab;
+            padding: 0 0.3rem;
+            color: var(--light-blue);
+        }
+
         .output {
             font-size: 0.7rem;
             color: var(--gray);
@@ -585,6 +618,44 @@
                 <div class="demo-area" style="flex-direction: column; align-items: stretch;">
                     <button onclick="testCacheBust()">Cache-bust demo link</button>
                     <span class="output" id="cache-bust-log">Click to see URL update</span>
+                </div>
+            </div>
+
+            <!-- save-ignore -->
+            <div class="demo-card" id="save-ignore">
+                <h3>[save-ignore]</h3>
+                <p class="desc">Exclude element from dirty detection, but still save it</p>
+                <pre><code>&lt;div save-ignore&gt;
+  Changes here won't mark dirty
+&lt;/div&gt;</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <div class="mini-editor" contenteditable save-ignore id="save-ignore-editor">Edit me — page stays "saved"</div>
+                    <span class="output" id="save-ignore-log">savestatus won't change</span>
+                </div>
+            </div>
+
+            <!-- save-freeze -->
+            <div class="demo-card" id="save-freeze">
+                <h3>[save-freeze]</h3>
+                <p class="desc">Always save the original innerHTML, even if it changes live</p>
+                <pre><code>&lt;div save-freeze&gt;
+  Original content is preserved on save
+&lt;/div&gt;</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <div class="mini-editor" contenteditable save-freeze id="save-freeze-editor">Edit me — original saves</div>
+                    <span class="output">Live DOM can change, saves use the frozen original</span>
+                </div>
+            </div>
+
+            <!-- save-remove -->
+            <div class="demo-card" id="save-remove">
+                <h3>[save-remove]</h3>
+                <p class="desc">Strip element entirely from saved HTML</p>
+                <pre><code>&lt;div save-remove&gt;
+  Admin-only UI, never saved
+&lt;/div&gt;</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <span class="output">Element is removed from both save output and dirty detection</span>
                 </div>
             </div>
 
@@ -859,6 +930,23 @@ hyperclay.isEditMode;</code></pre>
                         <li>Drag me (3)</li>
                     </ul>
                     <span class="output" id="sortable-log">Drag items to reorder</span>
+                </div>
+            </div>
+
+            <!-- movable -->
+            <div class="demo-card" id="movable">
+                <h3>[movable]</h3>
+                <p class="desc">Free-position drag with optional handle</p>
+                <pre><code>&lt;div movable style="transform:
+  translate(10px, 10px)"&gt;
+  &lt;div movable-handle&gt;⠿&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+                <div class="movable-demo-area">
+                    <div class="movable-box" movable style="transform: translate(10px, 10px)">drag me</div>
+                    <div class="movable-box" movable style="transform: translate(100px, 70px); flex-direction: column; gap: 2px;">
+                        <div movable-handle>⠿</div>
+                        <span style="font-size: 0.55rem;">handle only</span>
+                    </div>
                 </div>
             </div>
 
@@ -1205,6 +1293,7 @@ themodal.open();</code></pre>
     <script>
         window.hyperclay = window.hyperclay || {};
         window.hyperclay.testMode = true;
+        document.cookie = "isAdminOfCurrentResource=true; path=/";
 
         // Mock fetch for demos
         const originalFetch = window.fetch.bind(window);
@@ -1221,7 +1310,7 @@ themodal.open();</code></pre>
         };
     </script>
     <script type="module">
-        await import('./dist/hyperclay.js?preset=everything&exclude=autosave,save-toast,edit-mode,live-sync');
+        await import('./dist/hyperclay.js?preset=everything&exclude=autosave,save-toast,edit-mode,live-sync,unsaved-warning,save-system,save-core');
 
         // ========== HELPER FUNCTIONS ==========
 
@@ -1235,9 +1324,10 @@ themodal.open();</code></pre>
         window.testSavePage = () => {
             const log = document.getElementById('save-page-log');
             log.textContent = 'Saving...';
-            hyperclay.savePage?.(({ msgType, msg }) => {
-                log.textContent = `${msgType}: ${msg}`;
-            });
+            setTimeout(() => {
+                log.textContent = 'success: Saved (demo)';
+                toast('Saved', 'success');
+            }, 300);
         };
 
         window.dispatchSaveEvent = (type) => {
