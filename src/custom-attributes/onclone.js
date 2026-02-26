@@ -15,6 +15,23 @@ function init() {
     if (clonedNode.nodeType === Node.ELEMENT_NODE) {
       processOnclone(clonedNode);
       clonedNode.querySelectorAll('[onclone]').forEach(processOnclone);
+
+      // Patch textareas: the persist module writes live values to data-value
+      // on every keystroke (because writing textContent on a focused textarea
+      // destroys cursor/scroll). Shift data-value into textContent on the
+      // clone so consumers get the current value without special handling.
+      if (deep) {
+        const textareas = clonedNode.tagName === 'TEXTAREA'
+          ? [clonedNode]
+          : clonedNode.querySelectorAll('textarea[data-value]');
+        textareas.forEach(ta => {
+          const val = ta.getAttribute('data-value');
+          if (val !== null) {
+            ta.textContent = val;
+            ta.removeAttribute('data-value');
+          }
+        });
+      }
     }
 
     return clonedNode;

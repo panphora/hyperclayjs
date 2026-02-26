@@ -283,7 +283,7 @@
     "persist": {
       "name": "persist",
       "category": "core",
-      "size": 2.4,
+      "size": 6.4,
       "isEditModeOnly": true,
       "files": [
         "core/enablePersistentFormInputValues.js"
@@ -366,7 +366,7 @@
     "event-attrs": {
       "name": "event-attrs",
       "category": "custom-attributes",
-      "size": 4.6,
+      "size": 5.3,
       "files": [
         "custom-attributes/events.js",
         "custom-attributes/onclickaway.js",

@@ -61,7 +61,7 @@ import 'hyperclayjs/presets/standard.js';
 | edit-mode | 1.8KB | Toggle edit mode on hyperclay on/off |
 | edit-mode-helpers | 6.8KB | Admin-only functionality: [viewmode:disabled], [editmode:resource], [editmode:onclick] |
 | option-visibility | 7.1KB | Dynamic show/hide based on ancestor state with option:attribute="value" |
-| persist | 2.4KB | Persist input/select/textarea values to the DOM with [persist] attribute |
+| persist | 6.4KB | Persist input/select/textarea values to the DOM with [persist] attribute |
 | save-core | 8.9KB | Basic save function only - hyperclay.savePage() |
 | save-system | 13.4KB | CMD+S, [trigger-save] button, savestatus attribute |
 | save-toast | 0.9KB | Toast notifications for save events |
@@ -75,7 +75,7 @@ import 'hyperclayjs/presets/standard.js';
 |--------|------|-------------|
 | ajax-elements | 2.6KB | [ajax-form], [ajax-button] for async form submissions |
 | dom-helpers | 6.8KB | el.nearest, el.val, el.text, el.exec, el.cycle |
-| event-attrs | 4.6KB | [onclickaway], [onclickchildren], [onclone], [onpagemutation], [onrender] |
+| event-attrs | 5.3KB | [onclickaway], [onclickchildren], [onclone], [onpagemutation], [onrender] |
 | input-helpers | 3.9KB | [prevent-enter], [autosize] for textareas |
 | movable | 2.5KB | Free-positioning drag with [movable] and [movable-handle], edit mode only |
 | onaftersave | 1KB | [onaftersave] attribute - run JS when save status changes |
@@ -139,12 +139,12 @@ Essential features for basic editing
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `edit-mode-helpers`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Standard (~79.2KB)
+### Standard (~83.9KB)
 Standard feature set for most use cases
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `unsaved-warning`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Everything (~220.5KB)
+### Everything (~225.2KB)
 All available features
 
 Includes all available modules across all categories.
