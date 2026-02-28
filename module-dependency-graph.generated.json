@@ -381,7 +381,7 @@
     "ajax-elements": {
       "name": "ajax-elements",
       "category": "custom-attributes",
-      "size": 2.6,
+      "size": 2.8,
       "files": [
         "custom-attributes/ajaxElements.js"
       ],
@@ -765,7 +765,7 @@
     "behavior-collector": {
       "name": "behavior-collector",
       "category": "communication",
-      "size": 5.5,
+      "size": 5.6,
       "files": [
         "communication/behaviorCollector.js"
       ],
