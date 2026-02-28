@@ -49,11 +49,13 @@ function submitAjax(elem) {
       },
       body: JSON.stringify(data)
     })
-      .then(res => res.json().then(resData => {
-        return { ...resData, ok: res.ok, msgType: res.ok ? "success" : "error" }
-      }))
-      .then((res) => {
-        handleResponse(elem, res);
+      .then(async (res) => {
+        const contentType = res.headers.get('content-type') || '';
+        let resData = {};
+        if (res.status !== 204 && contentType.includes('application/json')) {
+          resData = await res.json();
+        }
+        handleResponse(elem, { ...resData, ok: res.ok, msgType: res.ok ? "success" : "error" });
       })
       .catch(error => console.error('Error:', error));
   });
