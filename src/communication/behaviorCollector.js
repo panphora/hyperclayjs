@@ -84,7 +84,7 @@ const behaviorCollector = (() => {
     const scrollEvent = {
       position: position,
       timestamp: now,
-      direction: position > data.navigation.lastScrollPosition ? 'down' : 'up',
+      direction: position === data.navigation.lastScrollPosition ? null : (position > data.navigation.lastScrollPosition ? 'down' : 'up'),
       isTrusted: e.isTrusted
     };
 
@@ -96,7 +96,7 @@ const behaviorCollector = (() => {
 
     if (data.scrollEvents.length > 1) {
       const lastEvent = data.scrollEvents[data.scrollEvents.length - 2];
-      if (lastEvent.direction !== scrollEvent.direction) {
+      if (lastEvent.direction && scrollEvent.direction && lastEvent.direction !== scrollEvent.direction) {
         data.navigation.scrollDirectionChanges++;
       }
     }
