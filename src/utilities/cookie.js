@@ -3,7 +3,7 @@ function get (cookieName) {
   const cookies = document.cookie.split('; ');
   const cookie = cookies.find(row => row.startsWith(`${cookieName}=`));
   if (!cookie) return null;
-  const cookieValue = cookie.split('=')[1];
+  const cookieValue = cookie.slice(cookieName.length + 1);
   try {
     return JSON.parse(decodeURIComponent(cookieValue));
   } catch (err) {
