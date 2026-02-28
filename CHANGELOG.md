@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.24.3] - 2026-02-27
+
+### Fixed
+- Handle cookie values containing equals signs
+- Prefer element.value over getAttribute for form data collection
+- Handle non-JSON and 204 responses in ajax elements
+- Prevent double initialization of admin system
+- Handle null scroll direction when position unchanged
+
+
+
 ## [1.24.2] - 2026-02-25
 
 ### Added
