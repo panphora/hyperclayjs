@@ -4,7 +4,11 @@ import { init as initInputs } from './adminInputs.js';
 import { init as initOnClick } from './adminOnClick.js';
 import { init as initResources } from './adminResources.js';
 
+let initialized = false;
+
 function init() {
+  if (initialized) return;
+  initialized = true;
   initContenteditable();
   initInputs();
   initOnClick();
