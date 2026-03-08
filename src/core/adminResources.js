@@ -2,8 +2,8 @@ import { isEditMode, isOwner } from "./isAdminOfCurrentResource.js";
 import onDomReady from "../dom-utilities/onDomReady.js";
 import {beforeSave} from "./savePage.js";
 
-const SELECTOR = '[editmode\\:resource]:is(style, link, script)';
-const SELECTOR_INERT = '[editmode\\:resource]:is(style, link, script)[type^="inert/"]';
+export const SELECTOR = '[editmode\\:resource]:is(style, link, script)';
+export const SELECTOR_INERT = '[editmode\\:resource]:is(style, link, script)[type^="inert/"]';
 
 export function disableAdminResourcesBeforeSave () {
   beforeSave(docElem => {

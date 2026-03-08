@@ -2,8 +2,8 @@ import { isEditMode, isOwner } from "./isAdminOfCurrentResource.js";
 import onDomReady from "../dom-utilities/onDomReady.js";
 import { beforeSave } from "./savePage.js";
 
-const SELECTOR_DISABLED = '[viewmode\\:disabled]';
-const SELECTOR_READONLY = '[viewmode\\:readonly]';
+export const SELECTOR_DISABLED = '[viewmode\\:disabled]';
+export const SELECTOR_READONLY = '[viewmode\\:readonly]';
 
 export function disableAdminInputsBeforeSave() {
   beforeSave(docElem => {
