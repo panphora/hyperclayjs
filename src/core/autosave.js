@@ -20,7 +20,7 @@ import { savePageThrottled } from "./savePage.js";
  */
 function initSavePageOnChange() {
   Mutation.onAnyChange({
-    debounce: 3333,
+    debounce: 1500,
     omitChangeDetails: true
   }, () => {
     savePageThrottled();
@@ -36,7 +36,7 @@ function initSaveOnPersistInput() {
   document.addEventListener('input', (e) => {
     if (!e.target.closest('[persist]')) return;
     clearTimeout(inputSaveTimer);
-    inputSaveTimer = setTimeout(savePageThrottled, 3333);
+    inputSaveTimer = setTimeout(savePageThrottled, 1500);
   }, true);
 }
 
