@@ -24,7 +24,10 @@ import {
 // =============================================================================
 
 let saveInProgress = false;
-const saveEndpoint = `/save/${cookie.get("currentResource")}`;
+const appname = document.documentElement.getAttribute('appname');
+const saveEndpoint = appname
+  ? `/save/${appname}`
+  : `/save/${cookie.get("currentResource")}`;
 
 /**
  * Check if a save is currently in progress.
