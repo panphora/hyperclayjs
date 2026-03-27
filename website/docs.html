@@ -507,7 +507,8 @@
       <h3>Communication</h3><a href="#fn-sendMessage">sendMessage</a><a href="#fn-uploadFile">uploadFile</a><a href="#fn-createFile">createFile</a><a href="#fn-uploadFileBasic">uploadFileBasic</a><a href="#fn-live-sync">live-sync</a></div><div class="sidebar-section">
       <h3>Event Attributes</h3><a href="#fn-onclickaway">onclickaway</a><a href="#fn-onclickchildren">onclickchildren</a><a href="#fn-onclone">onclone</a><a href="#fn-onmutation">onmutation</a><a href="#fn-onpagemutation">onpagemutation</a><a href="#fn-onrender">onrender</a></div><div class="sidebar-section">
       <h3>Custom Attributes</h3><a href="#fn-persist">persist</a><a href="#fn-onaftersave">onaftersave</a><a href="#fn-prevent-enter">prevent-enter</a><a href="#fn-autosize">autosize</a><a href="#fn-sortable">sortable</a><a href="#fn-option-visibility">option-visibility</a></div><div class="sidebar-section">
-      <h3>Save/Edit Features</h3><a href="#fn-edit-mode">edit-mode</a><a href="#fn-edit-mode-helpers">edit-mode-helpers</a><a href="#fn-save-system">save-system</a><a href="#fn-save-toast">save-toast</a><a href="#fn-unsaved-warning">unsaved-warning</a><a href="#fn-autosave">autosave</a><a href="#fn-tailwind-inject">tailwind-inject</a></div>
+      <h3>Save/Edit Features</h3><a href="#fn-edit-mode">edit-mode</a><a href="#fn-edit-mode-helpers">edit-mode-helpers</a><a href="#fn-save-system">save-system</a><a href="#fn-save-toast">save-toast</a><a href="#fn-unsaved-warning">unsaved-warning</a><a href="#fn-autosave">autosave</a></div><div class="sidebar-section">
+      <h3>Resource Refresh</h3><a href="#fn-refetch-on-save">refetch-on-save</a></div>
       </div>
     </div>
     <main class="content">
@@ -1278,8 +1279,9 @@ const img = document.querySelector('img');
 cacheBust(img);
 // src=&quot;/photo.jpg?v=123&quot; becomes &quot;/photo.jpg?v=1702847291234&quot;
 
-// Use with onaftersave to reload Tailwind CSS after save
-// &lt;link href=&quot;/tailwindcss/mysite.css&quot; onaftersave=&quot;cacheBust(this)&quot;&gt;</pre></div>
+// Use with onaftersave
+// &lt;link href=&quot;/styles.css&quot; onaftersave=&quot;cacheBust(this)&quot;&gt;
+// Note: for stylesheets where a flash matters, use [refetch-on-save] instead</pre></div>
   </div><div class="function-card" id="fn-cookie">
     <h3>cookie</h3>
     <p class="function-description">Utility object for reading and removing browser cookies.</p>
@@ -2274,34 +2276,26 @@ hyperclay.replacePageWith('/templates/blog.html');</pre></div>
 
 &lt;!-- Full save stack --&gt;
 &lt;script src=&quot;hyperclay.js?save-system,autosave,unsaved-warning,save-toast&quot;&gt;&lt;/script&gt;</pre></div>
-  </div><div class="function-card" id="fn-tailwind-inject">
-    <h3>tailwind-inject</h3>
-    <p class="function-description">Injects a Tailwind CSS stylesheet for the current resource and cache-busts it on every save. Edit-mode only.</p>
+  </div></div><div class="category-section" id="cat-refetchOnSave">
+      <h2>Resource Refresh</h2><div class="function-card" id="fn-refetch-on-save">
+    <h3>refetch-on-save</h3>
+    <p class="function-description">Flash-free refetch of any element's `href` or `src` after a successful save. The old resource stays visible until the new one has fully loaded, preventing FOUC.</p>
     
     
-    <h4>Parameters</h4>
-    <table class="params-table">
-      <tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr>
-      
-        <tr>
-          <td><code>currentResource</code></td>
-          <td><code>cookie</code></td>
-          <td>—</td>
-          <td>Read from `currentResource` cookie. Determines the CSS path: `/tailwindcss/{currentResource}.css`</td>
-        </tr>
-      
-    </table>
     
     
-    <h4>Example</h4><div class="example"><pre>&lt;!-- Include with other save features --&gt;
-&lt;script type=&quot;module&quot;&gt;
-  await import('hyperclay.js?features=tailwind-inject,save-system');
-&lt;/script&gt;
+    
+    <h4>Example</h4><div class="example"><pre>&lt;!-- Reload Tailwind CSS after save (classes may have changed) --&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;/tailwindcss/mysite.css&quot; refetch-on-save&gt;
 
-&lt;!-- Or use the everything preset --&gt;
-&lt;script type=&quot;module&quot;&gt;
-  await import('hyperclay.js?preset=everything');
-&lt;/script&gt;</pre></div>
+&lt;!-- Reload any stylesheet --&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;/styles/theme.css&quot; refetch-on-save&gt;
+
+&lt;!-- Reload a script --&gt;
+&lt;script src=&quot;/js/config.js&quot; refetch-on-save&gt;&lt;/script&gt;
+
+&lt;!-- Reload a preview image --&gt;
+&lt;img src=&quot;/preview.png&quot; refetch-on-save&gt;</pre></div>
   </div></div>
     </main>
   </div>

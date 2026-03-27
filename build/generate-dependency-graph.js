@@ -387,12 +387,11 @@ const MODULE_DEFINITIONS = {
       liveSync: ['hyperclay']
     }
   },
-  'core/tailwindInject.js': {
-    name: 'tailwind-inject',
-    moduleId: 'tailwind-inject',
-    description: 'Injects tailwind CSS link with cache-bust on save',
-    isEditModeOnly: true,
-    difficulty: 'intermediate'
+  'custom-attributes/refetchOnSave.js': {
+    name: 'refetch-on-save',
+    moduleId: 'refetch-on-save',
+    description: 'Flash-free refetch of href/src resources on save via [refetch-on-save] attribute',
+    isEditModeOnly: true
     // No exports - auto-inits on load
   },
   'core/exportToWindow.js': {

@@ -621,6 +621,18 @@
                 </div>
             </div>
 
+            <!-- refetch-on-save -->
+            <div class="demo-card" id="refetch-on-save">
+                <h3>[refetch-on-save]</h3>
+                <p class="desc">Flash-free reload of href/src resources after save</p>
+                <pre><code>&lt;link rel="stylesheet"
+  href="/styles.css" refetch-on-save&gt;</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <button onclick="testRefetchOnSave()">Simulate save event</button>
+                    <span class="output" id="refetch-on-save-log">Old element stays until new one loads</span>
+                </div>
+            </div>
+
             <!-- save-ignore -->
             <div class="demo-card" id="save-ignore">
                 <h3>[save-ignore]</h3>
@@ -1345,6 +1357,16 @@ themodal.open();</code></pre>
             cacheBust(fakeLink);
             const after = fakeLink.href;
             document.getElementById('cache-bust-log').textContent = `${before} → ${after}`;
+        };
+
+        // refetch-on-save demo
+        window.testRefetchOnSave = () => {
+            const log = document.getElementById('refetch-on-save-log');
+            log.textContent = 'Dispatching save event...';
+            dispatchSaveEvent('saved');
+            setTimeout(() => {
+                log.textContent = 'Elements with [refetch-on-save] were swapped with cache-busted clones';
+            }, 200);
         };
 
         // Save system - update savestatus on edit

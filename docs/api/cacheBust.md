@@ -31,6 +31,7 @@ const img = document.querySelector('img');
 cacheBust(img);
 // src="/photo.jpg?v=123" becomes "/photo.jpg?v=1702847291234"
 
-// Use with onaftersave to reload Tailwind CSS after save
-// <link href="/tailwindcss/mysite.css" onaftersave="cacheBust(this)">
+// Use with onaftersave
+// <link href="/styles.css" onaftersave="cacheBust(this)">
+// Note: for stylesheets where a flash matters, use [refetch-on-save] instead
 ```

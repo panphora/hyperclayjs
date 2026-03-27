@@ -138,15 +138,18 @@ class LiveSync {
 
   /**
    * Auto-detect the current site identifier from the URL
-   * Returns site ID without .html extension
+   * Returns extensionless site ID
    *
    * Handles:
-   * - /                  -> index
-   * - /about             -> about
-   * - /about.html        -> about
-   * - /about/            -> about/index
-   * - /pages/contact     -> pages/contact
-   * - /pages/contact/    -> pages/contact/index
+   * - /                           -> index
+   * - /about                      -> about
+   * - /about.html                 -> about
+   * - /about.htmlclay             -> about
+   * - /about.html/dashboard       -> about  (SPA route stripped)
+   * - /blog/app.htmlclay/settings -> blog/app  (SPA route stripped)
+   * - /about/                     -> about/index
+   * - /pages/contact              -> pages/contact
+   * - /pages/contact/             -> pages/contact/index
    */
   detectCurrentFile() {
     let pathname = window.location.pathname;
@@ -159,17 +162,17 @@ class LiveSync {
     // Remove leading slash
     pathname = pathname.replace(/^\//, '');
 
+    // Extension-based URLs: extract file path up to .html/.htmlclay, strip extension
+    // Also handles SPA suffixes (e.g., blog/app.html/dashboard → blog/app)
+    const htmlMatch = pathname.match(/^(.*?)\.html(?:clay)?/);
+    if (htmlMatch) return htmlMatch[1];
+
     // Handle trailing slash -> directory index
     if (pathname.endsWith('/')) {
       return pathname + 'index';
     }
 
-    // Remove .html extension if present
-    if (pathname.endsWith('.html')) {
-      return pathname.slice(0, -5);
-    }
-
-    // Already a site identifier
+    // Extensionless path (platform URLs, etc.)
     return pathname;
   }
 
@@ -276,9 +279,8 @@ class LiveSync {
 
       fetch('/live-sync/save', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Page-URL': window.location.href },
         body: JSON.stringify({
-          file: this.currentFile,
           html: html,
           sender: this.clientId
         })

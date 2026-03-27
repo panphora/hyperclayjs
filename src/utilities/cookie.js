@@ -1,4 +1,4 @@
-// e.g. Cookie.get("currentResource")
+// e.g. Cookie.get("isAdminOfCurrentResource")
 function get (cookieName) {
   const cookies = document.cookie.split('; ');
   const cookie = cookies.find(row => row.startsWith(`${cookieName}=`));
@@ -11,7 +11,7 @@ function get (cookieName) {
   }
 }
 
-// e.g. Cookie.remove("currentResource")
+// e.g. Cookie.remove("isAdminOfCurrentResource")
 function remove(name) {
   // Clear from current path
   document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`

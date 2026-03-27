@@ -27,7 +27,9 @@ const FUNCTION_ORDER = [
   // Custom Attributes
   'persist', 'onaftersave', 'prevent-enter', 'autosize', 'sortable', 'option-visibility',
   // Save/Edit Features
-  'edit-mode', 'edit-mode-helpers', 'save-system', 'save-toast', 'unsaved-warning', 'autosave', 'tailwind-inject'
+  'edit-mode', 'edit-mode-helpers', 'save-system', 'save-toast', 'unsaved-warning', 'autosave',
+  // Custom Attributes (continued)
+  'refetch-on-save'
 ];
 
 // Category definitions with display order
@@ -62,7 +64,11 @@ const CATEGORIES = {
   },
   saveEdit: {
     name: 'Save/Edit Features',
-    functions: ['edit-mode', 'edit-mode-helpers', 'save-system', 'save-toast', 'unsaved-warning', 'autosave', 'tailwind-inject']
+    functions: ['edit-mode', 'edit-mode-helpers', 'save-system', 'save-toast', 'unsaved-warning', 'autosave']
+  },
+  refetchOnSave: {
+    name: 'Resource Refresh',
+    functions: ['refetch-on-save']
   }
 };
 

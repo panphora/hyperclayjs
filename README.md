@@ -66,7 +66,6 @@ import 'hyperclayjs/presets/standard.js';
 | save-system | 13.4KB | CMD+S, [trigger-save] button, savestatus attribute |
 | save-toast | 0.9KB | Toast notifications for save events |
 | snapshot | 10.8KB | Source of truth for page state - captures DOM snapshots for save and sync |
-| tailwind-inject | 1.4KB | Injects tailwind CSS link with cache-bust on save |
 | unsaved-warning | 1.3KB | Warn before leaving page with unsaved changes |
 
 ### Custom Attributes (HTML enhancements)
@@ -79,6 +78,7 @@ import 'hyperclayjs/presets/standard.js';
 | input-helpers | 3.9KB | [prevent-enter], [autosize] for textareas |
 | movable | 2.5KB | Free-positioning drag with [movable] and [movable-handle], edit mode only |
 | onaftersave | 1KB | [onaftersave] attribute - run JS when save status changes |
+| refetch-on-save | 0.9KB | Flash-free refetch of href/src resources on save via [refetch-on-save] attribute |
 | save-freeze | 2.8KB | [save-freeze] attribute - freeze element innerHTML for saves, live DOM changes freely |
 | sortable | 3.4KB | Drag-drop sorting with [sortable], lazy-loads ~118KB Sortable.js in edit mode |
 
@@ -123,7 +123,7 @@ import 'hyperclayjs/presets/standard.js';
 | Module | Size | Description |
 |--------|------|-------------|
 | file-upload | 10.7KB | File upload with progress |
-| live-sync | 11.7KB | Real-time DOM sync across browsers |
+| live-sync | 12.1KB | Real-time DOM sync across browsers |
 | send-message | 1.3KB | Message sending utility |
 
 ### Vendor Libraries (Third-party libraries)
@@ -144,7 +144,7 @@ Standard feature set for most use cases
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `unsaved-warning`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Everything (~225.5KB)
+### Everything (~225.4KB)
 All available features
 
 Includes all available modules across all categories.

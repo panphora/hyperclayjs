@@ -76,8 +76,7 @@
     ],
     "core/savePageCore.js": [
       "core/isAdminOfCurrentResource.js",
-      "core/snapshot.js",
-      "utilities/cookie.js"
+      "core/snapshot.js"
     ],
     "core/saveToast.js": [
       "core/isAdminOfCurrentResource.js",
@@ -89,10 +88,6 @@
       "dom-utilities/onDomReady.js"
     ],
     "core/snapshot.js": [],
-    "core/tailwindInject.js": [
-      "dom-utilities/insertStyleTag.js",
-      "utilities/cookie.js"
-    ],
     "core/unsavedWarning.js": [
       "core/isAdminOfCurrentResource.js",
       "core/savePage.js",
@@ -141,6 +136,7 @@
       "utilities/mutation.js"
     ],
     "custom-attributes/preventEnter.js": [],
+    "custom-attributes/refetchOnSave.js": [],
     "custom-attributes/saveFreeze.js": [
       "core/isAdminOfCurrentResource.js",
       "core/snapshot.js"
@@ -814,7 +810,7 @@
     "live-sync": {
       "name": "live-sync",
       "category": "communication",
-      "size": 11.7,
+      "size": 12.1,
       "isEditModeOnly": true,
       "difficulty": "advanced",
       "files": [
@@ -827,16 +823,15 @@
         ]
       }
     },
-    "tailwind-inject": {
-      "name": "tailwind-inject",
-      "category": "core",
-      "size": 1.4,
+    "refetch-on-save": {
+      "name": "refetch-on-save",
+      "category": "custom-attributes",
+      "size": 0.9,
       "isEditModeOnly": true,
-      "difficulty": "intermediate",
       "files": [
-        "core/tailwindInject.js"
+        "custom-attributes/refetchOnSave.js"
       ],
-      "description": "Injects tailwind CSS link with cache-bust on save",
+      "description": "Flash-free refetch of href/src resources on save via [refetch-on-save] attribute",
       "exports": {}
     },
     "export-to-window": {
@@ -892,7 +887,7 @@
     "send-message": "./communication/sendMessage.js",
     "file-upload": "./communication/uploadFile.js",
     "live-sync": "./communication/live-sync.js",
-    "tailwind-inject": "./core/tailwindInject.js",
+    "refetch-on-save": "./custom-attributes/refetchOnSave.js",
     "export-to-window": "./core/exportToWindow.js"
   },
   "categories": {
@@ -909,8 +904,7 @@
         "persist",
         "snapshot",
         "option-visibility",
-        "edit-mode",
-        "tailwind-inject"
+        "edit-mode"
       ]
     },
     "custom-attributes": {
@@ -924,7 +918,8 @@
         "dom-helpers",
         "input-helpers",
         "onaftersave",
-        "save-freeze"
+        "save-freeze",
+        "refetch-on-save"
       ]
     },
     "ui": {
@@ -1058,6 +1053,7 @@
         "behavior-collector",
         "send-message",
         "file-upload",
+        "refetch-on-save",
         "export-to-window",
         "view-mode-excludes-edit-modules"
       ]
@@ -1106,7 +1102,7 @@
         "send-message",
         "file-upload",
         "live-sync",
-        "tailwind-inject",
+        "refetch-on-save",
         "export-to-window",
         "view-mode-excludes-edit-modules"
       ]

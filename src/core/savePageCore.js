@@ -7,7 +7,6 @@
  * For full save system with state management, use savePage.js instead.
  */
 
-import cookie from "../utilities/cookie.js";
 import { isEditMode } from "./isAdminOfCurrentResource.js";
 import {
   captureForSave,
@@ -24,10 +23,7 @@ import {
 // =============================================================================
 
 let saveInProgress = false;
-const appname = document.documentElement.getAttribute('appname');
-const saveEndpoint = appname
-  ? `/save/${appname}`
-  : `/save/${cookie.get("currentResource")}`;
+const saveEndpoint = '/save';
 
 /**
  * Check if a save is currently in progress.
@@ -122,12 +118,13 @@ export function savePage(callback = () => {}) {
   const fetchOptions = {
     method: 'POST',
     credentials: 'include',
-    signal: controller.signal
+    signal: controller.signal,
+    headers: { 'Page-URL': window.location.href }
   };
 
   if (isHyperclayLocal && window.__hyperclaySnapshotHtml) {
     // Send JSON with both stripped content and full snapshot for platform live sync
-    fetchOptions.headers = { 'Content-Type': 'application/json' };
+    fetchOptions.headers['Content-Type'] = 'application/json';
     fetchOptions.body = JSON.stringify({
       content: currentContents,
       snapshotHtml: window.__hyperclaySnapshotHtml
@@ -216,12 +213,13 @@ export function saveHtml(html, callback = () => {}) {
   const fetchOptions = {
     method: 'POST',
     credentials: 'include',
-    signal: controller.signal
+    signal: controller.signal,
+    headers: { 'Page-URL': window.location.href }
   };
 
   if (isHyperclayLocal && window.__hyperclaySnapshotHtml) {
     // Send JSON with both stripped content and full snapshot for platform live sync
-    fetchOptions.headers = { 'Content-Type': 'application/json' };
+    fetchOptions.headers['Content-Type'] = 'application/json';
     fetchOptions.body = JSON.stringify({
       content: html,
       snapshotHtml: window.__hyperclaySnapshotHtml

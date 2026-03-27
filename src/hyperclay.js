@@ -68,7 +68,7 @@ const MODULE_PATHS = {
   "send-message": "./communication/sendMessage.js",
   "file-upload": "./communication/uploadFile.js",
   "live-sync": "./communication/live-sync.js",
-  "tailwind-inject": "./core/tailwindInject.js",
+  "refetch-on-save": "./custom-attributes/refetchOnSave.js",
   "export-to-window": "./core/exportToWindow.js"
 };
 const PRESETS = {
@@ -145,6 +145,7 @@ const PRESETS = {
       "behavior-collector",
       "send-message",
       "file-upload",
+      "refetch-on-save",
       "export-to-window",
       "view-mode-excludes-edit-modules"
     ]
@@ -193,7 +194,7 @@ const PRESETS = {
       "send-message",
       "file-upload",
       "live-sync",
-      "tailwind-inject",
+      "refetch-on-save",
       "export-to-window",
       "view-mode-excludes-edit-modules"
     ]
@@ -216,7 +217,7 @@ const EDIT_MODE_ONLY = new Set([
   "hyper-morph",
   "file-upload",
   "live-sync",
-  "tailwind-inject"
+  "refetch-on-save"
 ]);
 
 // Parse URL (use import.meta.url for ES modules since document.currentScript is null)
