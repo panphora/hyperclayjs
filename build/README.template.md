@@ -252,16 +252,16 @@ myFeature();
 
 ### Before
 ```html
-<script src="/js/old-hyperclay.js"></script>
+<script src="/public/js/old-hyperclay.js"></script>
 ```
 
 ### After
 ```html
 <!-- Use preset -->
-<script src="/js/hyperclay.js?preset=standard" type="module"></script>
+<script src="/public/js/hyperclay.js?preset=standard" type="module"></script>
 
 <!-- Or specific features -->
-<script src="/js/hyperclay.js?features=save,edit-mode-helpers,toast" type="module"></script>
+<script src="/public/js/hyperclay.js?features=save,edit-mode-helpers,toast" type="module"></script>
 ```
 
 ## Contributing

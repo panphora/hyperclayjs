@@ -30,7 +30,7 @@ The new element keeps the `refetch-on-save` attribute so it works on subsequent 
 <link rel="stylesheet" href="/styles/theme.css" refetch-on-save>
 
 <!-- Reload a script -->
-<script src="/js/config.js" refetch-on-save></script>
+<script src="/public/js/config.js" refetch-on-save></script>
 
 <!-- Reload a preview image -->
 <img src="/preview.png" refetch-on-save>
