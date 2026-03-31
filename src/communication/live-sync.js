@@ -137,42 +137,28 @@ class LiveSync {
   }
 
   /**
-   * Auto-detect the current site identifier from the URL
-   * Returns extensionless site ID
+   * Auto-detect the current site file path from the URL
+   * Returns the path including extension (e.g., card-canvas.html)
    *
    * Handles:
-   * - /                           -> index
-   * - /about                      -> about
-   * - /about.html                 -> about
-   * - /about.htmlclay             -> about
-   * - /about.html/dashboard       -> about  (SPA route stripped)
-   * - /blog/app.htmlclay/settings -> blog/app  (SPA route stripped)
-   * - /about/                     -> about/index
-   * - /pages/contact              -> pages/contact
-   * - /pages/contact/             -> pages/contact/index
+   * - /                           -> index.html
+   * - /about.html                 -> about.html
+   * - /about.htmlclay             -> about.htmlclay
+   * - /about.html/dashboard       -> about.html  (SPA route stripped)
+   * - /blog/app.htmlclay/settings -> blog/app.htmlclay  (SPA route stripped)
    */
   detectCurrentFile() {
     let pathname = window.location.pathname;
 
-    // Root path
     if (pathname === '/') {
-      return 'index';
+      return 'index.html';
     }
 
-    // Remove leading slash
     pathname = pathname.replace(/^\//, '');
 
-    // Extension-based URLs: extract file path up to .html/.htmlclay, strip extension
-    // Also handles SPA suffixes (e.g., blog/app.html/dashboard → blog/app)
-    const htmlMatch = pathname.match(/^(.*?)\.html(?:clay)?/);
+    const htmlMatch = pathname.match(/^(.*?\.html(?:clay)?)/);
     if (htmlMatch) return htmlMatch[1];
 
-    // Handle trailing slash -> directory index
-    if (pathname.endsWith('/')) {
-      return pathname + 'index';
-    }
-
-    // Extensionless path (platform URLs, etc.)
     return pathname;
   }
 
@@ -183,7 +169,8 @@ class LiveSync {
   connect() {
     if (this.isDestroyed) return;
 
-    const url = `/live-sync/stream?file=${encodeURIComponent(this.currentFile)}`;
+    const pageUrl = encodeURIComponent(window.location.href);
+    const url = `/live-sync/stream?page-url=${pageUrl}`;
     this.sse = new EventSource(url);
 
     this.sse.onopen = () => {
