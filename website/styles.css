@@ -243,7 +243,7 @@ input[sum] {
     margin-top: 0.75rem;
     padding-left: 1.25rem;
     font-size: var(--text-body);
-    color: var(--gray);
+    color: var(--text-primary);
 }
 
 .intro-bullets li {
@@ -275,7 +275,7 @@ input[sum] {
 
 .intro-section p {
     font-size: var(--text-body);
-    color: var(--gray);
+    color: var(--text-primary);
     margin-bottom: 0.75rem;
     line-height: 1.6;
 }
@@ -304,7 +304,7 @@ input[sum] {
 
 .intro-section--orange p {
     font-size: var(--text-body);
-    color: var(--gray);
+    color: var(--text-primary);
     margin-bottom: 0.75rem;
     line-height: 1.6;
 }
@@ -325,7 +325,7 @@ input[sum] {
     margin: 0.75rem 0;
     padding-left: 1.25rem;
     font-size: var(--text-body);
-    color: var(--gray);
+    color: var(--text-primary);
 }
 
 .feature-list li {
@@ -426,7 +426,7 @@ input[sum] {
 
 .demo-card .desc {
     font-size: var(--text-ui);
-    color: var(--gray);
+    color: var(--text-primary);
     margin-bottom: 0.75rem;
 }
 
@@ -640,7 +640,7 @@ input[sum] {
 
 .footer-cta__desc {
     font-size: var(--text-body);
-    color: var(--gray);
+    color: var(--text-primary);
     margin-bottom: 1rem;
 }
 
@@ -664,11 +664,11 @@ input[sum] {
 
 .footer-bottom p {
     font-size: var(--text-body);
-    color: var(--gray);
+    color: var(--text-primary);
 }
 
 .footer-bottom a {
-    color: var(--gray);
+    color: var(--text-primary);
 }
 
 
@@ -1190,7 +1190,7 @@ input[sum] {
 
 .feature-description {
     font-size: var(--text-base);
-    color: var(--gray);
+    color: var(--text-primary);
 }
 
 .feature-exports {
@@ -1278,14 +1278,14 @@ input[sum] {
 }
 
 .legend-description {
-    color: var(--gray);
+    color: var(--text-primary);
 }
 
 .legend-examples {
     margin-top: 0.25rem;
     margin-left: 1rem;
     font-size: var(--text-base);
-    color: var(--gray);
+    color: var(--text-primary);
 }
 
 .legend-example-item {
@@ -1348,7 +1348,7 @@ input[sum] {
 
 .preset-description {
     font-size: var(--text-sm);
-    color: var(--gray);
+    color: var(--text-primary);
     line-height: 1.4;
 }
 
@@ -1444,7 +1444,7 @@ input[sum] {
 
 .url-note {
     font-size: var(--text-ui);
-    color: var(--gray);
+    color: var(--text-primary);
     margin: 0.75rem 0;
     line-height: 1.4;
 }
@@ -1509,7 +1509,7 @@ input[sum] {
 
 .toggle-label {
     font-size: var(--text-sm);
-    color: var(--gray);
+    color: var(--text-primary);
     line-height: 1.3;
 }
 
