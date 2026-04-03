@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.24.5] - 2026-04-02
+
+### Added
+- Deploy script for wrangler
+
+### Changed
+- README, dependency graph, config, and jsdelivr loader
+
+
+
 ## [1.24.3] - 2026-02-27
 
 ### Fixed
