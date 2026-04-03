@@ -1,0 +1,1659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HyperclayJS Style Guide</title>
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <style>
+        @font-face {
+            font-family: 'Berkeley Mono';
+            src: url('./assets/BerkeleyMonoVariable-Regular.woff2') format('woff2');
+            font-weight: 100 900;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        :root {
+            --primary-blue: #d79921;
+            --shadow-blue: rgba(215, 153, 33, 0.06);
+            --light-blue: #fabd2f;
+            --white: #FFFFFF;
+            --gray: #c8bca4;
+            --green: #00A676;
+            --red: #E63946;
+            --yellow: #E69500;
+            --orange: #E85D04;
+            --selected-blue: #296af8;
+            --selected-blue-bg: rgba(41, 106, 248, 0.08);
+            --bg-dark: #080808;
+            --bg-card: #0e0e0e;
+            --code-bg: rgba(215, 153, 33, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #c8bca4;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Berkeley Mono', monospace;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            padding: 1.5rem;
+            line-height: 1.6;
+            text-wrap: pretty;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* ── Guide Section Dividers ── */
+        .guide-section {
+            margin-bottom: 4rem;
+        }
+
+        .guide-section-title {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--orange);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--orange);
+            margin-bottom: 2rem;
+        }
+
+        .guide-subsection {
+            margin-bottom: 2.5rem;
+        }
+
+        .guide-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+        }
+
+        .guide-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .guide-swatch-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        /* ═══════════════════════════════════════
+           HEADER
+           ═══════════════════════════════════════ */
+        .header {
+            margin-bottom: 2rem;
+        }
+
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--light-blue);
+        }
+
+        /* ═══════════════════════════════════════
+           NAV LINKS
+           ═══════════════════════════════════════ */
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-link {
+            font-weight: bold;
+            color: var(--text-primary);
+            text-decoration: none;
+            border: 2px solid var(--primary-blue);
+            padding: 0.5rem 1rem;
+            background: var(--bg-card);
+            box-shadow: 4px 4px 0 var(--shadow-blue);
+            white-space: nowrap;
+        }
+
+        .nav-link:hover {
+            background: var(--shadow-blue);
+        }
+
+        .nav-link.active {
+            background: var(--primary-blue);
+            color: var(--bg-dark);
+        }
+
+        .nav-link-icon {
+            padding: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-link-icon svg {
+            display: block;
+        }
+
+        /* ═══════════════════════════════════════
+           COLORS
+           ═══════════════════════════════════════ */
+        .color-swatch {
+            width: 120px;
+            text-align: center;
+        }
+
+        .color-swatch-box {
+            width: 120px;
+            height: 60px;
+            border: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 0.5rem;
+        }
+
+        .color-swatch-name {
+            font-size: 0.7rem;
+            color: var(--gray);
+        }
+
+        .color-swatch-value {
+            font-size: 0.65rem;
+            color: var(--text-primary);
+            margin-top: 0.15rem;
+        }
+
+        /* ═══════════════════════════════════════
+           TYPOGRAPHY
+           ═══════════════════════════════════════ */
+        .type-sample {
+            margin-bottom: 1.5rem;
+        }
+
+        .type-meta {
+            font-size: 0.65rem;
+            color: var(--gray);
+            margin-top: 0.25rem;
+        }
+
+        /* ═══════════════════════════════════════
+           CARDS
+           ═══════════════════════════════════════ */
+        .demo-card {
+            border: 2px solid var(--primary-blue);
+            padding: 1rem;
+            background: var(--bg-card);
+        }
+
+        .demo-card h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: var(--text-primary);
+        }
+
+        .demo-card .desc {
+            font-size: 0.75rem;
+            color: var(--gray);
+            margin-bottom: 0.75rem;
+        }
+
+        .demo-card pre {
+            background: var(--shadow-blue);
+            padding: 0.5rem;
+            font-size: 0.7rem;
+            overflow-x: auto;
+            margin-bottom: 0.75rem;
+            border-left: 3px solid var(--primary-blue);
+            max-width: 100%;
+        }
+
+        .demo-card code {
+            font-family: inherit;
+        }
+
+        .demo-area {
+            padding: 0.5rem;
+            border: 1px dashed var(--light-blue);
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* Elevated card (docs function-card style) */
+        .function-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--primary-blue);
+            box-shadow: 4px 4px 0 var(--shadow-blue);
+            padding: 24px;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .function-card h3 {
+            font-size: 18px;
+            margin: 0 0 4px 0;
+            color: var(--text-primary);
+        }
+
+        .function-description {
+            color: var(--text-secondary);
+            margin: 0 0 16px 0;
+        }
+
+        /* Summary card (config sidebar style) */
+        .summary-box {
+            padding: 1.5rem;
+            border: 2px solid var(--primary-blue);
+            box-shadow: 4px 4px 0 var(--shadow-blue);
+            background: var(--bg-card);
+        }
+
+        .summary-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+        }
+
+        .summary-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--shadow-blue);
+        }
+
+        .summary-stat:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            color: var(--gray);
+        }
+
+        .stat-value {
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        /* ═══════════════════════════════════════
+           BUTTONS
+           ═══════════════════════════════════════ */
+        button {
+            font-family: inherit;
+            font-size: 0.75rem;
+            padding: 0.4rem 0.75rem;
+            border: 2px solid var(--primary-blue);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.15s;
+        }
+
+        button:hover {
+            background: var(--shadow-blue);
+        }
+
+        button:active:not(:disabled) {
+            transform: translate(1px, 1px);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .preset-button {
+            padding: 0.75rem 1.5rem;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: bold;
+            border: 2px solid var(--primary-blue);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 4px 4px 0 var(--shadow-blue);
+        }
+
+        .preset-button:hover {
+            box-shadow: 2px 2px 0 var(--shadow-blue);
+            transform: translate(2px, 2px);
+        }
+
+        .preset-button.active {
+            background: var(--selected-blue-bg);
+            border-color: var(--selected-blue);
+            color: white;
+        }
+
+        .copy-button {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-blue);
+            color: #080808;
+            border: none;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .copy-button.copied {
+            background: var(--green);
+        }
+
+        /* ═══════════════════════════════════════
+           FORM ELEMENTS
+           ═══════════════════════════════════════ */
+        input, textarea, select {
+            font-family: inherit;
+            font-size: 0.75rem;
+            padding: 0.4rem;
+            border: 2px solid var(--primary-blue);
+            color: var(--text-primary);
+            background: var(--bg-dark);
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            box-shadow: 2px 2px 0 var(--shadow-blue);
+        }
+
+        input:read-only {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        textarea {
+            resize: none;
+            min-height: 40px;
+        }
+
+        /* Checkbox (config style) */
+        .feature-checkbox {
+            appearance: none;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 2px solid var(--primary-blue);
+            background: var(--bg-dark);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .feature-checkbox:checked {
+            background: var(--primary-blue);
+            position: relative;
+        }
+
+        .feature-checkbox:checked::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 14px;
+            height: 14px;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 8L6 12L14 4' stroke='white' stroke-width='3' stroke-linecap='square' stroke-linejoin='miter'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        /* Toggle switch */
+        .toggle-option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #4b5563;
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: var(--primary-blue);
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        .toggle-label {
+            font-size: 0.8rem;
+            color: var(--gray);
+            line-height: 1.3;
+        }
+
+        .toggle-label strong {
+            color: var(--text-primary);
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        /* ═══════════════════════════════════════
+           CODE BLOCKS
+           ═══════════════════════════════════════ */
+        .signature {
+            background-color: var(--code-bg);
+            border-left: 3px solid var(--primary-blue);
+            padding: 12px 16px;
+            margin: 16px 0;
+            overflow-x: auto;
+        }
+
+        .signature code {
+            color: var(--text-primary);
+            white-space: pre;
+            display: block;
+        }
+
+        .example {
+            background-color: var(--code-bg);
+            border-left: 3px solid var(--primary-blue);
+            padding: 16px;
+            margin: 16px 0 0 0;
+            overflow-x: auto;
+        }
+
+        .example pre {
+            margin: 0;
+            color: var(--text-primary);
+            font-size: 13px;
+            line-height: 1.5;
+            white-space: pre;
+        }
+
+        .exports {
+            display: inline-block;
+            background-color: var(--code-bg);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: var(--primary-blue);
+            margin-bottom: 16px;
+        }
+
+        code {
+            font-family: inherit;
+        }
+
+        .inline-code {
+            background-color: var(--code-bg);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        /* ═══════════════════════════════════════
+           SECTION HEADERS
+           ═══════════════════════════════════════ */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: linear-gradient(90deg, var(--shadow-blue) 0%, transparent 100%);
+            border-left: 4px solid var(--primary-blue);
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--primary-blue);
+        }
+
+        .section-size {
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+
+        /* Docs category heading */
+        .category-heading {
+            font-size: 20px;
+            color: var(--primary-blue);
+            margin: 0 0 24px 0;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--primary-blue);
+        }
+
+        /* ═══════════════════════════════════════
+           INTRO SECTION / CALLOUT BOXES
+           ═══════════════════════════════════════ */
+        .intro-section {
+            margin-top: 1.5rem;
+            padding: 1.25rem;
+            border: 2px solid var(--primary-blue);
+            background: var(--shadow-blue);
+        }
+
+        .intro-section h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 0.75rem;
+        }
+
+        .intro-section p {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-bottom: 0.75rem;
+            line-height: 1.6;
+        }
+
+        .intro-section p:last-child {
+            margin-bottom: 0;
+        }
+
+        .intro-section strong {
+            color: var(--text-primary);
+        }
+
+        .intro-section-orange {
+            margin-top: 1.5rem;
+            padding: 1.25rem;
+            border: 2px solid var(--orange);
+            background: rgba(232, 93, 4, 0.05);
+        }
+
+        .intro-section-orange h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--orange);
+            margin-bottom: 0.75rem;
+        }
+
+        .intro-section-orange p {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-bottom: 0.75rem;
+            line-height: 1.6;
+        }
+
+        .intro-section-orange p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Info box */
+        .info-box {
+            padding: 1rem;
+            background: var(--shadow-blue);
+            border-left: 4px solid var(--primary-blue);
+            margin-bottom: 2rem;
+        }
+
+        .info-text {
+            font-size: 0.875rem;
+            color: var(--text-primary);
+        }
+
+        /* ═══════════════════════════════════════
+           BADGES & TAGS
+           ═══════════════════════════════════════ */
+        .badge {
+            display: inline-block;
+            border: 1px solid var(--primary-blue);
+            padding: 0.2rem 0.4rem;
+            font-size: 0.7rem;
+            background: var(--bg-card);
+        }
+
+        .feature-badge {
+            display: inline-block;
+            font-size: 0.6875rem;
+            padding: 0.15rem 0.4rem;
+            background: var(--yellow);
+            color: #080808;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .difficulty-badge {
+            display: inline-block;
+            font-size: 0.6875rem;
+            padding: 0.15rem 0.4rem;
+            background: var(--orange);
+            color: #080808;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .feature-tag {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: var(--shadow-blue);
+            color: var(--text-primary);
+            font-size: 0.75rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .returns-type {
+            background-color: var(--code-bg);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 13px;
+        }
+
+        /* ═══════════════════════════════════════
+           FEATURE LIST (bullet list)
+           ═══════════════════════════════════════ */
+        .feature-list {
+            list-style: none;
+            margin: 0.75rem 0;
+            padding-left: 1.25rem;
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        .feature-list li {
+            margin-bottom: 0.25rem;
+        }
+
+        .feature-list li::before {
+            content: "\2022";
+            color: var(--primary-blue);
+            display: inline-block;
+            width: 1rem;
+            margin-left: -1rem;
+        }
+
+        /* ═══════════════════════════════════════
+           CATEGORY LABELS
+           ═══════════════════════════════════════ */
+        .category-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--orange);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 1rem 0 0.25rem;
+            border-bottom: 2px solid var(--orange);
+            margin-bottom: 1rem;
+        }
+
+        /* ═══════════════════════════════════════
+           FEATURE ITEM (config checkbox row)
+           ═══════════════════════════════════════ */
+        .feature-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border: 2px solid var(--primary-blue);
+            background: var(--bg-card);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .feature-item.selected {
+            background: var(--selected-blue-bg);
+            border-color: var(--selected-blue);
+        }
+
+        .feature-item.selected .feature-checkbox {
+            border-color: var(--selected-blue);
+        }
+
+        .feature-item.selected .feature-checkbox:checked {
+            background: var(--selected-blue);
+        }
+
+        .feature-info {
+            flex-grow: 1;
+        }
+
+        .feature-name {
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .feature-description {
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+
+        .feature-size {
+            font-size: 0.875rem;
+            color: var(--primary-blue);
+            font-weight: bold;
+            margin-left: 1rem;
+        }
+
+        .feature-size.large {
+            color: var(--red);
+        }
+
+        /* ═══════════════════════════════════════
+           SIZE INDICATOR BAR
+           ═══════════════════════════════════════ */
+        .size-indicator {
+            width: 100%;
+            height: 20px;
+            background: var(--shadow-blue);
+            border: 2px solid var(--primary-blue);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .size-bar {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .size-bar.small { background: var(--selected-blue); }
+        .size-bar.medium { background: var(--yellow); }
+        .size-bar.large { background: var(--red); }
+
+        /* ═══════════════════════════════════════
+           PARAMS TABLE (docs)
+           ═══════════════════════════════════════ */
+        .params-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .params-table th {
+            text-align: left;
+            color: var(--text-secondary);
+            font-weight: normal;
+            padding: 8px;
+            border-bottom: 1px solid var(--primary-blue);
+        }
+
+        .params-table td {
+            padding: 8px;
+            border-bottom: 1px solid var(--shadow-blue);
+            vertical-align: top;
+        }
+
+        .params-table code {
+            background-color: var(--code-bg);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        /* ═══════════════════════════════════════
+           SIDEBAR (docs)
+           ═══════════════════════════════════════ */
+        .sidebar-demo {
+            width: 240px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--primary-blue);
+            padding: 20px;
+        }
+
+        .sidebar-demo h2 {
+            font-size: 14px;
+            color: var(--primary-blue);
+            margin: 0 0 16px 0;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--primary-blue);
+        }
+
+        .sidebar-section {
+            margin-bottom: 20px;
+        }
+
+        .sidebar-section h3 {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin: 0 0 8px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-section a {
+            display: block;
+            color: var(--text-primary);
+            text-decoration: none;
+            padding: 4px 8px;
+            margin: 2px 0;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .sidebar-section a:hover {
+            background-color: var(--shadow-blue);
+        }
+
+        /* ═══════════════════════════════════════
+           LEGEND BOX
+           ═══════════════════════════════════════ */
+        .legend {
+            padding: 1.5rem;
+            border: 2px solid var(--orange);
+            background: rgba(232, 93, 4, 0.05);
+        }
+
+        .legend-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--orange);
+            margin-bottom: 1rem;
+        }
+
+        .legend-item {
+            margin-bottom: 0.75rem;
+        }
+
+        .legend-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .legend-level {
+            font-weight: bold;
+            color: var(--orange);
+        }
+
+        .legend-description {
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+
+        /* ═══════════════════════════════════════
+           SORTABLE LIST
+           ═══════════════════════════════════════ */
+        .sortable-list {
+            list-style: none;
+        }
+
+        .sortable-list li {
+            padding: 0.4rem 0.6rem;
+            background: var(--shadow-blue);
+            margin-bottom: 0.25rem;
+            cursor: move;
+            font-size: 0.75rem;
+            border: 1px solid var(--primary-blue);
+        }
+
+        /* ═══════════════════════════════════════
+           LINKS
+           ═══════════════════════════════════════ */
+        .intro-link {
+            color: var(--gray);
+            text-decoration: underline;
+        }
+
+        .intro-link:hover {
+            text-decoration: none;
+        }
+
+        /* ═══════════════════════════════════════
+           UTILITY
+           ═══════════════════════════════════════ */
+        .hidden { display: none !important; }
+        .muted { opacity: 0.4; border-style: dashed !important; }
+
+        .output {
+            font-size: 0.7rem;
+            color: var(--gray);
+            background: var(--shadow-blue);
+            padding: 0.25rem 0.5rem;
+            width: 100%;
+        }
+
+        @media (max-width: 640px) {
+            h1 { font-size: 2rem; }
+            .header-row {
+                flex-direction: column-reverse;
+                align-items: flex-end;
+            }
+            .header-row h1 {
+                align-self: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ════════════════════════════════════
+             HEADER
+             ════════════════════════════════════ -->
+        <div class="header">
+            <div class="header-row">
+                <h1>Style Guide</h1>
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">Home</a>
+                    <a href="docs.html" class="nav-link">Docs</a>
+                    <a href="config.html" class="nav-link">Use HyperclayJS</a>
+                    <a href="https://github.com/panphora/hyperclayjs" class="nav-link nav-link-icon" target="_blank" rel="noopener" title="GitHub">
+                        <svg width="20" height="20" viewBox="0 0 98 96" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z" fill="currentColor"/></svg>
+                    </a>
+                </div>
+            </div>
+            <p class="subtitle">Every component and pattern used across the HyperclayJS website</p>
+        </div>
+
+
+        <!-- ════════════════════════════════════
+             COLORS
+             ════════════════════════════════════ -->
+        <div class="guide-section">
+            <div class="guide-section-title">Colors</div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">Primary Palette</div>
+                <div class="guide-swatch-row">
+                    <div class="color-swatch">
+                        <div class="color-swatch-box" style="background: #d79921;"></div>
+                        <div class="color-swatch-name">--primary-blue</div>
+                        <div class="color-swatch-value">#d79921</div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-swatch-box" style="background: #fabd2f;"></div>
+                        <div class="color-swatch-name">--light-blue</div>
+                        <div class="color-swatch-value">#fabd2f</div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-swatch-box" style="background: rgba(215, 153, 33, 0.1); border-color: #d79921;"></div>
+                        <div class="color-swatch-name">--code-bg</div>
+                        <div class="color-swatch-value">rgba(215,153,33,0.1)</div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-swatch-box" style="background: rgba(215, 153, 33, 0.06); border-color: #d79921;"></div>
+                        <div class="color-swatch-name">--shadow-blue</div>
+                        <div class="color-swatch-value">rgba(215,153,33,0.06)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">Backgrounds</div>
+                <div class="guide-swatch-row">
+                    <div class="color-swatch">
+                        <div class="color-swatch-box" style="background: #080808;"></div>
+                        <div class="color-swatch-name">--bg-dark</div>
+                        <div class="color-swatch-value">#080808</div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-swatch-box" style="background: #0e0e0e;"></div>
+                        <div class="color-swatch-name">--bg-card</div>
+                        <div class="color-swatch-value">#0e0e0e</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">Text</div>
+                <div class="guide-swatch-row">
+                    <div class="color-swatch">
+                        <div class="color-swatch-box" style="background: #ffffff;"></div>
+                        <div class="color-swatch-name">--text-primary</div>
+                        <div class="color-swatch-value">#ffffff</div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-swatch-box" style="background: #c8bca4;"></div>
+                        <div class="color-swatch-name">--gray / --text-secondary</div>
+                        <div class="color-swatch-value">#c8bca4</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">Semantic</div>
+                <div class="guide-swatch-row">
+                    <div class="color-swatch">
+                        <div class="color-swatch-box" style="background: #00A676;"></div>
+                        <div class="color-swatch-name">--green</div>
+                        <div class="color-swatch-value">#00A676</div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-swatch-box" style="background: #E63946;"></div>
+                        <div class="color-swatch-name">--red</div>
+                        <div class="color-swatch-value">#E63946</div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-swatch-box" style="background: #E69500;"></div>
+                        <div class="color-swatch-name">--yellow</div>
+                        <div class="color-swatch-value">#E69500</div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-swatch-box" style="background: #E85D04;"></div>
+                        <div class="color-swatch-name">--orange</div>
+                        <div class="color-swatch-value">#E85D04</div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-swatch-box" style="background: #296af8;"></div>
+                        <div class="color-swatch-name">--selected-blue</div>
+                        <div class="color-swatch-value">#296af8</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ════════════════════════════════════
+             TYPOGRAPHY
+             ════════════════════════════════════ -->
+        <div class="guide-section">
+            <div class="guide-section-title">Typography</div>
+
+            <div class="type-sample">
+                <div style="font-size: 2.5rem; font-weight: 900;">Page Title (h1)</div>
+                <div class="type-meta">2.5rem / weight 900</div>
+            </div>
+
+            <div class="type-sample">
+                <div style="font-size: 1.25rem; font-weight: bold; color: var(--primary-blue);">Section Title</div>
+                <div class="type-meta">1.25rem / bold / --primary-blue</div>
+            </div>
+
+            <div class="type-sample">
+                <div style="font-size: 1.1rem; font-weight: 700; color: var(--primary-blue);">Callout Heading (h2)</div>
+                <div class="type-meta">1.1rem / weight 700 / --primary-blue</div>
+            </div>
+
+            <div class="type-sample">
+                <div style="font-size: 0.95rem; font-weight: 700;">Card Title (h3)</div>
+                <div class="type-meta">0.95rem / weight 700</div>
+            </div>
+
+            <div class="type-sample">
+                <div style="font-size: 13px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Label / h4</div>
+                <div class="type-meta">13px / uppercase / letter-spacing 0.5px / --text-secondary</div>
+            </div>
+
+            <div class="type-sample">
+                <div style="font-size: 1rem; color: var(--light-blue);">Subtitle text</div>
+                <div class="type-meta">1rem / --light-blue</div>
+            </div>
+
+            <div class="type-sample">
+                <div style="font-size: 0.85rem; color: var(--gray);">Body / description text goes here. This is the secondary reading size used for paragraphs, descriptions, and supporting copy throughout the site.</div>
+                <div class="type-meta">0.85rem / --gray</div>
+            </div>
+
+            <div class="type-sample">
+                <div style="font-size: 0.75rem; color: var(--gray);">Small text for captions, demo areas, and compact UI</div>
+                <div class="type-meta">0.75rem / --gray</div>
+            </div>
+
+            <div class="type-sample">
+                <div style="font-size: 0.7rem; color: var(--gray);">Extra small text for output and fine print</div>
+                <div class="type-meta">0.7rem / --gray</div>
+            </div>
+
+            <div class="type-sample">
+                <div>Inline code: <code class="inline-code">hyperclay.savePage()</code></div>
+                <div class="type-meta">code-bg pill / 12px / inherit font</div>
+            </div>
+        </div>
+
+
+        <!-- ════════════════════════════════════
+             NAV LINKS
+             ════════════════════════════════════ -->
+        <div class="guide-section">
+            <div class="guide-section-title">Navigation</div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">Nav Links</div>
+                <div class="nav-links">
+                    <a href="#" class="nav-link active">Active</a>
+                    <a href="#" class="nav-link">Default</a>
+                    <a href="#" class="nav-link">Another</a>
+                    <a href="#" class="nav-link nav-link-icon" title="Icon link">
+                        <svg width="20" height="20" viewBox="0 0 98 96" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z" fill="currentColor"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">Docs Sidebar</div>
+                <div class="sidebar-demo">
+                    <h2>API Reference</h2>
+                    <div class="sidebar-section">
+                        <h3>UI Components</h3>
+                        <a href="#">toast</a>
+                        <a href="#">ask</a>
+                        <a href="#">consent</a>
+                    </div>
+                    <div class="sidebar-section">
+                        <h3>DOM Utilities</h3>
+                        <a href="#">All</a>
+                        <a href="#">insertStyles</a>
+                        <a href="#">getDataFromForm</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ════════════════════════════════════
+             BUTTONS
+             ════════════════════════════════════ -->
+        <div class="guide-section">
+            <div class="guide-section-title">Buttons</div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">Standard Button</div>
+                <div class="guide-row">
+                    <button>Default</button>
+                    <button disabled>Disabled</button>
+                </div>
+            </div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">Preset Buttons (large, elevated)</div>
+                <div class="guide-row">
+                    <button class="preset-button">Minimal (23KB)</button>
+                    <button class="preset-button active">Standard (50KB)</button>
+                    <button class="preset-button">Everything (220KB)</button>
+                </div>
+            </div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">CTA / Copy Button</div>
+                <div class="guide-row">
+                    <button class="copy-button" style="width: 240px;">Copy to Clipboard</button>
+                    <button class="copy-button copied" style="width: 240px;">Copied!</button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ════════════════════════════════════
+             FORM ELEMENTS
+             ════════════════════════════════════ -->
+        <div class="guide-section">
+            <div class="guide-section-title">Form Elements</div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">Text Input</div>
+                <div class="guide-row">
+                    <input type="text" placeholder="Editable input" value="Some value">
+                    <input type="text" value="Read only" readonly>
+                </div>
+            </div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">Textarea</div>
+                <textarea style="width: 300px; min-height: 60px;">Editable textarea content</textarea>
+            </div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">Select</div>
+                <select>
+                    <option>Option A</option>
+                    <option>Option B</option>
+                    <option>Option C</option>
+                </select>
+            </div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">Custom Checkbox</div>
+                <div class="guide-row" style="align-items: center;">
+                    <input type="checkbox" class="feature-checkbox">
+                    <span style="font-size: 0.85rem;">Unchecked</span>
+                    <input type="checkbox" class="feature-checkbox" checked>
+                    <span style="font-size: 0.85rem;">Checked</span>
+                </div>
+            </div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">Toggle Switch</div>
+                <div class="toggle-option">
+                    <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <div class="toggle-label">
+                        <strong>Edit Mode</strong>
+                        Show admin controls
+                    </div>
+                </div>
+                <div class="toggle-option">
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <div class="toggle-label">
+                        <strong>Auto-save</strong>
+                        Save changes automatically
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ════════════════════════════════════
+             CARDS
+             ════════════════════════════════════ -->
+        <div class="guide-section">
+            <div class="guide-section-title">Cards</div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">Demo Card (home page)</div>
+                <div style="max-width: 400px;">
+                    <div class="demo-card">
+                        <h3>Click Counter</h3>
+                        <div class="desc">Increment a counter with a button click</div>
+                        <pre><code>&lt;button onclick="this.nextElementSibling.textContent++"&gt;
+  Add +1
+&lt;/button&gt;
+&lt;span&gt;0&lt;/span&gt;</code></pre>
+                        <div class="demo-area">
+                            <button onclick="this.nextElementSibling.textContent = parseInt(this.nextElementSibling.textContent) + 1">Add +1</button>
+                            <span style="font-size: 1.2rem; font-weight: 700; min-width: 3rem; text-align: center;">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">Function Card (docs page, elevated shadow)</div>
+                <div style="max-width: 600px;">
+                    <div class="function-card">
+                        <h3>toast</h3>
+                        <p class="function-description">Display a toast notification for success or error messages.</p>
+                        <div class="exports">Available as: <code>window.toast</code>, <code>hyperclay.toast</code></div>
+                        <div class="signature"><code>toast(message, messageType)</code></div>
+                        <h4 style="font-size: 13px; color: var(--text-secondary); margin: 20px 0 8px 0; text-transform: uppercase; letter-spacing: 0.5px;">Parameters</h4>
+                        <table class="params-table">
+                            <tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr>
+                            <tr>
+                                <td><code>message</code></td>
+                                <td><code>string</code></td>
+                                <td>&mdash;</td>
+                                <td>The message to display</td>
+                            </tr>
+                            <tr>
+                                <td><code>messageType</code></td>
+                                <td><code>string</code></td>
+                                <td><code>'success'</code></td>
+                                <td>Either 'success' or 'error'</td>
+                            </tr>
+                        </table>
+                        <h4 style="font-size: 13px; color: var(--text-secondary); margin: 20px 0 8px 0; text-transform: uppercase; letter-spacing: 0.5px;">Returns</h4>
+                        <p><code class="returns-type">void</code></p>
+                        <h4 style="font-size: 13px; color: var(--text-secondary); margin: 20px 0 8px 0; text-transform: uppercase; letter-spacing: 0.5px;">Example</h4>
+                        <div class="example"><pre>toast('Changes saved!', 'success');
+toast('Something went wrong', 'error');</pre></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">Summary Box (config sidebar)</div>
+                <div style="max-width: 320px;">
+                    <div class="summary-box">
+                        <div class="summary-title">Build Summary</div>
+                        <div class="summary-stat">
+                            <span class="stat-label">Features</span>
+                            <span class="stat-value">8</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="stat-label">Total Size</span>
+                            <span class="stat-value" style="color: var(--selected-blue);">23KB</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="stat-label">Status</span>
+                            <span class="stat-value" style="color: var(--green);">Ready</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ════════════════════════════════════
+             SECTION HEADERS & CALLOUTS
+             ════════════════════════════════════ -->
+        <div class="guide-section">
+            <div class="guide-section-title">Section Headers & Callouts</div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">Section Header (config page)</div>
+                <div class="section-header">
+                    <h2 class="section-title">Core Features</h2>
+                    <span class="section-size">Essential functionality</span>
+                </div>
+            </div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">Category Heading (docs page)</div>
+                <h2 class="category-heading">UI Components</h2>
+            </div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">Category Label (home page, orange)</div>
+                <div class="category-label">Interactive Demos</div>
+            </div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">Callout Box (primary)</div>
+                <div class="intro-section" style="max-width: 600px;">
+                    <h2>What is Hyperclay?</h2>
+                    <p><strong>Hyperclay</strong> turns a single HTML file into a living app &mdash; one that can rewrite itself, persist changes, and run anywhere.</p>
+                    <p><strong>One HTML file, full application.</strong></p>
+                </div>
+            </div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">Callout Box (orange variant)</div>
+                <div class="intro-section-orange" style="max-width: 600px;">
+                    <h2>What is HyperclayJS?</h2>
+                    <p>HyperclayJS is the JavaScript library that powers single-file HTML apps. It gives your HTML files the ability to send themselves to a save endpoint and manage edit mode.</p>
+                </div>
+            </div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">Info Box</div>
+                <div class="info-box" style="max-width: 600px;">
+                    <div class="info-text">This is an informational callout with a left border accent. Used for supplementary notes and tips.</div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ════════════════════════════════════
+             CODE BLOCKS
+             ════════════════════════════════════ -->
+        <div class="guide-section">
+            <div class="guide-section-title">Code Blocks</div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">Signature Block</div>
+                <div class="signature" style="max-width: 600px;"><code>toast(message, messageType)</code></div>
+            </div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">Example Block</div>
+                <div class="example" style="max-width: 600px;"><pre>const name = await ask('What is your name?');
+console.log('Hello, ' + name);
+
+const title = await ask('Enter title:', null, 'Untitled');</pre></div>
+            </div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">Exports Pill</div>
+                <div class="exports">Available as: <code>window.toast</code>, <code>hyperclay.toast</code></div>
+            </div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">Output Display</div>
+                <div class="output" style="max-width: 400px;">Count: 3 | Last clicked: 2.4s ago</div>
+            </div>
+        </div>
+
+
+        <!-- ════════════════════════════════════
+             BADGES & TAGS
+             ════════════════════════════════════ -->
+        <div class="guide-section">
+            <div class="guide-section-title">Badges & Tags</div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">Badges</div>
+                <div class="guide-row" style="align-items: center; gap: 0.75rem;">
+                    <span class="badge">bordered badge</span>
+                    <span class="feature-badge">Edit Mode</span>
+                    <span class="difficulty-badge">Advanced</span>
+                    <code class="returns-type">Promise&lt;string&gt;</code>
+                </div>
+            </div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">Feature Tags</div>
+                <div>
+                    <span class="feature-tag">save-core</span>
+                    <span class="feature-tag">toast</span>
+                    <span class="feature-tag">mutation</span>
+                    <span class="feature-tag">admin</span>
+                    <span class="feature-tag">persist</span>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ════════════════════════════════════
+             FEATURE ITEMS
+             ════════════════════════════════════ -->
+        <div class="guide-section">
+            <div class="guide-section-title">Feature Item (Config Page)</div>
+
+            <div class="guide-subsection" style="max-width: 600px;">
+                <div class="guide-label">Default State</div>
+                <label class="feature-item" style="margin-bottom: 0.75rem;">
+                    <input type="checkbox" class="feature-checkbox" style="margin-right: 1rem;">
+                    <div class="feature-info">
+                        <div class="feature-name">Save Core</div>
+                        <div class="feature-description">Basic save function only</div>
+                    </div>
+                    <span class="feature-size">3KB</span>
+                </label>
+
+                <div class="guide-label">Selected State</div>
+                <label class="feature-item selected" style="margin-bottom: 0.75rem;">
+                    <input type="checkbox" class="feature-checkbox" checked style="margin-right: 1rem; border-color: var(--selected-blue); background: var(--selected-blue);">
+                    <div class="feature-info">
+                        <div class="feature-name">Toast Notifications <span class="feature-badge" style="margin-left: 0.5rem;">Edit Mode</span></div>
+                        <div class="feature-description">Success/error message notifications</div>
+                    </div>
+                    <span class="feature-size" style="color: #6b9aff;">7.3KB</span>
+                </label>
+
+                <div class="guide-label">Large Size Warning</div>
+                <label class="feature-item">
+                    <input type="checkbox" class="feature-checkbox" style="margin-right: 1rem;">
+                    <div class="feature-info">
+                        <div class="feature-name">Sortable <span class="difficulty-badge" style="margin-left: 0.5rem;">Advanced</span></div>
+                        <div class="feature-description">Drag-drop sorting, includes Sortable.js</div>
+                    </div>
+                    <span class="feature-size large">118KB</span>
+                </label>
+            </div>
+        </div>
+
+
+        <!-- ════════════════════════════════════
+             SIZE INDICATOR
+             ════════════════════════════════════ -->
+        <div class="guide-section">
+            <div class="guide-section-title">Size Indicator Bar</div>
+
+            <div class="guide-subsection" style="max-width: 400px;">
+                <div class="guide-label">Small</div>
+                <div class="size-indicator" style="margin-bottom: 1rem;">
+                    <div class="size-bar small" style="width: 15%;"></div>
+                </div>
+                <div class="guide-label">Medium</div>
+                <div class="size-indicator" style="margin-bottom: 1rem;">
+                    <div class="size-bar medium" style="width: 50%;"></div>
+                </div>
+                <div class="guide-label">Large</div>
+                <div class="size-indicator">
+                    <div class="size-bar large" style="width: 85%;"></div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ════════════════════════════════════
+             LISTS
+             ════════════════════════════════════ -->
+        <div class="guide-section">
+            <div class="guide-section-title">Lists</div>
+
+            <div class="guide-subsection" style="max-width: 400px;">
+                <div class="guide-label">Feature Bullet List</div>
+                <ul class="feature-list">
+                    <li>Turn HTML files into apps</li>
+                    <li>Share access, attach custom domains</li>
+                    <li>Create a simple CMS</li>
+                    <li>Sync apps directly online</li>
+                </ul>
+            </div>
+
+            <div class="guide-subsection" style="max-width: 300px;">
+                <div class="guide-label">Sortable List</div>
+                <ul class="sortable-list">
+                    <li>First item</li>
+                    <li>Second item</li>
+                    <li>Third item</li>
+                    <li>Fourth item</li>
+                </ul>
+            </div>
+        </div>
+
+
+        <!-- ════════════════════════════════════
+             LEGEND
+             ════════════════════════════════════ -->
+        <div class="guide-section">
+            <div class="guide-section-title">Legend Box</div>
+
+            <div style="max-width: 600px;">
+                <div class="legend">
+                    <div class="legend-title">Difficulty Levels</div>
+                    <div class="legend-item">
+                        <span class="difficulty-badge">Beginner</span>
+                        <span class="legend-description"> &mdash; Simple attributes, no JavaScript required</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="difficulty-badge">Intermediate</span>
+                        <span class="legend-description"> &mdash; Some JavaScript, callbacks and events</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="difficulty-badge">Advanced</span>
+                        <span class="legend-description"> &mdash; Complex integrations, custom logic</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ════════════════════════════════════
+             DEMO AREA / INTERACTIVE ZONE
+             ════════════════════════════════════ -->
+        <div class="guide-section">
+            <div class="guide-section-title">Demo Area & Utility States</div>
+
+            <div class="guide-subsection" style="max-width: 400px;">
+                <div class="guide-label">Demo Area (dashed border)</div>
+                <div class="demo-area">
+                    <button>Click me</button>
+                    <span style="font-size: 0.75rem; color: var(--gray);">Interactive zone</span>
+                </div>
+            </div>
+
+            <div class="guide-subsection" style="max-width: 400px;">
+                <div class="guide-label">Muted State</div>
+                <div class="demo-area muted">
+                    <span style="font-size: 0.75rem; color: var(--gray);">Muted / inactive element</span>
+                </div>
+            </div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">URL Output Textarea</div>
+                <div style="max-width: 600px;">
+                    <textarea style="width: 100%; padding: 1rem; border: 2px solid var(--primary-blue); background: var(--bg-dark); color: var(--text-primary); font-family: inherit; font-size: 0.875rem; box-shadow: 4px 4px 0 var(--shadow-blue); resize: none; overflow-x: auto; line-height: 1.5;" rows="2">&lt;script src="https://cdn.example.com/hyperclayjs@latest"&gt;&lt;/script&gt;</textarea>
+                    <div style="font-size: 0.75rem; color: var(--gray); margin: 0.75rem 0;">Paste this into the &lt;head&gt; of your HTML file.</div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ════════════════════════════════════
+             SPACING & LAYOUT REFERENCE
+             ════════════════════════════════════ -->
+        <div class="guide-section">
+            <div class="guide-section-title">Spacing & Layout</div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">Key Values</div>
+                <table class="params-table" style="max-width: 500px;">
+                    <tr><th>Property</th><th>Value</th></tr>
+                    <tr><td>Body padding</td><td><code>1.5rem</code></td></tr>
+                    <tr><td>Max container width</td><td><code>1400px</code></td></tr>
+                    <tr><td>Standard gap</td><td><code>1rem</code></td></tr>
+                    <tr><td>Tight gap</td><td><code>0.75rem</code></td></tr>
+                    <tr><td>Section spacing</td><td><code>2rem</code></td></tr>
+                    <tr><td>Card padding</td><td><code>1rem</code> &ndash; <code>24px</code></td></tr>
+                    <tr><td>Sidebar width</td><td><code>240px</code></td></tr>
+                    <tr><td>Border width (primary)</td><td><code>2px solid</code></td></tr>
+                    <tr><td>Border width (secondary)</td><td><code>1px solid</code></td></tr>
+                    <tr><td>Box shadow (elevated)</td><td><code>4px 4px 0</code></td></tr>
+                    <tr><td>Box shadow (focus)</td><td><code>2px 2px 0</code></td></tr>
+                    <tr><td>Border radius</td><td><code>0</code> (none, except toggles)</td></tr>
+                </table>
+            </div>
+
+            <div class="guide-subsection">
+                <div class="guide-label">Breakpoints</div>
+                <table class="params-table" style="max-width: 500px;">
+                    <tr><th>Width</th><th>Behavior</th></tr>
+                    <tr><td><code>1024px</code></td><td>Config grid &rarr; single column</td></tr>
+                    <tr><td><code>1000px</code></td><td>Home cards &rarr; 2 columns</td></tr>
+                    <tr><td><code>768px</code></td><td>Docs sidebar &rarr; mobile overlay</td></tr>
+                    <tr><td><code>640px</code></td><td>Home cards &rarr; full width, h1 shrinks</td></tr>
+                    <tr><td><code>480px</code></td><td>Docs compact padding + font sizes</td></tr>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

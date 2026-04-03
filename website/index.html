@@ -3,498 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HyperclayJS - Better DOM API</title>
+    <title>HyperclayJS - DOM-first Applications</title>
     <meta name="description" content="Experience the Zen of making, hosting, and sharing great software in a single, portable, self-updating, vanilla HTML file.">
     <meta property="og:url" content="https://hyperclayjs.com/">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="HyperclayJS - Better DOM API">
+    <meta property="og:title" content="HyperclayJS - DOM-first Applications">
     <meta property="og:description" content="Experience the Zen of making, hosting, and sharing great software in a single, portable, self-updating, vanilla HTML file.">
     <meta property="og:image" content="https://hyperclayjs.com/assets/open-graph.jpg">
     <meta name="twitter:card" content="summary_large_image">
     <meta property="twitter:domain" content="hyperclayjs.com">
     <meta property="twitter:url" content="https://hyperclayjs.com/">
-    <meta name="twitter:title" content="HyperclayJS - Better DOM API">
+    <meta name="twitter:title" content="HyperclayJS - DOM-first Applications">
     <meta name="twitter:description" content="Experience the Zen of making, hosting, and sharing great software in a single, portable, self-updating, vanilla HTML file.">
     <meta name="twitter:image" content="https://hyperclayjs.com/assets/open-graph.jpg">
     <link rel="icon" type="image/x-icon" href="./favicon.ico">
-    <style>
-        @font-face {
-            font-family: 'Berkeley Mono';
-            src: url('./assets/BerkeleyMonoVariable-Regular.woff2') format('woff2');
-            font-weight: 100 900;
-            font-style: normal;
-            font-display: swap;
-        }
-
-        :root {
-            --primary-blue: #d79921;
-            --shadow-blue: rgba(215, 153, 33, 0.06);
-            --light-blue: #fabd2f;
-            --white: #FFFFFF;
-            --gray: #c8bca4;
-            --green: #00A676;
-            --red: #E63946;
-            --yellow: #E69500;
-            --bg-dark: #080808;
-            --bg-card: #0e0e0e;
-            --code-bg: rgba(215, 153, 33, 0.1);
-            --text-primary: #ffffff;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Berkeley Mono', monospace;
-            background-color: var(--bg-dark);
-            color: var(--text-primary);
-            padding: 1.5rem;
-            line-height: 1.5;
-            text-wrap: pretty;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .header {
-            margin-bottom: 2rem;
-        }
-
-        .header-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 900;
-            color: var(--text-primary);
-            margin-bottom: 0.25rem;
-        }
-
-        .subtitle {
-            font-size: 1rem;
-            color: var(--light-blue);
-        }
-
-        .intro-bullets {
-            margin-top: 0.75rem;
-            padding-left: 1.25rem;
-            font-size: 0.85rem;
-            color: var(--gray);
-        }
-
-        .intro-bullets li {
-            margin-bottom: 0.25rem;
-        }
-
-        .intro-link {
-            color: var(--gray);
-            text-decoration: underline;
-        }
-
-        .intro-link:hover {
-            text-decoration: none;
-        }
-
-        .intro-section {
-            margin-top: 1.5rem;
-            padding: 1.25rem;
-            border: 2px solid var(--primary-blue);
-            background: var(--shadow-blue);
-        }
-
-        .intro-section h2 {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--primary-blue);
-            margin-bottom: 0.75rem;
-        }
-
-        .intro-section p {
-            font-size: 0.85rem;
-            color: var(--gray);
-            margin-bottom: 0.75rem;
-            line-height: 1.6;
-        }
-
-        .intro-section p:last-child {
-            margin-bottom: 0;
-        }
-
-        .intro-section strong {
-            color: var(--text-primary);
-        }
-
-        .feature-list {
-            list-style: none;
-            margin: 0.75rem 0;
-            padding-left: 1.25rem;
-            font-size: 0.85rem;
-            color: var(--gray);
-        }
-
-        .feature-list li {
-            margin-bottom: 0.25rem;
-        }
-
-        .feature-list li::before {
-            content: "•";
-            color: var(--primary-blue);
-            display: inline-block;
-            width: 1rem;
-            margin-left: -1rem;
-        }
-
-        .nav-links {
-            margin-left: auto;
-            display: flex;
-            gap: 1rem;
-        }
-
-        .nav-link {
-            font-weight: bold;
-            color: var(--text-primary);
-            text-decoration: none;
-            border: 2px solid var(--primary-blue);
-            padding: 0.5rem 1rem;
-            background: var(--bg-card);
-            box-shadow: 4px 4px 0 var(--shadow-blue);
-            white-space: nowrap;
-        }
-
-        .nav-link:hover {
-            background: var(--shadow-blue);
-        }
-
-        .nav-link.active {
-            background: var(--primary-blue);
-            color: var(--bg-dark);
-        }
-
-        .nav-link-icon {
-            padding: 0.5rem;
-            display: flex;
-            align-items: center;
-        }
-
-        .nav-link-icon svg {
-            display: block;
-        }
-
-        .demo-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .demo-card {
-            flex: 1 1 320px;
-            max-width: calc(33.333% - 0.67rem);
-        }
-
-        .category-label {
-            flex: 1 1 100%;
-        }
-
-        @media (max-width: 1000px) {
-            .demo-card { max-width: calc(50% - 0.5rem); }
-        }
-
-        @media (max-width: 640px) {
-            .demo-card { max-width: 100%; }
-            h1 { font-size: 2rem; }
-            .header-row {
-                flex-direction: column-reverse;
-                align-items: flex-end;
-            }
-            .header-row h1 {
-                align-self: flex-start;
-            }
-        }
-
-        .demo-card {
-            border: 2px solid var(--primary-blue);
-            padding: 1rem;
-            background: var(--bg-card);
-        }
-
-        .demo-card h3 {
-            font-size: 0.95rem;
-            font-weight: 700;
-            margin-bottom: 0.25rem;
-            color: var(--text-primary);
-        }
-
-        .demo-card .desc {
-            font-size: 0.75rem;
-            color: var(--gray);
-            margin-bottom: 0.75rem;
-        }
-
-        .demo-card pre {
-            background: var(--shadow-blue);
-            padding: 0.5rem;
-            font-size: 0.7rem;
-            overflow-x: auto;
-            margin-bottom: 0.75rem;
-            border-left: 3px solid var(--primary-blue);
-            max-width: 100%;
-        }
-
-        .demo-card code {
-            font-family: inherit;
-        }
-
-        .demo-area {
-            padding: 0.5rem;
-            border: 1px dashed var(--light-blue);
-            min-height: 44px;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        button {
-            font-family: inherit;
-            font-size: 0.75rem;
-            padding: 0.4rem 0.75rem;
-            border: 2px solid var(--primary-blue);
-            background: var(--bg-card);
-            color: var(--text-primary);
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.15s;
-        }
-
-        button:hover {
-            background: var(--shadow-blue);
-        }
-
-        button:active:not(:disabled) {
-            transform: translate(1px, 1px);
-        }
-
-        button:disabled, input:disabled, select:disabled,
-        [inert-contenteditable] {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        input:read-only:not([sum]):not([type="radio"]):not([type="checkbox"]):not([type="file"]) {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        input[sum] {
-            border-color: var(--green);
-        }
-
-        input, textarea, select {
-            font-family: inherit;
-            font-size: 0.75rem;
-            padding: 0.4rem;
-            border: 2px solid var(--primary-blue);
-            color: var(--text-primary);
-            background: var(--bg-dark);
-        }
-
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            box-shadow: 2px 2px 0 var(--shadow-blue);
-        }
-
-        textarea {
-            resize: none;
-            min-height: 40px;
-        }
-
-        .sortable-list {
-            list-style: none;
-            width: 100%;
-        }
-
-        .sortable-list li {
-            padding: 0.4rem 0.6rem;
-            background: var(--shadow-blue);
-            margin-bottom: 0.25rem;
-            cursor: move;
-            font-size: 0.75rem;
-            border: 1px solid var(--primary-blue);
-        }
-
-        .movable-demo-area {
-            position: relative;
-            height: 140px;
-            border: 1px dashed var(--light-blue);
-            overflow: hidden;
-        }
-
-        .movable-box {
-            position: absolute;
-            width: 80px;
-            height: 50px;
-            background: var(--shadow-blue);
-            border: 1px solid var(--primary-blue);
-            font-size: 0.65rem;
-            color: var(--gray);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: grab;
-            user-select: none;
-        }
-
-        .movable-box[movable-dragging] {
-            cursor: grabbing;
-            border-color: var(--light-blue);
-        }
-
-        .movable-box [movable-handle] {
-            cursor: grab;
-            padding: 0 0.3rem;
-            color: var(--light-blue);
-        }
-
-        .output {
-            font-size: 0.7rem;
-            color: var(--gray);
-            background: var(--shadow-blue);
-            padding: 0.25rem 0.5rem;
-            width: 100%;
-        }
-
-        .category-label {
-            grid-column: 1 / -1;
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: #E85D04;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            padding: 1rem 0 0.25rem;
-            border-bottom: 2px solid #E85D04;
-            margin-top: 0.5rem;
-        }
-
-        .category-label:first-of-type {
-            margin-top: 0;
-        }
-
-        .clickaway-box {
-            background: var(--shadow-blue);
-            padding: 0.5rem;
-            text-align: center;
-            font-size: 0.75rem;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        .clone-item {
-            display: inline-block;
-            padding: 0.25rem 0.5rem;
-            font-size: 0.7rem;
-            margin: 0.15rem;
-        }
-
-        .counter-display {
-            font-size: 1.2rem;
-            font-weight: 700;
-            min-width: 3rem;
-            text-align: center;
-        }
-
-        .visibility-box {
-            padding: 0.5rem;
-            background: var(--green);
-            color: white;
-            font-size: 0.7rem;
-            text-align: center;
-        }
-
-        .attr-display {
-            font-size: 0.65rem;
-            color: var(--gray);
-            word-break: break-all;
-        }
-
-        .mini-editor {
-            border: 1px solid var(--primary-blue);
-            background: var(--bg-card);
-            padding: 0.5rem;
-            min-height: 50px;
-            font-size: 0.75rem;
-        }
-
-        .mini-editor:focus {
-            outline: none;
-            box-shadow: 2px 2px 0 var(--shadow-blue);
-        }
-
-        .badge {
-            display: inline-block;
-            border: 1px solid var(--primary-blue);
-            padding: 0.2rem 0.4rem;
-            font-size: 0.7rem;
-            background: var(--bg-card);
-        }
-
-        .flex-row {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        /* New styles for demos */
-        .hidden { display: none !important; }
-        .muted { opacity: 0.4; border-style: dashed !important; }
-                .menu-box {
-            padding: 0.5rem;
-            background: var(--shadow-blue);
-            font-size: 0.7rem;
-            text-align: center;
-            border: 1px solid var(--primary-blue);
-        }
-
-        .sync-card {
-            border: 1px solid var(--primary-blue);
-            padding: 0.5rem;
-            background: var(--bg-card);
-            font-size: 0.75rem;
-            min-height: 60px;
-        }
-
-        .sync-card:focus {
-            outline: none;
-            box-shadow: 2px 2px 0 var(--shadow-blue);
-        }
-
-        .filter-card {
-            padding: 0.5rem;
-            background: var(--shadow-blue);
-            font-size: 0.7rem;
-            text-align: center;
-            border: 1px solid var(--primary-blue);
-            transition: opacity 0.2s, border-style 0.2s;
-        }
-
-        .morph-box {
-            padding: 0.5rem;
-            background: var(--shadow-blue);
-            font-size: 0.75rem;
-            text-align: center;
-            border: 1px solid var(--primary-blue);
-            min-width: 40px;
-        }
-    </style>
+    <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
     <div class="container">
@@ -510,14 +33,14 @@
                     </a>
                 </div>
             </div>
-            <p class="subtitle">A Better DOM API</p>
+            <p class="subtitle">A Better API for DOM-first Applications</p>
             <ul class="intro-bullets">
                 <li>The DOM API is incomplete. These modules patch the gaps.</li>
                 <li>Pair with <a href="https://hyperclay.com" class="intro-link">Hyperclay</a> to unlock HTML files that edit themselves.</li>
             </ul>
 
-            <div class="intro-section" style="background: rgba(232, 93, 4, 0.05); border-color: #E85D04;">
-                <h2 style="color: #E85D04;">What is HyperclayJS?</h2>
+            <div class="intro-section--orange">
+                <h2>What is HyperclayJS?</h2>
                 <p>
                     HyperclayJS is the JavaScript library that powers single-file HTML apps. It gives your HTML files the ability to send themselves to a save endpoint, manage the split between edit mode and view mode, and blurs the line between document and application.
                 </p>
@@ -734,7 +257,7 @@ hyperclay.isEditMode;</code></pre>
   .edit-outline { outline: 2px dashed blue; }
 &lt;/style&gt;</code></pre>
                 <div class="demo-area">
-                    <style editmode:resource type="text/css">.edit-outline { outline: 2px dashed #E85D04; border: none; }</style>
+                    <style editmode:resource type="text/css">.edit-outline { outline: 2px dashed var(--orange); border: none; }</style>
                     <div class="edit-outline badge">Dashed outline in edit mode</div>
                 </div>
             </div>
@@ -778,7 +301,7 @@ hyperclay.isEditMode;</code></pre>
                     <span>+</span>
                     <input type="number" b value="0" oninput="this.val.sum = Number(this.val.a) + Number(this.val.b)" style="width: 60px;">
                     <span>=</span>
-                    <input sum readonly value="0" style="width: 60px; border-color: #296af8; background: rgba(41, 106, 248, 0.12); color: #6b9aff;">
+                    <input sum readonly value="0" class="input--sum" style="width: 60px;">
                 </div>
             </div>
 
@@ -844,9 +367,9 @@ hyperclay.isEditMode;</code></pre>
                         <button onclick="document.documentElement.setAttribute('savestatus', 'dirty')">Set dirty</button>
                     </div>
                     <div class="flex-row">
-                        <span class="badge" option:savestatus="saved" style="background: var(--green); color: white; border: 2px solid #006B4D;">✓ Saved</span>
-                        <span class="badge" option:savestatus="saving" style="background: var(--yellow); color: white; border: 2px solid #A66D00;">Saving...</span>
-                        <span class="badge" option:savestatus="dirty" style="background: var(--red); color: white; border: 2px solid #A62833;">Unsaved</span>
+                        <span class="badge badge--green" option:savestatus="saved">✓ Saved</span>
+                        <span class="badge badge--yellow" option:savestatus="saving">Saving...</span>
+                        <span class="badge badge--red" option:savestatus="dirty">Unsaved</span>
                     </div>
                 </div>
             </div>
@@ -864,8 +387,8 @@ hyperclay.isEditMode;</code></pre>
                         <button onclick="setEditMode(false)">Edit mode OFF</button>
                     </div>
                     <div class="flex-row">
-                        <span class="badge" option:editmode="true" style="background: var(--primary-blue); color: white; border: 2px solid #1e1b4b;">Edit Tools</span>
-                        <span class="badge" option:editmode="false" style="background: var(--gray); color: white; border: 2px solid #334155;">View Only</span>
+                        <span class="badge badge--primary" option:editmode="true">Edit Tools</span>
+                        <span class="badge badge--muted" option:editmode="false">View Only</span>
                     </div>
                 </div>
             </div>
@@ -882,8 +405,8 @@ hyperclay.isEditMode;</code></pre>
                         <button onclick="this.closest('[status]').setAttribute('status', 'pending')">Mark Pending</button>
                     </div>
                     <div class="flex-row">
-                        <span class="badge" option:status="pending" style="background: var(--yellow); color: white; border: 2px solid #A66D00;">⏳ Pending</span>
-                        <span class="badge" option:status="completed" style="background: var(--green); color: white; border: 2px solid #006B4D;">✓ Completed</span>
+                        <span class="badge badge--yellow" option:status="pending">⏳ Pending</span>
+                        <span class="badge badge--green" option:status="completed">✓ Completed</span>
                     </div>
                 </div>
             </div>
@@ -1233,7 +756,7 @@ themodal.open();</code></pre>
                             </select>
                             <label style="font-size: 0.7rem;"><input type="checkbox" name="flags" value="demo" checked> demo</label>
                         </div>
-                        <button type="submit" style="margin-top: 0.5rem; border-color: #296af8; color: #6b9aff; background: rgba(41, 106, 248, 0.12);" onmouseover="this.style.background='rgba(41, 106, 248, 0.22)'" onmouseout="this.style.background='rgba(41, 106, 248, 0.12)'">Serialize</button>
+                        <button type="submit" class="btn--accent" style="margin-top: 0.5rem;">Serialize</button>
                     </form>
                     <span class="output" id="form-output" style="margin-top: 0.5rem;">Click serialize</span>
                 </div>
@@ -1291,14 +814,14 @@ themodal.open();</code></pre>
 
         </div>
 
-        <footer style="margin-top: 3rem; padding: 2rem; border: 2px solid #E85D04; background: rgba(232, 93, 4, 0.05); text-align: center;">
-            <p style="font-size: 1rem; color: #E85D04; margin-bottom: 0.5rem;"><strong>Build your own apps with HyperclayJS</strong></p>
-            <p style="font-size: 0.85rem; color: var(--gray); margin-bottom: 1rem;">Make your HTML files into apps</p>
-            <a href="https://hyperclay.com" style="display: inline-block; font-weight: bold; color: white; background: #E85D04; padding: 0.6rem 1.5rem; text-decoration: none;">Use HyperclayJS &rarr;</a>
+        <footer class="footer-cta">
+            <p class="footer-cta__title"><strong>Build your own apps with HyperclayJS</strong></p>
+            <p class="footer-cta__desc">Make your HTML files into apps</p>
+            <a href="https://hyperclay.com" class="footer-cta__link">Use HyperclayJS &rarr;</a>
         </footer>
 
-        <footer style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(106, 115, 182, 0.3); text-align: center;">
-            <p style="font-size: 0.85rem; color: var(--gray);">HyperclayJS is part of <a href="https://hyperclay.com" style="color: var(--gray);">Hyperclay</a></p>
+        <footer class="footer-bottom">
+            <p>HyperclayJS is part of <a href="https://hyperclay.com">Hyperclay</a></p>
         </footer>
     </div>
 
