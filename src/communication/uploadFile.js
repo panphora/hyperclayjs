@@ -188,6 +188,7 @@ function uploadFileData(fileName, fileBody, progressCallback, extraData = {}) {
   const xhr = new XMLHttpRequest();
   xhr.open("POST", "/upload", true);
   xhr.setRequestHeader("Content-Type", "application/json");
+  xhr.setRequestHeader("Page-URL", window.location.href);
 
   let lastReportedProgress = 0;
   const debouncedProgressCallback = debounce(function (event) {
