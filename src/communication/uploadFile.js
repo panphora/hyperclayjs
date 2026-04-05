@@ -2,21 +2,42 @@ import toast from "../ui/toast.js";
 import debounce from "../utilities/debounce.js";
 import copyToClipboard from "../string-utilities/copy-to-clipboard.js";
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+function getMaxFileSize() {
+  return window.env?.MAX_UPLOAD_SIZE || 10 * 1024 * 1024;
+}
 
 export function uploadFile(eventOrFile, callback = () => {}, extraData = {}) {
-  // handle event
   if (eventOrFile instanceof Event) {
     eventOrFile.preventDefault();
     const fileInput = eventOrFile.target;
-    const file = fileInput.files[0];
-    return uploadFileFromObject(file, res => {
-      callback(res);
-      fileInput.value = ""; // Reset fileInput after upload
-    }, extraData);
+    const files = Array.from(fileInput.files);
+
+    if (files.length === 0) return Promise.reject(new Error('No files selected'));
+
+    if (files.length === 1) {
+      return uploadFileFromObject(files[0], res => {
+        callback(res);
+        fileInput.value = "";
+      }, extraData);
+    }
+
+    return (async () => {
+      const results = [];
+      for (let i = 0; i < files.length; i++) {
+        try {
+          const result = await uploadFileFromObject(files[i], () => {}, extraData);
+          results.push(result);
+        } catch (err) {
+          results.push({ error: err.message, fileName: files[i].name });
+        }
+        toast(`Uploaded ${i + 1} of ${files.length} files`);
+      }
+      fileInput.value = "";
+      callback(results);
+      return results;
+    })();
   }
 
-  // handle raw file object
   if (eventOrFile instanceof File) {
     return uploadFileFromObject(eventOrFile, callback, extraData);
   }
@@ -65,7 +86,7 @@ export function uploadFileBasic (eventOrFile, {
   onError = (error) => {}
 } = {}) {
   function handleUpload(file) {
-    if (file.size > MAX_FILE_SIZE) {
+    if (file.size > getMaxFileSize()) {
       onError(new Error('File too large'));
       return Promise.reject(new Error('File too large'));
     }
@@ -118,8 +139,9 @@ export function uploadFileBasic (eventOrFile, {
 }
 
 function uploadFileFromObject(file, onComplete = () => {}, extraData = {}) {
-  if (file.size > MAX_FILE_SIZE) {
-    toast(`Maximum file size: ${MAX_FILE_SIZE / 1024 / 1024}MB`, 'error');
+  const maxFileSize = getMaxFileSize();
+  if (file.size > maxFileSize) {
+    toast(`Maximum file size: ${maxFileSize / 1024 / 1024}MB`, 'error');
     return Promise.reject(new Error('File too large'));
   }
 
