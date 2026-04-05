@@ -11,13 +11,12 @@
    - e.g. <ul sortable onsorted="console.log('Items reordered!')"></ul>
 
    This wrapper conditionally loads the full Sortable.js vendor script (~118KB)
-   only when in edit mode. The script is injected with save-remove so it's
-   stripped from the page before saving.
+   only when in edit mode, using dynamic import().
 
 */
 import { isEditMode } from "../core/isAdminOfCurrentResource.js";
 import Mutation from "../utilities/mutation.js";
-import { loadVendorScript, getVendorUrl } from "../utilities/loadVendorScript.js";
+import { getVendorUrl } from "../utilities/loadVendorScript.js";
 
 function makeSortable(sortableElem, Sortable) {
   let options = {};
@@ -75,7 +74,8 @@ async function init() {
 
   // Load the vendor script
   const vendorUrl = getVendorUrl(import.meta.url, '../vendor/Sortable.vendor.js');
-  const Sortable = await loadVendorScript(vendorUrl, 'Sortable');
+  await import(vendorUrl);
+  const Sortable = window.Sortable;
 
   // Auto-export to window unless suppressed by loader
   if (!window.__hyperclayNoAutoExport) {

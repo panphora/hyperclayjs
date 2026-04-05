@@ -433,6 +433,7 @@ const modalCss = `<style class="micromodal-css">
   padding: 6px 6px 7px;
   font-size: var(--hyperclay-modal-input-font-size, 16px);
   color: #000;
+  background: #fff;
 }
 
 .micromodal .micromodal__input:focus, .micromodal .micromodal__input:active {

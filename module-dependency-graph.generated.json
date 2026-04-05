@@ -387,7 +387,7 @@
     "sortable": {
       "name": "sortable",
       "category": "custom-attributes",
-      "size": 3.4,
+      "size": 3.3,
       "isEditModeOnly": true,
       "files": [
         "custom-attributes/sortable.js"
