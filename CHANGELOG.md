@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.25.0] - 2026-04-05
+
+### Added
+- Multi-file upload support and uploadFileBasic API with progress callbacks
+- Better error handling with toast messages for file uploads
+
+### Changed
+- Modal component updated
+- uploadFile.js updated
+- Text readability improved with --text-primary and copy fixes
+- Website redesigned with shared stylesheet, soft gold theme, and improved readability
+
+### Fixed
+- Sortable attribute handling
+
+
+
 ## [1.24.5] - 2026-04-02
 
 ### Added

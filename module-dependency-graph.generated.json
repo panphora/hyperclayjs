@@ -789,7 +789,7 @@
     "file-upload": {
       "name": "file-upload",
       "category": "communication",
-      "size": 10.7,
+      "size": 11.3,
       "isEditModeOnly": true,
       "files": [
         "communication/uploadFile.js"
