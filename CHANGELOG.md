@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.26.0] - 2026-04-10
+
+### Added
+- data-copy click handler in createModal for clipboard copy buttons
+
+
+
 ## [1.25.0] - 2026-04-05
 
 ### Added
