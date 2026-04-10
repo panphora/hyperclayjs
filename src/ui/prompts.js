@@ -50,6 +50,19 @@ function createModal(promptText, yesCallback, extraContent = "", includeInput = 
 
   themodal.open();
 
+  setTimeout(() => {
+    const modalContainer = document.querySelector('.micromodal-parent');
+    if (modalContainer) {
+      modalContainer.addEventListener('click', (event) => {
+        const btn = event.target.closest('[data-copy]');
+        if (btn) {
+          copyToClipboard(btn.dataset.copy);
+          toast('Copied', 'success');
+        }
+      });
+    }
+  }, 0);
+
   return promise;
 }
 
