@@ -78,8 +78,15 @@ export const beforeSave = onPrepareForSave;
  *
  * @returns {HTMLElement} Cloned document element with snapshot hooks applied
  */
+function clonePreventingOnclone(node) {
+  const prev = window.__preventOnclone;
+  window.__preventOnclone = true;
+  try { return node.cloneNode(true); }
+  finally { window.__preventOnclone = prev; }
+}
+
 export function captureSnapshot() {
-  const clone = document.documentElement.cloneNode(true);
+  const clone = clonePreventingOnclone(document.documentElement);
 
   for (const hook of snapshotHooks) {
     hook(clone);
@@ -196,7 +203,7 @@ export function captureForSaveAndComparison({ emitForSync = true } = {}) {
   }
 
   // Clone for comparison before stripping (cheaper than cloning live DOM)
-  const compareClone = clone.cloneNode(true);
+  const compareClone = clonePreventingOnclone(clone);
 
   // Save clone: strip [save-remove], then run hooks
   for (const el of clone.querySelectorAll('[save-remove]')) {

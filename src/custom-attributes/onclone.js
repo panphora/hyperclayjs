@@ -13,8 +13,10 @@ function init() {
     const clonedNode = originalCloneNode.call(this, deep);
 
     if (clonedNode.nodeType === Node.ELEMENT_NODE) {
-      processOnclone(clonedNode);
-      clonedNode.querySelectorAll('[onclone]').forEach(processOnclone);
+      if (!window.__preventOnclone) {
+        processOnclone(clonedNode);
+        clonedNode.querySelectorAll('[onclone]').forEach(processOnclone);
+      }
 
       // Patch textareas: the persist module writes live values to data-value
       // on every keystroke (because writing textContent on a focused textarea
