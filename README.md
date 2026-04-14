@@ -65,7 +65,7 @@ import 'hyperclayjs/presets/standard.js';
 | save-core | 8.9KB | Basic save function only - hyperclay.savePage() |
 | save-system | 13.4KB | CMD+S, [trigger-save] button, savestatus attribute |
 | save-toast | 0.9KB | Toast notifications for save events |
-| snapshot | 10.8KB | Source of truth for page state - captures DOM snapshots for save and sync |
+| snapshot | 11KB | Source of truth for page state - captures DOM snapshots for save and sync |
 | unsaved-warning | 1.3KB | Warn before leaving page with unsaved changes |
 
 ### Custom Attributes (HTML enhancements)
@@ -134,17 +134,17 @@ import 'hyperclayjs/presets/standard.js';
 
 ## Presets
 
-### Minimal (~57KB)
+### Minimal (~57.2KB)
 Essential features for basic editing
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `edit-mode-helpers`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Standard (~83.9KB)
+### Standard (~84.1KB)
 Standard feature set for most use cases
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `unsaved-warning`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Everything (~225.8KB)
+### Everything (~226KB)
 All available features
 
 Includes all available modules across all categories.

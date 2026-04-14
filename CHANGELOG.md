@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.26.1] - 2026-04-13
+
+### Changed
+- Suppress onclone callbacks during save/snapshot pipeline clones
+
+
+
 ## [1.26.0] - 2026-04-10
 
 ### Added

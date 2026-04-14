@@ -290,7 +290,7 @@
     "snapshot": {
       "name": "snapshot",
       "category": "core",
-      "size": 10.8,
+      "size": 11,
       "isEditModeOnly": true,
       "files": [
         "core/snapshot.js"
