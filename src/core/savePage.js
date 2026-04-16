@@ -121,129 +121,160 @@ export function getLastSavedContents() { return lastSavedContents; }
 export function setLastSavedContents(val) { lastSavedContents = val; }
 
 /**
- * Save the current page with change detection and state management
+ * Save the current page with change detection and state management.
+ *
+ * Returns a Promise that resolves with {msg, msgType} — the same object
+ * passed to the callback. Promise never rejects; errors resolve with
+ * msgType: 'error', skipped early-returns resolve with msgType: 'skipped'.
  *
  * @param {Function} callback - Optional callback for custom handling
+ * @returns {Promise<{msg: string, msgType: string}>}
  */
 export function savePage(callback = () => {}) {
-  if (!isEditMode && !window.hyperclay?.testMode) {
-    return;
-  }
-
-  // Don't start a new save if one is already in progress
-  if (isSaveInProgress()) {
-    return;
-  }
-
-  // Check if offline - set DOM state immediately for UI feedback
-  // but still try the fetch (navigator.onLine can be wrong)
-  const wasOffline = !navigator.onLine;
-  if (wasOffline) {
-    setOfflineStateQuiet();
-  }
-
-  // Single capture: clone once, get both versions
-  // forComparison has [save-remove] and [save-ignore] stripped
-  // forSave has only [save-remove] stripped
-  let forSave, forComparison;
-  try {
-    ({ forSave, forComparison } = captureForSaveAndComparison());
-  } catch (err) {
-    console.error('savePage: captureForSaveAndComparison failed', err);
-    setSaveState('error', err.message);
-    if (typeof callback === 'function') {
-      callback({ msg: err.message, msgType: 'error' });
+  return new Promise((resolve) => {
+    if (!isEditMode && !window.hyperclay?.testMode) {
+      const skipped = { msg: 'Not in edit mode', msgType: 'skipped' };
+      callback(skipped);
+      return resolve(skipped);
     }
-    return;
-  }
 
-  // Compare directly - lastSavedContents is already stripped
-  unsavedChanges = (forComparison !== lastSavedContents);
-  logSaveCheck('savePage dirty check', !unsavedChanges);
+    // Don't start a new save if one is already in progress
+    if (isSaveInProgress()) {
+      const skipped = { msg: 'Save already in progress', msgType: 'skipped' };
+      callback(skipped);
+      return resolve(skipped);
+    }
 
-  // Skip if content hasn't changed
-  if (!unsavedChanges) {
-    return;
-  }
+    // Check if offline - set DOM state immediately for UI feedback
+    // but still try the fetch (navigator.onLine can be wrong)
+    const wasOffline = !navigator.onLine;
+    if (wasOffline) {
+      setOfflineStateQuiet();
+    }
 
-  // Start debounced 'saving' state (only shows if save takes >500ms)
-  setSavingState();
-
-  // Use saveHtml directly with our pre-captured content (avoids double capture)
-  saveHtml(forSave, (err, data) => {
-    if (!err) {
-      // SUCCESS - store stripped version for future comparisons
-      lastSavedContents = forComparison;
-      unsavedChanges = false;
-      setSaveState('saved', data?.msg || 'Saved');
-      logBaseline('updated after save', `${lastSavedContents.length} chars`);
-    } else {
-      // FAILED - determine if it's offline or server error
-      if (!navigator.onLine) {
-        setSaveState('offline', err.message);
-      } else {
-        setSaveState('error', err.message);
+    // Single capture: clone once, get both versions
+    // forComparison has [save-remove] and [save-ignore] stripped
+    // forSave has only [save-remove] stripped
+    let forSave, forComparison;
+    try {
+      ({ forSave, forComparison } = captureForSaveAndComparison());
+    } catch (err) {
+      console.error('savePage: captureForSaveAndComparison failed', err);
+      setSaveState('error', err.message);
+      const result = { msg: err.message, msgType: 'error' };
+      if (typeof callback === 'function') {
+        callback(result);
       }
+      return resolve(result);
     }
 
-    // Call user callback if provided (preserve server's msgType)
-    if (typeof callback === 'function') {
-      callback({
+    // Compare directly - lastSavedContents is already stripped
+    unsavedChanges = (forComparison !== lastSavedContents);
+    logSaveCheck('savePage dirty check', !unsavedChanges);
+
+    // Skip if content hasn't changed
+    if (!unsavedChanges) {
+      const skipped = { msg: 'No changes to save', msgType: 'skipped' };
+      callback(skipped);
+      return resolve(skipped);
+    }
+
+    // Start debounced 'saving' state (only shows if save takes >500ms)
+    setSavingState();
+
+    // Use saveHtml directly with our pre-captured content (avoids double capture)
+    saveHtml(forSave, (err, data) => {
+      if (!err) {
+        // SUCCESS - store stripped version for future comparisons
+        lastSavedContents = forComparison;
+        unsavedChanges = false;
+        setSaveState('saved', data?.msg || 'Saved');
+        logBaseline('updated after save', `${lastSavedContents.length} chars`);
+      } else {
+        // FAILED - determine if it's offline or server error
+        if (!navigator.onLine) {
+          setSaveState('offline', err.message);
+        } else {
+          setSaveState('error', err.message);
+        }
+      }
+
+      // Call user callback if provided (preserve server's msgType)
+      const result = {
         msg: err?.message || data?.msg,
         msgType: err ? 'error' : (data?.msgType || 'success')
-      });
-    }
+      };
+      if (typeof callback === 'function') {
+        callback(result);
+      }
+      resolve(result);
+    });
   });
 }
 
+/**
+ * Force-save the current page (skips dirty check).
+ *
+ * @param {Function} callback - Optional callback for custom handling
+ * @returns {Promise<{msg: string, msgType: string}>}
+ */
 export function savePageForce(callback = () => {}) {
-  if (!isEditMode && !window.hyperclay?.testMode) {
-    return;
-  }
-
-  if (isSaveInProgress()) {
-    return;
-  }
-
-  const wasOffline = !navigator.onLine;
-  if (wasOffline) {
-    setOfflineStateQuiet();
-  }
-
-  let forSave, forComparison;
-  try {
-    ({ forSave, forComparison } = captureForSaveAndComparison());
-  } catch (err) {
-    console.error('savePageForce: captureForSaveAndComparison failed', err);
-    setSaveState('error', err.message);
-    if (typeof callback === 'function') {
-      callback({ msg: err.message, msgType: 'error' });
+  return new Promise((resolve) => {
+    if (!isEditMode && !window.hyperclay?.testMode) {
+      const skipped = { msg: 'Not in edit mode', msgType: 'skipped' };
+      callback(skipped);
+      return resolve(skipped);
     }
-    return;
-  }
 
-  setSavingState();
+    if (isSaveInProgress()) {
+      const skipped = { msg: 'Save already in progress', msgType: 'skipped' };
+      callback(skipped);
+      return resolve(skipped);
+    }
 
-  saveHtml(forSave, (err, data) => {
-    if (!err) {
-      lastSavedContents = forComparison;
-      unsavedChanges = false;
-      setSaveState('saved', data?.msg || 'Saved');
-      logBaseline('updated after force save', `${lastSavedContents.length} chars`);
-    } else {
-      if (!navigator.onLine) {
-        setSaveState('offline', err.message);
-      } else {
-        setSaveState('error', err.message);
+    const wasOffline = !navigator.onLine;
+    if (wasOffline) {
+      setOfflineStateQuiet();
+    }
+
+    let forSave, forComparison;
+    try {
+      ({ forSave, forComparison } = captureForSaveAndComparison());
+    } catch (err) {
+      console.error('savePageForce: captureForSaveAndComparison failed', err);
+      setSaveState('error', err.message);
+      const result = { msg: err.message, msgType: 'error' };
+      if (typeof callback === 'function') {
+        callback(result);
       }
+      return resolve(result);
     }
 
-    if (typeof callback === 'function') {
-      callback({
+    setSavingState();
+
+    saveHtml(forSave, (err, data) => {
+      if (!err) {
+        lastSavedContents = forComparison;
+        unsavedChanges = false;
+        setSaveState('saved', data?.msg || 'Saved');
+        logBaseline('updated after force save', `${lastSavedContents.length} chars`);
+      } else {
+        if (!navigator.onLine) {
+          setSaveState('offline', err.message);
+        } else {
+          setSaveState('error', err.message);
+        }
+      }
+
+      const result = {
         msg: err?.message || data?.msg,
         msgType: err ? 'error' : (data?.msgType || 'success')
-      });
-    }
+      };
+      if (typeof callback === 'function') {
+        callback(result);
+      }
+      resolve(result);
+    });
   });
 }
 
@@ -364,13 +395,21 @@ if (document.readyState === 'loading') {
 }
 
 /**
- * Save the page with throttling, for use with auto-save
- * Checks both baseline and last saved content to prevent saves from initial setup
+ * Save the page with throttling, for use with auto-save.
+ * Checks both baseline and last saved content to prevent saves from initial setup.
+ *
+ * Returns a Promise resolving with {msg, msgType}. Within-throttle-window calls
+ * piggyback on the trailing-edge save and resolve with its result.
  *
  * @param {Function} callback - Optional callback
+ * @returns {Promise<{msg: string, msgType: string}>}
  */
 export function savePageThrottled(callback = () => {}) {
-  if (!isEditMode) return;
+  if (!isEditMode) {
+    const skipped = { msg: 'Not in edit mode', msgType: 'skipped' };
+    callback(skipped);
+    return Promise.resolve(skipped);
+  }
 
   // For autosave: check both that content changed from baseline AND from last save
   // This prevents saves from initial setup mutations
@@ -382,10 +421,14 @@ export function savePageThrottled(callback = () => {}) {
   logSaveCheck('throttled vs baseline', !differsFromBaseline);
   logSaveCheck('throttled vs lastSave', !differsFromLastSave);
 
-  if (differsFromBaseline && differsFromLastSave) {
-    unsavedChanges = true;
-    throttledSave(callback);
+  if (!(differsFromBaseline && differsFromLastSave)) {
+    const skipped = { msg: 'No changes to save', msgType: 'skipped' };
+    callback(skipped);
+    return Promise.resolve(skipped);
   }
+
+  unsavedChanges = true;
+  return throttledSave(callback);
 }
 
 /**

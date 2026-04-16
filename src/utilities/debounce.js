@@ -1,13 +1,22 @@
 // debounce.js
 function debounce(callback, delay) {
   let timeoutId;
+  let pendingResolvers = [];
 
   return function (...args) {
+    const ctx = this;
     clearTimeout(timeoutId);
 
-    timeoutId = setTimeout(() => {
-      callback.apply(this, args);
-    }, delay);
+    return new Promise((resolve) => {
+      pendingResolvers.push(resolve);
+
+      timeoutId = setTimeout(() => {
+        const resolvers = pendingResolvers;
+        pendingResolvers = [];
+        Promise.resolve(callback.apply(ctx, args))
+          .then(value => { for (const r of resolvers) r(value); });
+      }, delay);
+    });
   };
 }
 
