@@ -62,8 +62,8 @@ import 'hyperclayjs/presets/standard.js';
 | edit-mode-helpers | 6.8KB | Admin-only functionality: [viewmode:disabled], [editmode:resource], [editmode:onclick] |
 | option-visibility | 7.1KB | Dynamic show/hide based on ancestor state with option:attribute="value" |
 | persist | 6.4KB | Persist input/select/textarea values to the DOM with [persist] attribute |
-| save-core | 8.9KB | Basic save function only - hyperclay.savePage() |
-| save-system | 13.4KB | CMD+S, [trigger-save] button, savestatus attribute |
+| save-core | 11.5KB | Basic save function only - hyperclay.savePage() |
+| save-system | 15.4KB | CMD+S, [trigger-save] button, savestatus attribute |
 | save-toast | 0.9KB | Toast notifications for save events |
 | snapshot | 11KB | Source of truth for page state - captures DOM snapshots for save and sync |
 | unsaved-warning | 1.3KB | Warn before leaving page with unsaved changes |
@@ -96,10 +96,10 @@ import 'hyperclayjs/presets/standard.js';
 |--------|------|-------------|
 | cache-bust | 0.6KB | Cache-bust href/src attributes |
 | cookie | 1.4KB | Cookie management (often auto-included) |
-| debounce | 0.4KB | Function debouncing |
+| debounce | 0.7KB | Function debouncing |
 | mutation | 13.8KB | DOM mutation observation (often auto-included) |
 | nearest | 3.4KB | Find nearest elements (often auto-included) |
-| throttle | 0.8KB | Function throttling |
+| throttle | 1.3KB | Function throttling |
 
 ### DOM Utilities (DOM manipulation helpers)
 
@@ -134,17 +134,17 @@ import 'hyperclayjs/presets/standard.js';
 
 ## Presets
 
-### Minimal (~57.2KB)
+### Minimal (~61.8KB)
 Essential features for basic editing
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `edit-mode-helpers`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Standard (~84.1KB)
+### Standard (~88.7KB)
 Standard feature set for most use cases
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `unsaved-warning`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Everything (~226KB)
+### Everything (~231.4KB)
 All available features
 
 Includes all available modules across all categories.

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.26.2] - 2026-04-16
+
+### Changed
+- Refactor savePage core and rate-limiting utilities
+
+
+
 ## [1.26.1] - 2026-04-13
 
 ### Changed
