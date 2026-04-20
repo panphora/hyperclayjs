@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.26.4] - 2026-04-20
+
+### Fixed
+- Modal overflow when content has long unbreakable strings
+- Slugify now preserves .html/.htmlclay extensions
+- Fake CDN url in style-guide textarea demo
+
+
+
 ## [1.26.2] - 2026-04-16
 
 ### Changed

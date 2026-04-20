@@ -511,7 +511,7 @@
     "the-modal": {
       "name": "the-modal",
       "category": "ui",
-      "size": 22.4,
+      "size": 22.5,
       "files": [
         "ui/theModal.js"
       ],
@@ -717,7 +717,7 @@
     "slugify": {
       "name": "slugify",
       "category": "string-utilities",
-      "size": 0.7,
+      "size": 1,
       "files": [
         "string-utilities/slugify.js"
       ],
