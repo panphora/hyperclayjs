@@ -369,6 +369,7 @@ const modalCss = `<style class="micromodal-css">
 .micromodal__container {
   position: relative;
   width: 100%;
+  min-width: 0;
   max-width: min(550px, calc(100vw - 2rem));
   max-height: calc(100vh - 4rem);
   max-height: calc(100dvh - 2rem);
@@ -419,6 +420,7 @@ const modalCss = `<style class="micromodal-css">
 
 .micromodal .micromodal__content {
   margin-bottom: 14px;
+  overflow-wrap: anywhere;
 }
 
 .micromodal .micromodal__heading {
@@ -426,6 +428,7 @@ const modalCss = `<style class="micromodal-css">
   flex-direction: column;
   gap: 2px;
   margin-bottom: 8px;
+  overflow-wrap: anywhere;
 }
 
 .micromodal .micromodal__input {
