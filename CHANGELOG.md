@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.27.1] - 2026-04-21
+
+### Fixed
+- restore throw-to-keep-open contract for ask()/consent() yesCallback
+
+
+
 ## [1.27.0] - 2026-04-21
 
 ### Changed

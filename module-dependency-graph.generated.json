@@ -454,7 +454,7 @@
     "dialogs": {
       "name": "dialogs",
       "category": "ui",
-      "size": 8.2,
+      "size": 8.5,
       "files": [
         "ui/prompts.js"
       ],
