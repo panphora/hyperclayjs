@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.27.0] - 2026-04-21
+
+### Changed
+- Modal callbacks (ask/consent/tell/snippet yesCallback + resolve/reject) defer to the next tick so chained modal calls don't collide on themodal's singleton state. Lets you call `ask()` followed by `consent()` without a caller-side `setTimeout` workaround.
+
+### Fixed
+- Live-sync races: serialize morphs, drop stale sequences, keep scroll position
+
+### Note
+- Minor behavior change: a `yesCallback` that throws no longer keeps the modal open (the modal has already closed by the time the deferred callback runs). Errors are still toasted. No known consumers rely on throw-to-keep-open.
+
 ## [1.26.4] - 2026-04-20
 
 ### Fixed

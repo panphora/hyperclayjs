@@ -21,30 +21,26 @@ function createModal(promptText, yesCallback, extraContent = "", includeInput = 
 
   const promise = new Promise((resolve, reject) => {
     themodal.onYes(() => {
-      try {
-        if (includeInput) {
-          const promptResult = document.querySelector(".micromodal__input").value;
-          if (promptResult) {
-            if (yesCallback) yesCallback(promptResult);
-            resolve(promptResult);
-            return true; // Allow modal to close
-          }
-        } else {
-          if (yesCallback) yesCallback();
-          resolve();
-          return true; // Allow modal to close
-        }
-      } catch (error) {
-        // Show error message as toast
-        toast(error.message || 'An error occurred', 'error');
-        // Keep modal open - don't reject or resolve
-        // User can try again
-        return false; // Prevent modal from closing
+      let promptResult;
+      if (includeInput) {
+        promptResult = document.querySelector(".micromodal__input").value;
+        if (!promptResult) return false; // keep modal open on empty input
       }
+      // Defer so the modal's close sequence completes before callbacks fire —
+      // chained ask()/consent() calls then land in a clean themodal instead of
+      // piggybacking on this modal's onYes loop (themodal is a singleton).
+      setTimeout(() => {
+        if (yesCallback) {
+          try { yesCallback(promptResult); }
+          catch (err) { toast(err.message || 'An error occurred', 'error'); }
+        }
+        resolve(promptResult);
+      }, 0);
+      return true; // Allow modal to close
     });
 
     themodal.onNo = () => {
-      reject();
+      setTimeout(reject, 0);
     };
   });
 
@@ -95,12 +91,12 @@ export function tell(promptText, ...content) {
 
   const promise = new Promise((resolve, reject) => {
     themodal.onYes(() => {
-      resolve();
+      setTimeout(resolve, 0);
       return true;
     });
 
     themodal.onNo = () => {
-      reject();
+      setTimeout(reject, 0);
     };
   });
 
@@ -159,22 +155,22 @@ export function snippet(title, content, extraContent = '') {
     }, 0);
 
     themodal.onYes(() => {
-      // Clean up the event listener
+      // Clean up the event listener synchronously — the DOM may be torn down
+      // before our deferred resolve fires otherwise.
       const modalContainer = document.querySelector('.micromodal-parent');
       if (modalContainer) {
         modalContainer.removeEventListener('click', handleCopy);
       }
-      resolve();
+      setTimeout(resolve, 0);
       return true;
     });
 
     themodal.onNo = () => {
-      // Clean up the event listener
       const modalContainer = document.querySelector('.micromodal-parent');
       if (modalContainer) {
         modalContainer.removeEventListener('click', handleCopy);
       }
-      resolve();
+      setTimeout(resolve, 0);
     };
   });
 

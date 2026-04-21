@@ -454,7 +454,7 @@
     "dialogs": {
       "name": "dialogs",
       "category": "ui",
-      "size": 8.1,
+      "size": 8.2,
       "files": [
         "ui/prompts.js"
       ],
@@ -810,7 +810,7 @@
     "live-sync": {
       "name": "live-sync",
       "category": "communication",
-      "size": 11.6,
+      "size": 15.5,
       "isEditModeOnly": true,
       "difficulty": "advanced",
       "files": [
