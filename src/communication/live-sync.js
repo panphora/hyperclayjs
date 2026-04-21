@@ -47,6 +47,20 @@ class LiveSync {
     // Store handler reference for cleanup
     this._snapshotHandler = null;
 
+    // High-water mark of server seqs we've seen on this channel (own echoes
+    // count too). Server-broadcast payloads carry a monotonic seq
+    // (Date.now()-based). We drop anything <= this to guard against rare
+    // cases where a stale message lands after a newer one — e.g. buffered
+    // replay, alt backend after reconnect, or an own-save echo arriving
+    // after a peer's newer broadcast.
+    this.lastSeenSeq = 0;
+
+    // Promise chain used to serialize overlapping applyUpdate() calls.
+    // A morph with external scripts returns a Promise; without chaining, two
+    // SSE events arriving back-to-back would interleave their morphs on the
+    // same DOM.
+    this._applyChain = Promise.resolve();
+
     // Callbacks
     this.onConnect = null;
     this.onDisconnect = null;
@@ -112,6 +126,8 @@ class LiveSync {
 
     // Reset state for new connection
     this.lastHtml = null;
+    this.lastSeenSeq = 0;
+    this._applyChain = Promise.resolve();
 
     console.log('[LiveSync] Starting for:', this.currentFile);
     this.connect();
@@ -194,9 +210,24 @@ class LiveSync {
         return;
       }
 
-      const { html, sender } = data;
+      const { html, sender, seq } = data;
 
-      // Ignore own changes
+      // Staleness check runs FIRST — compared against the high-water mark of
+      // seqs we've seen (own echoes count too, see below). `seq` is optional
+      // for back-compat with older server builds that don't stamp it.
+      if (typeof seq === 'number' && seq <= this.lastSeenSeq) {
+        this._log(`Dropping stale message: seq=${seq}, lastSeen=${this.lastSeenSeq}`);
+        return;
+      }
+
+      // Advance the watermark before the sender filter so that our own save
+      // echoes count toward "seen". Without this, a later buffered/replayed
+      // peer message with a smaller seq could rewind us past our local edit.
+      if (typeof seq === 'number') {
+        this.lastSeenSeq = seq;
+      }
+
+      // Ignore own changes — already reflected in the DOM, nothing to morph
       if (sender === this.clientId) {
         this._log('Ignoring own message (sender matches clientId)');
         return;
@@ -208,9 +239,9 @@ class LiveSync {
         return;
       }
 
-      this._log(`Received update from: ${sender} (my clientId: ${this.clientId})`);
-      this.applyUpdate(html);
-      if (this.onUpdate) this.onUpdate({ html, sender });
+      this._log(`Received update from: ${sender} (my clientId: ${this.clientId}, seq=${seq})`);
+      this.applyUpdate(html, seq);
+      if (this.onUpdate) this.onUpdate({ html, sender, seq });
     };
 
     // Native EventSource auto-reconnects on transient errors
@@ -285,13 +316,48 @@ class LiveSync {
   }
 
   /**
-   * Apply an update received from the server
-   * Morphs the entire document (head and body)
+   * Apply an update received from the server.
+   * Morphs the entire document (head and body).
+   *
+   * Serialized via a promise chain so concurrent SSE events don't produce
+   * overlapping morphs (morph can return a Promise when external scripts load).
+   *
+   * @param {string} html - Full document HTML
+   * @param {number} [seq] - Optional monotonic seq from the server
+   * @returns {Promise<void>}
    */
-  applyUpdate(html) {
+  applyUpdate(html, seq) {
+    // Serialize concurrent updates onto a single promise chain. `.catch` on
+    // the combined result both logs the failure (so it isn't a silent
+    // unhandled rejection) AND heals the chain so subsequent updates aren't
+    // blocked by it. `_applyChain` and the returned promise are the same
+    // caught promise — callers that fire-and-forget are safe.
+    const result = this._applyChain
+      .then(() => this._doApplyUpdate(html, seq))
+      .catch((err) => {
+        console.error('[LiveSync] applyUpdate failed:', err);
+      });
+    this._applyChain = result;
+    return result;
+  }
+
+  /**
+   * Actual morph work. Do not call directly — use applyUpdate() so calls
+   * serialize.
+   * @param {string} html
+   * @param {number} [seq]
+   * @returns {Promise<void>}
+   */
+  async _doApplyUpdate(html, seq) {
     this._log('applyUpdate - pausing mutations and morphing');
     this.isPaused = true;
-    this.lastHtml = html;
+
+    // Preserve scroll position: a remote edit that inserts or removes content
+    // above the viewport would otherwise cause a visible jump. Capturing here
+    // and restoring after the morph keeps the viewport stable. Browser
+    // scroll-clamping handles the case where the document is now shorter.
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
 
     // Pause mutation observer so morph doesn't trigger autosave
     Mutation.pause();
@@ -300,19 +366,36 @@ class LiveSync {
     const parser = new DOMParser();
     const newDoc = parser.parseFromString(html, 'text/html');
 
-    // Morph entire document (html element)
-    HyperMorph.morph(document.documentElement, newDoc.documentElement, {
-      morphStyle: 'outerHTML',
-      ignoreActiveValue: true,
-      head: { style: 'merge' },
-      scripts: { handle: true, matchMode: 'smart' }
-    });
+    try {
+      // Morph entire document. We MUST await — HyperMorph.morph returns a
+      // Promise when `scripts: { handle: true }` needs to wait for external
+      // scripts to load. If we don't await, Mutation.resume() fires before
+      // late-loading scripts execute, and any DOM mutations they trigger look
+      // like user edits → the receiving tab rebroadcasts them (feedback loop).
+      await HyperMorph.morph(document.documentElement, newDoc.documentElement, {
+        morphStyle: 'outerHTML',
+        ignoreActiveValue: true,
+        head: { style: 'merge' },
+        scripts: { handle: true, matchMode: 'smart' }
+      });
 
-    this._log('applyUpdate - morph complete, resuming mutations');
-    Mutation.resume();
-    // Defer past microtask boundary — MutationObserver callbacks and any async
-    // morph side-effects fire before this, so isPaused catches stray snapshots
-    setTimeout(() => { this.isPaused = false; }, 0);
+      // Restore viewport. Done after morph so layout has settled.
+      window.scrollTo(scrollX, scrollY);
+
+      // Only mark lastHtml after a successful morph so that a failed apply
+      // doesn't desync our state and cause the next outbound save to be
+      // mistakenly skipped as "unchanged". Note: lastSeenSeq is advanced at
+      // receive time (in onmessage) so the staleness check covers own-save
+      // echoes even when they don't reach this point.
+      this.lastHtml = html;
+    } finally {
+      this._log('applyUpdate - morph complete, resuming mutations');
+      Mutation.resume();
+      // Defer past microtask boundary — MutationObserver callbacks fire before
+      // this, so isPaused catches any stray snapshots from the morph itself.
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      this.isPaused = false;
+    }
   }
 
   /**
