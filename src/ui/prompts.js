@@ -26,17 +26,22 @@ function createModal(promptText, yesCallback, extraContent = "", includeInput = 
         promptResult = document.querySelector(".micromodal__input").value;
         if (!promptResult) return false; // keep modal open on empty input
       }
-      // Defer so the modal's close sequence completes before callbacks fire —
-      // chained ask()/consent() calls then land in a clean themodal instead of
-      // piggybacking on this modal's onYes loop (themodal is a singleton).
-      setTimeout(() => {
-        if (yesCallback) {
-          try { yesCallback(promptResult); }
-          catch (err) { toast(err.message || 'An error occurred', 'error'); }
+      // Run the validation callback synchronously so a throw can keep the
+      // modal open (callers rely on this — e.g. delete-site confirms by
+      // throwing when the typed name doesn't match).
+      if (yesCallback) {
+        try {
+          yesCallback(promptResult);
+        } catch (err) {
+          toast(err.message || 'An error occurred', 'error');
+          return false; // keep modal open, user can retry
         }
-        resolve(promptResult);
-      }, 0);
-      return true; // Allow modal to close
+      }
+      // Defer resolve so downstream .then() handlers don't fire inside this
+      // modal's onYes loop — themodal is a singleton, and chained ask()/
+      // consent() calls need a clean themodal to set up their state.
+      setTimeout(() => resolve(promptResult), 0);
+      return true; // allow modal to close
     });
 
     themodal.onNo = () => {
