@@ -178,6 +178,7 @@
     "utilities/pipe.js": [],
     "utilities/throttle.js": [],
     "vendor/Sortable.vendor.js": [],
+    "vendor/hyper-html-api.vendor.js": [],
     "vendor/hyper-morph.vendor.js": []
   },
   "modules": {
@@ -714,6 +715,22 @@
         ]
       }
     },
+    "hyper-html-api": {
+      "name": "hyper-html-api",
+      "category": "vendor",
+      "size": 10,
+      "difficulty": "intermediate",
+      "files": [
+        "vendor/hyper-html-api.vendor.js"
+      ],
+      "description": "Declarative extract/apply engine driven by a rules tag — foundation for CMS and upgrade flows",
+      "exports": {
+        "HyperHtmlApi": [
+          "window",
+          "hyperclay"
+        ]
+      }
+    },
     "slugify": {
       "name": "slugify",
       "category": "string-utilities",
@@ -880,6 +897,7 @@
     "style-injection": "./dom-utilities/insertStyleTag.js",
     "form-data": "./dom-utilities/getDataFromForm.js",
     "hyper-morph": "./vendor/hyper-morph.vendor.js",
+    "hyper-html-api": "./vendor/hyper-html-api.vendor.js",
     "slugify": "./string-utilities/slugify.js",
     "copy-to-clipboard": "./string-utilities/copy-to-clipboard.js",
     "query-params": "./string-utilities/query.js",
@@ -975,7 +993,8 @@
       "name": "Vendor Libraries",
       "description": "Third-party libraries",
       "modules": [
-        "hyper-morph"
+        "hyper-morph",
+        "hyper-html-api"
       ]
     }
   },
@@ -1095,6 +1114,7 @@
         "style-injection",
         "form-data",
         "hyper-morph",
+        "hyper-html-api",
         "slugify",
         "copy-to-clipboard",
         "query-params",

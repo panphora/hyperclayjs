@@ -325,6 +325,15 @@ const MODULE_DEFINITIONS = {
       morph: ['window', 'hyperclay']
     }
   },
+  'vendor/hyper-html-api.vendor.js': {
+    name: 'hyper-html-api',
+    moduleId: 'hyper-html-api',
+    description: 'Declarative extract/apply engine driven by a rules tag — foundation for CMS and upgrade flows',
+    difficulty: 'intermediate',
+    exports: {
+      HyperHtmlApi: ['window', 'hyperclay']
+    }
+  },
   'string-utilities/slugify.js': {
     name: 'slugify',
     moduleId: 'slugify',
