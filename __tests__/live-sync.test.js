@@ -355,6 +355,99 @@ describe('LiveSync applyUpdate (rAF-paced queue)', () => {
     reborn.stop();
   });
 
+  test('_fillInIdsAfterMorph transfers IDs to elements not paired by morph', () => {
+    document.body.innerHTML = '<div><span>kept</span><span>new</span></div>';
+    const liveSpans = document.body.querySelectorAll('span');
+
+    // Simulate the matcher having already paired the first span via
+    // afterNodeMorphed (so liveWeakMap is seeded). The second span is the
+    // "newly inserted via importNode" case — no afterNodeMorphed fired.
+    sync.liveWeakMap.set(liveSpans[0], 'alice:5');
+
+    // Build a parsed tree mirroring live shape and an identityMap as the
+    // sender would emit. Paths: '' html, '0' head, '1' body, '1.0' div,
+    // '1.0.0' first span, '1.0.1' second span.
+    const parsed = document.documentElement.cloneNode(true);
+    sync._fillInIdsAfterMorph(document.documentElement, parsed, {
+      '': 'alice:1',
+      '1': 'alice:2',
+      '1.0': 'alice:3',
+      '1.0.0': 'alice:5',
+      '1.0.1': 'alice:7',
+    });
+
+    // Existing entry preserved (already-set-to-alice:5 is the same value).
+    expect(sync.liveWeakMap.get(liveSpans[0])).toBe('alice:5');
+    // Gap filled — the previously-unmatched span now has its sender ID.
+    expect(sync.liveWeakMap.get(liveSpans[1])).toBe('alice:7');
+    // Root + body + div also filled in along the way.
+    expect(sync.liveWeakMap.get(document.documentElement)).toBe('alice:1');
+    expect(sync.liveWeakMap.get(document.body)).toBe('alice:2');
+
+    document.body.innerHTML = '';
+  });
+
+  test('_fillInIdsAfterMorph never overwrites an existing liveWeakMap entry', () => {
+    document.body.innerHTML = '<div></div>';
+    const liveDiv = document.body.querySelector('div');
+    sync.liveWeakMap.set(liveDiv, 'preexisting:99');
+
+    const parsed = document.documentElement.cloneNode(true);
+    sync._fillInIdsAfterMorph(document.documentElement, parsed, {
+      '1.0': 'sender:42',
+    });
+
+    // Existing entry is the source of truth — fill-in never clobbers.
+    expect(sync.liveWeakMap.get(liveDiv)).toBe('preexisting:99');
+    document.body.innerHTML = '';
+  });
+
+  test('_fillInIdsAfterMorph aborts subtree on structural divergence', () => {
+    document.body.innerHTML = '<div><span>a</span><span>b</span></div>';
+    const liveSpans = document.body.querySelectorAll('span');
+
+    // Simulate a parsed tree with one fewer child under the div (e.g.
+    // the live tree has a local save-ignore element parsed lacks).
+    const parsed = document.documentElement.cloneNode(true);
+    const parsedDiv = parsed.querySelector('div');
+    parsedDiv.removeChild(parsedDiv.lastElementChild);
+
+    sync._fillInIdsAfterMorph(document.documentElement, parsed, {
+      '1.0.0': 'alice:9',
+    });
+
+    // Spans not transferred — count mismatch aborted the subtree before
+    // we recursed in. liveWeakMap stays empty for them.
+    expect(sync.liveWeakMap.has(liveSpans[0])).toBe(false);
+    expect(sync.liveWeakMap.has(liveSpans[1])).toBe(false);
+    document.body.innerHTML = '';
+  });
+
+  test('_fillInIdsAfterMorph filters [snapshot-remove] from live like _buildIdentityMap', () => {
+    // Mirror sender semantics: snapshot-remove elements aren't in the
+    // sender's clone (and thus not in identityMap), so paths must skip
+    // them on the live side too.
+    document.body.innerHTML =
+      '<div snapshot-remove>removed</div><div><span>kept</span></div>';
+    const liveKeptDiv = document.body.children[1];
+    const liveKeptSpan = liveKeptDiv.children[0];
+
+    // Parsed tree as the sender saw it: snapshot-remove already stripped.
+    const parsed = document.documentElement.cloneNode(true);
+    for (const el of parsed.querySelectorAll('[snapshot-remove]')) el.remove();
+
+    // Path '1.0' on parsed = the kept div (since snapshot-remove was
+    // first child of body and got stripped before walking).
+    sync._fillInIdsAfterMorph(document.documentElement, parsed, {
+      '1.0': 'alice:11',
+      '1.0.0': 'alice:12',
+    });
+
+    expect(sync.liveWeakMap.get(liveKeptDiv)).toBe('alice:11');
+    expect(sync.liveWeakMap.get(liveKeptSpan)).toBe('alice:12');
+    document.body.innerHTML = '';
+  });
+
   test('errors in morph are caught and do not break the queue', async () => {
     // Override the default deferred behavior for this test only.
     HyperMorph.morph.mockImplementationOnce(() => Promise.reject(new Error('boom')));

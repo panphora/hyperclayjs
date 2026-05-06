@@ -269,6 +269,47 @@ class LiveSync {
   }
 
   /**
+   * Fill liveWeakMap entries for live elements that the matcher's
+   * afterNodeMorphed didn't reach. createNode's no-id-children
+   * optimization (hyper-morph importNode path) inserts a clone of the
+   * parsed element without invoking morphNode, so afterNodeMorphed never
+   * fires for those subtrees and their synthetic IDs would be lost. On
+   * the receiver's next save, _buildIdentityMap would mint fresh IDs for
+   * the same logical elements, breaking convergence for newly-added
+   * ambiguous siblings — exactly the case identity-map exists to fix.
+   *
+   * Walks live and parsed in lockstep using the same path scheme as
+   * _buildIdentityMap. Filters [snapshot-remove] from the live side to
+   * stay aligned with the sender's clone view. Aborts a subtree on
+   * child-count divergence (e.g. local save-ignore additions) — those
+   * elements fall through to content scoring on the next round, which
+   * is the same fallback as a sender-side lockstep skip.
+   *
+   * @param {Element} liveRoot - post-morph live tree root
+   * @param {Element} parsedRoot - parsed-tree root (still has identityMap WeakMap entries)
+   * @param {Object} identityMap - path → id map from the SSE payload
+   */
+  _fillInIdsAfterMorph(liveRoot, parsedRoot, identityMap) {
+    if (!liveRoot || !parsedRoot || !identityMap) return;
+    const visit = (live, parsed, path) => {
+      const id = identityMap[path];
+      if (id && !this.liveWeakMap.has(live)) {
+        this.liveWeakMap.set(live, id);
+      }
+      const liveKids = [];
+      for (const c of live.children) {
+        if (!c.hasAttribute('snapshot-remove')) liveKids.push(c);
+      }
+      const parsedKids = parsed.children;
+      if (liveKids.length !== parsedKids.length) return;
+      for (let i = 0; i < liveKids.length; i++) {
+        visit(liveKids[i], parsedKids[i], path === '' ? String(i) : `${path}.${i}`);
+      }
+    };
+    visit(liveRoot, parsedRoot, '');
+  }
+
+  /**
    * Auto-detect the current site file path from the URL
    * Returns the path including extension (e.g., card-canvas.html)
    *
@@ -588,6 +629,16 @@ class LiveSync {
 
       // Restore viewport. Done after morph so layout has settled.
       window.scrollTo(scrollX, scrollY);
+
+      // Fill in any IDs the matcher's afterNodeMorphed missed. Brand-new
+      // elements come in via hyper-morph's importNode optimization, which
+      // skips morphNode and thus afterNodeMorphed; their parsedWeakMap IDs
+      // never make it onto liveWeakMap. Without this pass, the receiver
+      // would mint fresh IDs on its next save for those elements,
+      // breaking convergence exactly for newly-added ambiguous siblings.
+      if (identityMap && typeof identityMap === 'object' && !Array.isArray(identityMap)) {
+        this._fillInIdsAfterMorph(document.documentElement, newDoc.documentElement, identityMap);
+      }
 
       // Only mark lastHtml after a successful morph so that a failed apply
       // doesn't desync our state and cause the next outbound save to be
