@@ -260,8 +260,8 @@ describe('LiveSync applyUpdate (rAF-paced queue)', () => {
     await completeNextMorph();
   });
 
-  test('malformed identityMap (array, string, null) is ignored without throwing', async () => {
-    for (const bad of [null, '{}', ['a', 'b']]) {
+  test('malformed identityMap (string, null, array) is ignored without throwing', async () => {
+    for (const bad of ['{}', null, ['a', 'b']]) {
       HyperMorph.morph.mockClear();
       sync.applyUpdate('<html><body></body></html>', 1, bad);
       flushFrame();

@@ -3,7 +3,7 @@ var HyperMorph=(()=>{var z=Object.defineProperty;var ne=Object.getOwnPropertyDes
 // Convenience morph wrapper with data-id support
 var morph = function(oldEl, newEl, options = {}) {
     return HyperMorph.morph(oldEl, newEl, {
-        key: (el) => (el.getAttribute && el.getAttribute('data-id')) || el.id,
+        key: (el) => (el.getAttribute && el.getAttribute('data-id')) || el.id || null,
         ...options
     });
 };

@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- live-sync identity-map (sender + receiver). Pairs elements across morphs by stable ID instead of content scoring. Synthetic IDs (`<clientId>:<counter>`) live in a WeakMap, never written to the DOM. See `src/communication/live-sync.js`.
+
+### Changed
+- live-sync `applyUpdate()` now uses an rAF-paced single-flight queue. Burst arrivals coalesce to one morph per frame against the latest payload; intermediate updates are dropped on purpose. Previously each update applied serially via a promise chain. Behavior change for every live-sync user, not gated behind identity-map: receivers under load no longer fall behind by replaying stale snapshots.
+
 ## [1.27.1] - 2026-04-21
 
 ### Fixed
