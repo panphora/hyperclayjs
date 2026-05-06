@@ -28,6 +28,10 @@ export default {
     '**/__tests__/**/*.test.js'
   ],
 
+  // jsdom does not ship EventSource. live-sync.js auto-starts at import
+  // time and instantiates EventSource, so stub it before any module loads.
+  setupFiles: ['./jest.setup.js'],
+
   // Verbose output
   verbose: true
 };

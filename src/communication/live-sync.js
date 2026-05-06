@@ -50,16 +50,31 @@ class LiveSync {
     // High-water mark of server seqs we've seen on this channel (own echoes
     // count too). Server-broadcast payloads carry a monotonic seq
     // (Date.now()-based). We drop anything <= this to guard against rare
-    // cases where a stale message lands after a newer one — e.g. buffered
+    // cases where a stale message lands after a newer one, e.g. buffered
     // replay, alt backend after reconnect, or an own-save echo arriving
     // after a peer's newer broadcast.
     this.lastSeenSeq = 0;
 
-    // Promise chain used to serialize overlapping applyUpdate() calls.
-    // A morph with external scripts returns a Promise; without chaining, two
-    // SSE events arriving back-to-back would interleave their morphs on the
-    // same DOM.
-    this._applyChain = Promise.resolve();
+    // rAF-paced single-flight queue. Incoming updates overwrite a pending
+    // slot; on each animation frame, if a slot is set and no morph is in
+    // flight, run one morph against the latest pending payload. Burst
+    // arrivals collapse to one morph per frame, keeping the receiver from
+    // falling behind under load. A morph with external scripts returns a
+    // Promise, so the in-flight flag prevents overlap.
+    this._pendingHtml = null;
+    this._pendingSeq = null;
+    this._pendingIdentityMap = null;
+    this._morphInFlight = false;
+    this._rafHandle = null;
+
+    // Identity tracking for content-based morphing across live-sync updates.
+    // Synthetic IDs (`<clientId>:<counter>`) live here only — never written to
+    // the DOM, never serialized into saved HTML. The WeakMap holds them
+    // against the live elements so that the next save can produce the same
+    // identityMap, and afterNodeMorphed transfers IDs from incoming parsed
+    // elements onto the live elements they morphed into.
+    this.idCounter = this._loadIdCounter();
+    this.liveWeakMap = new WeakMap();
 
     // Callbacks
     this.onConnect = null;
@@ -127,7 +142,6 @@ class LiveSync {
     // Reset state for new connection
     this.lastHtml = null;
     this.lastSeenSeq = 0;
-    this._applyChain = Promise.resolve();
 
     console.log('[LiveSync] Starting for:', this.currentFile);
     this.connect();
@@ -150,6 +164,108 @@ class LiveSync {
     }
 
     clearTimeout(this.debounceTimer);
+
+    // Cancel any pending frame and clear the queue. A morph already in
+    // flight cannot be aborted; the isDestroyed check in _runPending guards
+    // its post-morph rescheduling so the queue stops cleanly.
+    if (this._rafHandle != null) {
+      this._cancelFrame(this._rafHandle);
+      this._rafHandle = null;
+    }
+    this._pendingHtml = null;
+    this._pendingSeq = null;
+    this._pendingIdentityMap = null;
+  }
+
+  _loadIdCounter() {
+    try {
+      const raw = sessionStorage.getItem('livesync-id-counter');
+      const n = parseInt(raw || '0', 10);
+      return Number.isFinite(n) && n > 0 ? n : 0;
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  _persistIdCounter() {
+    try {
+      sessionStorage.setItem('livesync-id-counter', String(this.idCounter));
+    } catch (e) {
+      // Storage full / sandboxed — fall back to in-memory only.
+    }
+  }
+
+  _mintId() {
+    this.idCounter++;
+    this._persistIdCounter();
+    return `${this.clientId}:${this.idCounter}`;
+  }
+
+  /**
+   * Walk the live DOM and the snapshot clone in lockstep. Path keys come
+   * from the clone (= what the receiver will see, after [snapshot-remove]
+   * and snapshotHooks). WeakMap lookup happens against the live element so
+   * synthetic IDs persist across saves.
+   *
+   * The live walk filters [snapshot-remove] to mirror the clone's earlier
+   * strip in captureSnapshot. If child counts diverge anywhere (an
+   * onbeforesnapshot handler added/removed siblings on the clone), the
+   * subtree is skipped — better to fall back to content scoring there than
+   * emit misaligned IDs.
+   *
+   * @param {Element} liveRoot
+   * @param {Element} cloneRoot
+   * @returns {Object} identityMap keyed by dot-path
+   */
+  _buildIdentityMap(liveRoot, cloneRoot) {
+    const map = {};
+    if (!liveRoot || !cloneRoot) return map;
+
+    const visit = (live, clone, path) => {
+      let id = this.liveWeakMap.get(live);
+      if (!id) {
+        id = this._mintId();
+        this.liveWeakMap.set(live, id);
+      }
+      map[path] = id;
+
+      const liveKids = [];
+      for (const c of live.children) {
+        if (!c.hasAttribute('snapshot-remove')) liveKids.push(c);
+      }
+      const cloneKids = clone.children;
+
+      if (liveKids.length !== cloneKids.length) {
+        this._log(
+          `identity map: subtree skipped at "${path}" (live=${liveKids.length}, clone=${cloneKids.length})`
+        );
+        return;
+      }
+
+      for (let i = 0; i < liveKids.length; i++) {
+        visit(liveKids[i], cloneKids[i], path === '' ? String(i) : `${path}.${i}`);
+      }
+    };
+
+    visit(liveRoot, cloneRoot, '');
+    return map;
+  }
+
+  /**
+   * Walk a single parsed tree, invoking cb(element, path) at each Element.
+   * Paths use the same dot-segment scheme as _buildIdentityMap so the
+   * receiver can look up IDs by the path the sender emitted.
+   */
+  _walkParsedTree(root, cb) {
+    if (!root) return;
+    const visit = (el, path) => {
+      cb(el, path);
+      const kids = el.children;
+      for (let i = 0; i < kids.length; i++) {
+        visit(kids[i], path === '' ? String(i) : `${path}.${i}`);
+      }
+    };
+    visit(root, '');
   }
 
   /**
@@ -210,7 +326,7 @@ class LiveSync {
         return;
       }
 
-      const { html, sender, seq } = data;
+      const { html, sender, seq, identityMap } = data;
 
       // Staleness check runs FIRST — compared against the high-water mark of
       // seqs we've seen (own echoes count too, see below). `seq` is optional
@@ -240,8 +356,8 @@ class LiveSync {
       }
 
       this._log(`Received update from: ${sender} (my clientId: ${this.clientId}, seq=${seq})`);
-      this.applyUpdate(html, seq);
-      if (this.onUpdate) this.onUpdate({ html, sender, seq });
+      this.applyUpdate(html, seq, identityMap);
+      if (this.onUpdate) this.onUpdate({ html, sender, seq, identityMap });
     };
 
     // Native EventSource auto-reconnects on transient errors
@@ -268,12 +384,17 @@ class LiveSync {
         return;
       }
 
-      const { documentElement } = event.detail;
-      if (!documentElement) return;
+      const { documentElement: clone } = event.detail;
+      if (!clone) return;
 
+      // Capture both synchronously inside the event handler — captureSnapshot's
+      // caller continues to mutate the clone (strip [save-remove], run hooks)
+      // after dispatchEvent returns, so reading outerHTML and walking children
+      // must happen now.
       this._log('snapshot-ready received, preparing to send');
-      const html = documentElement.outerHTML;
-      this.sendUpdate(html);
+      const html = clone.outerHTML;
+      const identityMap = this._buildIdentityMap(document.documentElement, clone);
+      this.sendUpdate(html, identityMap);
     };
 
     document.addEventListener('hyperclay:snapshot-ready', this._snapshotHandler);
@@ -283,7 +404,7 @@ class LiveSync {
    * Send full HTML to the server (debounced)
    * Only updates lastHtml after successful save
    */
-  sendUpdate(html) {
+  sendUpdate(html, identityMap) {
     clearTimeout(this.debounceTimer);
 
     this.debounceTimer = setTimeout(() => {
@@ -300,7 +421,8 @@ class LiveSync {
         headers: { 'Content-Type': 'application/json', 'Page-URL': window.location.href },
         body: JSON.stringify({
           html: html,
-          sender: this.clientId
+          sender: this.clientId,
+          identityMap: identityMap
         })
       }).then(response => {
         if (response.ok) {
@@ -316,39 +438,96 @@ class LiveSync {
   }
 
   /**
-   * Apply an update received from the server.
-   * Morphs the entire document (head and body).
+   * Apply an update received from the server. Morphs the entire document.
    *
-   * Serialized via a promise chain so concurrent SSE events don't produce
-   * overlapping morphs (morph can return a Promise when external scripts load).
+   * Updates land in a single pending slot. On each animation frame, the
+   * latest pending payload is morphed once; intermediate updates that
+   * arrived between frames are skipped because they would be replaced
+   * milliseconds later anyway. Burst arrivals collapse to roughly one morph
+   * per frame, so the receiver always shows current state instead of
+   * playing back a backlog of stale snapshots.
    *
    * @param {string} html - Full document HTML
    * @param {number} [seq] - Optional monotonic seq from the server
-   * @returns {Promise<void>}
+   * @param {Object} [identityMap] - Optional element-identity map from sender
    */
-  applyUpdate(html, seq) {
-    // Serialize concurrent updates onto a single promise chain. `.catch` on
-    // the combined result both logs the failure (so it isn't a silent
-    // unhandled rejection) AND heals the chain so subsequent updates aren't
-    // blocked by it. `_applyChain` and the returned promise are the same
-    // caught promise — callers that fire-and-forget are safe.
-    const result = this._applyChain
-      .then(() => this._doApplyUpdate(html, seq))
-      .catch((err) => {
-        console.error('[LiveSync] applyUpdate failed:', err);
-      });
-    this._applyChain = result;
-    return result;
+  applyUpdate(html, seq, identityMap) {
+    if (this.isDestroyed) return;
+    this._pendingHtml = html;
+    this._pendingSeq = seq;
+    this._pendingIdentityMap = identityMap;
+    this._scheduleNextFrame();
   }
 
   /**
-   * Actual morph work. Do not call directly — use applyUpdate() so calls
-   * serialize.
+   * Schedule the next-frame morph if one isn't already pending. Skipped when
+   * a morph is in flight; the morph's post-completion check will reschedule
+   * if a newer payload arrived during it.
+   */
+  _scheduleNextFrame() {
+    if (this.isDestroyed) return;
+    if (this._rafHandle != null) return;
+    if (this._morphInFlight) return;
+    this._rafHandle = this._requestFrame(() => this._runPending());
+  }
+
+  /**
+   * Drain the pending slot once. Errors are caught and logged so a single
+   * failed morph does not stop the queue.
+   */
+  async _runPending() {
+    this._rafHandle = null;
+    if (this.isDestroyed) return;
+
+    const html = this._pendingHtml;
+    const seq = this._pendingSeq;
+    const identityMap = this._pendingIdentityMap;
+    this._pendingHtml = null;
+    this._pendingSeq = null;
+    this._pendingIdentityMap = null;
+    if (html == null) return;
+
+    this._morphInFlight = true;
+    try {
+      await this._doApplyUpdate(html, seq, identityMap);
+    } catch (err) {
+      console.error('[LiveSync] applyUpdate failed:', err);
+    } finally {
+      this._morphInFlight = false;
+    }
+
+    // A newer payload may have arrived during the morph. Schedule another
+    // frame to drain it. Without this, late-arriving updates would sit
+    // forever until the next applyUpdate call.
+    if (!this.isDestroyed && this._pendingHtml != null) {
+      this._scheduleNextFrame();
+    }
+  }
+
+  _requestFrame(cb) {
+    if (typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function') {
+      return window.requestAnimationFrame(cb);
+    }
+    return setTimeout(cb, 16);
+  }
+
+  _cancelFrame(handle) {
+    if (typeof window !== 'undefined' && typeof window.cancelAnimationFrame === 'function') {
+      window.cancelAnimationFrame(handle);
+      return;
+    }
+    clearTimeout(handle);
+  }
+
+  /**
+   * Actual morph work. Do not call directly. Use applyUpdate() so calls
+   * pass through the rAF queue and don't overlap.
    * @param {string} html
    * @param {number} [seq]
+   * @param {Object} [identityMap]
    * @returns {Promise<void>}
    */
-  async _doApplyUpdate(html, seq) {
+  async _doApplyUpdate(html, seq, identityMap) {
     this._log('applyUpdate - pausing mutations and morphing');
     this.isPaused = true;
 
@@ -366,6 +545,32 @@ class LiveSync {
     const parser = new DOMParser();
     const newDoc = parser.parseFromString(html, 'text/html');
 
+    // Build the parsed-tree WeakMap from the incoming identityMap. The
+    // sender emitted paths off its clone, which is exactly what we just
+    // parsed, so the same path scheme indexes into both trees.
+    const parsedWeakMap = new WeakMap();
+    if (identityMap && typeof identityMap === 'object' && !Array.isArray(identityMap)) {
+      this._walkParsedTree(newDoc.documentElement, (el, path) => {
+        const id = identityMap[path];
+        if (id) parsedWeakMap.set(el, id);
+      });
+    }
+
+    const liveWeakMap = this.liveWeakMap;
+    // Priority: synthetic IDs win when present (they're updated after every
+    // morph via afterNodeMorphed). data-id / id is the durable fallback that
+    // covers the bootstrap window and any element that hasn't been paired yet.
+    const key = (el) =>
+      liveWeakMap.get(el) ||
+      parsedWeakMap.get(el) ||
+      (el.getAttribute && el.getAttribute('data-id')) ||
+      el.id ||
+      null;
+    const afterNodeMorphed = (oldEl, newEl) => {
+      const id = parsedWeakMap.get(newEl);
+      if (id) liveWeakMap.set(oldEl, id);
+    };
+
     try {
       // Morph entire document. We MUST await — HyperMorph.morph returns a
       // Promise when `scripts: { handle: true }` needs to wait for external
@@ -376,7 +581,9 @@ class LiveSync {
         morphStyle: 'outerHTML',
         ignoreActiveValue: true,
         head: { style: 'merge' },
-        scripts: { handle: true, matchMode: 'smart' }
+        scripts: { handle: true, matchMode: 'smart' },
+        key,
+        callbacks: { afterNodeMorphed }
       });
 
       // Restore viewport. Done after morph so layout has settled.
@@ -449,6 +656,8 @@ if (typeof window !== 'undefined') {
   }
 }
 
-// Export for hyperclayjs module system
-export { liveSync };
+// Export for hyperclayjs module system. The class itself is exported so
+// tests can create fresh instances without driving the singleton's
+// EventSource/snapshot wiring.
+export { liveSync, LiveSync };
 export default liveSync;

@@ -697,7 +697,7 @@
     "hyper-morph": {
       "name": "hyper-morph",
       "category": "vendor",
-      "size": 17.2,
+      "size": 18.6,
       "isEditModeOnly": true,
       "difficulty": "intermediate",
       "files": [
@@ -718,7 +718,7 @@
     "hyper-html-api": {
       "name": "hyper-html-api",
       "category": "vendor",
-      "size": 10,
+      "size": 14.6,
       "difficulty": "intermediate",
       "files": [
         "vendor/hyper-html-api.vendor.js"
@@ -827,7 +827,7 @@
     "live-sync": {
       "name": "live-sync",
       "category": "communication",
-      "size": 15.5,
+      "size": 22.8,
       "isEditModeOnly": true,
       "difficulty": "advanced",
       "files": [
