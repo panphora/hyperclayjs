@@ -697,7 +697,7 @@
     "hyper-morph": {
       "name": "hyper-morph",
       "category": "vendor",
-      "size": 18.6,
+      "size": 18.7,
       "isEditModeOnly": true,
       "difficulty": "intermediate",
       "files": [
@@ -827,7 +827,7 @@
     "live-sync": {
       "name": "live-sync",
       "category": "communication",
-      "size": 22.8,
+      "size": 25.3,
       "isEditModeOnly": true,
       "difficulty": "advanced",
       "files": [
