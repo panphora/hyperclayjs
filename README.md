@@ -130,8 +130,8 @@ import 'hyperclayjs/presets/standard.js';
 
 | Module | Size | Description |
 |--------|------|-------------|
-| hyper-html-api | 14.6KB | Declarative extract/apply engine driven by a rules tag — foundation for CMS and upgrade flows |
 | hyper-morph | 18.7KB | DOM morphing with content-based element matching |
+| hypercms | 74.8KB | Live edit-in-place CMS sidebar driven by a hyper-html-api rules tag. Pairs with [sortable] and [hyper-morph]. |
 
 ## Presets
 
@@ -145,7 +145,7 @@ Standard feature set for most use cases
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `unsaved-warning`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Everything (~262KB)
+### Everything (~322.2KB)
 All available features
 
 Includes all available modules across all categories.

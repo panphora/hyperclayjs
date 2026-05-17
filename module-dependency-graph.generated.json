@@ -178,8 +178,8 @@
     "utilities/pipe.js": [],
     "utilities/throttle.js": [],
     "vendor/Sortable.vendor.js": [],
-    "vendor/hyper-html-api.vendor.js": [],
-    "vendor/hyper-morph.vendor.js": []
+    "vendor/hyper-morph.vendor.js": [],
+    "vendor/hypercms.vendor.js": []
   },
   "modules": {
     "save-core": {
@@ -715,19 +715,19 @@
         ]
       }
     },
-    "hyper-html-api": {
-      "name": "hyper-html-api",
+    "hypercms": {
+      "name": "hypercms",
       "category": "vendor",
-      "size": 14.6,
-      "difficulty": "intermediate",
+      "size": 74.8,
       "files": [
-        "vendor/hyper-html-api.vendor.js"
+        "vendor/hypercms.vendor.js"
       ],
-      "description": "Declarative extract/apply engine driven by a rules tag — foundation for CMS and upgrade flows",
+      "description": "Live edit-in-place CMS sidebar driven by a hyper-html-api rules tag. Pairs with [sortable] and [hyper-morph].",
       "exports": {
-        "HyperHtmlApi": [
+        "cms": [
           "window",
-          "hyperclay"
+          "hyperclay",
+          "hypercms"
         ]
       }
     },
@@ -897,7 +897,7 @@
     "style-injection": "./dom-utilities/insertStyleTag.js",
     "form-data": "./dom-utilities/getDataFromForm.js",
     "hyper-morph": "./vendor/hyper-morph.vendor.js",
-    "hyper-html-api": "./vendor/hyper-html-api.vendor.js",
+    "hypercms": "./vendor/hypercms.vendor.js",
     "slugify": "./string-utilities/slugify.js",
     "copy-to-clipboard": "./string-utilities/copy-to-clipboard.js",
     "query-params": "./string-utilities/query.js",
@@ -994,7 +994,7 @@
       "description": "Third-party libraries",
       "modules": [
         "hyper-morph",
-        "hyper-html-api"
+        "hypercms"
       ]
     }
   },
@@ -1066,6 +1066,7 @@
         "all-js",
         "style-injection",
         "form-data",
+        "hypercms",
         "slugify",
         "copy-to-clipboard",
         "query-params",
@@ -1114,7 +1115,7 @@
         "style-injection",
         "form-data",
         "hyper-morph",
-        "hyper-html-api",
+        "hypercms",
         "slugify",
         "copy-to-clipboard",
         "query-params",

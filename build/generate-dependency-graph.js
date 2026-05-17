@@ -325,13 +325,12 @@ const MODULE_DEFINITIONS = {
       morph: ['window', 'hyperclay']
     }
   },
-  'vendor/hyper-html-api.vendor.js': {
-    name: 'hyper-html-api',
-    moduleId: 'hyper-html-api',
-    description: 'Declarative extract/apply engine driven by a rules tag — foundation for CMS and upgrade flows',
-    difficulty: 'intermediate',
+  'vendor/hypercms.vendor.js': {
+    name: 'hypercms',
+    moduleId: 'hypercms',
+    description: 'Live edit-in-place CMS sidebar driven by a hyper-html-api rules tag. Pairs with [sortable] and [hyper-morph].',
     exports: {
-      HyperHtmlApi: ['window', 'hyperclay']
+      cms: ['window', 'hyperclay', 'hypercms']
     }
   },
   'string-utilities/slugify.js': {
