@@ -87,7 +87,7 @@ import 'hyperclayjs/presets/standard.js';
 | Module | Size | Description |
 |--------|------|-------------|
 | dialogs | 8.5KB | ask(), consent(), tell(), snippet() dialog functions |
-| the-modal | 22.5KB | Full modal window creation system - window.theModal |
+| the-modal | 22.8KB | Full modal window creation system - window.theModal |
 | toast | 15.8KB | Success/error message notifications, toast(msg, msgType) |
 
 ### Utilities (Core utilities (often auto-included))
@@ -131,7 +131,7 @@ import 'hyperclayjs/presets/standard.js';
 | Module | Size | Description |
 |--------|------|-------------|
 | hyper-morph | 18.7KB | DOM morphing with content-based element matching |
-| hypercms | 88.5KB | Live edit-in-place CMS sidebar driven by a hyper-html-api rules tag. Pairs with [sortable] and [hyper-morph]. |
+| hypercms | 88.7KB | Live edit-in-place CMS sidebar driven by a hyper-html-api rules tag. Pairs with [sortable] and [hyper-morph]. |
 
 ## Presets
 
@@ -145,7 +145,7 @@ Standard feature set for most use cases
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `unsaved-warning`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Everything (~336.8KB)
+### Everything (~337.3KB)
 All available features
 
 Includes all available modules across all categories.

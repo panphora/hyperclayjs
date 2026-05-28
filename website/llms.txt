@@ -2027,7 +2027,7 @@ snippet(title, content, extraContent)
 |------|------|---------|-------------|
 | title | string | — | The modal heading |
 | content | string | — | The code/text to display and copy |
-| extraContent | string | `''` | Optional raw HTML rendered below the copy button. Callers style their own container — use `<div class="snippet-warning">…</div>` for the standard yellow-bordered warning box. |
+| extraContent | string | `''` | Optional warning or info text below the copy button |
 
 ## Returns
 
@@ -2039,11 +2039,11 @@ snippet(title, content, extraContent)
 // Show embed code
 snippet('Embed Code', '<iframe src="https://example.com"></iframe>');
 
-// With a warning message (caller wraps in .snippet-warning)
+// With a warning message
 snippet(
   'API Key',
   'sk-1234567890abcdef',
-  '<div class="snippet-warning">Keep this key secret. Do not share it publicly.</div>'
+  'Keep this key secret. Do not share it publicly.'
 );
 
 // Show configuration

@@ -512,7 +512,7 @@
     "the-modal": {
       "name": "the-modal",
       "category": "ui",
-      "size": 22.5,
+      "size": 22.8,
       "files": [
         "ui/theModal.js"
       ],
@@ -718,7 +718,7 @@
     "hypercms": {
       "name": "hypercms",
       "category": "vendor",
-      "size": 88.5,
+      "size": 88.7,
       "files": [
         "vendor/hypercms.vendor.js"
       ],
