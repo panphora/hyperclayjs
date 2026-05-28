@@ -530,6 +530,23 @@ const modalCss = `<style class="micromodal-css">
   max-width: 420px;
 }
 
+.micromodal .snippet-link-box {
+  padding: 0.75rem;
+  border: 2px solid #F6F7F9;
+  background-color: transparent;
+  font-size: 0.875rem;
+  margin-top: 0.75rem;
+}
+
+.micromodal .snippet-link-box a {
+  color: #F6F7F9;
+  text-decoration: underline;
+}
+
+.micromodal .snippet-link-box a:hover {
+  color: #E5E7EB;
+}
+
 .micromodal button.micromodal__close {
   clip-path: polygon(0% 4%, 0% 0%, 100% 0%, 100% 100%, 94% 100%);
   position: absolute;

@@ -256,20 +256,20 @@ tell('Tip', 'You can drag and drop items to reorder them.');</pre></div>
           <td><code>extraContent</code></td>
           <td><code>string</code></td>
           <td><code>`''`</code></td>
-          <td>Optional warning or info text below the copy button</td>
+          <td>Optional raw HTML rendered below the copy button. Callers style their own container — use <code>&lt;div class=&quot;snippet-warning&quot;&gt;…&lt;/div&gt;</code> for the standard yellow-bordered warning box.</td>
         </tr>
-      
+
     </table>
-    
+
     <h4>Returns</h4><p><code class="returns-type">Promise&lt;void&gt;</code> — Resolves when modal is closed</p>
     <h4>Example</h4><div class="example"><pre>// Show embed code
 snippet('Embed Code', '&lt;iframe src=&quot;https://example.com&quot;&gt;&lt;/iframe&gt;');
 
-// With a warning message
+// With a warning message (caller wraps in .snippet-warning)
 snippet(
   'API Key',
   'sk-1234567890abcdef',
-  'Keep this key secret. Do not share it publicly.'
+  '&lt;div class=&quot;snippet-warning&quot;&gt;Keep this key secret. Do not share it publicly.&lt;/div&gt;'
 );
 
 // Show configuration

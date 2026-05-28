@@ -114,7 +114,9 @@ export function tell(promptText, ...content) {
  * Display a modal with a code snippet and copy functionality
  * @param {string} title - The modal heading
  * @param {string} content - The code to display
- * @param {string} extraContent - Optional warning/info text below the copy button
+ * @param {string} extraContent - Optional raw HTML rendered below the copy button.
+ *   Callers style their own container; use `<div class="snippet-warning">…</div>`
+ *   for the standard yellow-bordered warning box.
  */
 export function snippet(title, content, extraContent = '') {
 
@@ -126,11 +128,7 @@ export function snippet(title, content, extraContent = '') {
 
     <button type="button" class="micromodal__secondary-btn copy-snippet-btn" style="margin-bottom: 14px;">copy</button>
 
-    ${extraContent ? `
-      <div class="snippet-warning">
-        ${extraContent}
-      </div>
-    ` : ''}
+    ${extraContent || ''}
   `;
 
   // Use the existing modal system
