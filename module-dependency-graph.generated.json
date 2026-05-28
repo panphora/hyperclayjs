@@ -527,7 +527,7 @@
     "mutation": {
       "name": "mutation",
       "category": "utilities",
-      "size": 13.8,
+      "size": 14.7,
       "files": [
         "utilities/mutation.js"
       ],
@@ -718,7 +718,7 @@
     "hypercms": {
       "name": "hypercms",
       "category": "vendor",
-      "size": 74.8,
+      "size": 88.5,
       "files": [
         "vendor/hypercms.vendor.js"
       ],

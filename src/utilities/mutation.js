@@ -280,7 +280,7 @@ const Mutation = {
           if (node.nodeType === 1 && !this._shouldIgnore(node)) {
             const removedNodes = [node, ...node.querySelectorAll('*')];
             this._log(`Processing ${removedNodes.length} removed nodes`, { removedNodes });
-            
+
             for (const element of removedNodes) {
               const change = {
                 type: 'remove',
@@ -293,6 +293,29 @@ const Mutation = {
               changesByType.remove.push(change);
             }
           }
+        }
+
+        // Bubble text-node child changes (e.g. `el.textContent = 'foo'`) up
+        // to the parent element so onAnyChange fires. Typed callbacks
+        // (addElement, removeElement) stay element-only by design.
+        let hasTextNodeChanges = false;
+        for (const node of mutation.addedNodes) {
+          if (node.nodeType === 3) { hasTextNodeChanges = true; break; }
+        }
+        if (!hasTextNodeChanges) {
+          for (const node of mutation.removedNodes) {
+            if (node.nodeType === 3) { hasTextNodeChanges = true; break; }
+          }
+        }
+        if (hasTextNodeChanges && mutation.target.nodeType === 1) {
+          const change = {
+            type: 'characterData',
+            element: mutation.target,
+            oldValue: undefined,
+            newValue: mutation.target.textContent
+          };
+          changes.push(change);
+          changesByType.characterData.push(change);
         }
       }
       
@@ -404,7 +427,8 @@ const Mutation = {
       attributes: true,
       subtree: true,
       characterData: true,
-      attributeOldValue: true
+      attributeOldValue: true,
+      characterDataOldValue: true
     });
     this._observing = true;
     this._log('Observation started');
