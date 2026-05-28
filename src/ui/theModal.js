@@ -531,20 +531,31 @@ const modalCss = `<style class="micromodal-css">
 }
 
 .micromodal .snippet-link-box {
-  padding: 0.75rem;
-  border: 2px solid #F6F7F9;
-  background-color: transparent;
-  font-size: 0.875rem;
+  font-size: 16px;
   margin-top: 0.75rem;
+  text-align: right;
 }
 
 .micromodal .snippet-link-box a {
   color: #F6F7F9;
-  text-decoration: underline;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.45rem;
+  border: 1px solid #474C64;
+  line-height: 1;
 }
 
 .micromodal .snippet-link-box a:hover {
   color: #E5E7EB;
+  border-color: #75798B;
+}
+
+.micromodal .snippet-link-box a svg {
+  width: 0.85rem;
+  height: 0.85rem;
+  flex-shrink: 0;
 }
 
 .micromodal button.micromodal__close {
