@@ -512,7 +512,7 @@
     "the-modal": {
       "name": "the-modal",
       "category": "ui",
-      "size": 22.8,
+      "size": 23,
       "files": [
         "ui/theModal.js"
       ],
