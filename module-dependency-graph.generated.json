@@ -168,6 +168,10 @@
       "ui/toast.js"
     ],
     "ui/toast.js": [],
+    "undo.js": [
+      "core/isAdminOfCurrentResource.js",
+      "vendor/hyper-undo.vendor.js"
+    ],
     "utilities/autosaveDebug.js": [],
     "utilities/cacheBust.js": [],
     "utilities/cookie.js": [],
@@ -179,6 +183,7 @@
     "utilities/throttle.js": [],
     "vendor/Sortable.vendor.js": [],
     "vendor/hyper-morph.vendor.js": [],
+    "vendor/hyper-undo.vendor.js": [],
     "vendor/hypercms.vendor.js": []
   },
   "modules": {
@@ -291,7 +296,7 @@
     "snapshot": {
       "name": "snapshot",
       "category": "core",
-      "size": 11,
+      "size": 11.5,
       "isEditModeOnly": true,
       "files": [
         "core/snapshot.js"
@@ -527,7 +532,7 @@
     "mutation": {
       "name": "mutation",
       "category": "utilities",
-      "size": 14.7,
+      "size": 15.6,
       "files": [
         "utilities/mutation.js"
       ],
@@ -718,7 +723,7 @@
     "hypercms": {
       "name": "hypercms",
       "category": "vendor",
-      "size": 88.7,
+      "size": 72.4,
       "files": [
         "vendor/hypercms.vendor.js"
       ],
@@ -728,6 +733,23 @@
           "window",
           "hyperclay",
           "hypercms"
+        ]
+      }
+    },
+    "undo": {
+      "name": "undo",
+      "category": "other",
+      "size": 0.8,
+      "isEditModeOnly": true,
+      "files": [
+        "undo.js"
+      ],
+      "description": "DOM-state undo/redo via MutationObserver inverse-op replay. Cmd+Z works out of the box; integrates with hypercms via window.hyperclay.undo.",
+      "exports": {
+        "undo": [
+          "window",
+          "hyperclay",
+          "undo"
         ]
       }
     },
@@ -898,6 +920,7 @@
     "form-data": "./dom-utilities/getDataFromForm.js",
     "hyper-morph": "./vendor/hyper-morph.vendor.js",
     "hypercms": "./vendor/hypercms.vendor.js",
+    "undo": "./undo.js",
     "slugify": "./string-utilities/slugify.js",
     "copy-to-clipboard": "./string-utilities/copy-to-clipboard.js",
     "query-params": "./string-utilities/query.js",
@@ -1067,6 +1090,7 @@
         "style-injection",
         "form-data",
         "hypercms",
+        "undo",
         "slugify",
         "copy-to-clipboard",
         "query-params",
@@ -1116,6 +1140,7 @@
         "form-data",
         "hyper-morph",
         "hypercms",
+        "undo",
         "slugify",
         "copy-to-clipboard",
         "query-params",

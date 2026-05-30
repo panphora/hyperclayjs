@@ -86,6 +86,15 @@ function clonePreventingOnclone(node) {
 }
 
 export function captureSnapshot() {
+  // Force-close any pending undo idle batch BEFORE cloning the DOM, so the
+  // snapshot reflects a clean undo boundary. Without this, a save that fires
+  // mid-typing would leave the idle batch open across the save boundary, and
+  // Cmd+Z after save would restore to a state earlier than the last save.
+  // No-op when undo isn't loaded or no batch is pending.
+  if (typeof window !== 'undefined' && window.hyperclay && window.hyperclay.undo && window.hyperclay.undo.flush) {
+    window.hyperclay.undo.flush();
+  }
+
   const clone = clonePreventingOnclone(document.documentElement);
 
   for (const hook of snapshotHooks) {

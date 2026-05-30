@@ -333,6 +333,15 @@ const MODULE_DEFINITIONS = {
       cms: ['window', 'hyperclay', 'hypercms']
     }
   },
+  'undo.js': {
+    name: 'undo',
+    moduleId: 'undo',
+    description: 'DOM-state undo/redo via MutationObserver inverse-op replay. Cmd+Z works out of the box; integrates with hypercms via window.hyperclay.undo.',
+    isEditModeOnly: true,
+    exports: {
+      undo: ['window', 'hyperclay', 'undo']
+    }
+  },
   'string-utilities/slugify.js': {
     name: 'slugify',
     moduleId: 'slugify',

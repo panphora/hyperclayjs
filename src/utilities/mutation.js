@@ -67,7 +67,7 @@ const Mutation = {
   },
 
   _observing: false,
-  _paused: false,
+  _pauseDepth: 0,
   debug: false,
 
   /**
@@ -76,21 +76,34 @@ const Mutation = {
    * Always pair with resume() in a try/finally block.
    */
   pause() {
-    this._paused = true;
-    this._log('Paused');
+    // Reference-counted so nested pauses (e.g. a programmatic pause wrapping a
+    // live-sync morph that also pauses) only resume on the outermost release.
+    this._pauseDepth++;
+    // Bridge: pause undo recorder too. Live-sync calls Mutation.pause()
+    // before morphing remote HTML in, and we want those mutations excluded
+    // from the local undo stack as well. undo.pause() is itself reference-counted.
+    if (typeof window !== 'undefined' && window.hyperclay && window.hyperclay.undo && window.hyperclay.undo.pause) {
+      window.hyperclay.undo.pause();
+    }
+    this._log('Paused', this._pauseDepth);
   },
 
   /**
    * Resume mutation observation after a pause.
    */
   resume() {
-    // Drain pending mutation records — observer stays connected during pause,
-    // so morph mutations are recorded and would fire async after _paused=false
-    if (this._observer) {
+    if (this._pauseDepth === 0) return;  // underflow guard
+    this._pauseDepth--;
+    // Drain pending mutation records only on the outermost release — observer
+    // stays connected during pause, so morph mutations are recorded and would
+    // fire async once the depth returns to zero.
+    if (this._pauseDepth === 0 && this._observer) {
       this._observer.takeRecords();
     }
-    this._paused = false;
-    this._log('Resumed');
+    if (typeof window !== 'undefined' && window.hyperclay && window.hyperclay.undo && window.hyperclay.undo.resume) {
+      window.hyperclay.undo.resume();
+    }
+    this._log('Resumed', this._pauseDepth);
   },
 
   _log(message, data = null, type = 'log') {
@@ -215,7 +228,7 @@ const Mutation = {
 
   _handleMutations(mutations) {
     // Skip all mutations while paused (e.g., during live-sync morph)
-    if (this._paused) {
+    if (this._pauseDepth > 0) {
       this._log(`Skipping ${mutations.length} mutations (paused)`);
       return;
     }
