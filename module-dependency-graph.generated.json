@@ -146,6 +146,9 @@
       "utilities/loadVendorScript.js",
       "utilities/mutation.js"
     ],
+    "data.js": [
+      "vendor/hyper-html-api.vendor.js"
+    ],
     "dom-utilities/All.js": [],
     "dom-utilities/getDataFromForm.js": [],
     "dom-utilities/insertStyleTag.js": [],
@@ -182,6 +185,7 @@
     "utilities/pipe.js": [],
     "utilities/throttle.js": [],
     "vendor/Sortable.vendor.js": [],
+    "vendor/hyper-html-api.vendor.js": [],
     "vendor/hyper-morph.vendor.js": [],
     "vendor/hyper-undo.vendor.js": [],
     "vendor/hypercms.vendor.js": []
@@ -723,7 +727,7 @@
     "hypercms": {
       "name": "hypercms",
       "category": "vendor",
-      "size": 72.4,
+      "size": 72.7,
       "files": [
         "vendor/hypercms.vendor.js"
       ],
@@ -750,6 +754,23 @@
           "window",
           "hyperclay",
           "undo"
+        ]
+      }
+    },
+    "data": {
+      "name": "data",
+      "category": "other",
+      "size": 0.5,
+      "files": [
+        "data.js"
+      ],
+      "description": "Read/write structured data from the DOM via named rules tags — window.hyperclay.extractData() / applyData(). Backs the /~/api endpoint shape.",
+      "exports": {
+        "extractData": [
+          "hyperclay"
+        ],
+        "applyData": [
+          "hyperclay"
         ]
       }
     },
@@ -921,6 +942,7 @@
     "hyper-morph": "./vendor/hyper-morph.vendor.js",
     "hypercms": "./vendor/hypercms.vendor.js",
     "undo": "./undo.js",
+    "data": "./data.js",
     "slugify": "./string-utilities/slugify.js",
     "copy-to-clipboard": "./string-utilities/copy-to-clipboard.js",
     "query-params": "./string-utilities/query.js",
@@ -1049,6 +1071,7 @@
         "option-visibility",
         "event-attrs",
         "dom-helpers",
+        "data",
         "toast",
         "save-toast",
         "export-to-window",
@@ -1091,6 +1114,7 @@
         "form-data",
         "hypercms",
         "undo",
+        "data",
         "slugify",
         "copy-to-clipboard",
         "query-params",
@@ -1141,6 +1165,7 @@
         "hyper-morph",
         "hypercms",
         "undo",
+        "data",
         "slugify",
         "copy-to-clipboard",
         "query-params",

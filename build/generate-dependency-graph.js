@@ -342,6 +342,15 @@ const MODULE_DEFINITIONS = {
       undo: ['window', 'hyperclay', 'undo']
     }
   },
+  'data.js': {
+    name: 'data',
+    moduleId: 'data',
+    description: 'Read/write structured data from the DOM via named rules tags — window.hyperclay.extractData() / applyData(). Backs the /~/api endpoint shape.',
+    exports: {
+      extractData: ['hyperclay'],
+      applyData: ['hyperclay']
+    }
+  },
   'string-utilities/slugify.js': {
     name: 'slugify',
     moduleId: 'slugify',
@@ -474,7 +483,7 @@ const PRESETS = {
   'standard': {
     name: 'Standard',
     description: 'Standard feature set for most use cases',
-    modules: ['save-core', 'snapshot', 'save-system', 'unsaved-warning', 'edit-mode-helpers', 'persist', 'option-visibility', 'event-attrs', 'dom-helpers', 'toast', 'save-toast', 'export-to-window', 'view-mode-excludes-edit-modules']
+    modules: ['save-core', 'snapshot', 'save-system', 'unsaved-warning', 'edit-mode-helpers', 'persist', 'option-visibility', 'event-attrs', 'dom-helpers', 'data', 'toast', 'save-toast', 'export-to-window', 'view-mode-excludes-edit-modules']
   },
   'smooth-sailing': {
     name: 'Smooth Sailing',
