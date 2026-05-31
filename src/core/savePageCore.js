@@ -23,7 +23,7 @@ import {
 // =============================================================================
 
 let saveInProgress = false;
-const saveEndpoint = '/save';
+const saveEndpoint = '/_/save';
 
 /**
  * Check if a save is currently in progress.

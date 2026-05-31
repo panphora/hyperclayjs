@@ -208,7 +208,7 @@ function createFileFromData(fileName, fileBody, onComplete = () => {}) {
 
 function uploadFileData(fileName, fileBody, progressCallback, extraData = {}) {
   const xhr = new XMLHttpRequest();
-  xhr.open("POST", "/upload", true);
+  xhr.open("POST", "/_/upload", true);
   xhr.setRequestHeader("Content-Type", "application/json");
   xhr.setRequestHeader("Page-URL", window.location.href);
 

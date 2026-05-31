@@ -19,7 +19,7 @@ function sendMessage(eventOrObj, successMessage = "Successfully sent", callback)
 
   data.behaviorData = behaviorCollector.getData();
 
-  return fetch("/message", {
+  return fetch("/_/message", {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)

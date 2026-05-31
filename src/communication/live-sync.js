@@ -343,7 +343,7 @@ class LiveSync {
     if (this.isDestroyed) return;
 
     const pageUrl = encodeURIComponent(window.location.href);
-    const url = `/live-sync/stream?page-url=${pageUrl}`;
+    const url = `/_/live-sync/stream?page-url=${pageUrl}`;
     this.sse = new EventSource(url);
 
     this.sse.onopen = () => {
@@ -457,7 +457,7 @@ class LiveSync {
 
       this._log(`Sending update (HTML length: ${html.length}, lastHtml length: ${this.lastHtml?.length || 0})`);
 
-      fetch('/live-sync/save', {
+      fetch('/_/live-sync/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Page-URL': window.location.href },
         body: JSON.stringify({
