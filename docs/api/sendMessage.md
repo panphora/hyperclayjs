@@ -1,6 +1,6 @@
 # sendMessage
 
-Send form data or a custom object to the `/message` endpoint. Automatically collects form data, includes behavior tracking, and handles success/error toasts.
+Send form data or a custom object to the `/_/message` endpoint. Automatically collects form data, includes behavior tracking, and handles success/error toasts.
 
 ## Signature
 

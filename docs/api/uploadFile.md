@@ -1,6 +1,6 @@
 # uploadFile
 
-Upload a file to the `/upload` endpoint with progress toasts and automatic clipboard copy of the resulting URL.
+Upload a file to the `/_/upload` endpoint with progress toasts and automatic clipboard copy of the resulting URL.
 
 ## Signature
 

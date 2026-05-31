@@ -10,7 +10,7 @@
  *                              │
  *                              ▼
  *   ┌─────────────────────────────────────────────────────────┐
- *   │  2. SEND               POST html to /live-sync/save     │
+ *   │  2. SEND               POST html to /_/live-sync/save   │
  *   │                        (debounced, skip if unchanged)   │
  *   └─────────────────────────────────────────────────────────┘
  *                              │
