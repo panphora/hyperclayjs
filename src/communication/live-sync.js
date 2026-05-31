@@ -646,6 +646,17 @@ class LiveSync {
       // receive time (in onmessage) so the staleness check covers own-save
       // echoes even when they don't reach this point.
       this.lastHtml = html;
+
+      // Announce that a remote morph just landed, so document-level listeners
+      // that are deaf to Mutation.pause (e.g. the hypercms form panel) can
+      // re-sync. Fires only on a successful apply, and only for genuine remote
+      // morphs — own-sender and stale-seq echoes are filtered upstream in
+      // onmessage before applyUpdate is ever called. Covers every SSE morph
+      // source (peer edit, version restore, body-swap) since they all funnel
+      // through this single choke point.
+      document.dispatchEvent(new CustomEvent('hyperclay:livesync-applied', {
+        detail: { seq }
+      }));
     } finally {
       this._log('applyUpdate - morph complete, resuming mutations');
       Mutation.resume();

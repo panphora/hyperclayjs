@@ -103,6 +103,26 @@ describe('LiveSync applyUpdate (rAF-paced queue)', () => {
     expect(pendingFrames.length).toBe(0);
   });
 
+  test('dispatches hyperclay:livesync-applied on document after a successful morph', async () => {
+    const events = [];
+    const handler = (e) => events.push(e);
+    document.addEventListener('hyperclay:livesync-applied', handler);
+    try {
+      sync.applyUpdate('<html><body>v1</body></html>', 7);
+
+      // Not yet — the morph hasn't run, let alone completed.
+      flushFrame();
+      await Promise.resolve();
+      expect(events.length).toBe(0);
+
+      await completeNextMorph();
+      expect(events.length).toBe(1);
+      expect(events[0].detail).toEqual({ seq: 7 });
+    } finally {
+      document.removeEventListener('hyperclay:livesync-applied', handler);
+    }
+  });
+
   test('burst before any frame collapses to one morph against the latest payload', async () => {
     sync.applyUpdate('<html><body>v1</body></html>', 1);
     sync.applyUpdate('<html><body>v2</body></html>', 2);
