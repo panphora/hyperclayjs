@@ -36,6 +36,8 @@
  *   └─────────────────────────┘
  */
 
+import { stripExtensionNoise } from '../utilities/extension-noise.js';
+
 // =============================================================================
 // HOOK REGISTRIES
 // =============================================================================
@@ -108,6 +110,11 @@ export function captureSnapshot() {
   for (const el of clone.querySelectorAll('[snapshot-remove]')) {
     el.remove();
   }
+
+  // Browser-extension noise (password-manager menus, Grammarly overlays, and
+  // marker attributes on real inputs) is not page content. Drop it from every
+  // snapshot so it never reaches a save, a comparison, or a live-sync broadcast.
+  stripExtensionNoise(clone);
 
   return clone;
 }

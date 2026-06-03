@@ -55,6 +55,8 @@
  *  
  */
 
+import { EXTENSION_NODE_SELECTOR, EXTENSION_ATTR_PATTERN } from './extension-noise.js';
+
 const dummyElem = document.createElement("div");
 
 const Mutation = {
@@ -214,6 +216,11 @@ const Mutation = {
     // For non-element nodes (like text nodes), start from parent
     let element = (node && node.nodeType !== 1) ? node.parentElement : node;
 
+    // Browser-extension injected elements (and their descendants) are not page content.
+    if (element && element.closest && element.closest(EXTENSION_NODE_SELECTOR)) {
+      return true;
+    }
+
     while (element && element.nodeType === 1) {
       if (element.hasAttribute?.('mutations-ignore') ||
           element.hasAttribute?.('save-remove') ||
@@ -244,6 +251,12 @@ const Mutation = {
     for (const mutation of mutations) {
       // Check if the target or any parent has mutations-ignore attribute
       if (this._shouldIgnore(mutation.target)) {
+        continue;
+      }
+
+      // Ignore extension marker attributes (e.g. password-manager field tags) stamped onto real elements.
+      if (mutation.type === 'attributes' && mutation.attributeName &&
+          EXTENSION_ATTR_PATTERN.test(mutation.attributeName.toLowerCase())) {
         continue;
       }
 
