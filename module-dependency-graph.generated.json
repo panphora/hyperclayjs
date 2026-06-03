@@ -87,7 +87,9 @@
       "core/savePage.js",
       "dom-utilities/onDomReady.js"
     ],
-    "core/snapshot.js": [],
+    "core/snapshot.js": [
+      "utilities/extension-noise.js"
+    ],
     "core/unsavedWarning.js": [
       "core/isAdminOfCurrentResource.js",
       "core/savePage.js",
@@ -179,8 +181,11 @@
     "utilities/cacheBust.js": [],
     "utilities/cookie.js": [],
     "utilities/debounce.js": [],
+    "utilities/extension-noise.js": [],
     "utilities/loadVendorScript.js": [],
-    "utilities/mutation.js": [],
+    "utilities/mutation.js": [
+      "utilities/extension-noise.js"
+    ],
     "utilities/nearest.js": [],
     "utilities/pipe.js": [],
     "utilities/throttle.js": [],
@@ -300,7 +305,7 @@
     "snapshot": {
       "name": "snapshot",
       "category": "core",
-      "size": 11.5,
+      "size": 11.9,
       "isEditModeOnly": true,
       "files": [
         "core/snapshot.js"
@@ -536,7 +541,7 @@
     "mutation": {
       "name": "mutation",
       "category": "utilities",
-      "size": 15.6,
+      "size": 16.1,
       "files": [
         "utilities/mutation.js"
       ],
@@ -727,7 +732,7 @@
     "hypercms": {
       "name": "hypercms",
       "category": "vendor",
-      "size": 72.7,
+      "size": 73.6,
       "files": [
         "vendor/hypercms.vendor.js"
       ],
@@ -764,7 +769,7 @@
       "files": [
         "data.js"
       ],
-      "description": "Read/write structured data from the DOM via named rules tags — window.hyperclay.extractData() / applyData(). Backs the /~/api endpoint shape.",
+      "description": "Read/write structured data from the DOM via named rules tags — window.hyperclay.extractData() / applyData(). Backs the /_/api endpoint shape.",
       "exports": {
         "extractData": [
           "hyperclay"
@@ -870,7 +875,7 @@
     "live-sync": {
       "name": "live-sync",
       "category": "communication",
-      "size": 25.3,
+      "size": 25.9,
       "isEditModeOnly": true,
       "difficulty": "advanced",
       "files": [
@@ -1040,6 +1045,14 @@
       "modules": [
         "hyper-morph",
         "hypercms"
+      ]
+    },
+    "other": {
+      "name": "Data & Undo",
+      "description": "Page data and undo history",
+      "modules": [
+        "undo",
+        "data"
       ]
     }
   },

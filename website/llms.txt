@@ -544,6 +544,169 @@ createFile('config.json', JSON.stringify({ theme: 'dark' }));
 
 ---
 
+# data
+
+Read structured data out of the live DOM and write a JS object back into it. The `extractData` / `applyData` helpers mirror the hyper-html-api engine in the browser. They operate on the LOCAL DOM only and do not write to the server.
+
+## Methods
+
+| Method | Description |
+|--------|-------------|
+| `extractData(source?)` | Read values out of the DOM under `document` into a JS object |
+| `extractData(el, source?)` | Read values out of the DOM under `el` |
+| `applyData(root, data, source?)` | Write `data` into the live DOM under `root`, mutate it, return `root` |
+| `engine.bind(root, source, opts?)` | Lower-level primitive: returns `{ get(), set(data) }` bound to `root` |
+
+`source` resolves a set of extraction rules:
+- omitted: auto-detect the page's single `<script data-rules-name … data-rules-version="1" type="application/json">` rules tag
+- a token string (e.g. `'api'`): use `<script data-rules-name~="token">`
+- an object literal: use it directly as inline rules
+
+## Presets
+
+In `standard`, `smooth-sailing`, and `everything`. Not in `minimal`. This is a core read/write primitive, so it is NOT edit-mode-only.
+
+## Exposure
+
+Exposed as `window.hyperclay.extractData` / `window.hyperclay.applyData` (and the `window.h` alias). The vendored module attaches these during evaluation, so loading hyperclayjs at a preset that includes `data` is enough.
+
+## Browser import (without hyperclayjs)
+
+Import the LEAN `src/data.js` entry, not the full package entry:
+
+```js
+import { extractData, applyData } from 'https://cdn.jsdelivr.net/npm/hyper-html-api@0.4.0/src/data.js';
+```
+
+The full `hyper-html-api.js` entry pulls in `cms`, which references a bare `hyper-morph` specifier that does not resolve over jsdelivr. Use the lean entry above.
+
+## Rules grammar
+
+Rules are JSON (relaxed: unquoted keys, single quotes, and trailing commas are accepted). A rule is a string selector, an object, or a two-element array.
+
+| Form | Meaning |
+|------|---------|
+| `"selector"` | element text (`textContent`). `null` if no match |
+| `"selector@attr"` | attribute or DOM property of the first match |
+| `"@attr"` | attribute or property of the current element |
+| `"selector@value"` | input value (`value` is a DOM property) |
+| `"."` | text of the current element (useful inside arrays) |
+| `"selector[]"` | scalar array: text of every match |
+| `["selector", { shape }]` | object array: extract `shape` from each match, selectors scoped per match |
+| `{ key: rule, … }` | nested object |
+
+`@value`, `@checked`, `@selected`, `@disabled`, `@readOnly`, `@type`, `@innerHTML`, `@textContent`, `@id`, `@className`, `@title`, and `@outerHTML` are read and written via DOM properties. `@href`, `@src`, `@action`, and anything else go through attributes. A bare selector always reads text, so reading an input value needs `@value`. Read-only properties (e.g. `@tagName`, `@offsetWidth`) throw on write.
+
+## Examples
+
+```html
+<div id="card">
+  <h1 class="title">Hello</h1>
+  <a class="link" href="/about">About</a>
+  <input class="email" value="a@b.com">
+  <ul>
+    <li class="tag">js</li>
+    <li class="tag">html</li>
+  </ul>
+</div>
+
+<script type="application/json" data-rules-name="card" data-rules-version="1">
+{
+  title: ".title",
+  link: ".link@href",
+  email: ".email@value",
+  tags: ".tag[]"
+}
+</script>
+```
+
+```js
+// Auto-detect the single rules tag, read from the whole document.
+const data = extractData();
+// { title: "Hello", link: "/about", email: "a@b.com", tags: ["js", "html"] }
+
+// Scope to a root element, auto-detect rules (head-mounted tag still found).
+const data = extractData(document.getElementById('card'));
+
+// Named rules tag.
+const data = extractData('card');
+
+// Inline rules, no tag needed.
+const data = extractData({ title: ".title", tags: ".tag[]" });
+
+// Explicit root + named source.
+const data = extractData(document.getElementById('card'), 'card');
+```
+
+```js
+// Write back into the live DOM under #card using the page's rules tag.
+applyData(document.getElementById('card'), {
+  title: "Updated",
+  link: "/contact",
+  email: "x@y.com",
+  tags: ["js", "html", "css"]
+});
+
+// Inline rules.
+applyData(document.body, { title: "Updated" }, { title: ".title" });
+
+// Returns the root, so it chains.
+const el = applyData(card, { title: "Hi" });
+```
+
+```js
+// Lower-level: bind once, get/set repeatedly. Token resolution searches the
+// whole ownerDocument; get/set stay scoped to root.
+const card = document.getElementById('card');
+const binding = engine.bind(card, 'card');
+const current = binding.get();
+binding.set({ ...current, title: "Hi" });
+```
+
+## Object arrays
+
+```html
+<div class="products">
+  <div class="product" data-id="1">
+    <h3 class="name">Widget A</h3>
+    <span class="price">$19.99</span>
+  </div>
+  <div class="product" data-id="2">
+    <h3 class="name">Widget B</h3>
+    <span class="price">$29.99</span>
+  </div>
+</div>
+
+<script type="application/json" data-rules-name="catalog" data-rules-version="1">
+{
+  products: [".product", { id: "@data-id", name: ".name", price: ".price" }]
+}
+</script>
+```
+
+```js
+extractData('catalog');
+// { products: [
+//   { id: "1", name: "Widget A", price: "$19.99" },
+//   { id: "2", name: "Widget B", price: "$29.99" }
+// ] }
+```
+
+## Notes
+
+- `applyData` and `set()` MUTATE the local DOM. They do not save to the server. Call `savePage()` (or rely on autosave) to persist.
+- `applyData` validates the shape of `data` against the rules and throws on a mismatch (e.g. an object where a scalar is expected). A key omitted from `data` (`undefined`) leaves that part of the DOM untouched; `null` or `""` clears a scalar target.
+- Auto-detect requires exactly one rules tag on the page. Zero tags or more than one throws with a clear message; pass a name or inline rules to disambiguate.
+- The rules tag must carry `data-rules-version="1"`. Any other version throws.
+
+## Server endpoint
+
+The same rules tag also powers a public, read-only HTTP endpoint. A `GET /_/api/<folderPath>/<sitename>.html` returns bare JSON (with CORS) extracted from the site's `<script data-rules-name~="api" data-rules-version="1">` tag. This runs server-side against the saved HTML and is independent of the browser helpers.
+
+This is distinct from the URL-driven Data Extraction API (`?data=…`), where the rules live in the query string and the page is scraped from outside, read-only.
+
+---
+
 # debounce
 
 Delay function execution until after a period of inactivity. The timer resets each time the function is called.
@@ -831,6 +994,220 @@ fetch('/api/submit', {
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify(formData)
 });
+```
+
+---
+
+# hypercms
+
+Live edit-in-place CMS sidebar. Reads a page through a [`hyper-html-api`](https://github.com/panphora/hyper-html-api) rules tag, builds a form from those rules, mounts it as a side panel, and streams edits back into the page DOM in real time.
+
+The CMS only mutates the live DOM. Saving the page (Hyperclay Cmd+S or autosave) is what writes the file. The sidebar (`[data-hcms-shell]`, marked `save-ignore`/`save-remove`) and the `hcms-open` body class are stripped from the saved output.
+
+Vendored from `@panphora/hyper-cms`. In the `smooth-sailing` and `everything` presets. Not in `minimal` or `standard`.
+
+## CDN import
+
+```html
+<script type="module" src="https://cdn.jsdelivr.net/npm/hyperclayjs@latest/src/hyperclay.js?preset=smooth-sailing"></script>
+```
+
+`window.hyperclay.hypercms` references the `cms` object once loaded (`export-to-window` is on by default in these presets). It is flattened, so call `window.hyperclay.hypercms.open()`, not `window.hyperclay.hypercms.cms.open()`.
+
+## Hard requirement: `window.hyperclay.Mutation`
+
+`cms.open()` throws if `window.hyperclay.Mutation` is missing. The full hyperclayjs library installs it automatically. For a standalone setup, side-effect import the utility first:
+
+```html
+<script type="module" src="https://cdn.jsdelivr.net/npm/hyperclayjs@latest/src/utilities/mutation.js"></script>
+```
+
+## The rules tag
+
+`cms.open()` looks up a rules tag by the token `cms` (`script[data-rules-name~="cms"]`). One tag can carry several space-separated tokens (e.g. `data-rules-name="api cms collection"`).
+
+```html
+<script data-rules-name="cms" data-rules-version="1" type="application/json">
+{
+  "title": ".page-title",
+  "products": [".product", { "name": ".name", "price": ".price@data-cents" }]
+}
+</script>
+```
+
+## Usage
+
+```html
+<button id="edit-btn">Edit</button>
+<script type="module" src="https://cdn.jsdelivr.net/npm/hyperclayjs@latest/src/utilities/mutation.js"></script>
+<script type="module">
+  import { cms } from 'https://cdn.jsdelivr.net/npm/hyperclayjs@latest/src/vendor/hypercms.vendor.js'
+  document.getElementById('edit-btn').addEventListener('click', () => cms.open())
+</script>
+```
+
+With window exposure (default presets), no import is needed:
+
+```html
+<button onclick="window.hyperclay.hypercms.open()">Edit</button>
+```
+
+## Methods
+
+| Method | Description |
+|--------|-------------|
+| `cms.open(opts?)` | Build the form and mount the sidebar. Warns and no-ops if already open. |
+| `cms.close()` | Tear down the sidebar and restore focus. |
+| `cms.refresh()` | Re-extract the page and morph the form to match. No-op when closed. |
+| `cms.isOpen` | Getter, `true` while the sidebar is mounted. |
+
+## `open(opts)` options
+
+| Option | Default | Effect |
+|--------|---------|--------|
+| `rules` | `'cms'` | Rules source. A token string (`data-rules-name~="<token>"`), a literal rules object, or omitted for the default token. |
+| `pageRoot` | `document.body` | Where extract and apply run. |
+| `mountTo` | `document.body` | Where the shell DOM mounts. Can be a descendant of `pageRoot`. |
+| `side` | `'right'` | `'right'` or `'left'`. |
+| `overlay` | `false` | `true`: sidebar covers the page. `false`: page content gets a padding offset. |
+| `showSaveButton` | `false` | Render a Save button in the shell footer. Clicking dispatches `hcms:save`. |
+| `onChange(data, info)` | none | Per-commit callback. `info` is `{ path, structural }`. |
+| `onError(err)` | none | Per-commit error callback. |
+| `onSave(data)` | none | Save-button callback. |
+
+```js
+cms.open()                                // default token "cms"
+cms.open({ rules: 'collection' })         // tag with data-rules-name~="collection"
+cms.open({ rules: { title: '.title' } })  // literal rules object
+cms.open({ side: 'left', overlay: true, showSaveButton: true })
+cms.open({ onChange: (data, info) => console.log(info.path, data) })
+```
+
+## `cms.api`
+
+Programmatic edits. All require the sidebar to be open. The mutating methods (`setValue`, `addItem`, `removeItem`) commit and dispatch `hcms:change`; `getData()` is a read-only snapshot.
+
+| Method | Description |
+|--------|-------------|
+| `cms.api.getData()` | Current form data as a JS object. Returns `null` when closed. |
+| `cms.api.setValue(path, value)` | Write a scalar leaf. Throws if the path is not a leaf scalar or has no field. |
+| `cms.api.addItem(arrayPath)` | Push a new item onto an array. |
+| `cms.api.removeItem(itemPath)` | Drop an item. Last path segment must be an integer index. |
+
+```js
+cms.api.getData()
+cms.api.setValue('title', 'New title')
+cms.api.setValue('products.0.name', 'Widget')
+cms.api.addItem('products')
+cms.api.removeItem('products.1')
+cms.api.removeItem('products.0.variants.1')
+```
+
+### Path syntax
+
+Dotted strings with integer indices for arrays, e.g. `products.0.variants.1.label`. Helpers live at `cms.path` (`fromString`, `toString`, `getRuleAtPath`).
+
+## Events
+
+All events dispatch on the shell root and bubble through the document.
+
+| Event | Detail | When |
+|-------|--------|------|
+| `hcms:open` | `{ pageRoot }` | After mount, before first interaction. |
+| `hcms:change` | `{ data, path, structural }` | Per successful commit. `structural` is `true` for add/remove/reorder. Cancelable. |
+| `hcms:error` | `{ error, attemptedData }` | When apply throws (shape mismatch, missing template, etc.). |
+| `hcms:save` | `{ data }` | Save button clicked. Cancelable. |
+| `hcms:close` | `null` | Before teardown. |
+
+```js
+document.addEventListener('hcms:change', (e) => {
+  console.log('changed', e.detail.path, e.detail.data, e.detail.structural)
+})
+document.addEventListener('hcms:save', (e) => save(e.detail.data))
+```
+
+## Page HTML attributes
+
+| Attribute | On | Effect |
+|-----------|----|--------|
+| `save-ignore` | any element | Engine skips it during extract and apply. The shell sets this on itself. |
+| `save-freeze`, `save-remove`, `mutations-ignore` | any element | Same observer-ignore behavior as `save-ignore`. |
+| `cms-template` | an element matching a list rule | Treated as a seed template, not data. Lets a list grow from empty. |
+
+### Template seeding
+
+The engine grows a list by cloning an existing item. When a list hits zero items there is nothing to clone, and the engine throws `EmptyListInsert`. Mark one hidden seed element per growable list with `cms-template`:
+
+```html
+<div class="variants">
+  <div class="variant">…real data…</div>
+  <div class="variant" cms-template hidden>
+    <strong class="variant-label"></strong>
+    <em class="variant-stock"></em>
+  </div>
+</div>
+```
+
+`cms-template` elements are never read as data and never written into. When the list needs to grow from zero, the engine clones the seed, strips the attribute from the clone, and inserts it. The original stays in place.
+
+## Custom form templates
+
+Override the default form for a path or shape with a `<template>` anywhere in the page:
+
+```html
+<template data-hcms-tpl="products.*">
+  <article class="my-product-card">
+    <input data-hcms-field="name" />
+    <input data-hcms-field="price" />
+    <button data-hcms-action="remove">×</button>
+  </article>
+</template>
+```
+
+`data-hcms-tpl` resolves in order: exact path (`products.0.name`), wildcard path (`products.*`), then shape key (`@scalar`, `@object`, `@object-array`, `@scalar-array`).
+
+### Template slots
+
+| Marker | Purpose |
+|--------|---------|
+| `data-hcms-field` | Input/textarea/select holding a scalar. Use `data-hcms-field="name"` to bind by key inside an object template. |
+| `data-hcms-label` | Where the field label is written. |
+| `data-hcms-action="add"` | Add-item button for a list. |
+| `data-hcms-action="remove"` | Remove-item button on an item. |
+| `data-hcms-action="move-up"` / `"move-down"` | Reorder buttons. |
+| `.hcms-object-fields` / `.hcms-card-fields` / `.hcms-array-items` | Slot where child fields/items render. Required on slotted (non-inline) templates. |
+
+### Template count and lock attributes
+
+Set on a `<template data-hcms-tpl>`. They project onto the rendered array container.
+
+| Attribute | Effect |
+|-----------|--------|
+| `data-hcms-min-items="N"` | Refuse to remove below N items. Hides the remove button at the floor. |
+| `data-hcms-max-items="N"` | Refuse to add above N items. Hides the add button at the ceiling. |
+| `data-hcms-no-add` | No add button. |
+| `data-hcms-no-remove` | No remove buttons. |
+| `data-hcms-no-reorder` | No drag handles or move buttons. |
+
+## Errors
+
+Apply runs inside a try/catch. On failure the error renders inline in the shell, `hcms:error` is dispatched, structural commits roll back the affected subtree from a pre-apply snapshot, and `onError` fires.
+
+| Name | Cause | Fix |
+|------|-------|-----|
+| `ShapeMismatch` | Form data shape does not match the rule shape. | Bug in form rendering, report it. |
+| `EmptyListInsert` | List needs to grow but has zero items and no `cms-template`. | Add a `cms-template` seed per growable list, or set `data-hcms-min-items="1"`. |
+| `MaxRuleDepthExceeded` | Rules nest beyond the engine depth limit. | Flatten the rules. |
+
+## Drag-to-reorder
+
+In hyperclayjs apps drag works out of the box: object-array templates carry the `[sortable]` attribute, which hyperclayjs upgrades. For standalone use, install `sortablejs` and upgrade `[sortable]` yourself, or replace the template with your own reorder UX. Add and remove still work without sortable.
+
+## Standalone (without hyperclayjs)
+
+```js
+import { cms } from '@panphora/hyper-cms'
+// Ensure window.hyperclay.Mutation exists before calling cms.open()
 ```
 
 ---
@@ -1918,7 +2295,7 @@ Shows toast notifications for save lifecycle events. No configuration needed.
 
 # sendMessage
 
-Send form data or a custom object to the `/message` endpoint. Automatically collects form data, includes behavior tracking, and handles success/error toasts.
+Send form data or a custom object to the `/_/message` endpoint. Automatically collects form data, includes behavior tracking, and handles success/error toasts.
 
 ## Signature
 
@@ -2008,6 +2385,146 @@ const title = 'My Blog Post Title!';
 const url = `/posts/${slugify(title)}`;
 // '/posts/my-blog-post-title'
 ```
+
+---
+
+# snapshot
+
+The source of truth for page state. Clones the live DOM, runs author hooks, and serializes it to the HTML string that gets saved or broadcast over live-sync. The save system and live-sync both build on this module.
+
+## Import
+
+```js
+import { onSnapshot, onPrepareForSave, captureForSave } from 'hyperclayjs/core/snapshot';
+```
+
+CDN (loaded automatically when the module is included):
+
+```html
+<script src="https://hyperclay.com/public/js/hyperclay.js"></script>
+```
+
+When auto-export is enabled (default, unless `window.__hyperclayNoAutoExport` is set), a subset is also exposed on `window.hyperclay.*` (and the `window.h` alias): `captureSnapshot`, `captureForSave`, `captureBodyForSync`, `onSnapshot`, `onPrepareForSave`, `beforeSave`, and `getPageContents`. The remaining functions (`captureForComparison`, `captureForSaveAndComparison`, `isCodeMirrorPage`, `getCodeMirrorContents`) are module exports only.
+
+## Presets
+
+In every preset: `minimal`, `standard`, `smooth-sailing`, and `everything`. The save and live-sync paths both depend on it. It is edit-mode-only, so it is skipped in view mode under `view-mode-excludes-edit-modules`.
+
+## The Pipeline
+
+```
+1. CLONE      document.documentElement.cloneNode(true)
+2. SNAPSHOT   onSnapshot hooks + [onbeforesnapshot] + [snapshot-remove] + extension-noise strip
+              ├─ used by SAVE and LIVE-SYNC
+              └─ emits hyperclay:snapshot-ready
+3. PREPARE    [onbeforesave] + [save-remove] + onPrepareForSave hooks
+              └─ used by SAVE only (live-sync stops at step 2)
+4. SERIALIZE  "<!DOCTYPE html>" + clone.outerHTML  →  sent to server
+```
+
+`captureForComparison` and the compare half of `captureForSaveAndComparison` additionally strip `[save-ignore]` so runtime-only elements do not trip dirty-checking.
+
+## Hooks
+
+| Function | Runs on | Description |
+|----------|---------|-------------|
+| `onSnapshot(callback)` | every snapshot (save AND live-sync) | Register a hook to sync runtime state into the clone, e.g. writing form values onto the cloned inputs |
+| `onPrepareForSave(callback)` | save only | Register a hook to mutate the clone before serialization, e.g. stripping admin UI |
+| `beforeSave(callback)` | save only | Backwards-compat alias for `onPrepareForSave` |
+
+Each callback receives the cloned `<html>` element (`HTMLElement`) and mutates it in place. Hooks run in registration order. The snapshot clone is never the live DOM, so mutations here never affect the visible page.
+
+## Capture Functions
+
+| Function | Returns | Description |
+|----------|---------|-------------|
+| `captureSnapshot()` | `HTMLElement` | Clones `<html>`, runs `onSnapshot` hooks, `[onbeforesnapshot]`, `[snapshot-remove]`, and strips extension noise. Nothing save-specific stripped yet |
+| `captureForSave({ emitForSync = true })` | `string` | Full save pipeline. Emits `hyperclay:snapshot-ready`, then runs prepare phase. Returns `"<!DOCTYPE html>" + outerHTML` |
+| `captureForComparison()` | `string` | Like the save path but also strips `[save-ignore]`. For comparing current state against a baseline. Does not emit `snapshot-ready` |
+| `captureForSaveAndComparison({ emitForSync = true })` | `{ forSave, forComparison }` | Single clone, then forks into a save string and a comparison string. Cheaper than calling both separately |
+| `captureBodyForSync()` | `string` | `<body>` innerHTML with form values synced, no stripping. Prefer the `hyperclay:snapshot-ready` event instead |
+| `getPageContents()` | `string` | Current page HTML for change detection. Calls `captureForSave({ emitForSync: false })`, so it never triggers live-sync |
+| `isCodeMirrorPage()` | `boolean` | True when a `.CodeMirror` editor instance is present |
+| `getCodeMirrorContents()` | `string` | The CodeMirror editor's value |
+
+### Options
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| `emitForSync` | boolean | `true` | When `true`, dispatch `hyperclay:snapshot-ready` so live-sync can broadcast the clone. Set `false` for read-only captures like change detection |
+
+## Save Lifecycle Attributes
+
+These markup hooks are processed during capture. Inline attribute handlers run via `new Function(...)` with `this` bound to the element on the clone.
+
+| Attribute | Phase | Effect |
+|-----------|-------|--------|
+| `onbeforesnapshot` | snapshot (save + sync) | Inline JS runs on the cloned element before any stripping |
+| `snapshot-remove` | snapshot (save + sync) | Element is removed from every snapshot, so it never reaches a save, a comparison, or a live-sync broadcast |
+| `onbeforesave` | prepare (save + compare) | Inline JS runs on the cloned element before save-specific stripping |
+| `save-remove` | prepare (save + compare) | Element is removed from the saved HTML entirely |
+| `save-ignore` | comparison only | Element is excluded from dirty-checking but still saved as-is |
+
+## Events
+
+| Event | Target | Detail | When |
+|-------|--------|--------|------|
+| `hyperclay:snapshot-ready` | `document` | `{ documentElement }` | After the snapshot clone is built, before save-specific stripping. The cloned `<html>` is passed so live-sync can extract head and body |
+
+## CodeMirror Pages
+
+When `isCodeMirrorPage()` is true, the capture functions bypass the DOM snapshot pipeline entirely and return the editor's text via `getCodeMirrorContents()`. CodeMirror pages do not emit `hyperclay:snapshot-ready`, so they are not live-synced.
+
+## Hyperclay Local
+
+On `localhost` / `127.0.0.1`, `captureForSaveAndComparison` stores the full unstripped snapshot HTML on `window.__hyperclaySnapshotHtml`. The save system sends both the stripped content and this full snapshot as JSON so the desktop platform can mirror the page exactly. The value is cleared after each send.
+
+## Undo Flush
+
+`captureSnapshot()` calls `window.hyperclay.undo.flush()` first (when the undo module is loaded) so a save fired mid-typing closes the pending idle batch on a clean boundary. This keeps Cmd+Z after a save from rewinding past the last saved state. No-op when undo is not loaded.
+
+## Example
+
+```js
+import { onSnapshot, onPrepareForSave, captureForSave } from 'hyperclayjs/core/snapshot';
+
+// Runs on save AND live-sync: copy a runtime value onto the clone
+onSnapshot((clone) => {
+  clone.querySelector('#editor-state')?.setAttribute('data-mode', currentMode);
+});
+
+// Runs on save only: strip admin-only UI from the saved file
+onPrepareForSave((clone) => {
+  clone.querySelectorAll('.admin-toolbar').forEach(el => el.remove());
+});
+
+// Get the exact HTML that would be saved, without triggering live-sync
+const html = captureForSave({ emitForSync: false });
+```
+
+```html
+<!-- Markup-level hooks -->
+<div onbeforesnapshot="this.dataset.snappedAt = Date.now()">...</div>
+<div snapshot-remove>Never appears in any snapshot</div>
+<button save-remove>Hidden from the saved file</button>
+<div save-ignore>Saved as-is but skipped by dirty-checking</div>
+```
+
+```js
+// Live-sync listens for the snapshot clone instead of recapturing
+document.addEventListener('hyperclay:snapshot-ready', (e) => {
+  const html = e.detail.documentElement;
+  // broadcast html.querySelector('body').innerHTML, etc.
+});
+```
+
+## Related Modules
+
+- `save-system` - Manual save, change detection, save events
+- `live-sync` - Real-time DOM sync, consumes `hyperclay:snapshot-ready`
+- `onaftersave` - Run code on the live DOM after a successful save
+- `onclone` - Run code when an element is cloned
+- `autosave` - Auto-save on DOM changes
 
 ---
 
@@ -2338,6 +2855,206 @@ toast('Uploaded successfully');
 
 ---
 
+# undo
+
+DOM-state undo/redo for self-editing pages. A single `MutationObserver` records primitive DOM mutations with computable inverses, batches them into labelled commits, and replays them backward (undo) or forward (redo). Removed subtrees are kept by reference, so undo restores the same live nodes: event listeners, focus, scroll position, and custom-attribute wiring all survive. This is `hyper-undo` vendored into hyperclayjs and re-exported as `window.hyperclay.undo`.
+
+## Import
+
+```js
+// Recommended: smooth-sailing or everything preset auto-starts undo in edit mode
+await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/src/hyperclay.js?preset=smooth-sailing');
+hyperclay.undo.commit('Add product', () => addProduct());
+
+// Other presets: add the feature explicitly
+await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/src/hyperclay.js?preset=standard&features=undo');
+```
+
+The `undo` module ships in the `smooth-sailing` and `everything` presets. With any other preset, add `&features=undo`. Exposed as `window.hyperclay.undo`.
+
+## Auto-start
+
+In a Hyperclay app the singleton auto-starts on `document.body` in edit mode only, with `bindKeys: true`. Cmd+Z works out of the box. Save does not clear the stack.
+
+## Methods
+
+| Method | Description |
+|--------|-------------|
+| `undo.start(opts?)` | Start the singleton on `opts.scope` (default `document.body`). Returns the scope |
+| `undo.stop()` | Disconnect observer, remove key bindings, clear stacks |
+| `undo.undo()` | Navigate one step back |
+| `undo.redo()` | Re-apply the undone step |
+| `undo.commit(label, fn)` | Run synchronous `fn`, push its mutations as one labelled step. Throws if `fn` returns a Promise |
+| `undo.commitCaptured(label)` | Drain `observer.takeRecords()` and push as one commit (pause-before / commit-on-success pattern) |
+| `undo.discardCaptured()` | Drain and throw away captured records (failure-path companion) |
+| `undo.flush()` | Force-close the current idle batch as its own commit |
+| `undo.record(primitive)` | Record a raw primitive the observer never delivers |
+| `undo.recordValue(target, opts?)` | Record an element property write (`input.value`, `checkbox.checked`) |
+| `undo.clear()` | Clear both stacks |
+| `undo.pause()` | Recorder skips while paused |
+| `undo.resume()` | Resume recording |
+| `undo.on(event, fn)` | Subscribe to a lifecycle event |
+| `undo.off(event, fn)` | Unsubscribe |
+| `undo.create(opts?)` | Create a separate scope for advanced multi-scope use |
+
+## Getters
+
+| Getter | Type | Description |
+|--------|------|-------------|
+| `undo.canUndo` | boolean | Whether there is a step to undo |
+| `undo.canRedo` | boolean | Whether there is a step to redo |
+| `undo.isPaused` | boolean | Whether recording is paused |
+| `undo.history` | array | `[{ label, timestamp }, ...]`, oldest first. `timestamp` is `Date.now()` millis |
+| `undo.defaults` | object | `{ shadowKeydownIn: [...] }` |
+
+## Options
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `scope` | `document.body` | Element to observe |
+| `maxHistory` | `100` | Older commits drop off the back; dropped commits release their removed-node references |
+| `idleWindowMs` | `500` | How long to wait before auto-closing a batch |
+| `idleLabel` | `'Edit'` | Label for auto-closed batches |
+| `bindKeys` | `true` (singleton), `false` (`create`) | Install the global Cmd+Z handler |
+| `shadowKeydownIn` | code-editor selectors (see below) | When `event.target.closest(selector)` matches, the global handler bails without `preventDefault` |
+| `ignoreAttribute` | `null` | Predicate `(attrName, element) => boolean`; return true to skip recording that attribute mutation |
+| `debug` | `false` | `console.log` internal state transitions |
+
+## recordValue parameters
+
+`undo.recordValue(target, { prop, oldValue, newValue })`
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| `prop` | string | `'value'` | Property name to write (`'value'`, `'checked'`) |
+| `oldValue` | any | — | Value before the write. No-op if equal to `newValue` |
+| `newValue` | any | — | Value after the write |
+
+## Events
+
+`undo.on(event, fn)` / `undo.off(event, fn)`. The generic `change` event was removed in 0.2.0.
+
+| Event | Fires when |
+|-------|------------|
+| `undo` | After an undo navigate |
+| `redo` | After a redo navigate |
+| `commit` | After a new commit is pushed |
+| `clear` | After the stacks are reset |
+
+## Keyboard shortcuts
+
+`bindKeys: true` installs a `window` keydown capture-phase listener.
+
+| Combo | Action |
+|-------|--------|
+| Cmd+Z / Ctrl+Z | undo |
+| Cmd+Shift+Z / Ctrl+Shift+Z | redo |
+| Cmd+Y / Ctrl+Y | redo (Windows convention) |
+
+The global Cmd+Z intercepts even inside plain `<input>`/`<textarea>`, so native char-level input undo no longer fires there. That is intentional: page-state undo is what users expect on a self-editing page. Pass `bindKeys: false` to opt out and bind your own handler.
+
+### In-page editors
+
+The handler short-circuits (without `preventDefault`) when `event.target` is inside any selector in `shadowKeydownIn`, so an embedded editor's own keymap handles the key. The default list covers CodeMirror v5/v6, Monaco, Ace, Quill, Tiptap, and ProseMirror:
+
+```js
+['.CodeMirror', '.cm-editor', '.monaco-editor', '.ace_editor', '.ql-editor', '.tiptap', '.ProseMirror']
+```
+
+Extend it for your own editor:
+
+```js
+hyperclay.undo.start({ shadowKeydownIn: [...hyperclay.undo.defaults.shadowKeydownIn, '.my-editor'] });
+```
+
+## Batching
+
+Raw mutation records are too fine-grained (typing "hello" is five `characterData` records). Two batching modes share one collector:
+
+- **Explicit commit** - `undo.commit(label, fn)` wraps a synchronous chunk into one labelled commit. Throws if `fn()` returns a Promise (mutations after the first `await` would land in a different commit).
+- **Idle auto-batch** - mutations made outside an explicit commit collect until the scope is idle for `idleWindowMs`, then close into one commit labelled `idleLabel` (default `'Edit'`).
+
+## Primitives
+
+Each MutationRecord becomes one or more inverse-able primitives: `attr-add`, `attr-set`, `attr-remove`, `text`, and childList `add` / `remove`. A `value` primitive (element property write) is created only via `record` / `recordValue`, since property writes emit no MutationRecord.
+
+## Ignored mutations
+
+A mutation is excluded from recording when its target's ancestor chain contains any of: `mutations-ignore`, `save-remove`, `save-ignore`, `save-freeze`. Browser-extension DOM is also filtered out.
+
+## Example
+
+```js
+await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/src/hyperclay.js?preset=smooth-sailing');
+
+// Group several DOM edits into one undoable step
+hyperclay.undo.commit('Add row', () => {
+  const row = document.createElement('li');
+  row.textContent = 'New item';
+  document.querySelector('ul').appendChild(row);
+});
+
+// Record a property write the observer can't see (no [persist])
+const input = document.querySelector('#title');
+const oldValue = input.value;
+input.value = 'New title';
+hyperclay.undo.recordValue(input, { oldValue, newValue: input.value });
+
+// Lifecycle events
+hyperclay.undo.on('undo', () => console.log('undone:', hyperclay.undo.history));
+hyperclay.undo.on('commit', () => updateToolbar());
+
+// Programmatic navigation
+if (hyperclay.undo.canUndo) hyperclay.undo.undo();
+if (hyperclay.undo.canRedo) hyperclay.undo.redo();
+```
+
+## Form input typing (known gap)
+
+Pure-property `<input>`/`<textarea>` value changes are not `MutationRecord`s, so raw typing into a field is not directly observable. Coverage:
+
+- **CMS form fields** flow through the engine, which mutates the page DOM, so the recorder sees the page mutation.
+- **`[persist]` inputs** mirror `el.value` to the `value` attribute; **`[persist]` textareas** mirror to `data-value`. The recorder sees the attribute mutation.
+- **Plain `<input>`/`<textarea>` without `[persist]`** do NOT mirror; their typing is invisible to the recorder.
+
+For an unmirrored field, do one of: add `[persist]`, call `undo.recordValue(input, ...)` after the write, wrap the handler in `undo.commit(label, fn)`, or accept that raw typing is not undoable for that field.
+
+## Multi-scope (advanced)
+
+Only one scope can own the global Cmd+Z binding at a time. Call `start()` again with a different scope and it throws; use `create` for additional scopes.
+
+```js
+const pageUndo = hyperclay.undo.start();                              // singleton on document.body, owns Cmd+Z
+const editorUndo = hyperclay.undo.create({ scope: editorRoot, bindKeys: false });
+editorUndo.start();
+// editorUndo.undo() / .redo() called manually; Cmd+Z still routes to pageUndo
+```
+
+## Limitations
+
+No persistence across reloads, no cross-tab or collaborative undo, no semantic diffs (it records DOM ops, the label is the only semantic), no tracking of non-DOM state, no revert-to-saved checkpoint. History is capped at `maxHistory` (~100 steps).
+
+## Standalone
+
+Outside hyperclayjs, install `hyper-undo` directly:
+
+```bash
+npm install hyper-undo
+```
+
+```js
+import { undo } from 'hyper-undo';
+
+undo.start({ scope: document.body, maxHistory: 100, bindKeys: true });
+undo.commit('User edited title', () => {
+  document.querySelector('h1').textContent = 'New title';
+});
+undo.undo();
+undo.redo();
+```
+
+---
+
 # unsaved-warning
 
 Warns users before leaving the page if there are unsaved changes. On `beforeunload`, compares current page content to last saved content and shows the browser's native dialog if different.
@@ -2363,7 +3080,7 @@ Warns users before leaving the page if there are unsaved changes. On `beforeunlo
 
 # uploadFile
 
-Upload a file to the `/upload` endpoint with progress toasts and automatic clipboard copy of the resulting URL.
+Upload a file to the `/_/upload` endpoint with progress toasts and automatic clipboard copy of the resulting URL.
 
 ## Signature
 

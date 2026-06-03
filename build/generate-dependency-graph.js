@@ -345,7 +345,7 @@ const MODULE_DEFINITIONS = {
   'data.js': {
     name: 'data',
     moduleId: 'data',
-    description: 'Read/write structured data from the DOM via named rules tags — window.hyperclay.extractData() / applyData(). Backs the /~/api endpoint shape.',
+    description: 'Read/write structured data from the DOM via named rules tags — window.hyperclay.extractData() / applyData(). Backs the /_/api endpoint shape.',
     exports: {
       extractData: ['hyperclay'],
       applyData: ['hyperclay']
@@ -469,6 +469,11 @@ const CATEGORIES = {
   'vendor': {
     name: 'Vendor Libraries',
     description: 'Third-party libraries',
+    modules: []
+  },
+  'other': {
+    name: 'Data & Undo',
+    description: 'Page data and undo history',
     modules: []
   }
 };

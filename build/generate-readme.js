@@ -56,6 +56,7 @@ function generateModuleTables(graph) {
     'dom-utilities',
     'string-utilities',
     'communication',
+    'other',
     'vendor'
   ];
 
@@ -92,7 +93,7 @@ function generatePresetDescriptions(graph) {
   let output = '';
 
   // Define preset order
-  const presetOrder = ['minimal', 'standard', 'everything'];
+  const presetOrder = ['minimal', 'standard', 'smooth-sailing', 'everything'];
 
   for (const presetId of presetOrder) {
     const preset = presets[presetId];

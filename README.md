@@ -65,7 +65,7 @@ import 'hyperclayjs/presets/standard.js';
 | save-core | 11.5KB | Basic save function only - hyperclay.savePage() |
 | save-system | 15.4KB | CMD+S, [trigger-save] button, savestatus attribute |
 | save-toast | 0.9KB | Toast notifications for save events |
-| snapshot | 11.5KB | Source of truth for page state - captures DOM snapshots for save and sync |
+| snapshot | 11.9KB | Source of truth for page state - captures DOM snapshots for save and sync |
 | unsaved-warning | 1.3KB | Warn before leaving page with unsaved changes |
 
 ### Custom Attributes (HTML enhancements)
@@ -97,7 +97,7 @@ import 'hyperclayjs/presets/standard.js';
 | cache-bust | 0.6KB | Cache-bust href/src attributes |
 | cookie | 1.4KB | Cookie management (often auto-included) |
 | debounce | 0.7KB | Function debouncing |
-| mutation | 15.6KB | DOM mutation observation (often auto-included) |
+| mutation | 16.1KB | DOM mutation observation (often auto-included) |
 | nearest | 3.4KB | Find nearest elements (often auto-included) |
 | throttle | 1.3KB | Function throttling |
 
@@ -123,29 +123,41 @@ import 'hyperclayjs/presets/standard.js';
 | Module | Size | Description |
 |--------|------|-------------|
 | file-upload | 11.3KB | File upload with progress |
-| live-sync | 25.3KB | Real-time DOM sync across browsers |
+| live-sync | 25.9KB | Real-time DOM sync across browsers |
 | send-message | 1.3KB | Message sending utility |
+
+### Data & Undo (Page data and undo history)
+
+| Module | Size | Description |
+|--------|------|-------------|
+| data | 0.5KB | Read/write structured data from the DOM via named rules tags — window.hyperclay.extractData() / applyData(). Backs the /_/api endpoint shape. |
+| undo | 0.8KB | DOM-state undo/redo via MutationObserver inverse-op replay. Cmd+Z works out of the box; integrates with hypercms via window.hyperclay.undo. |
 
 ### Vendor Libraries (Third-party libraries)
 
 | Module | Size | Description |
 |--------|------|-------------|
 | hyper-morph | 18.8KB | DOM morphing with content-based element matching |
-| hypercms | 72.7KB | Live edit-in-place CMS sidebar driven by a hyper-html-api rules tag. Pairs with [sortable] and [hyper-morph]. |
+| hypercms | 73.6KB | Live edit-in-place CMS sidebar driven by a hyper-html-api rules tag. Pairs with [sortable] and [hyper-morph]. |
 
 ## Presets
 
-### Minimal (~62.3KB)
+### Minimal (~62.7KB)
 Essential features for basic editing
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `edit-mode-helpers`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Standard (~89.7KB)
+### Standard (~90.1KB)
 Standard feature set for most use cases
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `unsaved-warning`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `data`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Everything (~324.3KB)
+### Smooth Sailing (~280KB)
+Everything, without gotchas
+
+**Modules:** `save-core`, `save-system`, `unsaved-warning`, `save-toast`, `edit-mode-helpers`, `persist`, `snapshot`, `option-visibility`, `edit-mode`, `event-attrs`, `ajax-elements`, `sortable`, `movable`, `dom-helpers`, `input-helpers`, `onaftersave`, `save-freeze`, `dialogs`, `toast`, `the-modal`, `mutation`, `nearest`, `cookie`, `throttle`, `debounce`, `dom-ready`, `window-load`, `all-js`, `style-injection`, `form-data`, `hypercms`, `undo`, `data`, `slugify`, `copy-to-clipboard`, `query-params`, `behavior-collector`, `send-message`, `file-upload`, `refetch-on-save`, `export-to-window`, `view-mode-excludes-edit-modules`
+
+### Everything (~326.7KB)
 All available features
 
 Includes all available modules across all categories.
