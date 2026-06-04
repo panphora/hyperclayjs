@@ -13,8 +13,8 @@ Warns users before leaving the page if there are unsaved changes. On `beforeunlo
 
 ```html
 <!-- Basic setup -->
-<script src="hyperclay.js?save-system,unsaved-warning"></script>
+<script src="hyperclay.js?features=save-system,unsaved-warning"></script>
 
 <!-- Full save stack -->
-<script src="hyperclay.js?save-system,autosave,unsaved-warning,save-toast"></script>
+<script src="hyperclay.js?features=save-system,autosave,unsaved-warning,save-toast"></script>
 ```

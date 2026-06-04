@@ -38,7 +38,7 @@ All methods share the same signature and return an unsubscribe function.
 
 ```js
 {
-  type: 'add' | 'remove' | 'attribute',
+  type: 'add' | 'remove' | 'attribute' | 'characterData',
   element: Element,
   parent: Element,
   previousSibling: Element | null,
@@ -49,6 +49,8 @@ All methods share the same signature and return an unsubscribe function.
   newValue: string
 }
 ```
+
+Text-content changes surface through `onAnyChange` callbacks with `type: 'characterData'`. These carry `oldValue` and `newValue`, and `element` is the parent of the changed text node. Typed callbacks (`onAddElement`, `onRemoveElement`, `onAttribute`) do not receive them.
 
 ## Returns
 

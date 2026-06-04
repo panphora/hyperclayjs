@@ -18,7 +18,7 @@ Runs on two occasions:
 1. **Page load**: All elements with `onrender` execute on initial page load
 2. **Dynamic insertion**: When new elements with `onrender` are added to the DOM
 
-The code supports async/await. Each element's `onrender` only fires once.
+The code supports async/await. Each element's `onrender` fires once when the element is added to the DOM (on page load, or on dynamic insertion).
 
 ## Example
 

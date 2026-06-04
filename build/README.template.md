@@ -44,11 +44,16 @@ npm install hyperclayjs
 
 ```javascript
 // Import specific modules
-import { savePage } from 'hyperclayjs/core/savePage.js';
-import toast from 'hyperclayjs/ui/toast.js';
+import { savePage } from 'hyperclayjs/core/savePage';
+import toast from 'hyperclayjs/ui/toast';
+```
 
-// Or use presets
-import 'hyperclayjs/presets/standard.js';
+To load a full preset, use the CDN loader with `?preset=standard`:
+
+```html
+<script type="module">
+  await import('https://cdn.jsdelivr.net/npm/hyperclayjs@1/src/hyperclay.js?preset=standard');
+</script>
 ```
 
 ## Available Modules
@@ -103,17 +108,17 @@ The configurator shows:
 
 ```
 hyperclayjs/
-├── hyperclay.js              # Self-detecting module loader
-├── core/                     # Core hyperclay features
-├── custom-attributes/        # HTML attribute enhancements
-├── ui/                       # UI components (toast, modals, prompts)
-├── utilities/                # General utilities (mutation, cookie, etc.)
-├── dom-utilities/            # DOM manipulation helpers
-├── string-utilities/         # String manipulation tools
-├── communication/            # File upload and messaging
-├── vendor/                   # Third-party libraries (Sortable.js, etc.)
+├── src/hyperclay.js          # Self-detecting module loader
+├── src/core/                 # Core hyperclay features
+├── src/custom-attributes/    # HTML attribute enhancements
+├── src/ui/                   # UI components (toast, modals, prompts)
+├── src/utilities/            # General utilities (mutation, cookie, etc.)
+├── src/dom-utilities/        # DOM manipulation helpers
+├── src/string-utilities/     # String manipulation tools
+├── src/communication/        # File upload and messaging
+├── src/vendor/               # Third-party libraries (Sortable.js, etc.)
 ├── scripts/                  # Build and generation scripts
-└── starter-kit-configurator.html  # Interactive configurator
+└── website/config.html       # Interactive configurator
 ```
 
 ### Setup
@@ -153,10 +158,10 @@ The configurator dynamically loads this file to always show accurate information
 
 ## Browser Support
 
-- Chrome 89+
-- Firefox 89+
-- Safari 15.4+
-- Edge 89+
+- Chrome 90+
+- Firefox 88+
+- Safari 14+
+- Edge 90+
 
 The loader uses ES modules with top-level await. Use `await import()` to ensure modules finish loading before your code runs.
 
@@ -261,7 +266,7 @@ myFeature();
 <script src="/public/js/hyperclay.js?preset=standard" type="module"></script>
 
 <!-- Or specific features -->
-<script src="/public/js/hyperclay.js?features=save,edit-mode-helpers,toast" type="module"></script>
+<script src="/public/js/hyperclay.js?features=save-core,edit-mode-helpers,toast" type="module"></script>
 ```
 
 ## Contributing

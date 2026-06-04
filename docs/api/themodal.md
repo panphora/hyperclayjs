@@ -21,9 +21,6 @@ themodal.close();
 | no | string | `''` | Cancel button HTML (hidden if empty) |
 | closeHtml | string | `''` | Close button HTML |
 | zIndex | string | `'100'` | CSS z-index for the modal |
-| fontFamily | string | system monospace | Font family for modal text |
-| fontSize | string | `'18px'` | Base font size |
-| inputFontSize | string | `'16px'` | Font size for inputs |
 | disableFocus | boolean | `false` | Disable auto-focus on first input |
 | disableScroll | boolean | `true` | Disable body scroll when modal is open |
 | isShowing | boolean | `false` | Whether modal is currently visible (read-only) |
@@ -37,6 +34,18 @@ themodal.close();
 | `onYes(callback)` | Add callback for confirm action. Return `false` to prevent closing |
 | `onNo(callback)` | Add callback for cancel/close action |
 | `onOpen(callback)` | Add callback for when modal opens |
+
+## Styling
+
+Font sizing is controlled with CSS custom properties, not JavaScript properties. Set these variables on the page (or scoped to `.micromodal`) to override the defaults.
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `--hyperclay-modal-font-family` | `ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace` | Font family for modal text |
+| `--hyperclay-modal-font-size` | `18px` | Base font size |
+| `--hyperclay-modal-input-font-size` | `16px` | Font size for inputs |
+| `--hyperclay-modal-title-font-size` | `20px` (`22px` at `min-width: 640px`) | Font size for the tell title |
+| `--hyperclay-modal-code-font-family` | `--hyperclay-modal-font-family`, then `monospace` | Font family for code blocks |
 
 ## Example
 

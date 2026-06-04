@@ -14,8 +14,8 @@ Shows toast notifications for save lifecycle events. No configuration needed.
 
 ```html
 <!-- Basic setup -->
-<script src="hyperclay.js?save-system,save-toast"></script>
+<script src="hyperclay.js?features=save-system,save-toast"></script>
 
 <!-- Full save stack with auto-save and notifications -->
-<script src="hyperclay.js?save-system,autosave,save-toast"></script>
+<script src="hyperclay.js?features=save-system,autosave,save-toast"></script>
 ```

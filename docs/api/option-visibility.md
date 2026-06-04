@@ -10,12 +10,34 @@ Show or hide elements based on ancestor attribute values.
 
 The element is hidden by default. It becomes visible when any ancestor has `name="value"`.
 
+### Inverse: `option-not:name="value"`
+
+Use `option-not:` to show an element when an ancestor has the `name` attribute but its value is NOT `value`:
+
+```html
+<element option-not:name="value">
+```
+
+The element becomes visible when an ancestor has `name` set to anything other than `value`. If multiple values are listed (see below), the element shows only when the ancestor matches none of them.
+
+### OR values: `option:name="a|b|c"`
+
+Separate multiple values with a pipe to match any of them:
+
+```html
+<element option:name="a|b|c">   <!-- visible when an ancestor has name="a", name="b", or name="c" -->
+```
+
+This works for both `option:` and `option-not:`. For `option-not:name="a|b"`, the element shows only when an ancestor has `name` set but its value is neither `a` nor `b`.
+
+Note: the pipe character `|` is reserved as the OR delimiter, so it cannot be used as a literal value.
+
 ## How It Works
 
-1. Scans the DOM for `option:*` attributes
-2. Generates CSS rules using `@layer` and `revert-layer`
-3. Elements are hidden with `display: none !important`
-4. When ancestor matches, `display: revert-layer !important` restores original display
+1. Scans the DOM for `option:*` and `option-not:*` attributes
+2. Generates a single conditional-hide CSS rule per pattern using `:is()` and `:not()` with selector lists
+3. An element is hidden with `display: none !important` only when it is NOT inside a matching ancestor scope
+4. When the condition is met, the hide rule simply does not match, so the author's original display value (flex, grid, block, etc.) applies. There is no revert-layer recovery.
 
 This is pure CSS after initialization - no JS overhead for toggling.
 
@@ -53,7 +75,7 @@ This is pure CSS after initialization - no JS overhead for toggling.
 
 ## Browser Support
 
-Requires `@layer` and `revert-layer` support (95.18% of browsers, 2025). Falls back gracefully - elements remain visible if unsupported.
+Requires `:is()` and `:not()` with selector lists (~96% of browsers, 2021+). Falls back gracefully - elements remain visible if unsupported.
 
 ## API
 

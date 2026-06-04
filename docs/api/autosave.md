@@ -1,6 +1,6 @@
 # autosave
 
-Automatically saves the page when DOM changes are detected. Debounces at 3.3s after last change, throttles saves to max once per 1.2s. Only saves if content actually changed.
+Automatically saves the page when DOM changes are detected. Debounces at 1.5s after last change, throttles saves to max once per 1.2s. Only saves if content actually changed.
 
 ## Methods
 

@@ -18,12 +18,12 @@ This project uses a build system that generates several files from source templa
 | File | Generated from |
 |------|----------------|
 | `module-dependency-graph.generated.json` | `generate-dependency-graph.js` |
-| `hyperclay.js` | `build-loader.js` + `module-dependency-graph.generated.json` |
+| `src/hyperclay.js` | `build-loader.js` + `module-dependency-graph.generated.json` |
 | `README.md` | `README.template.md` + `module-dependency-graph.generated.json` |
 
 ### Special Case: index.html
 
-`index.html` loads `module-dependency-graph.generated.json` at runtime (copied to `website/dist/` during website build) and dynamically renders module information. The module data (names, descriptions, exports) comes from the JSON file, but the rendering template is in `index.html` itself.
+`website/index.html` loads `module-dependency-graph.generated.json` at runtime (copied to `website/dist/` during website build) and dynamically renders module information. The module data (names, descriptions, exports) comes from the JSON file, but the rendering template is in `website/index.html` itself.
 
 ## How Dependencies Are Tracked
 
@@ -33,7 +33,7 @@ Dependencies between modules are **automatically detected** by [Madge](https://g
 
 1. **Module names, descriptions, exports** → Edit `build/generate-dependency-graph.js`
 2. **README content** → Edit `build/README.template.md`
-3. **UI rendering logic** → Edit `index.html` directly
+3. **UI rendering logic** → Edit `website/index.html` directly
 4. **Build process** → Edit the relevant file in `build/`
 
 After modifying source files, run the build to regenerate files:
