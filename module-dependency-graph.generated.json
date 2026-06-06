@@ -557,7 +557,7 @@
     "mutation": {
       "name": "mutation",
       "category": "utilities",
-      "size": 16.1,
+      "size": 16.4,
       "files": [
         "utilities/mutation.js"
       ],
@@ -1105,6 +1105,24 @@
         "data",
         "toast",
         "save-toast",
+        "export-to-window",
+        "view-mode-excludes-edit-modules"
+      ]
+    },
+    "cms": {
+      "name": "CMS",
+      "description": "Visual CMS editing for rules-tag pages: hypercms sidebar, undo, drag-reorder, save",
+      "modules": [
+        "save-core",
+        "snapshot",
+        "save-system",
+        "unsaved-warning",
+        "toast",
+        "save-toast",
+        "mutation",
+        "hypercms",
+        "sortable",
+        "undo",
         "export-to-window",
         "view-mode-excludes-edit-modules"
       ]

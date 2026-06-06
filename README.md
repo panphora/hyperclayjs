@@ -103,7 +103,7 @@ To load a full preset, use the CDN loader with `?preset=standard`:
 | cache-bust | 0.6KB | Cache-bust href/src attributes |
 | cookie | 1.4KB | Cookie management (often auto-included) |
 | debounce | 0.7KB | Function debouncing |
-| mutation | 16.1KB | DOM mutation observation (often auto-included) |
+| mutation | 16.4KB | DOM mutation observation (often auto-included) |
 | nearest | 3.4KB | Find nearest elements (often auto-included) |
 | throttle | 1.3KB | Function throttling |
 
@@ -158,12 +158,17 @@ Standard feature set for most use cases
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `unsaved-warning`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `data`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Smooth Sailing (~296.8KB)
+### CMS (~151.3KB)
+Visual CMS editing for rules-tag pages: hypercms sidebar, undo, drag-reorder, save
+
+**Modules:** `save-core`, `snapshot`, `save-system`, `unsaved-warning`, `toast`, `save-toast`, `mutation`, `hypercms`, `sortable`, `undo`, `export-to-window`, `view-mode-excludes-edit-modules`
+
+### Smooth Sailing (~297.1KB)
 Everything, without gotchas
 
 **Modules:** `save-core`, `save-system`, `unsaved-warning`, `save-toast`, `edit-mode-helpers`, `persist`, `snapshot`, `option-visibility`, `edit-mode`, `event-attrs`, `ajax-elements`, `sortable`, `movable`, `dom-helpers`, `input-helpers`, `onaftersave`, `save-freeze`, `dialogs`, `quickcrop`, `toast`, `the-modal`, `mutation`, `nearest`, `cookie`, `throttle`, `debounce`, `dom-ready`, `window-load`, `all-js`, `style-injection`, `form-data`, `hypercms`, `undo`, `data`, `slugify`, `copy-to-clipboard`, `query-params`, `behavior-collector`, `send-message`, `file-upload`, `refetch-on-save`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Everything (~343.5KB)
+### Everything (~343.8KB)
 All available features
 
 Includes all available modules across all categories.

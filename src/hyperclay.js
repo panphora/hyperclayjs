@@ -110,6 +110,24 @@ const PRESETS = {
       "view-mode-excludes-edit-modules"
     ]
   },
+  "cms": {
+    "name": "CMS",
+    "description": "Visual CMS editing for rules-tag pages: hypercms sidebar, undo, drag-reorder, save",
+    "modules": [
+      "save-core",
+      "snapshot",
+      "save-system",
+      "unsaved-warning",
+      "toast",
+      "save-toast",
+      "mutation",
+      "hypercms",
+      "sortable",
+      "undo",
+      "export-to-window",
+      "view-mode-excludes-edit-modules"
+    ]
+  },
   "smooth-sailing": {
     "name": "Smooth Sailing",
     "description": "Everything, without gotchas",

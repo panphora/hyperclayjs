@@ -93,7 +93,7 @@ function generatePresetDescriptions(graph) {
   let output = '';
 
   // Define preset order
-  const presetOrder = ['minimal', 'standard', 'smooth-sailing', 'everything'];
+  const presetOrder = ['minimal', 'standard', 'cms', 'smooth-sailing', 'everything'];
 
   for (const presetId of presetOrder) {
     const preset = presets[presetId];
