@@ -24,7 +24,9 @@ const FOLDERS_TO_COPY = [
 
 // Files to copy to website/dist (from src/)
 const SRC_FILES_TO_COPY = [
-  'hyperclay.js'
+  'hyperclay.js',
+  'undo.js',
+  'data.js'
 ];
 
 // Files to copy to website/dist (from root)
