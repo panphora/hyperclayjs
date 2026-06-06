@@ -88,10 +88,12 @@
             <div class="demo-card" id="save-system">
                 <h3>save-system</h3>
                 <p class="desc">CMD+S, [trigger-save] button, savestatus attribute</p>
-                <pre><code>&lt;html savestatus="saved"&gt;
+                <pre><code>&lt;button trigger-save&gt;Save&lt;/button&gt;
+&lt;html savestatus="saved"&gt;
 &lt;!-- saved | saving | dirty | error --&gt;</code></pre>
                 <div class="demo-area" style="flex-direction: column; align-items: stretch;">
                     <div class="mini-editor" contenteditable id="save-editor">Type here to mark dirty</div>
+                    <button trigger-save>Save page</button>
                     <span class="output" id="save-system-log">savestatus: saved</span>
                 </div>
             </div>
@@ -896,6 +898,13 @@ themodal.open();</code></pre>
         document.getElementById('save-editor')?.addEventListener('input', () => {
             document.documentElement.setAttribute('savestatus', 'dirty');
             document.getElementById('save-system-log').textContent = 'savestatus: dirty';
+        });
+        // [trigger-save] demo. This page forces the edit-mode cookie (above)
+        // for the other demos, so the loader's real view-mode notice won't
+        // fire here — show the same toast a non-owner would get.
+        document.querySelector('#save-system [trigger-save]')?.addEventListener('click', () => {
+            toast("You're not the owner, changes are local only", 'warning');
+            document.getElementById('save-system-log').textContent = 'non-owner click → toast (owners: saves the page)';
         });
 
         // Autosave demo

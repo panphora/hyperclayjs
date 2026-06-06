@@ -180,6 +180,11 @@ hyperclay.initHyperclaySaveButton(); // Looks for [trigger-save]
 hyperclay.initSaveKeyboardShortcut(); // CMD/CTRL+S
 ```
 
+Any element with the `trigger-save` attribute saves the page on click. For
+viewers who can't save (not the owner / not in edit mode), the loader shows a
+toast instead — "You're not the owner, changes are local only" — even on pages
+that exclude the save modules via `view-mode-excludes-edit-modules`.
+
 ### Toast Notifications
 
 ```javascript

@@ -312,6 +312,20 @@ try {
 
 if (debug) console.log('HyperclayJS: Ready');
 
+// View-mode save notice: in edit mode, save-system's own [trigger-save]
+// listener handles clicks. For everyone else that listener is either never
+// installed (its init is edit-mode gated) or not loaded at all
+// (view-mode-excludes-edit-modules), so a save click would silently do
+// nothing. Catch it here and say why. Imports happen at click time, so this
+// costs nothing on page load.
+document.addEventListener('click', async (event) => {
+  if (!event.target.closest?.('[trigger-save]')) return;
+  const { isEditMode } = await import(`${baseUrl}/core/isAdminOfCurrentResource.js`);
+  if (isEditMode) return;
+  const { default: toast } = await import(`${baseUrl}/ui/toast.js`);
+  toast("You're not the owner, changes are local only", "warning");
+});
+
 // ES module exports - allows destructuring from import()
 export const savePage = window.hyperclayModules['save-core']?.savePage ?? window.hyperclayModules['save-core']?.default;
 export const beforeSave = window.hyperclayModules['save-system']?.beforeSave ?? window.hyperclayModules['save-system']?.default;
