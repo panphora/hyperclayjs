@@ -487,6 +487,12 @@ if (!window.__hyperclayNoAutoExport) {
   window.hyperclay = window.hyperclay || {};
   window.hyperclay.Mutation = Mutation;
   window.h = window.hyperclay;
+  // Signal consumers (e.g. hypercms ?cms=true auto-open) that Mutation is on the
+  // window now, so they can react instead of polling. Wrapped so a dispatch
+  // failure can never break the install.
+  try {
+    document.dispatchEvent(new CustomEvent('hyperclay:mutation-ready', { detail: { Mutation } }));
+  } catch {}
 }
 
 export default Mutation;

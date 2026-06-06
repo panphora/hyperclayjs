@@ -70,8 +70,14 @@ if (viewModeExcludesEdit) {
   }
 }
 
-// Modules that extend prototypes must load before modules that execute user code
-const LOAD_FIRST = new Set(['dom-helpers', 'all-js']);
+// Modules that extend prototypes must load before modules that execute user code.
+// 'mutation' is here so it evaluates (and installs window.hyperclay.Mutation) in
+// the first wave, before hypercms in the rest wave: hypercms reads
+// window.hyperclay.Mutation at evaluation/auto-open time, so loading mutation
+// first makes ?cms=true auto-open deterministic instead of racing. Safe because
+// export-to-window is awaited before the first wave, so mutation's window-install
+// is not suppressed when it runs.
+const LOAD_FIRST = new Set(['dom-helpers', 'all-js', 'mutation']);
 
 // export-to-window flips the flag, so it must load before other modules
 const LOAD_BEFORE_ALL = 'export-to-window';
