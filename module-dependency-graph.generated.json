@@ -168,6 +168,7 @@
       "ui/theModal.js",
       "ui/toast.js"
     ],
+    "ui/quickcrop.js": [],
     "ui/theModal.js": [],
     "ui/toast-hyperclay.js": [
       "ui/toast.js"
@@ -488,6 +489,21 @@
           "hyperclay"
         ],
         "snippet": [
+          "window",
+          "hyperclay"
+        ]
+      }
+    },
+    "quickcrop": {
+      "name": "quickcrop",
+      "category": "ui",
+      "size": 16.8,
+      "files": [
+        "ui/quickcrop.js"
+      ],
+      "description": "Image-crop modal for upload flows - quickcrop(file) returns a cropped Blob; uses themodal when available",
+      "exports": {
+        "quickcrop": [
           "window",
           "hyperclay"
         ]
@@ -930,6 +946,7 @@
     "onaftersave": "./custom-attributes/onaftersave.js",
     "save-freeze": "./custom-attributes/saveFreeze.js",
     "dialogs": "./ui/prompts.js",
+    "quickcrop": "./ui/quickcrop.js",
     "toast": "./ui/toast.js",
     "toast-hyperclay": "./ui/toast-hyperclay.js",
     "the-modal": "./ui/theModal.js",
@@ -995,6 +1012,7 @@
       "description": "User interface elements",
       "modules": [
         "dialogs",
+        "quickcrop",
         "toast",
         "the-modal"
       ]
@@ -1113,6 +1131,7 @@
         "onaftersave",
         "save-freeze",
         "dialogs",
+        "quickcrop",
         "toast",
         "the-modal",
         "mutation",
@@ -1162,6 +1181,7 @@
         "onaftersave",
         "save-freeze",
         "dialogs",
+        "quickcrop",
         "toast",
         "the-modal",
         "mutation",

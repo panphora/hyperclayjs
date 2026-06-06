@@ -46,6 +46,7 @@ const MODULE_PATHS = {
   "onaftersave": "./custom-attributes/onaftersave.js",
   "save-freeze": "./custom-attributes/saveFreeze.js",
   "dialogs": "./ui/prompts.js",
+  "quickcrop": "./ui/quickcrop.js",
   "toast": "./ui/toast.js",
   "toast-hyperclay": "./ui/toast-hyperclay.js",
   "the-modal": "./ui/theModal.js",
@@ -131,6 +132,7 @@ const PRESETS = {
       "onaftersave",
       "save-freeze",
       "dialogs",
+      "quickcrop",
       "toast",
       "the-modal",
       "mutation",
@@ -180,6 +182,7 @@ const PRESETS = {
       "onaftersave",
       "save-freeze",
       "dialogs",
+      "quickcrop",
       "toast",
       "the-modal",
       "mutation",
@@ -345,6 +348,7 @@ export const ask = window.hyperclayModules['dialogs']?.ask ?? window.hyperclayMo
 export const consent = window.hyperclayModules['dialogs']?.consent ?? window.hyperclayModules['dialogs']?.default;
 export const tell = window.hyperclayModules['dialogs']?.tell ?? window.hyperclayModules['dialogs']?.default;
 export const snippet = window.hyperclayModules['dialogs']?.snippet ?? window.hyperclayModules['dialogs']?.default;
+export const quickcrop = window.hyperclayModules['quickcrop']?.quickcrop ?? window.hyperclayModules['quickcrop']?.default;
 export const toast = window.hyperclayModules['toast']?.toast ?? window.hyperclayModules['toast']?.default;
 export const toastHyperclay = window.hyperclayModules['toast-hyperclay']?.toastHyperclay ?? window.hyperclayModules['toast-hyperclay']?.default;
 export const themodal = window.hyperclayModules['the-modal']?.themodal ?? window.hyperclayModules['the-modal']?.default;

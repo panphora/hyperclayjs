@@ -739,6 +739,18 @@ themodal.open();</code></pre>
                 </div>
             </div>
 
+            <!-- quickcrop() -->
+            <div class="demo-card" id="quickcrop">
+                <h3>quickcrop()</h3>
+                <p class="desc">Image-crop modal for upload flows</p>
+                <pre><code>const result = await quickcrop(file, { aspect: 1 });
+// { blob, dataURL, width, height } or null</code></pre>
+                <div class="demo-area" style="flex-direction: column; align-items: stretch;">
+                    <input type="file" accept="image/*" onchange="quickcropDemo(event)">
+                    <span class="output" id="quickcrop-log">Select an image to crop</span>
+                </div>
+            </div>
+
             <!-- ========== SECTION 10: FORM HELPERS ========== -->
             <div class="category-label">Form Helpers</div>
             <p class="desc" style="flex: 1 1 100%; margin-top: 0.5rem; font-size: 0.85rem;">What native forms are missing: auto-growing textareas and serialization that handles nested objects and arrays.</p>
@@ -1045,6 +1057,17 @@ themodal.open();</code></pre>
             consent('Are you sure?', () => {
                 toast('Confirmed!', 'success');
             });
+        };
+
+        window.quickcropDemo = async (event) => {
+            const input = event.target;
+            const file = input?.files?.[0];
+            if (!file) return;
+            const result = await window.quickcrop(file, { aspect: 1 });
+            document.getElementById('quickcrop-log').textContent = result
+                ? `✓ Cropped: ${result.width}×${result.height} (${Math.round(result.blob.size / 1024)} KB)`
+                : 'Cancelled';
+            if (input) input.value = '';
         };
 
         // ========== FORM HELPER DEMOS ==========

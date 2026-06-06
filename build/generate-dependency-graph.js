@@ -196,6 +196,14 @@ const MODULE_DEFINITIONS = {
       snippet: ['window', 'hyperclay']
     }
   },
+  'ui/quickcrop.js': {
+    name: 'quickcrop',
+    moduleId: 'quickcrop',
+    description: 'Image-crop modal for upload flows - quickcrop(file) returns a cropped Blob; uses themodal when available',
+    exports: {
+      quickcrop: ['window', 'hyperclay']
+    }
+  },
   'ui/toast.js': {
     name: 'toast',
     moduleId: 'toast',

@@ -237,7 +237,7 @@ ask('Confirm action:', null, '', '<p class="warning">This cannot be undone</p>')
 
 # autosave
 
-Automatically saves the page when DOM changes are detected. Debounces at 3.3s after last change, throttles saves to max once per 1.2s. Only saves if content actually changed.
+Automatically saves the page when DOM changes are detected. Debounces at 1.5s after last change, throttles saves to max once per 1.2s. Only saves if content actually changed.
 
 ## Methods
 
@@ -826,52 +826,51 @@ All properties use `nearest()` to search outward from the element, checking sibl
 
 # edit-mode-helpers
 
-Sets `editmode` and `pageowner` attributes on `<html>` for CSS-based conditional styling.
+Wires up admin-only edit behaviors driven by colon-namespaced attributes. These behaviors activate only in edit mode and are neutralized before save, so saved pages stay inert for viewers.
 
-## Attributes Set
+## Attributes
 
-| Attribute | Value | Description |
-|-----------|-------|-------------|
-| `editmode` | `"true"` / `"false"` | Whether edit mode is active |
-| `pageowner` | `"true"` / `"false"` | Whether user owns the resource |
+| Attribute | Active in edit mode | Neutralized before save |
+|-----------|---------------------|-------------------------|
+| `editmode:contenteditable` | Element becomes editable (`contenteditable` set from the attribute's value, defaulting to `"true"`) | `contenteditable` is stashed in `inert-contenteditable` and removed |
+| `editmode:onclick` | The handler in the attribute fires on click | `onclick` is stashed in `inert-onclick` and removed |
+| `editmode:resource` (on `style`, `link`, `script`) | Resource runs/loads | `type` is rewritten to `inert/<type>` so the browser ignores it |
+| `viewmode:disabled` | Input is enabled | `disabled` is set on the input |
+| `viewmode:readonly` | Input is editable | `readonly` is set on the input |
 
 ## How It Works
 
-1. On page load: sets both attributes based on current state
-2. Before save: sets both to `"false"` so saved pages show viewer state
+This feature combines four admin modules: `adminContenteditable`, `adminOnClick`, `adminResources`, and `adminInputs`. Each one runs the same two-step pattern:
+
+1. On page load: if currently in edit mode (`isEditMode`), enable the behavior once the DOM is ready. When not in edit mode, nothing is enabled and the attributes stay inert.
+2. Before save: register a `beforeSave` hook that neutralizes the behavior on the document about to be written, so the saved HTML is safe to serve to viewers.
+
+The `editmode:` attributes (`contenteditable`, `onclick`, `resource`) grant owner-only editing affordances. The `viewmode:` attributes (`disabled`, `readonly`) lock inputs back down for the saved/viewer state.
 
 ## Example
 
 ```html
-<!-- In edit mode as owner -->
-<html editmode="true" pageowner="true">
-  ...
-</html>
+<!-- Editable only in edit mode, plain text when saved -->
+<h1 editmode:contenteditable="plaintext-only">Title</h1>
 
-<!-- Viewing as non-owner -->
-<html editmode="false" pageowner="false">
-  ...
-</html>
+<!-- Click handler that only fires in edit mode -->
+<button editmode:onclick="addRow()">Add Row</button>
+
+<!-- Script that runs in edit mode but is inert in the saved file -->
+<script editmode:resource>setupEditorTools();</script>
+
+<!-- Input editable in edit mode, disabled for viewers -->
+<input viewmode:disabled value="Owner only">
 ```
 
-```css
-/* Show edit controls only in edit mode */
-html[editmode="false"] .edit-toolbar {
-  display: none;
-}
+## Runtime Helpers
 
-/* Owner-only features */
-html[pageowner="false"] .delete-btn {
-  display: none;
-}
-```
+Each module also exposes manual enable/disable helpers on `window.hyperclay` (aliased as `h`):
 
-## Exports
-
-Re-exports from `edit-mode`:
-- `toggleEditMode()`
-- `isEditMode`
-- `isOwner`
+- `enableContentEditable()` / `disableContentEditable()`
+- `enableOnClick()` / `disableOnClick()`
+- `enableAdminResources()` / `disableAdminResources()`
+- `enableAdminInputs()` / `disableAdminInputs()`
 
 ## Usage
 
@@ -1334,7 +1333,7 @@ All methods share the same signature and return an unsubscribe function.
 
 ```js
 {
-  type: 'add' | 'remove' | 'attribute',
+  type: 'add' | 'remove' | 'attribute' | 'characterData',
   element: Element,
   parent: Element,
   previousSibling: Element | null,
@@ -1345,6 +1344,8 @@ All methods share the same signature and return an unsubscribe function.
   newValue: string
 }
 ```
+
+Text-content changes surface through `onAnyChange` callbacks with `type: 'characterData'`. These carry `oldValue` and `newValue`, and `element` is the parent of the changed text node. Typed callbacks (`onAddElement`, `onRemoveElement`, `onAttribute`) do not receive them.
 
 ## Returns
 
@@ -1821,7 +1822,7 @@ Runs on two occasions:
 1. **Page load**: All elements with `onrender` execute on initial page load
 2. **Dynamic insertion**: When new elements with `onrender` are added to the DOM
 
-The code supports async/await. Each element's `onrender` only fires once.
+The code supports async/await. Each element's `onrender` fires once when the element is added to the DOM (on page load, or on dynamic insertion).
 
 ## Example
 
@@ -1868,12 +1869,34 @@ Show or hide elements based on ancestor attribute values.
 
 The element is hidden by default. It becomes visible when any ancestor has `name="value"`.
 
+### Inverse: `option-not:name="value"`
+
+Use `option-not:` to show an element when an ancestor has the `name` attribute but its value is NOT `value`:
+
+```html
+<element option-not:name="value">
+```
+
+The element becomes visible when an ancestor has `name` set to anything other than `value`. If multiple values are listed (see below), the element shows only when the ancestor matches none of them.
+
+### OR values: `option:name="a|b|c"`
+
+Separate multiple values with a pipe to match any of them:
+
+```html
+<element option:name="a|b|c">   <!-- visible when an ancestor has name="a", name="b", or name="c" -->
+```
+
+This works for both `option:` and `option-not:`. For `option-not:name="a|b"`, the element shows only when an ancestor has `name` set but its value is neither `a` nor `b`.
+
+Note: the pipe character `|` is reserved as the OR delimiter, so it cannot be used as a literal value.
+
 ## How It Works
 
-1. Scans the DOM for `option:*` attributes
-2. Generates CSS rules using `@layer` and `revert-layer`
-3. Elements are hidden with `display: none !important`
-4. When ancestor matches, `display: revert-layer !important` restores original display
+1. Scans the DOM for `option:*` and `option-not:*` attributes
+2. Generates a single conditional-hide CSS rule per pattern using `:is()` and `:not()` with selector lists
+3. An element is hidden with `display: none !important` only when it is NOT inside a matching ancestor scope
+4. When the condition is met, the hide rule simply does not match, so the author's original display value (flex, grid, block, etc.) applies. There is no revert-layer recovery.
 
 This is pure CSS after initialization - no JS overhead for toggling.
 
@@ -1911,7 +1934,7 @@ This is pure CSS after initialization - no JS overhead for toggling.
 
 ## Browser Support
 
-Requires `@layer` and `revert-layer` support (95.18% of browsers, 2025). Falls back gracefully - elements remain visible if unsupported.
+Requires `:is()` and `:not()` with selector lists (~96% of browsers, 2021+). Falls back gracefully - elements remain visible if unsupported.
 
 ## API
 
@@ -2285,10 +2308,10 @@ Shows toast notifications for save lifecycle events. No configuration needed.
 
 ```html
 <!-- Basic setup -->
-<script src="hyperclay.js?save-system,save-toast"></script>
+<script src="hyperclay.js?features=save-system,save-toast"></script>
 
 <!-- Full save stack with auto-save and notifications -->
-<script src="hyperclay.js?save-system,autosave,save-toast"></script>
+<script src="hyperclay.js?features=save-system,autosave,save-toast"></script>
 ```
 
 ---
@@ -2594,7 +2617,7 @@ Enable drag-and-drop sorting on child elements.
 
 ## Edit Mode Only
 
-Sortable.js (~118KB) is only loaded in edit mode. The vendor script is injected with `save-remove` so it's stripped from saved pages.
+Sortable.js (~45KB) is only loaded in edit mode. Sortable.js is dynamically `import()`-ed only in edit mode (no persisted script tag).
 
 ## Example
 
@@ -2721,9 +2744,6 @@ themodal.close();
 | no | string | `''` | Cancel button HTML (hidden if empty) |
 | closeHtml | string | `''` | Close button HTML |
 | zIndex | string | `'100'` | CSS z-index for the modal |
-| fontFamily | string | system monospace | Font family for modal text |
-| fontSize | string | `'18px'` | Base font size |
-| inputFontSize | string | `'16px'` | Font size for inputs |
 | disableFocus | boolean | `false` | Disable auto-focus on first input |
 | disableScroll | boolean | `true` | Disable body scroll when modal is open |
 | isShowing | boolean | `false` | Whether modal is currently visible (read-only) |
@@ -2737,6 +2757,18 @@ themodal.close();
 | `onYes(callback)` | Add callback for confirm action. Return `false` to prevent closing |
 | `onNo(callback)` | Add callback for cancel/close action |
 | `onOpen(callback)` | Add callback for when modal opens |
+
+## Styling
+
+Font sizing is controlled with CSS custom properties, not JavaScript properties. Set these variables on the page (or scoped to `.micromodal`) to override the defaults.
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `--hyperclay-modal-font-family` | `ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace` | Font family for modal text |
+| `--hyperclay-modal-font-size` | `18px` | Base font size |
+| `--hyperclay-modal-input-font-size` | `16px` | Font size for inputs |
+| `--hyperclay-modal-title-font-size` | `20px` (`22px` at `min-width: 640px`) | Font size for the tell title |
+| `--hyperclay-modal-code-font-family` | `--hyperclay-modal-font-family`, then `monospace` | Font family for code blocks |
 
 ## Example
 
@@ -3070,10 +3102,10 @@ Warns users before leaving the page if there are unsaved changes. On `beforeunlo
 
 ```html
 <!-- Basic setup -->
-<script src="hyperclay.js?save-system,unsaved-warning"></script>
+<script src="hyperclay.js?features=save-system,unsaved-warning"></script>
 
 <!-- Full save stack -->
-<script src="hyperclay.js?save-system,autosave,unsaved-warning,save-toast"></script>
+<script src="hyperclay.js?features=save-system,autosave,unsaved-warning,save-toast"></script>
 ```
 
 ---
