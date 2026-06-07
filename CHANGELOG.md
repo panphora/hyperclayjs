@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.31.0] - 2026-06-06
+
+### Added
+- CMS preset for hyperclayjs
+- quickcrop module providing an image-crop modal for upload flows
+- view-mode notice shown on [trigger-save] clicks by non-owners
+- filtering of browser-extension DOM noise from saves and the mutation observer
+- hyperclay:livesync-applied event emitted after a remote morph
+- /_/ system-route endpoints
+- API reference docs for undo, data, hypercms, and snapshot
+
+### Changed
+- update vendored hypercms bundle and regenerate size metadata
+- refresh undo (0.2.0 events) and cms (focused-field) vendor bundles
+- point demo endpoints at the /_/ marker form
+- correct API docs and README against source
+
+### Fixed
+- make hypercms auto-open deterministic via mutation in LOAD_FIRST and a ready event
+- copy undo.js and data.js into website/dist
+- README category generation
+
+
+
 ## Unreleased
 
 ### Added
