@@ -16,12 +16,6 @@ if [ "$FILE_COUNT" -eq 0 ]; then
   exit 0
 fi
 
-if [ "$FILE_COUNT" -gt 10 ]; then
-  echo "Warning: $FILE_COUNT files changed, only purging the first 10"
-  FILES=$(echo "$FILES" | head -10)
-  FILE_COUNT=10
-fi
-
 CURRENT_VERSION=$(node -p "require('./package.json').version")
 
 echo "Purging jsdelivr @latest cache for $FILE_COUNT files changed since $PREV_TAG:"
@@ -42,19 +36,50 @@ for i in $(seq 1 24); do
   sleep 5
 done
 
+# jsdelivr purge API tolerates ~60 requests/min; purge sequentially at 1/s,
+# back off on 429 (5s, 10s, 20s), log a hard failure and move on after 3 tries.
+FAILED=0
+purge_url() {
+  local url="$1" retries=0 status backoff
+  while :; do
+    status=$(curl -sS -o /dev/null -w "%{http_code}" "$url" 2>/dev/null || true)
+    case "${status:-000}" in
+      2*)
+        echo "✓"
+        sleep 1
+        return 0
+        ;;
+      429)
+        if [ "$retries" -ge 3 ]; then
+          echo "✗ (rate limited after 3 retries)"
+          FAILED=$((FAILED + 1))
+          return 0
+        fi
+        retries=$((retries + 1))
+        backoff=$((5 * 2 ** (retries - 1)))
+        printf "429, retrying in %ss... " "$backoff"
+        sleep "$backoff"
+        ;;
+      *)
+        echo "✗ ($status)"
+        FAILED=$((FAILED + 1))
+        return 0
+        ;;
+    esac
+  done
+}
+
 printf "  Purging @latest alias... "
-if curl -fsS "https://purge.jsdelivr.net/npm/hyperclayjs@latest" > /dev/null 2>&1; then
-  echo "✓"
-else
-  echo "✗"
-fi
+purge_url "https://purge.jsdelivr.net/npm/hyperclayjs@latest"
 
 for file in $FILES; do
   url="https://purge.jsdelivr.net/npm/hyperclayjs@latest/$file"
   printf "  %s " "$url"
-  if curl -fsS "$url" > /dev/null 2>&1; then
-    echo "✓"
-  else
-    echo "✗"
-  fi
+  purge_url "$url"
 done
+
+if [ "$FAILED" -gt 0 ]; then
+  echo ""
+  echo "WARNING: $FAILED purge(s) failed — stale files may persist on the CDN for up to 7 days."
+  echo "Purge manually: curl https://purge.jsdelivr.net/npm/hyperclayjs@latest/<path>"
+fi
