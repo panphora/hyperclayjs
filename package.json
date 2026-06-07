@@ -36,7 +36,6 @@
     "test": "jest",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "release": "./scripts/release.sh",
     "prepublishOnly": "npm run build && npm test",
     "postpublish": "bash scripts/purge-cdn-cache.sh"
   },
