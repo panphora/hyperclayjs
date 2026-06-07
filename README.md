@@ -144,7 +144,7 @@ To load a full preset, use the CDN loader with `?preset=standard`:
 | Module | Size | Description |
 |--------|------|-------------|
 | hyper-morph | 18.8KB | DOM morphing with content-based element matching |
-| hypercms | 73.6KB | Live edit-in-place CMS sidebar driven by a hyper-html-api rules tag. Pairs with [sortable] and [hyper-morph]. |
+| hypercms | 127KB | Live edit-in-place CMS sidebar driven by a hyper-html-api rules tag. Pairs with [sortable] and [hyper-morph]. |
 
 ## Presets
 
@@ -158,17 +158,17 @@ Standard feature set for most use cases
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `unsaved-warning`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `data`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### CMS (~151.3KB)
+### CMS (~204.7KB)
 Visual CMS editing for rules-tag pages: hypercms sidebar, undo, drag-reorder, save
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `unsaved-warning`, `toast`, `save-toast`, `mutation`, `hypercms`, `sortable`, `undo`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Smooth Sailing (~297.1KB)
+### Smooth Sailing (~350.5KB)
 Everything, without gotchas
 
 **Modules:** `save-core`, `save-system`, `unsaved-warning`, `save-toast`, `edit-mode-helpers`, `persist`, `snapshot`, `option-visibility`, `edit-mode`, `event-attrs`, `ajax-elements`, `sortable`, `movable`, `dom-helpers`, `input-helpers`, `onaftersave`, `save-freeze`, `dialogs`, `quickcrop`, `toast`, `the-modal`, `mutation`, `nearest`, `cookie`, `throttle`, `debounce`, `dom-ready`, `window-load`, `all-js`, `style-injection`, `form-data`, `hypercms`, `undo`, `data`, `slugify`, `copy-to-clipboard`, `query-params`, `behavior-collector`, `send-message`, `file-upload`, `refetch-on-save`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Everything (~343.8KB)
+### Everything (~397.2KB)
 All available features
 
 Includes all available modules across all categories.

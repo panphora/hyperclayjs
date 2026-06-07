@@ -1,8 +1,8 @@
-var hypercms=(()=>{var Ue=Object.defineProperty;var br=Object.getOwnPropertyDescriptor;var Sr=Object.getOwnPropertyNames;var Ar=Object.prototype.hasOwnProperty;var De=(e,t)=>{for(var r in t)Ue(e,r,{get:t[r],enumerable:!0})},vr=(e,t,r,o)=>{if(t&&typeof t=="object"||typeof t=="function")for(let n of Sr(t))!Ar.call(e,n)&&n!==r&&Ue(e,n,{get:()=>t[n],enumerable:!(o=br(t,n))||o.enumerable});return e};var xr=e=>vr(Ue({},"__esModule",{value:!0}),e);var so={};De(so,{cms:()=>no,default:()=>oo});var Se=["textContent","innerText","innerHTML","outerHTML","value","checked","selected","disabled","readOnly","type","tagName","nodeName","nodeType","nodeValue","childElementCount","id","className","classList","baseURI","offsetWidth","offsetHeight","clientWidth","clientHeight","scrollWidth","scrollHeight","dataset","currentSrc","duration","paused","title","documentURI","contentType"],Be=new Set(Se),xt=new Set(["textContent","innerText","innerHTML","value","checked","selected","disabled","readOnly","type","id","className","title"]),Et=new Set(["tagName","nodeName","nodeType","nodeValue","childElementCount","classList","baseURI","documentURI","contentType","offsetWidth","offsetHeight","clientWidth","clientHeight","scrollWidth","scrollHeight","currentSrc","duration","paused","dataset"]);var ve={};De(ve,{EmptyListInsert:()=>ue,MAX_RULE_DEPTH:()=>ee,MaxRuleDepthExceeded:()=>z,RuleTargetReadOnly:()=>de,RulesParseError:()=>Q,ShapeMismatch:()=>le,UnknownRulesVersion:()=>ce,UpgradeAlreadyRegistered:()=>Ae});var Q=class extends Error{constructor(t,r){super(t),this.name="RulesParseError",this.cause=r}},ce=class extends Error{constructor(t){super(`unknown rules version: ${t}. Library supports "1".`),this.name="UnknownRulesVersion",this.version=t}},ee=20,z=class extends Error{constructor(t){super(`rule depth exceeded ${ee} at path: ${t.join(".")}`),this.name="MaxRuleDepthExceeded",this.path=t}},le=class extends Error{constructor(t){super(`shape mismatch: ${t.length} field(s) failed validation`),this.name="ShapeMismatch",this.mismatches=t}},ue=class extends Error{constructor(t){super(`cannot add items to empty list at "${t.join(".")}" \u2014 no sibling to clone as template. Seed the list with a hidden item first.`),this.name="EmptyListInsert",this.path=t}},de=class extends Error{constructor(t){super(`cannot write to read-only DOM property "${t}"`),this.name="RuleTargetReadOnly",this.target=t}},Ae=class extends Error{constructor(){super("upgrade transform already registered; only one registration is allowed per page."),this.name="UpgradeAlreadyRegistered"}};function B(e,t,r,o={}){return We(e,t,r,{depth:0,path:[]},o)}function We(e,t,r,o,n){if(o.depth>ee)throw new z(o.path);if(typeof r=="string")return Er(e,t,r,n);if(Array.isArray(r)){let[s,a]=r;return e.find(t,s,n).map((c,d)=>We(e,c,a,{depth:o.depth+1,path:[...o.path,d]},n))}if(typeof r=="object"&&r!==null){let s={};for(let[a,i]of Object.entries(r))s[a]=We(e,t,i,{depth:o.depth+1,path:[...o.path,a]},n);return s}return null}function Er(e,t,r,o){if(r.endsWith("[]")){let s=r.slice(0,-2);return e.find(t,s,o).map(a=>e.text(a))}if(r.startsWith("@"))return wt(e,t,r.slice(1));if(r.includes("@")){let s=r.lastIndexOf("@"),a=r.slice(0,s),i=r.slice(s+1),c=a?e.find(t,a,o):[t];return c.length===0?null:wt(e,c[0],i)}if(r===".")return e.text(t);let n=e.find(t,r,o);return n.length===0?null:e.text(n[0])}function wt(e,t,r){if(Be.has(r)){let n=e.prop(t,r);return n==null?null:String(n)}let o=e.attr(t,r);return o||null}var wr=.5;function Ve(e,t,r,o,n,s,a,i={}){let c=e.find(t,r,i);if(n.length===0){c.forEach(M=>e.remove(M));return}let d=n.length>c.length,u=c[0]||null;if(d&&!u&&(u=kr(e,t,r,i),!u))throw new ue(s.path);let p=c.map(M=>Mr(e,M,o,i)),y=null;if(u){y=e.clone(u),i.templateAttr&&e.removeAttr(y,i.templateAttr);let M=e.stripIds(y);M>0&&console.warn(`[hyper-html-api] stripped ${M} id attribute(s) from cloned template at "${s.path.join(".")||"(root)"}"`)}let w=Tr(n,p,o),v=c[0]||u,O=e.parent(v),g=c.length>0?Cr(e,O,v):0,C=new Set,T=n.map((M,R)=>{let E=w[R];if(E>=0)return C.add(E),c[E];let m=e.clone(y);return e.stripIds(m),m});c.forEach((M,R)=>{C.has(R)||e.remove(M)}),T.forEach((M,R)=>{let E=g+R;e.children(O).findIndex(l=>e.sameNode(l,M))!==E&&e.insertAt(O,M,E)}),T.forEach((M,R)=>{if(o===null){let E=n[R],m=E==null?"":String(E);e.text(M)!==m&&e.text(M,m)}else{let E=a(e,M,o,n[R],{depth:s.depth+1,path:[...s.path,R]},i);E&&E!==M&&(T[R]=E)}})}function Mr(e,t,r,o){return r===null?e.text(t):B(e,t,r,o)}function Tr(e,t,r){let o=new Array(e.length).fill(-1),n=new Set;return e.forEach((s,a)=>{let i=-1,c=-1;t.forEach((d,u)=>{if(n.has(u))return;let p=Rr(s,d,r),y=p===c&&i>=0?Math.abs(u-a)<Math.abs(i-a):!1;(p>c||y)&&(c=p,i=u)}),c>=wr&&(o[a]=i,n.add(i))}),o}function Rr(e,t,r){if(r===null)return e===t?1:0;let o=Object.keys(r||{});if(o.length===0)return 0;let n=0;for(let s of o)JSON.stringify(e?.[s])===JSON.stringify(t?.[s])&&n++;return n/o.length}function Cr(e,t,r){let o=e.children(t);for(let n=0;n<o.length;n++)if(e.sameNode(o[n],r))return n;return-1}function kr(e,t,r,o){if(!o.templateAttr)return null;let n=t;for(;n;){let s=e.find(n,r,{includeRulesTag:!1});for(let a of s)if(e.attr(a,o.templateAttr)!=null)return a;n=e.parent(n)}return null}var Mt=new Set(["checked","selected","disabled","readOnly","paused"]);function G(e,t,r,o,n={}){let s=[];if(Ke(r,o,[],s),s.length)throw new le(s);xe(e,t,r,o,{depth:0,path:[]},n)}function xe(e,t,r,o,n,s={}){if(n.depth>ee)throw new z(n.path);if(o===void 0)return t;if(typeof r=="string")return Ir(e,t,r,o,n,s);if(Array.isArray(r)){let[a,i]=r;return Ve(e,t,a,i,o,n,xe,s),t}if(typeof r=="object"&&r!==null){for(let[a,i]of Object.entries(r)){let c=xe(e,t,i,o==null?o:o[a],{depth:n.depth+1,path:[...n.path,a]},s);c&&c!==t&&(t=c)}return t}return t}function Ir(e,t,r,o,n,s){if(r.endsWith("[]")){let i=r.slice(0,-2);return Ve(e,t,i,null,o,n,xe,s),t}if(r.startsWith("@"))return Tt(e,t,r.slice(1),o);if(r.includes("@")){let i=r.lastIndexOf("@"),c=r.slice(0,i),d=r.slice(i+1),u=c?e.find(t,c,s):[t];return u.length===0||Tt(e,u[0],d,o),t}if(r===".")return e.text(t,o==null?"":String(o)),t;let a=e.find(t,r,s);return a.length===0||e.text(a[0],o==null?"":String(o)),t}function Tt(e,t,r,o){if(Et.has(r))throw new de(r);if(r==="outerHTML"){let n=o==null?"":String(o);return e.replaceWith(t,n)}return xt.has(r)?(e.prop(t,r,Or(r,o)),t):(e.attr(t,r,o==null?"":String(o)),t)}function Or(e,t){return t==null?Mt.has(e)?!1:"":Mt.has(e)?!!t:t}function Ke(e,t,r,o){if(t!==void 0){if(typeof e=="string"){if(e.endsWith("[]")){Array.isArray(t)?t.forEach((n,s)=>{typeof n=="object"&&n!==null&&o.push({path:he([...r,s]),expected:"scalar",got:fe(n)})}):o.push({path:he(r),expected:"array",got:fe(t)});return}t!==null&&typeof t=="object"&&o.push({path:he(r),expected:"scalar",got:fe(t)});return}if(Array.isArray(e)){if(!Array.isArray(t)){o.push({path:he(r),expected:"array",got:fe(t)});return}let n=e[1];t.forEach((s,a)=>Ke(n,s,[...r,a],o));return}if(typeof e=="object"&&e!==null){if(t===null||Array.isArray(t)||typeof t!="object"){o.push({path:he(r),expected:"object",got:fe(t)});return}for(let[n,s]of Object.entries(e))Ke(s,t[n],[...r,n],o)}}}function fe(e){return e===null?"null":Array.isArray(e)?"array":typeof e}function he(e){return e.join(".")}function ze(e){try{return JSON.parse(e)}catch(t){throw new Q(`Invalid strict JSON: ${t.message}`,t)}}function me(e){try{return JSON.parse(e)}catch{}let t={BRACE_OPEN:"{",BRACE_CLOSE:"}",BRACKET_OPEN:"[",BRACKET_CLOSE:"]",COLON:":",COMMA:",",STRING:"STRING",SELECTOR:"SELECTOR",IDENTIFIER:"IDENTIFIER",NUMBER:"NUMBER",BOOLEAN:"BOOLEAN"};function r(n){let s=[],a=0;for(;a<n.length;){let i=n[a];if(/\s/.test(i)){a++;continue}if("{}".includes(i)){s.push({type:i,value:i}),a++;continue}if(i==="["){let p=!1,y=a+1;for(;y<n.length&&/\s/.test(n[y]);)y++;if(y<n.length&&/[a-zA-Z_]/.test(n[y])&&(p=!0),!p){s.push({type:i,value:i}),a++;continue}}if(i==="]"){s.push({type:i,value:i}),a++;continue}if(i===":"){s.push({type:t.COLON,value:i}),a++;continue}if(i===","){s.push({type:t.COMMA,value:i}),a++;continue}if(i==='"'||i==="'"){let p=i,y=a+1;for(;y<n.length&&n[y]!==p;)n[y]==="\\"&&y++,y++;s.push({type:t.STRING,value:n.substring(a+1,y),quoted:!0,sourceQuote:p}),a=y+1;continue}let c=a,d;for(;c<n.length&&!/[{},]/.test(n[c]);)if(n[c]===":"){let p=[":first",":last",":nth-child",":nth-of-type",":first-child",":last-child",":first-of-type",":last-of-type",":only-child",":only-of-type",":hover",":focus",":active",":visited",":disabled",":enabled",":checked",":empty",":root",":target",":not",":before",":after",":nth-last-child",":nth-last-of-type"],y=!1;for(let w of p){let v=w.substring(1);if(n.substring(c+1,c+1+v.length)===v){y=!0,c+=v.length;break}}if(!y)break}else if(n[c]==="["){for(c++;c<n.length&&n[c]!=="]";){if(n[c]==='"'||n[c]==="'"){let p=n[c];for(c++;c<n.length&&n[c]!==p;)n[c]==="\\"&&c++,c++}c++}c<n.length&&n[c]==="]"&&c++}else c++;d=n.substring(a,c);let u=t.IDENTIFIER;/^-?\d+(\.\d+)?$/.test(d)?u=t.NUMBER:d==="true"||d==="false"||d==="null"?u=t.BOOLEAN:/^[.#@\[]|[.#@\[]| /.test(d)&&(u=t.SELECTOR),s.push({type:u,value:d,quoted:!1}),a=c}return s}function o(n){let s="";for(let a=0;a<n.length;a++){let i=n[a];if("{}".includes(i.type)||"[]".includes(i.type)){s+=i.value;continue}if(i.type===t.COLON){s+=i.value;continue}if(i.type===t.COMMA){let c=n[a+1];if(c&&(c.type==="}"||c.type==="]"))continue;s+=i.value;continue}if(i.type===t.STRING&&i.quoted){let c=i.value;i.sourceQuote==="'"&&(c=c.replace(/\\'/g,"'"),c=c.replace(/(\\*)"/g,(d,u)=>u.length%2===0?u+'\\"':d)),s+=`"${c}"`;continue}if(i.type===t.NUMBER||i.type===t.BOOLEAN){s+=i.value;continue}if(i.type===t.SELECTOR||i.type===t.IDENTIFIER){s+=`"${i.value}"`;continue}s+=`"${i.value}"`}return s}try{let n=r(e),s=o(n);return JSON.parse(s)}catch(n){throw new Q("Invalid extraction rules syntax: "+n.message,n)}}var jr="1",Rt=/^[a-zA-Z0-9_-]+$/;function Y(e,t,r){let o;if(r===void 0)o="script[data-rules-name]";else{if(typeof r!="string"||!Rt.test(r))throw new Error(`hyper-html-api: invalid rules token ${JSON.stringify(r)} (must match ${Rt})`);o=`script[data-rules-name~="${r}"]`}let n=e.find(t,o,{includeRulesTag:!0});if(n.length===0)return null;r!==void 0&&n.length>1&&console.warn(`hyper-html-api: ${n.length} rules tags match data-rules-name~="${r}"; using the first.`);let s=n[0],a=e.attr(s,"data-rules-version");if(a!==jr)throw new ce(a);return{rules:me(e.text(s)),tagNode:s}}function Ge(e,t,r){if(r&&typeof r=="object")return{rules:r,tagNode:null};if(typeof r=="string"){let o=t&&t.ownerDocument?t.ownerDocument:t;return Y(e,o,r)}return null}function Ct(e,t,r,o){let n=Ge(e,t,r);if(!n){let i=typeof r=="string"?`data-rules-name~="${r}"`:"the provided rules object";throw new Error(`hyper-html-api: could not resolve rules for ${i}`)}let{rules:s,tagNode:a}=n;return{rules:s,tagNode:a,get:()=>B(e,t,s,o),set:i=>G(e,t,s,i,o)}}var Ot={includeClasses:!0,includeAttributes:["href","src","name","type","role","aria-label","alt","title"],excludeAttributePrefixes:["data-morph-","data-hyper-","data-im-"],textHintLength:64,excludeIds:!0,maxPathDepth:4,landmarks:["HEADER","NAV","MAIN","ASIDE","FOOTER","SECTION","ARTICLE"],weights:{signature:100,pathSegment:10,textMatch:20,textMismatch:25,uniqueCandidate:50,positionPenalty:1,slotMatch:30},minConfidence:101};function $r(e){let t=5381;for(let r=0;r<e.length;r++)t=(t<<5)+t^e.charCodeAt(r);return Math.abs(t).toString(36)}function Hr(e){if(e.classList&&e.classList.length>0)return Array.from(e.classList).sort().join(" ");let t=e.getAttribute?.("class");return t?t.split(/\s+/).filter(Boolean).sort().join(" "):""}function Fr(e,t){let r=[];for(let o of e.attributes||[]){let n=o.name;n==="id"||n==="class"||t.excludeAttributePrefixes.some(s=>n.startsWith(s))||t.includeAttributes.includes(n)&&r.push(`${n}=${o.value}`)}return r.sort().join("|")}function qr(e,t){return(e.textContent||"").replace(/\s+/g," ").trim().slice(0,t.textHintLength)}function Pr(e,t){let r=[e.tagName];return t.includeClasses&&r.push(Hr(e)),r.push(Fr(e,t)),$r(r.join("|"))}function _r(e){let t=e.tagName,r=1,o=e.previousElementSibling;for(;o;)o.tagName===t&&r++,o=o.previousElementSibling;return r}function Ur(e,t){return e.id||e.getAttribute?.("role")?!0:t.landmarks.includes(e.tagName)}function Dr(e){if(e.id)return`#${e.id}`;let t=e.getAttribute?.("role");return t?`@${t}`:e.tagName}function Br(e,t){let r=[],o=e;for(;o&&o.tagName&&r.length<t.maxPathDepth;){let n=`${o.tagName}:${_r(o)}`;if(r.unshift(n),o!==e&&Ur(o,t)){r.unshift(Dr(o));break}o=o.parentElement}return r}function Wr(e,t){let r=0,o=e.length-1,n=t.length-1;for(;o>=0&&n>=0&&e[o]===t[n];)r++,o--,n--;return r}function _(e,t,r){if(r.has(e))return r.get(e);let o={signature:Pr(e,t),path:Br(e,t),textHint:qr(e,t)};return r.set(e,o),o}function $t(e,t,r,o){if(o.has(e))return o.get(e);let n=new Map,s=e.querySelectorAll("*"),a=0;for(let i of s){let c=_(i,t,r);c.domIndex=a++,n.has(c.signature)||n.set(c.signature,[]),n.get(c.signature).push(i)}return o.set(e,n),n}function Vr(e,t,r){r.delete(e),t.delete(e);let o=e.querySelectorAll("*");for(let n of o)t.delete(n)}function Ye(e,t,r,o,n){let s=_(e,r,o),a=_(t,r,o),i=r.weights,c={},d=0;if(s.signature!==a.signature)return{score:0,breakdown:{rejected:"signature mismatch"}};d+=i.signature,c.signature=i.signature;let p=Wr(s.path,a.path)*i.pathSegment;d+=p,c.path=p;let y=!0;if(s.textHint&&a.textHint?s.textHint===a.textHint?(d+=i.textMatch,c.text=i.textMatch):(d-=i.textMismatch,c.text=-i.textMismatch,y=!1):s.textHint!==a.textHint&&(d-=i.textMismatch,c.text=-i.textMismatch,y=!1),n.candidateCount===1&&y&&(d+=i.uniqueCandidate,c.unique=i.uniqueCandidate),typeof s.domIndex=="number"&&typeof a.domIndex=="number"){let w=Math.abs(s.domIndex-a.domIndex),v=Math.min(w*i.positionPenalty,20);d-=v,c.drift=-v}return{score:d,breakdown:c}}function jt(e,t,r,o,n){if(r.excludeIds&&e.id)return null;let s=$t(t,r,o,n),a=_(e,r,o);if(typeof a.domIndex!="number"){let y=0,w=e.previousElementSibling;for(;w;)y++,w=w.previousElementSibling;a.domIndex=y}let i=s.get(a.signature)||[],c=r.excludeIds?i.filter(y=>!y.id):i;if(c.length===0)return null;let d=null,u=0,p=null;for(let y of c){let{score:w,breakdown:v}=Ye(e,y,r,o,{candidateCount:c.length});w>u&&(u=w,d=y,p=v)}return u<r.minConfidence?null:{element:d,confidence:u,breakdown:p}}function Kr(e,t,r,o){let n=[],s=r.weights.signature+r.weights.slotMatch,a={slot:s};function i(p){if(p.children)return p.children;let y=p.childNodes;if(!y)return[];let w=[];for(let v=0;v<y.length;v++)y[v].nodeType===1&&w.push(y[v]);return w}function c(p,y){let w=i(p),v=i(y);if(w.length===v.length)for(let O=0;O<w.length;O++){let g=w[O],C=v[O];if(r.excludeIds&&(g.id||C.id)||g.tagName!==C.tagName)continue;let T=_(g,r,o).signature,M=_(C,r,o).signature;T!==M&&n.push({newEl:g,oldEl:C,score:s,breakdown:a}),c(g,C)}}function d(p,y){for(;;){if(p.tagName===y.tagName)return[p,y];let w=i(p);if(!p.tagName&&w.length===1){p=w[0];continue}let v=i(y);if(v.length===1&&v[0].tagName===p.tagName){y=v[0];continue}return null}}let u=d(e,t);return u&&c(u[0],u[1]),n}function Nt(e,t,r,o,n){let s=t.querySelectorAll("*"),a=$t(e,r,o,n),i=0;for(let p of s){let y=_(p,r,o);y.domIndex=i++}let c=[];for(let p of s){if(r.excludeIds&&p.id)continue;let y=_(p,r,o),w=a.get(y.signature)||[],v=r.excludeIds?w.filter(O=>!O.id):w;for(let O of v){let{score:g,breakdown:C}=Ye(p,O,r,o,{candidateCount:v.length});g>=r.minConfidence&&c.push({newEl:p,oldEl:O,score:g,breakdown:C})}}if(r.weights.slotMatch>0){let p=Kr(t,e,r,o);for(let y of p)c.push(y)}c.sort((p,y)=>y.score-p.score);let d=new Map,u=new Set;for(let{newEl:p,oldEl:y}of c)d.has(p)||u.has(y)||(d.set(p,y),u.add(y));return d}function Lt(e,t,r,o){let n=_(e,r,o),s=_(t,r,o),{score:a,breakdown:i}=Ye(e,t,r,o,{candidateCount:1});return{matches:a>=r.minConfidence,score:a,breakdown:i,newMeta:{signature:n.signature,path:n.path,textHint:n.textHint},oldMeta:{signature:s.signature,path:s.path,textHint:s.textHint}}}function Ht(e={}){let t={...Ot,...e,weights:{...Ot.weights,...e.weights}},r=new WeakMap,o=new WeakMap;return{findMatch:(n,s)=>jt(n,s,t,r,o),computeMatches:(n,s)=>Nt(n,s,t,r,o),explain:(n,s)=>Lt(n,s,t,r),invalidate:n=>Vr(n,r,o),session:()=>{let n=new WeakMap,s=new WeakMap;return{findMatch:(a,i)=>jt(a,i,t,n,s),computeMatches:(a,i)=>Nt(a,i,t,n,s),explain:(a,i)=>Lt(a,i,t,n)}},getConfig:()=>({...t})}}var zr=Ht(),Ze=(function(){"use strict";let e=()=>{};function t(g){if(!(g instanceof Element))return!1;if(g.hasAttribute("save-ignore"))return!0;if(g.tagName==="LINK"||g.tagName==="SCRIPT"){let C=g.getAttribute("src")||g.getAttribute("href")||"";if(C.startsWith("chrome-extension://")||C.startsWith("moz-extension://")||C.startsWith("safari-web-extension://"))return!0}return!1}function r(g,C){if(C!=="smart")return g.outerHTML;let T=g.getAttribute("src"),M=g.getAttribute("type")||"text/javascript";if(T)try{let R=new URL(T,window.location.href);return`ext:${M}:${R.origin}${R.pathname}${R.search}`}catch{return`ext:${M}:${T}`}else{let R=g.textContent.trim(),E=5381;for(let m=0;m<R.length;m++)E=(E<<5)+E^R.charCodeAt(m);return`inline:${M}:${Math.abs(E).toString(36)}`}}let o={morphStyle:"outerHTML",callbacks:{beforeNodeAdded:e,afterNodeAdded:e,beforeNodeMorphed:e,afterNodeMorphed:e,beforeNodeRemoved:e,afterNodeRemoved:e,beforeAttributeUpdated:e},head:{style:"merge",shouldPreserve:g=>g.getAttribute("im-preserve")==="true",shouldReAppend:g=>g.getAttribute("im-re-append")==="true",shouldRemove:e,afterHeadMorphed:e},scripts:{handle:!1,matchMode:"outerHTML",shouldPreserve:g=>g.getAttribute("im-preserve")==="true",shouldReAppend:g=>g.getAttribute("im-re-append")==="true",shouldRemove:e,afterScriptsHandled:e},restoreFocus:!0},n={computeMatches(g,C){let{computeMatches:T}=zr.session();return T(g,C)}};function s(g,C,T={}){g=v(g);let M=O(C),R=w(g,M,T),E=R.scripts.matchMode,m=new Set(Array.from(g.querySelectorAll("script")).map(f=>r(f,E))),A=i(R,()=>u(R,g,M,f=>f.morphStyle==="innerHTML"?(c(f,g,M),Array.from(g.childNodes)):a(f,g,M)));R.pantry.remove();let l=y(g,m,R);return l.length>0?A instanceof Promise?A.then(f=>Promise.all(l).then(()=>f)):Promise.all(l).then(()=>A):A}function a(g,C,T){let M=O(C);return c(g,M,T,C,C.nextSibling),Array.from(M.childNodes)}function i(g,C){if(!g.config.restoreFocus)return C();let T=document.activeElement;if(!(T instanceof HTMLInputElement||T instanceof HTMLTextAreaElement))return C();let{id:M,selectionStart:R,selectionEnd:E}=T,m=C();return M&&M!==document.activeElement?.getAttribute("id")&&(T=g.target.querySelector(`[id="${M}"]`),T?.focus()),T&&!T.selectionEnd&&E!=null&&T.setSelectionRange(R,E),m}let c=(function(){function g(l,f,b,h=null,S=null){f instanceof HTMLTemplateElement&&b instanceof HTMLTemplateElement&&(f=f.content,b=b.content),h||=f.firstChild;for(let x of b.childNodes){if(t(x))continue;if(h&&h!=S){let I=T(l,x,h,S);if(I){I!==h&&R(l,h,I),d(I,x,l),h=I.nextSibling;continue}}if(x instanceof Element){let I=x.getAttribute("id");if(l.persistentIds.has(I)){let N=E(f,I,h,l);d(N,x,l),h=N.nextSibling;continue}if(!l.idMap.has(x)){let N=l.hyperMatches.get(x);if(N&&!l.idMap.has(N)){A(f,N,h),d(N,x,l),h=N.nextSibling;continue}}}let k=C(f,x,h,l);k&&(h=k.nextSibling)}for(;h&&h!=S;){let x=h;h=h.nextSibling,t(x)||M(l,x)}}function C(l,f,b,h){if(h.callbacks.beforeNodeAdded(f)===!1)return null;if(h.idMap.has(f)){let S=document.createElement(f.tagName);return l.insertBefore(S,b),d(S,f,h),h.callbacks.afterNodeAdded(S),S}else{let S=document.importNode(f,!0);return l.insertBefore(S,b),h.callbacks.afterNodeAdded(S),S}}let T=(function(){function l(h,S,x,k){let I=S instanceof Element&&!h.idMap.has(S)?h.hyperMatches.get(S):null,N=null,F=S.nextSibling,ae=0,L=x;for(;L&&L!=k;){if(b(L,S)){if(f(h,L,S)||L===I&&!h.idMap.has(L))return L;if(N===null){let J=L instanceof Element&&h.hyperMatchedOldElements.has(L);!h.idMap.has(L)&&!J&&(N=L)}}if(N===null&&F&&b(L,F)&&(ae++,F=F.nextSibling,ae>=2&&(N=void 0)),h.activeElementAndParents.includes(L))break;L=L.nextSibling}return N||null}function f(h,S,x){let k=h.idMap.get(S),I=h.idMap.get(x);if(!I||!k)return!1;for(let N of k)if(I.has(N))return!0;return!1}function b(h,S){let x=h,k=S;return x.nodeType===k.nodeType&&x.tagName===k.tagName&&(!x.getAttribute?.("id")||x.getAttribute?.("id")===k.getAttribute?.("id"))}return l})();function M(l,f){let b=f instanceof Element&&l.hyperMatchedOldElements.has(f)&&!l.idMap.has(f);if(l.idMap.has(f)||b)A(l.pantry,f,null);else{if(l.callbacks.beforeNodeRemoved(f)===!1)return;f.parentNode?.removeChild(f),l.callbacks.afterNodeRemoved(f)}}function R(l,f,b){let h=f;for(;h&&h!==b;){let S=h;h=h.nextSibling,t(S)||M(l,S)}return h}function E(l,f,b,h){let S=h.target.getAttribute?.("id")===f&&h.target||h.target.querySelector(`[id="${f}"]`)||h.pantry.querySelector(`[id="${f}"]`);return m(S,h),A(l,S,b),S}function m(l,f){let b=l.getAttribute("id");for(;l=l.parentNode;){let h=f.idMap.get(l);h&&(h.delete(b),h.size||f.idMap.delete(l))}}function A(l,f,b){if(l.moveBefore)try{l.moveBefore(f,b)}catch{l.insertBefore(f,b)}else l.insertBefore(f,b)}return g})(),d=(function(){function g(m,A,l){return l.ignoreActive&&m===document.activeElement?null:(l.callbacks.beforeNodeMorphed(m,A)===!1||(m instanceof HTMLHeadElement&&l.head.ignore||(m instanceof HTMLHeadElement&&l.head.style!=="morph"?p(m,A,l):(C(m,A,l),E(m,l)||c(l,m,A))),l.callbacks.afterNodeMorphed(m,A)),m)}function C(m,A,l){let f=A.nodeType;if(f===1){let b=m,h=A,S=b.attributes,x=h.attributes;for(let k of x)R(k.name,b,"update",l)||b.getAttribute(k.name)!==k.value&&b.setAttribute(k.name,k.value);for(let k=S.length-1;0<=k;k--){let I=S[k];if(I&&!h.hasAttribute(I.name)){if(R(I.name,b,"remove",l))continue;b.removeAttribute(I.name)}}E(b,l)||T(b,h,l)}(f===8||f===3)&&m.nodeValue!==A.nodeValue&&(m.nodeValue=A.nodeValue)}function T(m,A,l){if(m instanceof HTMLInputElement&&A instanceof HTMLInputElement&&A.type!=="file"){let f=A.value,b=m.value;M(m,A,"checked",l),M(m,A,"disabled",l),l.formStateSync==="property"?b!==f&&(R("value",m,"update",l)||(m.value=f)):A.hasAttribute("value")?b!==f&&(R("value",m,"update",l)||(m.setAttribute("value",f),m.value=f)):R("value",m,"remove",l)||(m.value="",m.removeAttribute("value"))}else if(m instanceof HTMLOptionElement&&A instanceof HTMLOptionElement)M(m,A,"selected",l);else if(m instanceof HTMLTextAreaElement&&A instanceof HTMLTextAreaElement){let f=A.value,b=m.value;if(R("value",m,"update",l))return;f!==b&&(m.value=f),m.firstChild&&m.firstChild.nodeValue!==f&&(m.firstChild.nodeValue=f)}}function M(m,A,l,f){let b=A[l],h=m[l];if(b!==h){let S=R(l,m,"update",f);if(S||(m[l]=A[l]),f.formStateSync==="property")return;b?S||m.setAttribute(l,""):R(l,m,"remove",f)||m.removeAttribute(l)}}function R(m,A,l,f){return m==="value"&&f.ignoreActiveValue&&A===document.activeElement?!0:f.callbacks.beforeAttributeUpdated(m,A,l)===!1}function E(m,A){return!!A.ignoreActiveValue&&m===document.activeElement&&m!==document.body}return g})();function u(g,C,T,M){if(g.head.block){let R=C.querySelector("head"),E=T.querySelector("head");if(R&&E){let m=p(R,E,g);return Promise.all(m).then(()=>{let A=Object.assign(g,{head:{block:!1,ignore:!0}});return M(A)})}}return M(g)}function p(g,C,T){let M=[],R=[],E=[],m=[],A=T.scripts.matchMode,l=h=>{if(h.tagName==="SCRIPT")return r(h,A);if(h.tagName==="LINK"&&A==="smart"){let S=h.getAttribute("href");if(S)try{let x=new URL(S,window.location.href);return`link:${h.getAttribute("rel")||""}:${x.origin}${x.pathname}${x.search}`}catch{}}return h.outerHTML},f=new Map;for(let h of C.children)t(h)||f.set(l(h),h);for(let h of g.children){let S=l(h),x=f.has(S),k=T.head.shouldReAppend(h),I=T.head.shouldPreserve(h);x||I?k?R.push(h):(f.delete(S),E.push(h)):T.head.style==="append"?k&&(R.push(h),m.push(h)):T.head.shouldRemove(h)!==!1&&!t(h)&&R.push(h)}m.push(...f.values());let b=[];for(let h of m){let S=document.createRange().createContextualFragment(h.outerHTML).firstChild;if(T.callbacks.beforeNodeAdded(S)!==!1){if("href"in S&&S.href||"src"in S&&S.src){let x,k=new Promise(function(I){x=I});S.addEventListener("load",function(){x()}),b.push(k)}g.appendChild(S),T.callbacks.afterNodeAdded(S),M.push(S)}}for(let h of R)T.callbacks.beforeNodeRemoved(h)!==!1&&(g.removeChild(h),T.callbacks.afterNodeRemoved(h));return T.head.afterHeadMorphed(g,{added:M,kept:E,removed:R}),b}function y(g,C,T){if(!T.scripts.handle)return[];let M=[],R=[],E=[],m=[],A=T.scripts.matchMode,l=Array.from(g.querySelectorAll("script"));for(let b of l){let h=r(b,A),S=C.has(h),x=T.scripts.shouldPreserve(b),k=T.scripts.shouldReAppend(b);S||x?k?(R.push(b),m.push(b)):E.push(b):m.push(b)}for(let b of C){let h=l.some(S=>S.outerHTML===b)}let f=[];for(let b of m){if(T.callbacks.beforeNodeAdded(b)===!1)continue;let h=document.createRange().createContextualFragment(b.outerHTML).firstChild;if(h.src){let S,x=new Promise(function(k){S=k});h.addEventListener("load",function(){S()}),h.addEventListener("error",function(){S()}),f.push(x)}b.replaceWith(h),T.callbacks.afterNodeAdded(h),M.push(h)}return T.scripts.afterScriptsHandled(g,{added:M,kept:E,removed:R}),f}let w=(function(){function g(l,f,b){let{persistentIds:h,idMap:S}=m(l,f),x=n.computeMatches(l,f);if(typeof b.key=="function"){let F=new Map,ae=new Set,L=$=>{let H=b.key($);H!=null&&(F.has(H)?ae.add(H):F.set(H,$))};l instanceof Element&&L(l);for(let $ of l.querySelectorAll("*"))L($);for(let $ of ae)F.delete($);let J=new Map;for(let[$,H]of x)J.set(H,$);let qe=f.__hyperMorphRoot||f,be=new Map,At=new Set,vt=$=>{let H=b.key($);H!=null&&(be.has(H)?At.add(H):be.set(H,$))};qe instanceof Element&&vt(qe);for(let $ of qe.querySelectorAll("*"))vt($);for(let $ of At)be.delete($);for(let[$,H]of be){let X=F.get($);if(!X||X.tagName!==H.tagName)continue;let Pe=J.get(X);Pe&&Pe!==H&&x.delete(Pe);let _e=x.get(H);_e&&_e!==X&&J.delete(_e),x.set(H,X),J.set(X,H)}}let k=new Set;for(let F of x.values())k.add(F);let I=C(b),N=I.morphStyle||"outerHTML";if(!["innerHTML","outerHTML"].includes(N))throw`Do not understand how to morph style ${N}`;return{target:l,newContent:f,config:I,morphStyle:N,ignoreActive:I.ignoreActive,ignoreActiveValue:I.ignoreActiveValue,restoreFocus:I.restoreFocus,formStateSync:I.formStateSync||"attribute",idMap:S,persistentIds:h,hyperMatches:x,hyperMatchedOldElements:k,pantry:T(),activeElementAndParents:M(l),callbacks:I.callbacks,head:I.head,scripts:I.scripts}}function C(l){let f=Object.assign({},o);return Object.assign(f,l),f.callbacks=Object.assign({},o.callbacks,l.callbacks),f.head=Object.assign({},o.head,l.head),f.scripts=Object.assign({},o.scripts,l.scripts),f}function T(){let l=document.createElement("div");return l.hidden=!0,document.body.insertAdjacentElement("afterend",l),l}function M(l){let f=[],b=document.activeElement;if(b?.tagName!=="BODY"&&l.contains(b))for(;b&&(f.push(b),b!==l);)b=b.parentElement;return f}function R(l){let f=Array.from(l.querySelectorAll("[id]"));return l.getAttribute?.("id")&&f.push(l),f}function E(l,f,b,h){for(let S of h){let x=S.getAttribute("id");if(f.has(x)){let k=S;for(;k;){let I=l.get(k);if(I==null&&(I=new Set,l.set(k,I)),I.add(x),k===b)break;k=k.parentElement}}}}function m(l,f){let b=R(l),h=R(f),S=A(b,h),x=new Map;E(x,S,l,b);let k=f.__hyperMorphRoot||f;return E(x,S,k,h),{persistentIds:S,idMap:x}}function A(l,f){let b=new Set,h=new Map;for(let{id:x,tagName:k}of l)h.has(x)?b.add(x):h.set(x,k);let S=new Set;for(let{id:x,tagName:k}of f)S.has(x)?b.add(x):h.get(x)===k&&S.add(x);for(let x of b)S.delete(x);return S}return g})(),{normalizeElement:v,normalizeParent:O}=(function(){let g=new WeakSet;function C(E){return E instanceof Document?E.documentElement:E}function T(E){if(E==null)return document.createElement("div");if(typeof E=="string")return T(R(E));if(g.has(E))return E;if(E instanceof Node){if(E.parentNode)return new M(E);{let m=document.createElement("div");return m.append(E),m}}else{let m=document.createElement("div");for(let A of[...E])m.append(A);return m}}class M{constructor(m){this.originalNode=m,this.realParentNode=m.parentNode,this.previousSibling=m.previousSibling,this.nextSibling=m.nextSibling}get childNodes(){let m=[],A=this.previousSibling?this.previousSibling.nextSibling:this.realParentNode.firstChild;for(;A&&A!=this.nextSibling;)m.push(A),A=A.nextSibling;return m}querySelectorAll(m){return this.childNodes.reduce((A,l)=>{if(l instanceof Element){l.matches(m)&&A.push(l);let f=l.querySelectorAll(m);for(let b=0;b<f.length;b++)A.push(f[b])}return A},[])}insertBefore(m,A){return this.realParentNode.insertBefore(m,A)}moveBefore(m,A){return this.realParentNode.moveBefore(m,A)}get __hyperMorphRoot(){return this.originalNode}}function R(E){let m=new DOMParser,A=E.replace(/<svg(\s[^>]*>|>)([\s\S]*?)<\/svg>/gim,"");if(A.match(/<\/html>/)||A.match(/<\/head>/)||A.match(/<\/body>/)){let l=m.parseFromString(E,"text/html");if(A.match(/<\/html>/))return g.add(l),l;{let f=l.firstChild;return f&&g.add(f),f}}else{let f=m.parseFromString("<body><template>"+E+"</template></body>","text/html").body.querySelector("template").content;return g.add(f),f}}return{normalizeElement:C,normalizeParent:T}})();return{morph:s,defaults:o}})();var Vo=Ze.morph,Ko=Ze.defaults,Je=Ze;var Xr=null;function Ee(){return Xr}function Me(e,t){let r={carriedOver:0,discarded:0,listItems:0},o=Xe(t,e,r);return Qe(t,e,r),{data:o,summary:r}}function Xe(e,t,r){if(typeof e=="string")return e.endsWith("[]")?Array.isArray(t)?(r.listItems+=t.length,r.carriedOver+=t.length,t):void 0:t==null?void 0:(r.carriedOver++,t);if(Array.isArray(e)){let[,o]=e;return Array.isArray(t)?(r.listItems+=t.length,t.map(n=>Xe(o,n,r))):void 0}if(typeof e=="object"&&e!==null){let o={};for(let[n,s]of Object.entries(e)){let a=Xe(s,t?.[n],r);a!==void 0&&(o[n]=a)}return o}}function Qe(e,t,r){if(t!=null){if(typeof e=="object"&&e!==null&&!Array.isArray(e)){if(typeof t!="object"||Array.isArray(t))return;let o=new Set(Object.keys(e));for(let n of Object.keys(t))o.has(n)?Qe(e[n],t[n],r):r.discarded+=we(t[n]);return}if(Array.isArray(e)&&Array.isArray(t)){let o=e[1];t.forEach(n=>Qe(o,n,r));return}typeof e=="string"&&!e.endsWith("[]")&&typeof t=="object"&&t!==null&&(r.discarded+=we(t))}}function we(e){return e==null?0:Array.isArray(e)?e.reduce((t,r)=>t+we(r),0):typeof e=="object"?Object.values(e).reduce((t,r)=>t+we(r),0):1}function Qr(e){return e&&e.nodeType===1&&e.tagName==="SCRIPT"&&e.hasAttribute&&e.hasAttribute("data-rules-name")}function en(e){return e?(e.nodeType===9||e.nodeType===11,e):null}var tn={find(e,t,r={}){let o=en(e);if(!o||!o.querySelectorAll)return[];let n=Array.from(o.querySelectorAll(t));r.includeRulesTag||(n=n.filter(a=>!Qr(a)));let s=[];if(r.skip&&s.push(r.skip),r.templateAttr&&s.push("["+r.templateAttr+"]"),s.length){let a=s.join(", ");n=n.filter(i=>!i.closest||!i.closest(a))}return n},parent(e){return e?e.parentElement:null},children(e){return e?Array.from(e.children):[]},text(e,t){if(t===void 0)return(e.textContent||"").trim();e.textContent=t},attr(e,t,r){if(r===void 0)return e.hasAttribute&&e.hasAttribute(t)?e.getAttribute(t):null;e.setAttribute(t,r)},removeAttr(e,t){e&&e.removeAttribute&&e.removeAttribute(t)},prop(e,t,r){if(r===void 0){let o=e?e[t]:void 0;return o!==void 0?o:null}e[t]=r},clone(e){return e.cloneNode(!0)},insertAt(e,t,r){let o=e.children[r]||null;e.insertBefore(t,o)},remove(e){e&&e.parentNode&&e.parentNode.removeChild(e)},replaceWith(e,t){if(!e||!e.parentNode)throw new Error("dom.replaceWith: node has no parent");let o=e.ownerDocument.createElement("template");o.innerHTML=t;let n=o.content.firstElementChild;if(!n)throw new Error("dom.replaceWith: html did not parse to an element");return e.parentNode.replaceChild(n,e),n},stripIds(e){let t=0;return e.id&&(e.removeAttribute("id"),t++),(e.querySelectorAll?e.querySelectorAll("[id]"):[]).forEach(o=>{o.removeAttribute("id"),t++}),t},sameNode(e,t){return e===t}},U=tn;var rn="_hyperHtmlApi",nn="upgrade-helper",on="parentOrigin";function rt(e=typeof location<"u"?location:null){if(!e)return!1;try{return new URLSearchParams(e.search).get(rn)===nn}catch{return!1}}function Ft(e=typeof location<"u"?location:null){return e?new URLSearchParams(e.search).get(on):null}function nt({win:e,doc:t,parentOrigin:r}={}){if(e=e||(typeof window<"u"?window:null),t=t||(typeof document<"u"?document:null),!e||!t||(r=r||Ft(e.location),!r))return;let o=()=>sn({win:e,doc:t,parentOrigin:r});t.readyState==="loading"?t.addEventListener("DOMContentLoaded",o,{once:!0}):o()}function sn({win:e,doc:t,parentOrigin:r}){let o;try{o=Y(U,t.body)}catch(c){return et(e,r,c)}if(!o)return et(e,r,new Error("helper-mode: no rules tag in v2 document"));let n=o.rules,s=cn(t,"hyper-version"),a=!!Ee(),i=c=>{if(c.source!==e.parent||c.origin!==r)return;let d=c.data;if(!(!d||d.type!=="hha:upgrade-data")){e.removeEventListener("message",i);try{let u=an({doc:t,rules:n,v1Data:d.v1Data});e.parent.postMessage({type:"hha:upgrade-result",html:u.html,summary:u.summary},r)}catch(u){et(e,r,u)}}};e.addEventListener("message",i),e.parent.postMessage({type:"hha:upgrade-ready",rules:n,version:s,hasTransform:a},r)}function an({doc:e,rules:t,v1Data:r}){let o=Ee(),n=r,s=!1;o&&(n=o(r),s=!0);let{data:a,summary:i}=Me(n,t);G(U,e.body,t,a);let c=B(U,e.body,t);return{html:`<!DOCTYPE html>
-`+e.documentElement.outerHTML,summary:{...i,transformApplied:s,appliedFieldCount:tt(c)}}}function et(e,t,r){e.parent.postMessage({type:"hha:upgrade-error",name:r?.name||"Error",message:r?.message||String(r)},t)}function cn(e,t){let r=e.querySelector(`meta[name="${t}"]`);return r?r.getAttribute("content"):null}function tt(e){return e==null?0:Array.isArray(e)?e.reduce((t,r)=>t+tt(r),0):typeof e=="object"?Object.values(e).reduce((t,r)=>t+tt(r),0):1}var q={extract:(e,t,r)=>B(U,e,t,r),apply:(e,t,r,o)=>G(U,e,t,r,o),findRulesIn:(e,t)=>Y(U,e,t),findRules:(e,t)=>Ge(U,e,t),bind:(e,t,r)=>Ct(U,e,t,r),parseStrict:ze,parseRelaxed:me,errors:ve,DOM_PROPERTIES:Se};typeof window<"u"&&rt(window.location)&&nt({win:window,doc:document});var st={};De(st,{fromString:()=>V,getRuleAtPath:()=>pe,getValueAtPath:()=>hn,setAtPath:()=>ot,toString:()=>fn});function fn(e){return e.map(String).join(".")}function V(e){return e===""?[]:e.split(".").map(t=>/^\d+$/.test(t)?Number(t):t)}function pe(e,t){let r=e;for(let o of t){if(r==null)return;if(typeof r=="string"){if(r.endsWith("[]")&&(typeof o=="number"||o==="*")){r=r.slice(0,-2);continue}return}if(Array.isArray(r)){if(typeof o!="number"&&o!=="*")return;r=r[1];continue}if(typeof r=="object"){if(typeof o=="number"||!(o in r))return;r=r[o];continue}return}return r}function hn(e,t){let r=e;for(let o of t){if(r==null)return;r=r[o]}return r}function ot(e,t,r){if(t.length===0)return r;let[o,...n]=t;if(typeof o=="number"){let s=Array.isArray(e)?[...e]:[];return s[o]=ot(s[o],n,r),s}return{...e&&typeof e=="object"?e:{},[o]:ot((e||{})[o],n,r)}}function ye(e){if(typeof e=="string")return e.endsWith("[]")?[]:"";if(Array.isArray(e))return[];if(typeof e=="object"&&e!==null){let t={};for(let[r,o]of Object.entries(e))t[r]=ye(o);return t}return""}function Te(e,t,{ignoreActiveValue:r=!0}={}){Je.morph(e,t,{morphStyle:"innerHTML",ignoreActiveValue:r,restoreFocus:!0,formStateSync:"property"})}function qt(e){return e.replace(/([a-z])([A-Z])/g,"$1 $2").replace(/([A-Z]+)([A-Z][a-z])/g,"$1 $2").replace(/[-_]/g," ").replace(/\s+/g," ").trim().replace(/^./,t=>t.toUpperCase())}var Pt={"@scalar":`
+var hypercms=(()=>{var Ye=Object.defineProperty;var Lr=Object.getOwnPropertyDescriptor;var jr=Object.getOwnPropertyNames;var Nr=Object.prototype.hasOwnProperty;var Je=(e,t)=>{for(var r in t)Ye(e,r,{get:t[r],enumerable:!0})},Ir=(e,t,r,n)=>{if(t&&typeof t=="object"||typeof t=="function")for(let i of jr(t))!Nr.call(e,i)&&i!==r&&Ye(e,i,{get:()=>t[i],enumerable:!(n=Lr(t,i))||n.enumerable});return e};var Fr=e=>Ir(Ye({},"__esModule",{value:!0}),e);var Di={};Je(Di,{cms:()=>qi,default:()=>$i});var Se=["textContent","innerText","innerHTML","outerHTML","value","checked","selected","disabled","readOnly","type","tagName","nodeName","nodeType","nodeValue","childElementCount","id","className","classList","baseURI","offsetWidth","offsetHeight","clientWidth","clientHeight","scrollWidth","scrollHeight","dataset","currentSrc","duration","paused","title","documentURI","contentType"],Xe=new Set(Se),Ot=new Set(["textContent","innerText","innerHTML","value","checked","selected","disabled","readOnly","type","id","className","title"]),Lt=new Set(["tagName","nodeName","nodeType","nodeValue","childElementCount","classList","baseURI","documentURI","contentType","offsetWidth","offsetHeight","clientWidth","clientHeight","scrollWidth","scrollHeight","currentSrc","duration","paused","dataset"]);var Ee={};Je(Ee,{EmptyListInsert:()=>he,MAX_RULE_DEPTH:()=>ne,MaxRuleDepthExceeded:()=>G,RuleTargetReadOnly:()=>fe,RulesParseError:()=>re,ShapeMismatch:()=>me,UnknownRulesVersion:()=>de,UpgradeAlreadyRegistered:()=>_e});var re=class extends Error{constructor(t,r){super(t),this.name="RulesParseError",this.cause=r}},de=class extends Error{constructor(t){super(`unknown rules version: ${t}. Library supports "1".`),this.name="UnknownRulesVersion",this.version=t}},ne=20,G=class extends Error{constructor(t){super(`rule depth exceeded ${ne} at path: ${t.join(".")}`),this.name="MaxRuleDepthExceeded",this.path=t}},me=class extends Error{constructor(t){super(`shape mismatch: ${t.length} field(s) failed validation`),this.name="ShapeMismatch",this.mismatches=t}},he=class extends Error{constructor(t){super(`cannot add items to empty list at "${t.join(".")}" \u2014 no sibling to clone as template. Seed the list with a hidden item first.`),this.name="EmptyListInsert",this.path=t}},fe=class extends Error{constructor(t){super(`cannot write to read-only DOM property "${t}"`),this.name="RuleTargetReadOnly",this.target=t}},_e=class extends Error{constructor(){super("upgrade transform already registered; only one registration is allowed per page."),this.name="UpgradeAlreadyRegistered"}};function z(e,t,r,n={}){return Ze(e,t,r,{depth:0,path:[]},n)}function Ze(e,t,r,n,i){if(n.depth>ne)throw new G(n.path);if(typeof r=="string")return qr(e,t,r,i);if(Array.isArray(r)){let[o,a]=r;return e.find(t,o,i).map((l,u)=>Ze(e,l,a,{depth:n.depth+1,path:[...n.path,u]},i))}if(typeof r=="object"&&r!==null){let o={};for(let[a,s]of Object.entries(r))o[a]=Ze(e,t,s,{depth:n.depth+1,path:[...n.path,a]},i);return o}return null}function qr(e,t,r,n){if(r.endsWith("[]")){let o=r.slice(0,-2);return e.find(t,o,n).map(a=>e.text(a))}if(r.startsWith("@"))return jt(e,t,r.slice(1));if(r.includes("@")){let o=r.lastIndexOf("@"),a=r.slice(0,o),s=r.slice(o+1),l=a?e.find(t,a,n):[t];return l.length===0?null:jt(e,l[0],s)}if(r===".")return e.text(t);let i=e.find(t,r,n);return i.length===0?null:e.text(i[0])}function jt(e,t,r){if(Xe.has(r)){let i=e.prop(t,r);return i==null?null:String(i)}let n=e.attr(t,r);return n||null}var $r=.5;function Qe(e,t,r,n,i,o,a,s={}){let l=e.find(t,r,s);if(i.length===0){l.forEach(_=>e.remove(_));return}let u=i.length>l.length,c=l[0]||null;if(u&&!c&&(c=Br(e,t,r,s),!c))throw new he(o.path);let f=l.map(_=>Dr(e,_,n,s)),b=null;if(c){b=e.clone(c),s.templateAttr&&e.removeAttr(b,s.templateAttr);let _=e.stripIds(b);_>0&&console.warn(`[hyper-html-api] stripped ${_} id attribute(s) from cloned template at "${o.path.join(".")||"(root)"}"`)}let w=Pr(i,f,n),v=l[0]||c,T=e.parent(v),y=l.length>0?Ur(e,T,v):0,R=new Set,E=i.map((_,M)=>{let S=w[M];if(S>=0)return R.add(S),l[S];let p=e.clone(b);return e.stripIds(p),p});l.forEach((_,M)=>{R.has(M)||e.remove(_)}),E.forEach((_,M)=>{let S=y+M;e.children(T).findIndex(d=>e.sameNode(d,_))!==S&&e.insertAt(T,_,S)}),E.forEach((_,M)=>{if(n===null){let S=i[M],p=S==null?"":String(S);e.text(_)!==p&&e.text(_,p)}else{let S=a(e,_,n,i[M],{depth:o.depth+1,path:[...o.path,M]},s);S&&S!==_&&(E[M]=S)}})}function Dr(e,t,r,n){return r===null?e.text(t):z(e,t,r,n)}function Pr(e,t,r){let n=new Array(e.length).fill(-1),i=new Set;return e.forEach((o,a)=>{let s=-1,l=-1;t.forEach((u,c)=>{if(i.has(c))return;let f=Hr(o,u,r),b=f===l&&s>=0?Math.abs(c-a)<Math.abs(s-a):!1;(f>l||b)&&(l=f,s=c)}),l>=$r&&(n[a]=s,i.add(s))}),n}function Hr(e,t,r){if(r===null)return e===t?1:0;let n=Object.keys(r||{});if(n.length===0)return 0;let i=0;for(let o of n)JSON.stringify(e?.[o])===JSON.stringify(t?.[o])&&i++;return i/n.length}function Ur(e,t,r){let n=e.children(t);for(let i=0;i<n.length;i++)if(e.sameNode(n[i],r))return i;return-1}function Br(e,t,r,n){if(!n.templateAttr)return null;let i=t;for(;i;){let o=e.find(i,r,{includeRulesTag:!1});for(let a of o)if(e.attr(a,n.templateAttr)!=null)return a;i=e.parent(i)}return null}var Nt=new Set(["checked","selected","disabled","readOnly","paused"]);function Y(e,t,r,n,i={}){let o=[];if(et(r,n,[],o),o.length)throw new me(o);Me(e,t,r,n,{depth:0,path:[]},i)}function Me(e,t,r,n,i,o={}){if(i.depth>ne)throw new G(i.path);if(n===void 0)return t;if(typeof r=="string")return zr(e,t,r,n,i,o);if(Array.isArray(r)){let[a,s]=r;return Qe(e,t,a,s,n,i,Me,o),t}if(typeof r=="object"&&r!==null){for(let[a,s]of Object.entries(r)){let l=Me(e,t,s,n==null?n:n[a],{depth:i.depth+1,path:[...i.path,a]},o);l&&l!==t&&(t=l)}return t}return t}function zr(e,t,r,n,i,o){if(r.endsWith("[]")){let s=r.slice(0,-2);return Qe(e,t,s,null,n,i,Me,o),t}if(r.startsWith("@"))return It(e,t,r.slice(1),n);if(r.includes("@")){let s=r.lastIndexOf("@"),l=r.slice(0,s),u=r.slice(s+1),c=l?e.find(t,l,o):[t];return c.length===0||It(e,c[0],u,n),t}if(r===".")return e.text(t,n==null?"":String(n)),t;let a=e.find(t,r,o);return a.length===0||e.text(a[0],n==null?"":String(n)),t}function It(e,t,r,n){if(Lt.has(r))throw new fe(r);if(r==="outerHTML"){let i=n==null?"":String(n);return e.replaceWith(t,i)}return Ot.has(r)?(e.prop(t,r,Wr(r,n)),t):(e.attr(t,r,n==null?"":String(n)),t)}function Wr(e,t){return t==null?Nt.has(e)?!1:"":Nt.has(e)?!!t:t}function et(e,t,r,n){if(t!==void 0){if(typeof e=="string"){if(e.endsWith("[]")){Array.isArray(t)?t.forEach((i,o)=>{typeof i=="object"&&i!==null&&n.push({path:be([...r,o]),expected:"scalar",got:pe(i)})}):n.push({path:be(r),expected:"array",got:pe(t)});return}t!==null&&typeof t=="object"&&n.push({path:be(r),expected:"scalar",got:pe(t)});return}if(Array.isArray(e)){if(!Array.isArray(t)){n.push({path:be(r),expected:"array",got:pe(t)});return}let i=e[1];t.forEach((o,a)=>et(i,o,[...r,a],n));return}if(typeof e=="object"&&e!==null){if(t===null||Array.isArray(t)||typeof t!="object"){n.push({path:be(r),expected:"object",got:pe(t)});return}for(let[i,o]of Object.entries(e))et(o,t[i],[...r,i],n)}}}function pe(e){return e===null?"null":Array.isArray(e)?"array":typeof e}function be(e){return e.join(".")}function tt(e){try{return JSON.parse(e)}catch(t){throw new re(`Invalid strict JSON: ${t.message}`,t)}}function ge(e){try{return JSON.parse(e)}catch{}let t={BRACE_OPEN:"{",BRACE_CLOSE:"}",BRACKET_OPEN:"[",BRACKET_CLOSE:"]",COLON:":",COMMA:",",STRING:"STRING",SELECTOR:"SELECTOR",IDENTIFIER:"IDENTIFIER",NUMBER:"NUMBER",BOOLEAN:"BOOLEAN"};function r(i){let o=[],a=0;for(;a<i.length;){let s=i[a];if(/\s/.test(s)){a++;continue}if("{}".includes(s)){o.push({type:s,value:s}),a++;continue}if(s==="["){let f=!1,b=a+1;for(;b<i.length&&/\s/.test(i[b]);)b++;if(b<i.length&&/[a-zA-Z_]/.test(i[b])&&(f=!0),!f){o.push({type:s,value:s}),a++;continue}}if(s==="]"){o.push({type:s,value:s}),a++;continue}if(s===":"){o.push({type:t.COLON,value:s}),a++;continue}if(s===","){o.push({type:t.COMMA,value:s}),a++;continue}if(s==='"'||s==="'"){let f=s,b=a+1;for(;b<i.length&&i[b]!==f;)i[b]==="\\"&&b++,b++;o.push({type:t.STRING,value:i.substring(a+1,b),quoted:!0,sourceQuote:f}),a=b+1;continue}let l=a,u;for(;l<i.length&&!/[{},]/.test(i[l]);)if(i[l]===":"){let f=[":first",":last",":nth-child",":nth-of-type",":first-child",":last-child",":first-of-type",":last-of-type",":only-child",":only-of-type",":hover",":focus",":active",":visited",":disabled",":enabled",":checked",":empty",":root",":target",":not",":before",":after",":nth-last-child",":nth-last-of-type"],b=!1;for(let w of f){let v=w.substring(1);if(i.substring(l+1,l+1+v.length)===v){b=!0,l+=v.length;break}}if(!b)break}else if(i[l]==="["){for(l++;l<i.length&&i[l]!=="]";){if(i[l]==='"'||i[l]==="'"){let f=i[l];for(l++;l<i.length&&i[l]!==f;)i[l]==="\\"&&l++,l++}l++}l<i.length&&i[l]==="]"&&l++}else l++;u=i.substring(a,l);let c=t.IDENTIFIER;/^-?\d+(\.\d+)?$/.test(u)?c=t.NUMBER:u==="true"||u==="false"||u==="null"?c=t.BOOLEAN:/^[.#@\[]|[.#@\[]| /.test(u)&&(c=t.SELECTOR),o.push({type:c,value:u,quoted:!1}),a=l}return o}function n(i){let o="";for(let a=0;a<i.length;a++){let s=i[a];if("{}".includes(s.type)||"[]".includes(s.type)){o+=s.value;continue}if(s.type===t.COLON){o+=s.value;continue}if(s.type===t.COMMA){let l=i[a+1];if(l&&(l.type==="}"||l.type==="]"))continue;o+=s.value;continue}if(s.type===t.STRING&&s.quoted){let l=s.value;s.sourceQuote==="'"&&(l=l.replace(/\\'/g,"'"),l=l.replace(/(\\*)"/g,(u,c)=>c.length%2===0?c+'\\"':u)),o+=`"${l}"`;continue}if(s.type===t.NUMBER||s.type===t.BOOLEAN){o+=s.value;continue}if(s.type===t.SELECTOR||s.type===t.IDENTIFIER){o+=`"${s.value}"`;continue}o+=`"${s.value}"`}return o}try{let i=r(e),o=n(i);return JSON.parse(o)}catch(i){throw new re("Invalid extraction rules syntax: "+i.message,i)}}var Vr="1",Ft=/^[a-zA-Z0-9_-]+$/;function J(e,t,r){let n;if(r===void 0)n="script[data-rules-name]";else{if(typeof r!="string"||!Ft.test(r))throw new Error(`hyper-html-api: invalid rules token ${JSON.stringify(r)} (must match ${Ft})`);n=`script[data-rules-name~="${r}"]`}let i=e.find(t,n,{includeRulesTag:!0});if(i.length===0)return null;r!==void 0&&i.length>1&&console.warn(`hyper-html-api: ${i.length} rules tags match data-rules-name~="${r}"; using the first.`);let o=i[0],a=e.attr(o,"data-rules-version");if(a!==Vr)throw new de(a);return{rules:ge(e.text(o)),tagNode:o}}function rt(e,t,r){if(r&&typeof r=="object")return{rules:r,tagNode:null};if(typeof r=="string"){let n=t&&t.ownerDocument?t.ownerDocument:t;return J(e,n,r)}return null}function qt(e,t,r,n){let i=rt(e,t,r);if(!i){let s=typeof r=="string"?`data-rules-name~="${r}"`:"the provided rules object";throw new Error(`hyper-html-api: could not resolve rules for ${s}`)}let{rules:o,tagNode:a}=i;return{rules:o,tagNode:a,get:()=>z(e,t,o,n),set:s=>Y(e,t,o,s,n)}}var Pt={includeClasses:!0,includeAttributes:["href","src","name","type","role","aria-label","alt","title"],excludeAttributePrefixes:["data-morph-","data-hyper-","data-im-"],textHintLength:64,excludeIds:!0,maxPathDepth:4,landmarks:["HEADER","NAV","MAIN","ASIDE","FOOTER","SECTION","ARTICLE"],weights:{signature:100,pathSegment:10,textMatch:20,textMismatch:25,uniqueCandidate:50,positionPenalty:1,slotMatch:30},minConfidence:101};function Yr(e){let t=5381;for(let r=0;r<e.length;r++)t=(t<<5)+t^e.charCodeAt(r);return Math.abs(t).toString(36)}function Jr(e){if(e.classList&&e.classList.length>0)return Array.from(e.classList).sort().join(" ");let t=e.getAttribute?.("class");return t?t.split(/\s+/).filter(Boolean).sort().join(" "):""}function Xr(e,t){let r=[];for(let n of e.attributes||[]){let i=n.name;i==="id"||i==="class"||t.excludeAttributePrefixes.some(o=>i.startsWith(o))||t.includeAttributes.includes(i)&&r.push(`${i}=${n.value}`)}return r.sort().join("|")}function Zr(e,t){return(e.textContent||"").replace(/\s+/g," ").trim().slice(0,t.textHintLength)}function Qr(e,t){let r=[e.tagName];return t.includeClasses&&r.push(Jr(e)),r.push(Xr(e,t)),Yr(r.join("|"))}function en(e){let t=e.tagName,r=1,n=e.previousElementSibling;for(;n;)n.tagName===t&&r++,n=n.previousElementSibling;return r}function tn(e,t){return e.id||e.getAttribute?.("role")?!0:t.landmarks.includes(e.tagName)}function rn(e){if(e.id)return`#${e.id}`;let t=e.getAttribute?.("role");return t?`@${t}`:e.tagName}function nn(e,t){let r=[],n=e;for(;n&&n.tagName&&r.length<t.maxPathDepth;){let i=`${n.tagName}:${en(n)}`;if(r.unshift(i),n!==e&&tn(n,t)){r.unshift(rn(n));break}n=n.parentElement}return r}function on(e,t){let r=0,n=e.length-1,i=t.length-1;for(;n>=0&&i>=0&&e[n]===t[i];)r++,n--,i--;return r}function P(e,t,r){if(r.has(e))return r.get(e);let n={signature:Qr(e,t),path:nn(e,t),textHint:Zr(e,t)};return r.set(e,n),n}function zt(e,t,r,n){if(n.has(e))return n.get(e);let i=new Map,o=e.querySelectorAll("*"),a=0;for(let s of o){let l=P(s,t,r);l.domIndex=a++,i.has(l.signature)||i.set(l.signature,[]),i.get(l.signature).push(s)}return n.set(e,i),i}function sn(e,t,r){r.delete(e),t.delete(e);let n=e.querySelectorAll("*");for(let i of n)t.delete(i)}function nt(e,t,r,n,i){let o=P(e,r,n),a=P(t,r,n),s=r.weights,l={},u=0;if(o.signature!==a.signature)return{score:0,breakdown:{rejected:"signature mismatch"}};u+=s.signature,l.signature=s.signature;let f=on(o.path,a.path)*s.pathSegment;u+=f,l.path=f;let b=!0;if(o.textHint&&a.textHint?o.textHint===a.textHint?(u+=s.textMatch,l.text=s.textMatch):(u-=s.textMismatch,l.text=-s.textMismatch,b=!1):o.textHint!==a.textHint&&(u-=s.textMismatch,l.text=-s.textMismatch,b=!1),i.candidateCount===1&&b&&(u+=s.uniqueCandidate,l.unique=s.uniqueCandidate),typeof o.domIndex=="number"&&typeof a.domIndex=="number"){let w=Math.abs(o.domIndex-a.domIndex),v=Math.min(w*s.positionPenalty,20);u-=v,l.drift=-v}return{score:u,breakdown:l}}function Ht(e,t,r,n,i){if(r.excludeIds&&e.id)return null;let o=zt(t,r,n,i),a=P(e,r,n);if(typeof a.domIndex!="number"){let b=0,w=e.previousElementSibling;for(;w;)b++,w=w.previousElementSibling;a.domIndex=b}let s=o.get(a.signature)||[],l=r.excludeIds?s.filter(b=>!b.id):s;if(l.length===0)return null;let u=null,c=0,f=null;for(let b of l){let{score:w,breakdown:v}=nt(e,b,r,n,{candidateCount:l.length});w>c&&(c=w,u=b,f=v)}return c<r.minConfidence?null:{element:u,confidence:c,breakdown:f}}function an(e,t,r,n){let i=[],o=r.weights.signature+r.weights.slotMatch,a={slot:o};function s(f){if(f.children)return f.children;let b=f.childNodes;if(!b)return[];let w=[];for(let v=0;v<b.length;v++)b[v].nodeType===1&&w.push(b[v]);return w}function l(f,b){let w=s(f),v=s(b);if(w.length===v.length)for(let T=0;T<w.length;T++){let y=w[T],R=v[T];if(r.excludeIds&&(y.id||R.id)||y.tagName!==R.tagName)continue;let E=P(y,r,n).signature,_=P(R,r,n).signature;E!==_&&i.push({newEl:y,oldEl:R,score:o,breakdown:a}),l(y,R)}}function u(f,b){for(;;){if(f.tagName===b.tagName)return[f,b];let w=s(f);if(!f.tagName&&w.length===1){f=w[0];continue}let v=s(b);if(v.length===1&&v[0].tagName===f.tagName){b=v[0];continue}return null}}let c=u(e,t);return c&&l(c[0],c[1]),i}function Ut(e,t,r,n,i){let o=t.querySelectorAll("*"),a=zt(e,r,n,i),s=0;for(let f of o){let b=P(f,r,n);b.domIndex=s++}let l=[];for(let f of o){if(r.excludeIds&&f.id)continue;let b=P(f,r,n),w=a.get(b.signature)||[],v=r.excludeIds?w.filter(T=>!T.id):w;for(let T of v){let{score:y,breakdown:R}=nt(f,T,r,n,{candidateCount:v.length});y>=r.minConfidence&&l.push({newEl:f,oldEl:T,score:y,breakdown:R})}}if(r.weights.slotMatch>0){let f=an(t,e,r,n);for(let b of f)l.push(b)}l.sort((f,b)=>b.score-f.score);let u=new Map,c=new Set;for(let{newEl:f,oldEl:b}of l)u.has(f)||c.has(b)||(u.set(f,b),c.add(b));return u}function Bt(e,t,r,n){let i=P(e,r,n),o=P(t,r,n),{score:a,breakdown:s}=nt(e,t,r,n,{candidateCount:1});return{matches:a>=r.minConfidence,score:a,breakdown:s,newMeta:{signature:i.signature,path:i.path,textHint:i.textHint},oldMeta:{signature:o.signature,path:o.path,textHint:o.textHint}}}function Wt(e={}){let t={...Pt,...e,weights:{...Pt.weights,...e.weights}},r=new WeakMap,n=new WeakMap;return{findMatch:(i,o)=>Ht(i,o,t,r,n),computeMatches:(i,o)=>Ut(i,o,t,r,n),explain:(i,o)=>Bt(i,o,t,r),invalidate:i=>sn(i,r,n),session:()=>{let i=new WeakMap,o=new WeakMap;return{findMatch:(a,s)=>Ht(a,s,t,i,o),computeMatches:(a,s)=>Ut(a,s,t,i,o),explain:(a,s)=>Bt(a,s,t,i)}},getConfig:()=>({...t})}}var ln=Wt(),it=(function(){"use strict";let e=()=>{};function t(y){if(!(y instanceof Element))return!1;if(y.hasAttribute("save-ignore"))return!0;if(y.tagName==="LINK"||y.tagName==="SCRIPT"){let R=y.getAttribute("src")||y.getAttribute("href")||"";if(R.startsWith("chrome-extension://")||R.startsWith("moz-extension://")||R.startsWith("safari-web-extension://"))return!0}return!1}function r(y,R){if(R!=="smart")return y.outerHTML;let E=y.getAttribute("src"),_=y.getAttribute("type")||"text/javascript";if(E)try{let M=new URL(E,window.location.href);return`ext:${_}:${M.origin}${M.pathname}${M.search}`}catch{return`ext:${_}:${E}`}else{let M=y.textContent.trim(),S=5381;for(let p=0;p<M.length;p++)S=(S<<5)+S^M.charCodeAt(p);return`inline:${_}:${Math.abs(S).toString(36)}`}}let n={morphStyle:"outerHTML",callbacks:{beforeNodeAdded:e,afterNodeAdded:e,beforeNodeMorphed:e,afterNodeMorphed:e,beforeNodeRemoved:e,afterNodeRemoved:e,beforeAttributeUpdated:e},head:{style:"merge",shouldPreserve:y=>y.getAttribute("im-preserve")==="true",shouldReAppend:y=>y.getAttribute("im-re-append")==="true",shouldRemove:e,afterHeadMorphed:e},scripts:{handle:!1,matchMode:"outerHTML",shouldPreserve:y=>y.getAttribute("im-preserve")==="true",shouldReAppend:y=>y.getAttribute("im-re-append")==="true",shouldRemove:e,afterScriptsHandled:e},restoreFocus:!0},i={computeMatches(y,R){let{computeMatches:E}=ln.session();return E(y,R)}};function o(y,R,E={}){y=v(y);let _=T(R),M=w(y,_,E),S=M.scripts.matchMode,p=new Set(Array.from(y.querySelectorAll("script")).map(m=>r(m,S))),x=s(M,()=>c(M,y,_,m=>m.morphStyle==="innerHTML"?(l(m,y,_),Array.from(y.childNodes)):a(m,y,_)));M.pantry.remove();let d=b(y,p,M);return d.length>0?x instanceof Promise?x.then(m=>Promise.all(d).then(()=>m)):Promise.all(d).then(()=>x):x}function a(y,R,E){let _=T(R);return l(y,_,E,R,R.nextSibling),Array.from(_.childNodes)}function s(y,R){if(!y.config.restoreFocus)return R();let E=document.activeElement;if(!(E instanceof HTMLInputElement||E instanceof HTMLTextAreaElement))return R();let{id:_,selectionStart:M,selectionEnd:S}=E,p=R();return _&&_!==document.activeElement?.getAttribute("id")&&(E=y.target.querySelector(`[id="${_}"]`),E?.focus()),E&&!E.selectionEnd&&S!=null&&E.setSelectionRange(M,S),p}let l=(function(){function y(d,m,g,h=null,k=null){m instanceof HTMLTemplateElement&&g instanceof HTMLTemplateElement&&(m=m.content,g=g.content),h||=m.firstChild;for(let A of g.childNodes){if(t(A))continue;if(h&&h!=k){let O=E(d,A,h,k);if(O){O!==h&&M(d,h,O),u(O,A,d),h=O.nextSibling;continue}}if(A instanceof Element){let O=A.getAttribute("id");if(d.persistentIds.has(O)){let j=S(m,O,h,d);u(j,A,d),h=j.nextSibling;continue}if(!d.idMap.has(A)){let j=d.hyperMatches.get(A);if(j&&!d.idMap.has(j)){x(m,j,h),u(j,A,d),h=j.nextSibling;continue}}}let C=R(m,A,h,d);C&&(h=C.nextSibling)}for(;h&&h!=k;){let A=h;h=h.nextSibling,t(A)||_(d,A)}}function R(d,m,g,h){if(h.callbacks.beforeNodeAdded(m)===!1)return null;if(h.idMap.has(m)){let k=document.createElement(m.tagName);return d.insertBefore(k,g),u(k,m,h),h.callbacks.afterNodeAdded(k),k}else{let k=document.importNode(m,!0);return d.insertBefore(k,g),h.callbacks.afterNodeAdded(k),k}}let E=(function(){function d(h,k,A,C){let O=k instanceof Element&&!h.idMap.has(k)?h.hyperMatches.get(k):null,j=null,D=k.nextSibling,ue=0,N=A;for(;N&&N!=C;){if(g(N,k)){if(m(h,N,k)||N===O&&!h.idMap.has(N))return N;if(j===null){let ee=N instanceof Element&&h.hyperMatchedOldElements.has(N);!h.idMap.has(N)&&!ee&&(j=N)}}if(j===null&&D&&g(N,D)&&(ue++,D=D.nextSibling,ue>=2&&(j=void 0)),h.activeElementAndParents.includes(N))break;N=N.nextSibling}return j||null}function m(h,k,A){let C=h.idMap.get(k),O=h.idMap.get(A);if(!O||!C)return!1;for(let j of C)if(O.has(j))return!0;return!1}function g(h,k){let A=h,C=k;return A.nodeType===C.nodeType&&A.tagName===C.tagName&&(!A.getAttribute?.("id")||A.getAttribute?.("id")===C.getAttribute?.("id"))}return d})();function _(d,m){let g=m instanceof Element&&d.hyperMatchedOldElements.has(m)&&!d.idMap.has(m);if(d.idMap.has(m)||g)x(d.pantry,m,null);else{if(d.callbacks.beforeNodeRemoved(m)===!1)return;m.parentNode?.removeChild(m),d.callbacks.afterNodeRemoved(m)}}function M(d,m,g){let h=m;for(;h&&h!==g;){let k=h;h=h.nextSibling,t(k)||_(d,k)}return h}function S(d,m,g,h){let k=h.target.getAttribute?.("id")===m&&h.target||h.target.querySelector(`[id="${m}"]`)||h.pantry.querySelector(`[id="${m}"]`);return p(k,h),x(d,k,g),k}function p(d,m){let g=d.getAttribute("id");for(;d=d.parentNode;){let h=m.idMap.get(d);h&&(h.delete(g),h.size||m.idMap.delete(d))}}function x(d,m,g){if(d.moveBefore)try{d.moveBefore(m,g)}catch{d.insertBefore(m,g)}else d.insertBefore(m,g)}return y})(),u=(function(){function y(p,x,d){return d.ignoreActive&&p===document.activeElement?null:(d.callbacks.beforeNodeMorphed(p,x)===!1||(p instanceof HTMLHeadElement&&d.head.ignore||(p instanceof HTMLHeadElement&&d.head.style!=="morph"?f(p,x,d):(R(p,x,d),S(p,d)||l(d,p,x))),d.callbacks.afterNodeMorphed(p,x)),p)}function R(p,x,d){let m=x.nodeType;if(m===1){let g=p,h=x,k=g.attributes,A=h.attributes;for(let C of A)M(C.name,g,"update",d)||g.getAttribute(C.name)!==C.value&&g.setAttribute(C.name,C.value);for(let C=k.length-1;0<=C;C--){let O=k[C];if(O&&!h.hasAttribute(O.name)){if(M(O.name,g,"remove",d))continue;g.removeAttribute(O.name)}}S(g,d)||E(g,h,d)}(m===8||m===3)&&p.nodeValue!==x.nodeValue&&(p.nodeValue=x.nodeValue)}function E(p,x,d){if(p instanceof HTMLInputElement&&x instanceof HTMLInputElement&&x.type!=="file"){let m=x.value,g=p.value;_(p,x,"checked",d),_(p,x,"disabled",d),d.formStateSync==="property"?g!==m&&(M("value",p,"update",d)||(p.value=m)):x.hasAttribute("value")?g!==m&&(M("value",p,"update",d)||(p.setAttribute("value",m),p.value=m)):M("value",p,"remove",d)||(p.value="",p.removeAttribute("value"))}else if(p instanceof HTMLOptionElement&&x instanceof HTMLOptionElement)_(p,x,"selected",d);else if(p instanceof HTMLTextAreaElement&&x instanceof HTMLTextAreaElement){let m=x.value,g=p.value;if(M("value",p,"update",d))return;m!==g&&(p.value=m),p.firstChild&&p.firstChild.nodeValue!==m&&(p.firstChild.nodeValue=m)}}function _(p,x,d,m){let g=x[d],h=p[d];if(g!==h){let k=M(d,p,"update",m);if(k||(p[d]=x[d]),m.formStateSync==="property")return;g?k||p.setAttribute(d,""):M(d,p,"remove",m)||p.removeAttribute(d)}}function M(p,x,d,m){return p==="value"&&m.ignoreActiveValue&&x===document.activeElement?!0:m.callbacks.beforeAttributeUpdated(p,x,d)===!1}function S(p,x){return!!x.ignoreActiveValue&&p===document.activeElement&&p!==document.body}return y})();function c(y,R,E,_){if(y.head.block){let M=R.querySelector("head"),S=E.querySelector("head");if(M&&S){let p=f(M,S,y);return Promise.all(p).then(()=>{let x=Object.assign(y,{head:{block:!1,ignore:!0}});return _(x)})}}return _(y)}function f(y,R,E){let _=[],M=[],S=[],p=[],x=E.scripts.matchMode,d=h=>{if(h.tagName==="SCRIPT")return r(h,x);if(h.tagName==="LINK"&&x==="smart"){let k=h.getAttribute("href");if(k)try{let A=new URL(k,window.location.href);return`link:${h.getAttribute("rel")||""}:${A.origin}${A.pathname}${A.search}`}catch{}}return h.outerHTML},m=new Map;for(let h of R.children)t(h)||m.set(d(h),h);for(let h of y.children){let k=d(h),A=m.has(k),C=E.head.shouldReAppend(h),O=E.head.shouldPreserve(h);A||O?C?M.push(h):(m.delete(k),S.push(h)):E.head.style==="append"?C&&(M.push(h),p.push(h)):E.head.shouldRemove(h)!==!1&&!t(h)&&M.push(h)}p.push(...m.values());let g=[];for(let h of p){let k=document.createRange().createContextualFragment(h.outerHTML).firstChild;if(E.callbacks.beforeNodeAdded(k)!==!1){if("href"in k&&k.href||"src"in k&&k.src){let A,C=new Promise(function(O){A=O});k.addEventListener("load",function(){A()}),g.push(C)}y.appendChild(k),E.callbacks.afterNodeAdded(k),_.push(k)}}for(let h of M)E.callbacks.beforeNodeRemoved(h)!==!1&&(y.removeChild(h),E.callbacks.afterNodeRemoved(h));return E.head.afterHeadMorphed(y,{added:_,kept:S,removed:M}),g}function b(y,R,E){if(!E.scripts.handle)return[];let _=[],M=[],S=[],p=[],x=E.scripts.matchMode,d=Array.from(y.querySelectorAll("script"));for(let g of d){let h=r(g,x),k=R.has(h),A=E.scripts.shouldPreserve(g),C=E.scripts.shouldReAppend(g);k||A?C?(M.push(g),p.push(g)):S.push(g):p.push(g)}for(let g of R){let h=d.some(k=>k.outerHTML===g)}let m=[];for(let g of p){if(E.callbacks.beforeNodeAdded(g)===!1)continue;let h=document.createRange().createContextualFragment(g.outerHTML).firstChild;if(h.src){let k,A=new Promise(function(C){k=C});h.addEventListener("load",function(){k()}),h.addEventListener("error",function(){k()}),m.push(A)}g.replaceWith(h),E.callbacks.afterNodeAdded(h),_.push(h)}return E.scripts.afterScriptsHandled(y,{added:_,kept:S,removed:M}),m}let w=(function(){function y(d,m,g){let{persistentIds:h,idMap:k}=p(d,m),A=i.computeMatches(d,m);if(typeof g.key=="function"){let D=new Map,ue=new Set,N=I=>{let F=g.key(I);F!=null&&(D.has(F)?ue.add(F):D.set(F,I))};d instanceof Element&&N(d);for(let I of d.querySelectorAll("*"))N(I);for(let I of ue)D.delete(I);let ee=new Map;for(let[I,F]of A)ee.set(F,I);let Ve=m.__hyperMorphRoot||m,Ae=new Map,Rt=new Set,Tt=I=>{let F=g.key(I);F!=null&&(Ae.has(F)?Rt.add(F):Ae.set(F,I))};Ve instanceof Element&&Tt(Ve);for(let I of Ve.querySelectorAll("*"))Tt(I);for(let I of Rt)Ae.delete(I);for(let[I,F]of Ae){let te=D.get(I);if(!te||te.tagName!==F.tagName)continue;let Ke=ee.get(te);Ke&&Ke!==F&&A.delete(Ke);let Ge=A.get(F);Ge&&Ge!==te&&ee.delete(Ge),A.set(F,te),ee.set(te,F)}}let C=new Set;for(let D of A.values())C.add(D);let O=R(g),j=O.morphStyle||"outerHTML";if(!["innerHTML","outerHTML"].includes(j))throw`Do not understand how to morph style ${j}`;return{target:d,newContent:m,config:O,morphStyle:j,ignoreActive:O.ignoreActive,ignoreActiveValue:O.ignoreActiveValue,restoreFocus:O.restoreFocus,formStateSync:O.formStateSync||"attribute",idMap:k,persistentIds:h,hyperMatches:A,hyperMatchedOldElements:C,pantry:E(),activeElementAndParents:_(d),callbacks:O.callbacks,head:O.head,scripts:O.scripts}}function R(d){let m=Object.assign({},n);return Object.assign(m,d),m.callbacks=Object.assign({},n.callbacks,d.callbacks),m.head=Object.assign({},n.head,d.head),m.scripts=Object.assign({},n.scripts,d.scripts),m}function E(){let d=document.createElement("div");return d.hidden=!0,document.body.insertAdjacentElement("afterend",d),d}function _(d){let m=[],g=document.activeElement;if(g?.tagName!=="BODY"&&d.contains(g))for(;g&&(m.push(g),g!==d);)g=g.parentElement;return m}function M(d){let m=Array.from(d.querySelectorAll("[id]"));return d.getAttribute?.("id")&&m.push(d),m}function S(d,m,g,h){for(let k of h){let A=k.getAttribute("id");if(m.has(A)){let C=k;for(;C;){let O=d.get(C);if(O==null&&(O=new Set,d.set(C,O)),O.add(A),C===g)break;C=C.parentElement}}}}function p(d,m){let g=M(d),h=M(m),k=x(g,h),A=new Map;S(A,k,d,g);let C=m.__hyperMorphRoot||m;return S(A,k,C,h),{persistentIds:k,idMap:A}}function x(d,m){let g=new Set,h=new Map;for(let{id:A,tagName:C}of d)h.has(A)?g.add(A):h.set(A,C);let k=new Set;for(let{id:A,tagName:C}of m)k.has(A)?g.add(A):h.get(A)===C&&k.add(A);for(let A of g)k.delete(A);return k}return y})(),{normalizeElement:v,normalizeParent:T}=(function(){let y=new WeakSet;function R(S){return S instanceof Document?S.documentElement:S}function E(S){if(S==null)return document.createElement("div");if(typeof S=="string")return E(M(S));if(y.has(S))return S;if(S instanceof Node){if(S.parentNode)return new _(S);{let p=document.createElement("div");return p.append(S),p}}else{let p=document.createElement("div");for(let x of[...S])p.append(x);return p}}class _{constructor(p){this.originalNode=p,this.realParentNode=p.parentNode,this.previousSibling=p.previousSibling,this.nextSibling=p.nextSibling}get childNodes(){let p=[],x=this.previousSibling?this.previousSibling.nextSibling:this.realParentNode.firstChild;for(;x&&x!=this.nextSibling;)p.push(x),x=x.nextSibling;return p}querySelectorAll(p){return this.childNodes.reduce((x,d)=>{if(d instanceof Element){d.matches(p)&&x.push(d);let m=d.querySelectorAll(p);for(let g=0;g<m.length;g++)x.push(m[g])}return x},[])}insertBefore(p,x){return this.realParentNode.insertBefore(p,x)}moveBefore(p,x){return this.realParentNode.moveBefore(p,x)}get __hyperMorphRoot(){return this.originalNode}}function M(S){let p=new DOMParser,x=S.replace(/<svg(\s[^>]*>|>)([\s\S]*?)<\/svg>/gim,"");if(x.match(/<\/html>/)||x.match(/<\/head>/)||x.match(/<\/body>/)){let d=p.parseFromString(S,"text/html");if(x.match(/<\/html>/))return y.add(d),d;{let m=d.firstChild;return m&&y.add(m),m}}else{let m=p.parseFromString("<body><template>"+S+"</template></body>","text/html").body.querySelector("template").content;return y.add(m),m}}return{normalizeElement:R,normalizeParent:E}})();return{morph:o,defaults:n}})();var _o=it.morph,Eo=it.defaults,ot=it;var hn=null;function Ce(){return hn}function Te(e,t){let r={carriedOver:0,discarded:0,listItems:0},n=st(t,e,r);return at(t,e,r),{data:n,summary:r}}function st(e,t,r){if(typeof e=="string")return e.endsWith("[]")?Array.isArray(t)?(r.listItems+=t.length,r.carriedOver+=t.length,t):void 0:t==null?void 0:(r.carriedOver++,t);if(Array.isArray(e)){let[,n]=e;return Array.isArray(t)?(r.listItems+=t.length,t.map(i=>st(n,i,r))):void 0}if(typeof e=="object"&&e!==null){let n={};for(let[i,o]of Object.entries(e)){let a=st(o,t?.[i],r);a!==void 0&&(n[i]=a)}return n}}function at(e,t,r){if(t!=null){if(typeof e=="object"&&e!==null&&!Array.isArray(e)){if(typeof t!="object"||Array.isArray(t))return;let n=new Set(Object.keys(e));for(let i of Object.keys(t))n.has(i)?at(e[i],t[i],r):r.discarded+=Re(t[i]);return}if(Array.isArray(e)&&Array.isArray(t)){let n=e[1];t.forEach(i=>at(n,i,r));return}typeof e=="string"&&!e.endsWith("[]")&&typeof t=="object"&&t!==null&&(r.discarded+=Re(t))}}function Re(e){return e==null?0:Array.isArray(e)?e.reduce((t,r)=>t+Re(r),0):typeof e=="object"?Object.values(e).reduce((t,r)=>t+Re(r),0):1}function fn(e){return e&&e.nodeType===1&&e.tagName==="SCRIPT"&&e.hasAttribute&&e.hasAttribute("data-rules-name")}function pn(e){return e?(e.nodeType===9||e.nodeType===11,e):null}var bn={find(e,t,r={}){let n=pn(e);if(!n||!n.querySelectorAll)return[];let i=Array.from(n.querySelectorAll(t));r.includeRulesTag||(i=i.filter(a=>!fn(a)));let o=[];if(r.skip&&o.push(r.skip),r.templateAttr&&o.push("["+r.templateAttr+"]"),o.length){let a=o.join(", ");i=i.filter(s=>!s.closest||!s.closest(a))}return i},parent(e){return e?e.parentElement:null},children(e){return e?Array.from(e.children):[]},text(e,t){if(t===void 0)return(e.textContent||"").trim();e.textContent=t},attr(e,t,r){if(r===void 0)return e.hasAttribute&&e.hasAttribute(t)?e.getAttribute(t):null;e.setAttribute(t,r)},removeAttr(e,t){e&&e.removeAttribute&&e.removeAttribute(t)},prop(e,t,r){if(r===void 0){let n=e?e[t]:void 0;return n!==void 0?n:null}e[t]=r},clone(e){return e.cloneNode(!0)},insertAt(e,t,r){let n=e.children[r]||null;e.insertBefore(t,n)},remove(e){e&&e.parentNode&&e.parentNode.removeChild(e)},replaceWith(e,t){if(!e||!e.parentNode)throw new Error("dom.replaceWith: node has no parent");let n=e.ownerDocument.createElement("template");n.innerHTML=t;let i=n.content.firstElementChild;if(!i)throw new Error("dom.replaceWith: html did not parse to an element");return e.parentNode.replaceChild(i,e),i},stripIds(e){let t=0;return e.id&&(e.removeAttribute("id"),t++),(e.querySelectorAll?e.querySelectorAll("[id]"):[]).forEach(n=>{n.removeAttribute("id"),t++}),t},sameNode(e,t){return e===t}},H=bn;var gn="_hyperHtmlApi",yn="upgrade-helper",kn="parentOrigin";function ut(e=typeof location<"u"?location:null){if(!e)return!1;try{return new URLSearchParams(e.search).get(gn)===yn}catch{return!1}}function Vt(e=typeof location<"u"?location:null){return e?new URLSearchParams(e.search).get(kn):null}function dt({win:e,doc:t,parentOrigin:r}={}){if(e=e||(typeof window<"u"?window:null),t=t||(typeof document<"u"?document:null),!e||!t||(r=r||Vt(e.location),!r))return;let n=()=>vn({win:e,doc:t,parentOrigin:r});t.readyState==="loading"?t.addEventListener("DOMContentLoaded",n,{once:!0}):n()}function vn({win:e,doc:t,parentOrigin:r}){let n;try{n=J(H,t.body)}catch(l){return lt(e,r,l)}if(!n)return lt(e,r,new Error("helper-mode: no rules tag in v2 document"));let i=n.rules,o=wn(t,"hyper-version"),a=!!Ce(),s=l=>{if(l.source!==e.parent||l.origin!==r)return;let u=l.data;if(!(!u||u.type!=="hha:upgrade-data")){e.removeEventListener("message",s);try{let c=xn({doc:t,rules:i,v1Data:u.v1Data});e.parent.postMessage({type:"hha:upgrade-result",html:c.html,summary:c.summary},r)}catch(c){lt(e,r,c)}}};e.addEventListener("message",s),e.parent.postMessage({type:"hha:upgrade-ready",rules:i,version:o,hasTransform:a},r)}function xn({doc:e,rules:t,v1Data:r}){let n=Ce(),i=r,o=!1;n&&(i=n(r),o=!0);let{data:a,summary:s}=Te(i,t);Y(H,e.body,t,a);let l=z(H,e.body,t);return{html:`<!DOCTYPE html>
+`+e.documentElement.outerHTML,summary:{...s,transformApplied:o,appliedFieldCount:ct(l)}}}function lt(e,t,r){e.parent.postMessage({type:"hha:upgrade-error",name:r?.name||"Error",message:r?.message||String(r)},t)}function wn(e,t){let r=e.querySelector(`meta[name="${t}"]`);return r?r.getAttribute("content"):null}function ct(e){return e==null?0:Array.isArray(e)?e.reduce((t,r)=>t+ct(r),0):typeof e=="object"?Object.values(e).reduce((t,r)=>t+ct(r),0):1}var q={extract:(e,t,r)=>z(H,e,t,r),apply:(e,t,r,n)=>Y(H,e,t,r,n),findRulesIn:(e,t)=>J(H,e,t),findRules:(e,t)=>rt(H,e,t),bind:(e,t,r)=>qt(H,e,t,r),parseStrict:tt,parseRelaxed:ge,errors:Ee,DOM_PROPERTIES:Se};typeof window<"u"&&ut(window.location)&&dt({win:window,doc:document});var ht={};Je(ht,{fromString:()=>W,getRuleAtPath:()=>X,getValueAtPath:()=>Mn,setAtPath:()=>mt,toString:()=>En});function En(e){return e.map(String).join(".")}function W(e){return e===""?[]:e.split(".").map(t=>/^\d+$/.test(t)?Number(t):t)}function X(e,t){let r=e;for(let n of t){if(r==null)return;if(typeof r=="string"){if(r.endsWith("[]")&&(typeof n=="number"||n==="*")){r=r.slice(0,-2);continue}return}if(Array.isArray(r)){if(typeof n!="number"&&n!=="*")return;r=r[1];continue}if(typeof r=="object"){if(typeof n=="number"||!(n in r))return;r=r[n];continue}return}return r}function Mn(e,t){let r=e;for(let n of t){if(r==null)return;r=r[n]}return r}function mt(e,t,r){if(t.length===0)return r;let[n,...i]=t;if(typeof n=="number"){let o=Array.isArray(e)?[...e]:[];return o[n]=mt(o[n],i,r),o}return{...e&&typeof e=="object"?e:{},[n]:mt((e||{})[n],i,r)}}function ye(e){if(typeof e=="string")return e.endsWith("[]")?[]:"";if(Array.isArray(e))return[];if(typeof e=="object"&&e!==null){let t={};for(let[r,n]of Object.entries(e))t[r]=ye(n);return t}return""}function Oe(e,t,{ignoreActiveValue:r=!0}={}){ot.morph(e,t,{morphStyle:"innerHTML",ignoreActiveValue:r,restoreFocus:!0,formStateSync:"property"})}function Gt(e){return e.replace(/([a-z])([A-Z])/g,"$1 $2").replace(/([A-Z]+)([A-Z][a-z])/g,"$1 $2").replace(/[-_]/g," ").replace(/\s+/g," ").trim().replace(/^./,t=>t.toUpperCase())}var Cn='<div class="hcms-drag-handle mirk-sortable__grip" aria-hidden="true"><div class="mirk-sortable__dots"><span class="mirk-sortable__dot"></span><span class="mirk-sortable__dot"></span><span class="mirk-sortable__dot"></span><span class="mirk-sortable__dot"></span><span class="mirk-sortable__dot"></span><span class="mirk-sortable__dot"></span><span class="mirk-sortable__dot"></span><span class="mirk-sortable__dot"></span></div></div>',ft='<svg class="hcms-x" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path d="M4 4 L12 12 M12 4 L4 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"></path></svg>',Yt={"@scalar":`
     <label class="hcms-field" data-hcms-shape="scalar">
       <span class="hcms-label" data-hcms-label></span>
-      <input class="hcms-input" data-hcms-field />
+      <input class="mirk-input" data-hcms-field />
       <div class="hcms-error" hidden></div>
     </label>
   `,"@object":`
@@ -18,319 +18,1140 @@ var hypercms=(()=>{var Ue=Object.defineProperty;var br=Object.getOwnPropertyDesc
       </header>
       <ul class="hcms-array-items"></ul>
       <div class="hcms-error" hidden></div>
-      <button type="button" class="hcms-add" data-hcms-action="add">+ Add</button>
+      <button type="button" class="hcms-add mirk-button mirk-button--small" data-hcms-action="add"><span class="mirk-button__label">+ Add</span></button>
     </section>
   `,"@scalar-array-item":`
     <li class="hcms-array-item" draggable="true">
-      <span class="hcms-drag-handle" aria-hidden="true">::</span>
-      <input class="hcms-input" data-hcms-field />
+      <input class="mirk-input" data-hcms-field />
       <button type="button" class="hcms-move hcms-move-up hcms-sr-only" data-hcms-action="move-up" aria-label="Move up">\u2191</button>
       <button type="button" class="hcms-move hcms-move-down hcms-sr-only" data-hcms-action="move-down" aria-label="Move down">\u2193</button>
-      <button type="button" class="hcms-remove" data-hcms-action="remove" aria-label="Remove">x</button>
+      <button type="button" class="hcms-remove" data-hcms-action="remove" aria-label="Remove">\xD7</button>
       <div class="hcms-error" hidden></div>
     </li>
   `,"@object-array":`
-    <section class="hcms-array hcms-object-array" data-hcms-shape="object-array">
+    <section class="hcms-array hcms-object-array hcms-array--cards" data-hcms-shape="object-array">
       <header class="hcms-array-header">
         <h3 class="hcms-array-title" data-hcms-label></h3>
       </header>
       <div class="hcms-array-items"></div>
       <div class="hcms-error" hidden></div>
-      <button type="button" class="hcms-add" data-hcms-action="add">+ Add</button>
+      <button type="button" class="hcms-add mirk-button mirk-button--small" data-hcms-action="add"><span class="mirk-button__label">+ Add</span></button>
     </section>
   `,"@object-array-item":`
-    <article class="hcms-card" draggable="true">
-      <header class="hcms-card-header">
-        <span class="hcms-drag-handle" aria-hidden="true">::</span>
-        <button type="button" class="hcms-move hcms-move-up hcms-sr-only" data-hcms-action="move-up" aria-label="Move up">\u2191</button>
-        <button type="button" class="hcms-move hcms-move-down hcms-sr-only" data-hcms-action="move-down" aria-label="Move down">\u2193</button>
-        <button type="button" class="hcms-remove" data-hcms-action="remove" aria-label="Remove">x</button>
-      </header>
-      <div class="hcms-card-fields"></div>
+    <article class="hcms-card mirk-sortable__item" draggable="true">
+      ${Cn}
+      <div class="hcms-card-body mirk-sortable__body">
+        <div class="hcms-card-fields"></div>
+        <div class="hcms-card-controls">
+          <button type="button" class="hcms-move hcms-move-up hcms-sr-only" data-hcms-action="move-up" aria-label="Move up">\u2191</button>
+          <button type="button" class="hcms-move hcms-move-down hcms-sr-only" data-hcms-action="move-down" aria-label="Move down">\u2193</button>
+          <button type="button" class="hcms-remove hcms-remove--card" data-hcms-action="remove" aria-label="Remove">${ft}</button>
+        </div>
+      </div>
       <div class="hcms-error" hidden></div>
     </article>
-  `},mn=Object.keys(Pt);function Re(e){let t=e.head||e.documentElement;if(t)for(let r of mn){if(D(e,r))continue;let o=e.createElement("template");o.setAttribute("data-hcms-tpl",r),o.setAttribute("save-remove",""),o.innerHTML=Pt[r].trim(),t.appendChild(o)}}function D(e,t){return!e||!e.querySelector?null:e.querySelector(`template[data-hcms-tpl="${pn(t)}"]`)}function pn(e){return typeof CSS<"u"&&CSS.escape?CSS.escape(e):String(e).replace(/[^a-zA-Z0-9_\-.*]/g,t=>"\\"+t)}function te(e){return typeof e=="string"?e.endsWith("[]")?"scalar-array":"scalar":Array.isArray(e)?"object-array":typeof e=="object"&&e!==null?"object":"scalar"}function ge(e){return e?!!(e.content||e).querySelector("[data-hcms-field]"):!1}var _t={IMG:"src",A:"href"};function Ce(e){if(!e)return"value";let t=(e.tagName||"").toUpperCase();return t==="INPUT"?(e.getAttribute("type")||"text").toLowerCase()==="checkbox"?"checked":"value":t==="TEXTAREA"||t==="SELECT"?"value":_t[t]?_t[t]:null}function Ut(e,t){let r=(e.tagName||"").toUpperCase(),o=(e.getAttribute&&e.getAttribute("type")||"").toLowerCase(),n=Ce(e),a=`${Bt(r,o)}[data-hcms-field="${re(t)}"]`;return r==="INPUT"&&o==="radio"?`${a}:checked@value`:n?`${a}@${n}`:a}function yn(e){let t=(e.tagName||"").toUpperCase(),r=(e.getAttribute&&e.getAttribute("type")||"").toLowerCase(),o=Ce(e),s=`${Bt(t,r)}[data-hcms-field]`;return t==="INPUT"&&r==="radio"?`${s}:checked@value`:o?`${s}@${o}`:s}function Bt(e,t){return e==="INPUT"?t?`input[type="${t}"]`:"input":e==="TEXTAREA"?"textarea":e==="SELECT"?"select":e==="IMG"?"img":e==="A"?"a":':not([data-hcms-shape="scalar"]):not([data-hcms-shape="object"]):not([data-hcms-shape="object-array"]):not([data-hcms-shape="scalar-array"])'}function re(e){return typeof CSS<"u"&&CSS.escape?CSS.escape(e):String(e).replace(/[^a-zA-Z0-9_\-.*]/g,t=>"\\"+t)}var Dt=new Set(["__proto__","constructor","prototype"]);function ke(e,t){return r(e,[]);function r(d,u){let p=te(d);if(p==="scalar")return o(d,u);if(p==="scalar-array")return n(u);if(p==="object-array")return s(d,u);if(p==="object"){let y=Object.create(null);for(let[w,v]of Object.entries(d)){if(Dt.has(w))throw new Error(`hypercms: rule key "${w}" is forbidden at "${u.join(".")||"<root>"}"`);y[w]=r(v,[...u,w])}return y}return null}function o(d,u){let p=u.length?u[u.length-1]:null,y=typeof p=="string"?p:"__value",w=c(u,y);if(w)return Ut(w,y);let v=i("@scalar",y);return v?Ut(v,y):`input[data-hcms-field="${re(y)}"]@value`}function n(d){let u=i("@scalar-array-item",null),p=u?yn(u):"input[data-hcms-field]@value";return[a(d,"[data-hcms-array-item]"),p]}function s(d,u){let[,p]=d,y=[...u,"*"],w=a(u,"[data-hcms-card]");if(p&&typeof p=="object"&&!Array.isArray(p)){let v=Object.create(null);for(let[O,g]of Object.entries(p)){if(Dt.has(O))throw new Error(`hypercms: rule key "${O}" is forbidden at "${y.join(".")}"`);v[O]=r(g,[...y,O])}return[w,v]}return[w,r(p,[...y,0])]}function a(d,u){let p=d.length?d[d.length-1]:"",y=d.some(O=>O==="*"),w=d.join(".");return`${y?`[data-hcms-field="${re(p)}"]`:`[data-hcms-path="${re(w)}"]`} > .hcms-array-items > ${u}`}function i(d,u){if(!t)return null;let p=D(t,d);if(!p)return null;let y=p.content||p;if(u){let w=y.querySelector(`[data-hcms-field="${re(u)}"]`);if(w)return w}return y.querySelector("[data-hcms-field]")}function c(d,u){if(!t)return null;let p=d.map(v=>typeof v=="number"?"*":v).join("."),w=[d.join("."),p];for(let v=d.length-1;v>=0;v--){let O=d.slice(0,v).map(g=>typeof g=="number"?"*":g);O.push("*"),w.push(O.join("."))}for(let v of w){if(!v)continue;let O=D(t,v);if(!O||!ge(O))continue;let g=O.content||O,C=g.querySelector(`[data-hcms-field="${re(u)}"]`)||g.querySelector("[data-hcms-field]");if(C)return C}return null}}function Ie({pageRules:e,formRules:t,data:r,doc:o}){let n=o.createDocumentFragment(),s=it(e,[],r,o);return s&&n.appendChild(s),n}function Vt({shape:e,itemShape:t,pathArr:r,data:o,doc:n}){if(e==="object-array-item")return Kt(t,r,o,n);if(e==="scalar-array-item")return zt(r,o,n);throw new Error(`hypercms: buildItem called with unknown shape "${e}"`)}function it(e,t,r,o){let n=te(e);return n==="scalar"?gn(t,r,o):n==="object"?bn(e,t,r,o):n==="object-array"?Sn(e,t,r,o):n==="scalar-array"?An(e,t,r,o):null}function gn(e,t,r){let o=Oe(e,"@scalar",r);if(!o)throw new Error(`hypercms: missing template for scalar at "${e.join(".")}"`);let n=ne(o,r);return oe(n,e),vn(n,W(e)),je(n,W(e)),Ne(n,W(e)),Xt(n,t),n}function bn(e,t,r,o){let n=Oe(t,"@object",o);if(!n)throw new Error(`hypercms: missing template for object at "${t.join(".")}"`);let s=ne(n,o);if(oe(s,t),je(s,W(t)),Ne(s,W(t)),ge(n))return er(s,e,t),Qt(s,e,r),s;let a=Le(s,".hcms-object-fields",n,t);for(let[i,c]of Object.entries(e)){let d=r==null?null:r[i],u=it(c,[...t,i],d,o);u&&a.appendChild(u)}return s}function Sn(e,t,r,o){let n=Oe(t,"@object-array",o);if(!n)throw new Error(`hypercms: missing template for object-array at "${t.join(".")}"`);let s=ne(n,o);oe(s,t),je(s,W(t)),Ne(s,W(t)),Yt(s,n),Jt(s,n,t);let a=Le(s,".hcms-array-items",n,t),[,i]=e;return(Array.isArray(r)?r:[]).forEach((d,u)=>{let p=Kt(i,[...t,u],d,o);p&&a.appendChild(p)}),Zt(s),s}function Kt(e,t,r,o){let n=Gt(t,"object-array-item",o);if(!n)throw new Error(`hypercms: missing item template for "${t.join(".")}"`);let s=ne(n,o);if(s.setAttribute("data-hcms-card",""),s.classList.contains("hcms-card")||s.classList.add("hcms-card"),oe(s,t),ge(n))return e&&typeof e=="object"&&!Array.isArray(e)&&(er(s,e,t),Qt(s,e,r)),s;let a=Le(s,".hcms-card-fields",n,t);if(e&&typeof e=="object"&&!Array.isArray(e))for(let[i,c]of Object.entries(e)){let d=r==null?null:r[i],u=it(c,[...t,i],d,o);u&&a.appendChild(u)}return s}function An(e,t,r,o){let n=Oe(t,"@scalar-array",o);if(!n)throw new Error(`hypercms: missing template for scalar-array at "${t.join(".")}"`);let s=ne(n,o);oe(s,t),je(s,W(t)),Ne(s,W(t)),Yt(s,n),Jt(s,n,t);let a=Le(s,".hcms-array-items",n,t);return(Array.isArray(r)?r:[]).forEach((c,d)=>{let u=zt([...t,d],c,o);u&&a.appendChild(u)}),Zt(s),s}function zt(e,t,r){let o=Gt(e,"scalar-array-item",r);if(!o)throw new Error(`hypercms: missing item template for "${e.join(".")}"`);let n=ne(o,r);return n.setAttribute("data-hcms-array-item",""),n.classList.contains("hcms-array-item")||n.classList.add("hcms-array-item"),oe(n,e),Xt(n,t),n}function Oe(e,t,r){let o=e.join("."),n=e.map(s=>typeof s=="number"?"*":s).join(".");return o&&D(r,o)||n&&n!==o&&D(r,n)||D(r,t)}function Gt(e,t,r){let o=e.map(n=>typeof n=="number"?"*":n).join(".");return D(r,o)||D(r,"@"+t)}function ne(e,t){let r=e.content||e,o=t.createElement("div");return o.appendChild(r.cloneNode(!0)),o.firstElementChild||o}function oe(e,t){e.setAttribute("data-hcms-path",t.join("."))}function vn(e,t){let r=t==null?"":String(t);if(e.matches&&e.matches("[data-hcms-field]")){e.getAttribute("data-hcms-field")||e.setAttribute("data-hcms-field",r);return}(e.querySelectorAll?e.querySelectorAll("[data-hcms-field]"):[]).forEach(n=>{n.getAttribute("data-hcms-field")||n.setAttribute("data-hcms-field",r)})}function je(e,t){t==null||t===""||!e.setAttribute||e.hasAttribute?.("data-hcms-field")||e.setAttribute("data-hcms-field",String(t))}function Ne(e,t){if(t==null||t==="")return;(e.querySelectorAll?e.querySelectorAll("[data-hcms-label]"):[]).forEach(o=>{(o.textContent||"").trim()===""&&(o.textContent=qt(String(t)))})}function Yt(e,t){["data-hcms-no-add","data-hcms-no-remove","data-hcms-no-reorder"].forEach(r=>{t.hasAttribute(r)&&e.setAttribute(r,"")}),["data-hcms-min-items","data-hcms-max-items"].forEach(r=>{t.hasAttribute(r)&&e.setAttribute(r,t.getAttribute(r))})}function Zt(e){let t=e.querySelector?e.querySelector(".hcms-array-items"):null;if(!t)return;let r=Array.from(t.querySelectorAll(":scope > [data-hcms-card], :scope > [data-hcms-array-item]")),o=r.length,n=Wt(e,"data-hcms-max-items"),s=Wt(e,"data-hcms-min-items"),a=e.hasAttribute("data-hcms-no-add"),i=e.hasAttribute("data-hcms-no-remove"),c=e.hasAttribute("data-hcms-no-reorder"),d=e.querySelector('[data-hcms-action="add"]');d&&(d.hidden=a||n!=null&&o>=n),r.forEach((u,p)=>{let y=u.querySelector('[data-hcms-action="remove"]');y&&(y.hidden=i||s!=null&&o<=s);let w=u.querySelector('[data-hcms-action="move-up"]');w&&(w.hidden=c||p===0);let v=u.querySelector('[data-hcms-action="move-down"]');v&&(v.hidden=c||p===o-1)})}function Wt(e,t){if(!e||!e.hasAttribute(t))return null;let r=parseInt(e.getAttribute(t),10);return Number.isFinite(r)?r:null}function Jt(e,t,r){if(e.hasAttribute("data-hcms-no-reorder")||t.hasAttribute("data-hcms-no-reorder"))return;let o=e.querySelector(".hcms-array-items");if(!o)return;let n="hcms-"+r.join(".");o.setAttribute("sortable",n),o.setAttribute("onsorted","hypercmsCommit && hypercmsCommit()")}function W(e){return e.length?e[e.length-1]:null}function Xt(e,t){let r=xn(e);if(r.length!==0)for(let o of r)tr(o,t)}function xn(e){if(!e)return[];let t=[];return e.matches?.("[data-hcms-field]")&&En(e)&&t.push(e),(e.querySelectorAll?e.querySelectorAll("input[data-hcms-field], textarea[data-hcms-field], select[data-hcms-field], img[data-hcms-field], a[data-hcms-field], [contenteditable][data-hcms-field]"):[]).forEach(o=>t.push(o)),t}function En(e){let t=(e.tagName||"").toUpperCase();return!!(t==="INPUT"||t==="TEXTAREA"||t==="SELECT"||t==="IMG"||t==="A"||e.hasAttribute?.("contenteditable"))}function Qt(e,t,r){(e.querySelectorAll?e.querySelectorAll("[data-hcms-field]"):[]).forEach(n=>{let s=n.getAttribute("data-hcms-field");if(!s)return;if(!t||typeof t!="object"||!(s in t)){console.warn(`[hypercms] inline template field "${s}" is not in the rule shape; ignoring`);return}let a=r==null?null:r[s];tr(n,a)})}function er(e,t,r){if(!e.querySelectorAll)return;e.querySelectorAll("[data-hcms-field]").forEach(n=>{let s=n.getAttribute("data-hcms-field");if(!s||t&&typeof t=="object"&&!(s in t))return;let a=[...r,s].join(".");n.setAttribute("data-hcms-path",a)})}function Le(e,t,r,o){if(!e.querySelector)return e;let n=e.querySelector(t);if(n)return n;let s=r?.getAttribute?.("data-hcms-tpl")||o.join(".");throw new Error(`hypercms: template "${s}" is in slotted mode but has no ${t} element`)}function tr(e,t){let r=Ce(e),o=(e.tagName||"").toUpperCase(),n=(e.getAttribute("type")||"").toLowerCase();if(o==="INPUT"&&n==="radio"){e.checked=e.value!=null&&String(e.value)===String(t??"");return}if(r==="checked"){e.checked=t===!0||t==="true";return}if(r){e[r]=t==null?"":String(t);return}e.textContent=t==null?"":String(t)}var rr={skip:"[data-hcms-shell]",templateAttr:"cms-template"};function nr(e,t,r,o={}){let{observerHandle:n,shellRoot:s,structural:a,structuralPath:i}=o;n?.pause?.();try{if(!a)try{return q.apply(e,t,r,rr),{ok:!0}}catch(p){return{ok:!1,error:p}}let c=wn(e,t,i),d=c?Tn(c):null,u=c?null:Cn(e,s);try{return q.apply(e,t,r,rr),{ok:!0}}catch(p){return d?Rn(c,d):u&&kn(e,s,u),{ok:!1,error:p}}}finally{n?.resume?.()}}function wn(e,t,r){if(!r||!e)return null;let o=V(r),n=[],s=t;for(let a of o){if(typeof s=="string"||s==null||Array.isArray(s))break;if(typeof s=="object"&&a in s){if(n.push(a),s=s[a],Array.isArray(s)||typeof s=="string"&&s.endsWith("[]"))break}else return null}return!Array.isArray(s)&&!(typeof s=="string"&&s.endsWith("[]"))?null:Mn(e,t,n)}function Mn(e,t,r){if(r.length===0)return null;let o=e,n=t;for(let s=0;s<r.length;s++){let a=r[s];if(!n||typeof n!="object"||Array.isArray(n))return null;let i=n[a];if(i==null)return null;if(s===r.length-1){if(Array.isArray(i)){let[c]=i;return o.querySelector?.(c)?.parentElement||null}if(typeof i=="string"&&i.endsWith("[]")){let c=i.slice(0,-2);return o.querySelector?.(c)?.parentElement||null}return null}n=i}return null}function Tn(e){let t=[];for(let r of Array.from(e.childNodes))t.push(r.cloneNode(!0));return t}function Rn(e,t){for(;e.firstChild;)e.removeChild(e.firstChild);for(let r of t)e.appendChild(r)}function Cn(e,t){let r=[];for(let o of Array.from(e.childNodes))o===t||t&&o.contains?.(t)||r.push(o.cloneNode(!0));return r}function kn(e,t,r){for(let n of Array.from(e.childNodes))n===t||t&&n.contains?.(t)||e.removeChild(n);let o=In(e,t);for(let n of r)e.insertBefore(n,o||null)}function In(e,t){if(!t)return null;for(let r of Array.from(e.childNodes))if(r===t||r.contains?.(t))return r;return null}var at=new WeakSet;function se(e,t){let r=typeof window<"u"&&window.hyperclay&&window.hyperclay.undo||null;if(!r)return t();r.pause();try{let o=t();return o&&o.ok?r.commitCaptured(e):r.discardCaptured(),o}finally{r.resume()}}function ct(e){let t=typeof window<"u"&&window.hyperclay&&window.hyperclay.undo||null;if(!t)return e();t.pause();try{return e()}finally{t.discardCaptured(),t.resume()}}function ir(e){let{formRoot:t}=e;if(!t||at.has(t))return;at.add(t);let r=a=>{let i=a.target;!i||!i.closest||i.closest("[data-hcms-form-root]")&&i.matches("input, textarea, select")&&(!i.closest("[data-hcms-field]")&&!i.hasAttribute?.("data-hcms-field")||or(i,e))},o=a=>{let i=a.target;!i||!i.closest||i.closest("[data-hcms-form-root]")&&i.matches('input[type="checkbox"], input[type="radio"], select')&&or(i,e)},n=a=>{let i=a.target;if(!i||!i.closest)return;let c=i.closest("[data-hcms-action]");if(!c)return;let d=c.getAttribute("data-hcms-action");if(d==="add"||d==="remove"||d==="move-up"||d==="move-down"){if(!c.closest("[data-hcms-form-root]"))return}else if((d==="close"||d==="save")&&!c.closest("[data-hcms-shell]"))return;if(d==="add"){let u=c.closest("[data-hcms-path]");if(!u)return;let p=u.getAttribute("data-hcms-path");lt(p,e)}else if(d==="remove"){let u=c.closest("[data-hcms-card], [data-hcms-array-item]");if(!u)return;ut(u,e)}else if(d==="move-up"||d==="move-down"){let u=c.closest("[data-hcms-card], [data-hcms-array-item]");if(!u)return;On(u,d==="move-up"?-1:1,e)}else d==="close"?e.onCloseRequested?.():d==="save"&&jn(e)},s=t.ownerDocument;s.addEventListener("input",r,!0),s.addEventListener("change",o,!0),s.addEventListener("click",n,!0),e.detachEvents=()=>{s.removeEventListener("input",r,!0),s.removeEventListener("change",o,!0),s.removeEventListener("click",n,!0),at.delete(t)}}function or(e,t){let o=(e.closest("[data-hcms-field]")||e).closest("[data-hcms-path]")?.getAttribute("data-hcms-path")||"";K(P(t),{path:o,structural:!1},t)}function lt(e,t){let{formRoot:r,pageRules:o}=t,n=r.querySelector(`[data-hcms-path="${qn(e)}"]`);if(!n)throw new Error(`hypercms: no element at path "${e}"`);let s=n.querySelector(".hcms-array-items");if(!s)throw new Error(`hypercms: array container missing .hcms-array-items at "${e}"`);let a=V(e),i=Hn(o,a),c=Array.isArray(i),d=typeof i=="string"&&i.endsWith("[]");if(!c&&!d)throw new Error(`hypercms: path "${e}" is not an array`);let u=$e(n,"data-hcms-max-items"),p=s.querySelectorAll(":scope > [data-hcms-card], :scope > [data-hcms-array-item]");if(n.hasAttribute("data-hcms-no-add")||u!=null&&p.length>=u)return;let y=p.length,w=c?i[1]:i.replace(/\[\]$/,""),v=ye(c?w:"string"),O=Vt({shape:c?"object-array-item":"scalar-array-item",itemShape:w,pathArr:[...a,y],data:v,doc:t.doc});return s.appendChild(O),ft(n),se(`Add ${e}`,()=>K(P(t),{path:e,structural:!0},t))}function On(e,t,r){let o=e.closest('[data-hcms-shape="object-array"], [data-hcms-shape="scalar-array"]');if(!o||o.hasAttribute("data-hcms-no-reorder"))return;let n=o.querySelector(".hcms-array-items");if(!n)return;let s=Array.from(n.querySelectorAll(":scope > [data-hcms-card], :scope > [data-hcms-array-item]")),a=s.indexOf(e);if(a<0)return;let i=a+t;if(i<0||i>=s.length)return;let c=e.querySelector(`[data-hcms-action="${t<0?"move-up":"move-down"}"]`);return t<0?n.insertBefore(e,s[i]):n.insertBefore(e,s[i].nextSibling),mt(n),ft(o),c&&typeof c.focus=="function"&&e.querySelector(`[data-hcms-action="${t<0?"move-up":"move-down"}"]`)?.focus?.(),se(`Reorder ${o.getAttribute("data-hcms-path")||""}`,()=>K(P(r),{path:o.getAttribute("data-hcms-path")||"",structural:!0},r))}function ut(e,t){let r=e.getAttribute("data-hcms-path")||"",o=e.parentElement,n=e.closest('[data-hcms-shape="object-array"], [data-hcms-shape="scalar-array"]');if(!n?.hasAttribute("data-hcms-no-remove")){if(n){let s=$e(n,"data-hcms-min-items"),a=n.querySelector(".hcms-array-items"),i=a?a.querySelectorAll(":scope > [data-hcms-card], :scope > [data-hcms-array-item]").length:0;if(s!=null&&i<=s)return}return e.remove(),o&&mt(o),n&&ft(n),se(`Remove ${r}`,()=>K(P(t),{path:r,structural:!0},t))}}function jn(e){let t=P(e);e.dispatch?.("hcms:save",{data:t}),e.onSave?.(t)}function K(e,t,r){let o=pt(e);if(o===r.lastFingerprint)return{ok:!0,skipped:!0};let n=nr(r.pageRoot,r.pageRules,e,{observerHandle:r.observerHandle,shellRoot:r.shellRoot,structural:!!t.structural,structuralPath:t.path||null});return n.ok?(r.lastFingerprint=o,r.lastData=e,sr(r,null),r.dispatch?.("hcms:change",{data:e,path:t.path,structural:!!t.structural}),r.onChange?.(e,t)):(sr(r,$n(n.error,t.path)),r.dispatch?.("hcms:error",{error:n.error,attemptedData:e}),r.onError?.(n.error)),n}function P(e){let t=q.extract(e.formRoot,e.formRules);return Z(t,e.formRules)}function Z(e,t){if(t==null||e==null)return e;if(typeof t=="string")return t.endsWith("@checked")?e===!0||e==="true":e;if(Array.isArray(t)){if(!Array.isArray(e))return e;let[,r]=t;return e.map(o=>Z(o,r))}if(typeof t=="object"){if(typeof e!="object"||Array.isArray(e))return e;let r={};for(let[o,n]of Object.entries(t))r[o]=Z(e[o],n);return r}return e}function sr(e,t){e.lastErrors=t&&t.length?t:null,dt(e)}function dt(e){if(Nn(e),e.errorEl&&(e.errorEl.textContent="",e.errorEl.hidden=!0),!e.lastErrors)return;let t=[];for(let{message:r,path:o}of e.lastErrors){if(o!=null&&o!==""){let n=Ln(e.formRoot,o);if(n){n.textContent=n.textContent?`${n.textContent}
-${r}`:r,n.hidden=!1;continue}}t.push(r)}t.length&&e.errorEl&&(e.errorEl.textContent=t.join(`
-`),e.errorEl.hidden=!1)}function Nn(e){if(e.formRoot)for(let t of e.formRoot.querySelectorAll(".hcms-error"))t.textContent="",t.hidden=!0}function Ln(e,t){if(!e)return null;let r=t.split(".");for(;r.length>0;){let o=r.join("."),n=typeof CSS<"u"&&CSS.escape?CSS.escape(o):o.replace(/[^a-zA-Z0-9_\-.*]/g,a=>"\\"+a),s=e.querySelector(`[data-hcms-path="${n}"]`);if(s){for(let a of s.children)if(a.classList&&a.classList.contains("hcms-error"))return a}r.pop()}return null}function $n(e,t){return e?e.name==="EmptyListInsert"?[{message:"Add a seed item in HTML first.",path:t}]:e.name==="ShapeMismatch"&&Array.isArray(e.mismatches)&&e.mismatches.length?e.mismatches.map(r=>({message:`Shape mismatch: expected ${r.expected}, got ${r.got}`,path:r.path})):[{message:e.message||String(e),path:t}]:[{message:"unknown error",path:t}]}function Hn(e,t){let r=e;for(let o of t){if(r==null||typeof r=="string")return;if(Array.isArray(r)){if(typeof o!="number"&&o!=="*")return;r=r[1];continue}if(typeof r=="object"){if(typeof o=="number"||!(o in r))return;r=r[o];continue}return}return r}function $e(e,t){if(!e||!e.hasAttribute(t))return null;let r=parseInt(e.getAttribute(t),10);return Number.isFinite(r)?r:null}function ft(e){if(!e)return;let t=e.querySelector(".hcms-array-items");if(!t)return;let r=Array.from(t.querySelectorAll(":scope > [data-hcms-card], :scope > [data-hcms-array-item]")),o=r.length,n=$e(e,"data-hcms-max-items"),s=$e(e,"data-hcms-min-items"),a=e.hasAttribute("data-hcms-no-add"),i=e.hasAttribute("data-hcms-no-remove"),c=e.hasAttribute("data-hcms-no-reorder"),d=e.querySelector(':scope > .hcms-add, :scope > * > .hcms-add, :scope > [data-hcms-action="add"]');d&&(d.hidden=a||n!=null&&o>=n),r.forEach((u,p)=>{let y=u.querySelector('[data-hcms-action="remove"]');y&&(y.hidden=i||s!=null&&o<=s);let w=u.querySelector('[data-hcms-action="move-up"]');w&&(w.hidden=c||p===0);let v=u.querySelector('[data-hcms-action="move-down"]');v&&(v.hidden=c||p===o-1)})}function ht(e){!e||!e.querySelectorAll||e.querySelectorAll(".hcms-array-items").forEach(t=>mt(t))}function mt(e){let t=0;for(let r of e.children){if(!r.matches?.("[data-hcms-card], [data-hcms-array-item]"))continue;let o=r.getAttribute("data-hcms-path");if(!o)continue;let n=o.split(".");n[n.length-1]=String(t);let s=n.join(".");s!==o&&Fn(r,o,s),t++}}function Fn(e,t,r){let o=e.querySelectorAll("[data-hcms-path]");e.setAttribute("data-hcms-path",r);for(let n of o){let s=n.getAttribute("data-hcms-path");s===t?n.setAttribute("data-hcms-path",r):s&&s.startsWith(t+".")&&n.setAttribute("data-hcms-path",r+s.slice(t.length))}}function pt(e){return JSON.stringify(e,(t,r)=>{if(r&&typeof r=="object"&&!Array.isArray(r)){let o=Object.create(null);for(let n of Object.keys(r).sort())o[n]=r[n];return o}return r})}function qn(e){return typeof CSS<"u"&&CSS.escape?CSS.escape(e):String(e).replace(/[^a-zA-Z0-9_\-.*]/g,t=>"\\"+t)}var Wn={},He="hcms-shell-styles",Pn="hcms-bundled-styles-installed",_n='a[href], area[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',ie=new WeakSet,yt="";function ar(e){yt=e}var Un=0;function cr({mountTo:e,side:t="right",overlay:r=!1,showSaveButton:o=!1,doc:n}){lr(n);let s=`hcms-shell-title-${++Un}`,a=n.createElement("div");a.setAttribute("data-hcms-shell",""),a.setAttribute("save-remove",""),a.setAttribute("save-ignore",""),a.setAttribute("tabindex","-1"),a.setAttribute("role","dialog"),a.setAttribute("aria-modal","true"),a.setAttribute("aria-labelledby",s),a.className="hcms-shell hcms-side-"+t+(r?" hcms-overlay":""),a.innerHTML=`
-    <header class="hcms-shell-header">
-      <h2 class="hcms-shell-title" id="${s}">Edit</h2>
-      <button type="button" class="hcms-shell-close" data-hcms-action="close" aria-label="Close">\xD7</button>
-    </header>
-    <div class="hcms-shell-error" role="alert" hidden></div>
-    <div data-hcms-form-root class="hcms-form"></div>
-    <footer class="hcms-shell-footer"${o?"":" hidden"}>
-      <button type="button" class="hcms-shell-save" data-hcms-action="save">Save</button>
-    </footer>
-  `,(e||n.body).appendChild(a);let c=n.body;c.classList.add("hcms-open"),r&&c.classList.add("hcms-overlay"),t==="left"&&c.classList.add("hcms-side-left");let d=Bn(a,n);return{root:a,formRoot:a.querySelector("[data-hcms-form-root]"),errorEl:a.querySelector(".hcms-shell-error"),saveButton:a.querySelector(".hcms-shell-save"),destroy(){d.detach(),a.remove(),c.classList.remove("hcms-open","hcms-overlay","hcms-side-left")},restoreChrome(){Dn(n),c.classList.add("hcms-open"),r&&c.classList.add("hcms-overlay"),t==="left"&&c.classList.add("hcms-side-left")}}}function Dn(e){e&&(e.getElementById(He)||e.querySelector("style[data-hcms-bundled-styles]")||(ie.delete(e),lr(e)))}function lr(e){if(e&&!ie.has(e)){if(e[Pn]){ie.add(e);return}if(e.getElementById(He)||e.querySelector("style[data-hcms-bundled-styles]")){ie.add(e);return}if(yt){let t=e.createElement("style");t.id=He,t.setAttribute("save-remove",""),t.textContent=yt,(e.head||e.documentElement).appendChild(t),ie.add(e);return}try{let t=new URL("./styles.css",Wn.url).href,r=e.createElement("link");r.rel="stylesheet",r.id=He,r.setAttribute("save-remove",""),r.href=t,(e.head||e.documentElement).appendChild(r),ie.add(e)}catch{}}}function Bn(e,t){function r(o){if(o.key!=="Tab"||!e.contains(t.activeElement))return;let n=Array.from(e.querySelectorAll(_n));if(n.length===0)return;let s=n[0],a=n[n.length-1];o.shiftKey&&t.activeElement===s?(o.preventDefault(),a.focus()):!o.shiftKey&&t.activeElement===a&&(o.preventDefault(),s.focus())}return t.addEventListener("keydown",r),{detach:()=>t.removeEventListener("keydown",r)}}var Vn={skip:"[data-hcms-shell]",templateAttr:"cms-template"};function Fe(e,{ignoreActiveValue:t}={}){let r=q.findRules(e.doc,e.rulesSource||"cms");r&&(e.pageRules=r.rules,e.rulesTagNode=r.tagNode),Re(e.doc),e.formRules=ke(e.pageRules,e.doc);let o=Z(q.extract(e.pageRoot,e.pageRules,Vn),e.pageRules),n=Ie({pageRules:e.pageRules,formRules:e.formRules,data:o,doc:e.doc});Te(e.formRoot,n,{ignoreActiveValue:t}),dt(e),e.updateFingerprint&&e.updateFingerprint()}function ur({debounce:e=100,onRefresh:t}){let r=typeof window<"u"&&window.hyperclay&&window.hyperclay.Mutation||null;if(!r||typeof r.onAnyChange!="function")throw new Error("hypercms: window.hyperclay.Mutation is required. Load hyperclayjs (or just the mutation utility) before initializing hypercms.");let o=0,n=r.onAnyChange({debounce:e},()=>{o>0||t()});return{unsubscribe:typeof n=="function"?n:()=>{},pause(){o++},resume(){o=Math.max(0,o-1)}}}var Kn="[hypercms]";function dr(e,t){if(!e||!e.querySelectorAll||!t)return;let r=zn(t);e.querySelectorAll("template[data-hcms-tpl]").forEach(n=>{let s=n.getAttribute("data-hcms-tpl");s&&(s.startsWith("@")||r.has(s)||console.warn(`${Kn} template "${s}" doesn't match any rule path; ignored`))})}function zn(e){let t=new Set;return r([],e),t;function r(o,n){let s=o.join("."),a=o.map(c=>typeof c=="number"?"*":c).join(".");s&&t.add(s),a&&t.add(a);let i=te(n);if(i==="object")for(let[c,d]of Object.entries(n))r([...o,c],d);else if(i==="object-array"||i==="scalar-array"){let c=[...o,"*"],d=c.map(u=>typeof u=="number"?"*":u).join(".");if(t.add(d),i==="object-array"){let u=n[1];if(u&&typeof u=="object"&&!Array.isArray(u))for(let[p,y]of Object.entries(u))r([...c,p],y)}}}}function mr(e){ar(e)}var j={isOpen:!1,ctx:null,shell:null,opts:null};function fr(e,t){if(j.ctx!==e)return;let r=t==="livesync";t==="livesync"&&j.shell?.restoreChrome?.(),Fe(e,{ignoreActiveValue:r})}var hr=!1;function Gn(){if(hr)return;let e=typeof window<"u"&&window.hyperclay&&window.hyperclay.onPrepareForSave||null;typeof e=="function"&&(e(t=>{let r=t&&t.querySelector&&t.querySelector("body");r&&r.classList.remove("hcms-open","hcms-overlay","hcms-side-left")}),hr=!0)}function Yn(e={}){if(j.isOpen){console.warn("cms.open() called while already open; ignoring");return}Gn();let t=e.pageRoot||(typeof document<"u"?document.body:null);if(!t)throw new Error("hypercms: no pageRoot available");let r=t.ownerDocument||(typeof document<"u"?document:null);if(!r)throw new Error("hypercms: no document available");let o=e.rules!==void 0?e.rules:"cms",n=q.findRules(r,o);if(!n){let v=typeof o=="string"?`data-rules-name~="${o}"`:"the provided rules object";throw new Error(`hypercms: no rules found for ${v}`)}let s=n.rules,a=n.tagNode;Re(r),dr(r,s);let i=ke(s,r),c=Z(q.extract(t,s,{skip:"[data-hcms-shell]",templateAttr:"cms-template"}),s),d=ct(()=>cr({mountTo:e.mountTo||r.body,side:e.side||"right",overlay:!!e.overlay,showSaveButton:!!e.showSaveButton,doc:r})),u={doc:r,pageRoot:t,pageRules:s,formRules:i,rulesTagNode:a,rulesSource:o,formRoot:d.formRoot,shellRoot:d.root,errorEl:d.errorEl,lastFingerprint:null,lastData:null,observerHandle:null,undoUnsub:null,livesyncUnsub:null,onChange:e.onChange,onError:e.onError,onSave:e.onSave,previouslyFocused:r.activeElement,dispatch(v,O){let g=r.defaultView&&r.defaultView.CustomEvent||(typeof CustomEvent<"u"?CustomEvent:null);if(!g)return;let C=new g(v,{bubbles:!0,cancelable:v==="hcms:change"||v==="hcms:save",detail:O});d.root.dispatchEvent(C)},onCloseRequested(){pr()}};u.updateFingerprint=()=>{u.lastFingerprint=pt(P(u))};let p=Ie({pageRules:s,formRules:i,data:c,doc:r});d.formRoot.appendChild(p),ir(u),u.updateFingerprint(),u.observerHandle=ur({onRefresh:()=>Fe(u)});let y=typeof window<"u"&&window.hyperclay&&window.hyperclay.undo||null;if(y&&typeof y.on=="function"){let v=()=>fr(u,"undo");y.on("undo",v),y.on("redo",v),u.undoUnsub=()=>{y.off("undo",v),y.off("redo",v)}}let w=()=>fr(u,"livesync");r.addEventListener("hyperclay:livesync-applied",w),u.livesyncUnsub=()=>r.removeEventListener("hyperclay:livesync-applied",w),gt.ctx=u,Jn(r),Zn(d.root),j.isOpen=!0,j.ctx=u,j.shell=d,j.opts=e,u.dispatch("hcms:open",{pageRoot:t})}function Zn(e){let r=e.querySelector('input:not([disabled]):not([type="hidden"]), textarea:not([disabled]), select:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])');r&&typeof r.focus=="function"&&r.focus()}var gt={ctx:null};function Jn(e){let t=e.defaultView||(typeof globalThis<"u"?globalThis:null);if(!t)return;let r=function(){let n=gt.ctx;if(n)return ht(n.formRoot),se("Reorder",()=>K(P(n),{path:"",structural:!0},n))};typeof t.hypercmsCommit!="function"&&(t.hypercmsCommit=r),typeof globalThis<"u"&&typeof globalThis.hypercmsCommit!="function"&&(globalThis.hypercmsCommit=r)}function pr(){if(!j.isOpen)return;let{ctx:e,shell:t}=j,r=e.previouslyFocused;if(e.dispatch("hcms:close",null),e.observerHandle?.unsubscribe?.(),e.undoUnsub?.(),e.livesyncUnsub?.(),e.detachEvents?.(),ct(()=>t.destroy()),j.isOpen=!1,j.ctx=null,j.shell=null,j.opts=null,gt.ctx=null,r&&typeof r.focus=="function")try{r.focus()}catch{}}function yr(){j.isOpen&&Fe(j.ctx)}var Xn={getData(){return j.isOpen?P(j.ctx):null},setValue(e,t){if(!j.isOpen)throw new Error("hypercms: cms is not open");let r=j.ctx,o=V(e),n=pe(r.pageRules,o);if(n===void 0)throw new Error(`hypercms: no rule at path "${e}"`);if(typeof n!="string"||n.endsWith("[]"))throw new Error(`hypercms: setValue requires a leaf scalar path; "${e}" is not a leaf`);let s=Qn(r.formRoot,e);if(!s)throw new Error(`hypercms: no field element at path "${e}"`);eo(s,t,r.formRoot,e),K(P(r),{path:e,structural:!1},r)},addItem(e){if(!j.isOpen)throw new Error("hypercms: cms is not open");lt(e,j.ctx)},removeItem(e){if(!j.isOpen)throw new Error("hypercms: cms is not open");let t=j.ctx,r=V(e);if(typeof r[r.length-1]!="number")throw new Error(`hypercms: removeItem requires an item path; "${e}" is not an array index`);let n=pe(t.pageRules,r.slice(0,-1));if(!(Array.isArray(n)||typeof n=="string"&&n.endsWith("[]")))throw new Error(`hypercms: removeItem requires an item path; parent of "${e}" is not an array`);let a=t.formRoot.querySelector(`[data-hcms-path="${St(e)}"]`);if(!a)throw new Error(`hypercms: no element at path "${e}"`);ut(a,t)},refresh:yr,_commit(){if(!j.isOpen)return;let e=j.ctx;return ht(e.formRoot),se("Update",()=>K(P(e),{path:"",structural:!0},e))}};function Qn(e,t){let r=St(t),o=`[data-hcms-path="${r}"] input[data-hcms-field], [data-hcms-path="${r}"] textarea[data-hcms-field], [data-hcms-path="${r}"] select[data-hcms-field], [data-hcms-path="${r}"] img[data-hcms-field], [data-hcms-path="${r}"] a[data-hcms-field], [data-hcms-path="${r}"] [contenteditable][data-hcms-field], input[data-hcms-path="${r}"][data-hcms-field], textarea[data-hcms-path="${r}"][data-hcms-field], select[data-hcms-path="${r}"][data-hcms-field], img[data-hcms-path="${r}"][data-hcms-field], a[data-hcms-path="${r}"][data-hcms-field], [contenteditable][data-hcms-path="${r}"][data-hcms-field]`;return e.querySelector(o)}function eo(e,t,r,o){let n=(e.tagName||"").toUpperCase(),s=(e.getAttribute("type")||"").toLowerCase();if(n==="INPUT"&&s==="checkbox"){e.checked=t===!0||t==="true";return}if(n==="INPUT"&&s==="radio"){let a=St(o),i=r.querySelectorAll(`[data-hcms-path="${a}"][data-hcms-field][type="radio"], [data-hcms-path="${a}"] [data-hcms-field][type="radio"]`);i.length?i.forEach(c=>{c.checked=String(c.value)===String(t??"")}):e.checked=String(e.value)===String(t??"");return}if(n==="IMG"){e.src=t==null?"":String(t);return}if(n==="A"){e.href=t==null?"":String(t);return}if("value"in e){e.value=t==null?"":String(t);return}e.textContent=t==null?"":String(t)}var bt={open:Yn,close:pr,refresh:yr,api:Xn,get isOpen(){return j.isOpen},path:st,scaffold:ye,morphForm:Te};function St(e){return typeof CSS<"u"&&CSS.escape?CSS.escape(e):String(e).replace(/[^a-zA-Z0-9_\-.*]/g,t=>"\\"+t)}var gr=`.hcms-shell {
-  --hcms-primary: #2563eb;
-  --hcms-bg: #F6F7F9;
-  --hcms-text: #0f172a;
-  --hcms-muted: #64748b;
-  --hcms-border: #e2e8f0;
-  --hcms-error: #b91c1c;
-  --hcms-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-  font-family: var(--hcms-font-family);
-  font-size: 14px;
-  line-height: 1.45;
-  color: var(--hcms-text);
-  background: var(--hcms-bg);
+  `,"@file":`
+    <div class="hcms-field hcms-upload hcms-upload--file" data-hcms-shape="scalar">
+      <span class="hcms-label" data-hcms-label></span>
+      <div class="mirk-file mirk-file--compact mirk-file--round">
+        <label class="mirk-button mirk-button--round mirk-button--small">
+          <input type="file" data-hcms-upload />
+          <span class="mirk-button__label">Choose</span>
+        </label>
+        <a class="mirk-file__name" data-hcms-field></a>
+        <button type="button" class="hcms-upload-clear" data-hcms-action="clear-upload" aria-label="Remove file">${ft}</button>
+      </div>
+      <div class="hcms-error" hidden></div>
+    </div>
+  `,"@image":`
+    <div class="hcms-field hcms-upload hcms-upload--image" data-hcms-shape="scalar">
+      <span class="hcms-label" data-hcms-label></span>
+      <div class="mirk-image mirk-image--compact mirk-image--rounded">
+        <label class="mirk-button mirk-button--small mirk-image__upload">
+          <input type="file" accept="image/*" data-hcms-upload />
+          <span class="mirk-button__label">Upload image</span>
+        </label>
+        <figure class="mirk-image__thumb">
+          <span class="mirk-image__frame"><img class="mirk-image__preview" data-hcms-field alt="" /></span>
+          <button type="button" class="hcms-upload-clear hcms-upload-clear--badge" data-hcms-action="clear-upload" aria-label="Remove image">${ft}</button>
+        </figure>
+      </div>
+      <div class="hcms-error" hidden></div>
+    </div>
+  `},Rn=["@scalar","@object","@scalar-array","@scalar-array-item","@object-array","@object-array-item"];function Le(e){let t=e.head||e.documentElement;if(t)for(let r of Rn)Jt(e,t,r)}function Tn(e,t){if(!Yt[t])return null;let r=e&&(e.head||e.documentElement);return r?Jt(e,r,t):null}var Kt={src:"@image"},On=new Set(["@image","@file"]);function ke(e,t){if(typeof e!="string")return"@scalar";let r=e.lastIndexOf("@");if(r>=0){let i=e.slice(r+1);if(Kt[i])return Kt[i]}let n=Ln(e,r,t);return n==="image"?"@image":n==="file"?"@file":"@scalar"}function Ln(e,t,r){if(!r||!r.querySelector)return null;let n=t>=0?e.slice(0,t):e;if(!n||n===".")return null;let i=null;try{i=r.querySelector(n)}catch{return null}return i&&i.getAttribute?i.getAttribute("data-hcms-component"):null}function je(e,t){if(!e||t==null)return;r(t);function r(n){let i=Z(n);if(i==="scalar"){let o=ke(n,e);On.has(o)&&Tn(e,o);return}if(i==="object"){for(let o of Object.values(n))r(o);return}if(i==="object-array"){let o=n[1];if(o&&typeof o=="object"&&!Array.isArray(o))for(let a of Object.values(o))r(a);else r(o)}}}function Jt(e,t,r){let n=U(e,r);if(n)return n;let i=e.createElement("template");return i.setAttribute("data-hcms-tpl",r),i.setAttribute("save-remove",""),i.innerHTML=Yt[r].trim(),t.appendChild(i),i}function U(e,t){return!e||!e.querySelector?null:e.querySelector(`template[data-hcms-tpl="${jn(t)}"]`)}function jn(e){return typeof CSS<"u"&&CSS.escape?CSS.escape(e):String(e).replace(/[^a-zA-Z0-9_\-.*]/g,t=>"\\"+t)}function Z(e){return typeof e=="string"?e.endsWith("[]")?"scalar-array":"scalar":Array.isArray(e)?"object-array":typeof e=="object"&&e!==null?"object":"scalar"}function ve(e){return e?!!(e.content||e).querySelector("[data-hcms-field]"):!1}var Xt={IMG:"src",A:"href"};function Ne(e){if(!e)return"value";let t=(e.tagName||"").toUpperCase();return t==="INPUT"?(e.getAttribute("type")||"text").toLowerCase()==="checkbox"?"checked":"value":t==="TEXTAREA"||t==="SELECT"?"value":Xt[t]?Xt[t]:null}function Zt(e,t){let r=(e.tagName||"").toUpperCase(),n=(e.getAttribute&&e.getAttribute("type")||"").toLowerCase(),i=Ne(e),a=`${er(r,n)}[data-hcms-field="${ie(t)}"]`;return r==="INPUT"&&n==="radio"?`${a}:checked@value`:i?`${a}@${i}`:a}function Nn(e){let t=(e.tagName||"").toUpperCase(),r=(e.getAttribute&&e.getAttribute("type")||"").toLowerCase(),n=Ne(e),o=`${er(t,r)}[data-hcms-field]`;return t==="INPUT"&&r==="radio"?`${o}:checked@value`:n?`${o}@${n}`:o}function er(e,t){return e==="INPUT"?t?`input[type="${t}"]`:"input":e==="TEXTAREA"?"textarea":e==="SELECT"?"select":e==="IMG"?"img":e==="A"?"a":':not([data-hcms-shape="scalar"]):not([data-hcms-shape="object"]):not([data-hcms-shape="object-array"]):not([data-hcms-shape="scalar-array"])'}function ie(e){return typeof CSS<"u"&&CSS.escape?CSS.escape(e):String(e).replace(/[^a-zA-Z0-9_\-.*]/g,t=>"\\"+t)}var Qt=new Set(["__proto__","constructor","prototype"]);function Ie(e,t){return r(e,[]);function r(u,c){let f=Z(u);if(f==="scalar")return n(u,c);if(f==="scalar-array")return i(c);if(f==="object-array")return o(u,c);if(f==="object"){let b=Object.create(null);for(let[w,v]of Object.entries(u)){if(Qt.has(w))throw new Error(`hypercms: rule key "${w}" is forbidden at "${c.join(".")||"<root>"}"`);b[w]=r(v,[...c,w])}return b}return null}function n(u,c){let f=c.length?c[c.length-1]:null,b=typeof f=="string"?f:"__value",w=l(c,b);if(w)return Zt(w,b);let v=s(ke(u,t),b);return v?Zt(v,b):`input[data-hcms-field="${ie(b)}"]@value`}function i(u){let c=s("@scalar-array-item",null),f=c?Nn(c):"input[data-hcms-field]@value";return[a(u,"[data-hcms-array-item]"),f]}function o(u,c){let[,f]=u,b=[...c,"*"],w=a(c,"[data-hcms-card]");if(f&&typeof f=="object"&&!Array.isArray(f)){let v=Object.create(null);for(let[T,y]of Object.entries(f)){if(Qt.has(T))throw new Error(`hypercms: rule key "${T}" is forbidden at "${b.join(".")}"`);v[T]=r(y,[...b,T])}return[w,v]}return[w,r(f,[...b,0])]}function a(u,c){let f=u.length?u[u.length-1]:"",b=u.some(T=>T==="*"),w=u.join(".");return`${b?`[data-hcms-field="${ie(f)}"]`:`[data-hcms-path="${ie(w)}"]`} > .hcms-array-items > ${c}`}function s(u,c){if(!t)return null;let f=U(t,u);if(!f)return null;let b=f.content||f;if(c){let w=b.querySelector(`[data-hcms-field="${ie(c)}"]`);if(w)return w}return b.querySelector("[data-hcms-field]")}function l(u,c){if(!t)return null;let f=u.map(v=>typeof v=="number"?"*":v).join("."),w=[u.join("."),f];for(let v=u.length-1;v>=0;v--){let T=u.slice(0,v).map(y=>typeof y=="number"?"*":y);T.push("*"),w.push(T.join("."))}for(let v of w){if(!v)continue;let T=U(t,v);if(!T||!ve(T))continue;let y=T.content||T,R=y.querySelector(`[data-hcms-field="${ie(c)}"]`)||y.querySelector("[data-hcms-field]");if(R)return R}return null}}function pt(e){if(!e)return"";let t=String(e).split(/[?#]/)[0],r=t.split("/").pop()||t;try{return decodeURIComponent(r)}catch{return r}}function Fe({pageRules:e,formRules:t,data:r,doc:n}){let i=n.createDocumentFragment(),o=bt(e,[],r,n);return o&&i.appendChild(o),i}function rr({shape:e,itemShape:t,pathArr:r,data:n,doc:i}){if(e==="object-array-item")return nr(t,r,n,i);if(e==="scalar-array-item")return ir(r,n,i);throw new Error(`hypercms: buildItem called with unknown shape "${e}"`)}function bt(e,t,r,n){let i=Z(e);return i==="scalar"?In(e,t,r,n):i==="object"?qn(e,t,r,n):i==="object-array"?$n(e,t,r,n):i==="scalar-array"?Dn(e,t,r,n):null}function In(e,t,r,n){let i=ke(e,n),o=qe(t,i,n);if(!o)throw new Error(`hypercms: missing template for scalar at "${t.join(".")}"`);let a=oe(o,n);return se(a,t),Pn(a,V(t)),$e(a,V(t)),De(a,V(t)),cr(a,r),i==="@file"&&Fn(a),a}function Fn(e){let t=e.querySelector?e.querySelector("a.mirk-file__name[data-hcms-field]"):null;t&&(t.textContent=pt(t.getAttribute("href")))}function qn(e,t,r,n){let i=qe(t,"@object",n);if(!i)throw new Error(`hypercms: missing template for object at "${t.join(".")}"`);let o=oe(i,n);if(se(o,t),$e(o,V(t)),De(o,V(t)),ve(i))return dr(o,e,t),ur(o,e,r),o;let a=Pe(o,".hcms-object-fields",i,t);for(let[s,l]of Object.entries(e)){let u=r==null?null:r[s],c=bt(l,[...t,s],u,n);c&&a.appendChild(c)}return o}function $n(e,t,r,n){let i=qe(t,"@object-array",n);if(!i)throw new Error(`hypercms: missing template for object-array at "${t.join(".")}"`);let o=oe(i,n);se(o,t),$e(o,V(t)),De(o,V(t)),sr(o,i),lr(o,i,t);let a=Pe(o,".hcms-array-items",i,t),[,s]=e;return(Array.isArray(r)?r:[]).forEach((u,c)=>{let f=nr(s,[...t,c],u,n);f&&a.appendChild(f)}),ar(o),o}function nr(e,t,r,n){let i=or(t,"object-array-item",n);if(!i)throw new Error(`hypercms: missing item template for "${t.join(".")}"`);let o=oe(i,n);if(o.setAttribute("data-hcms-card",""),o.classList.contains("hcms-card")||o.classList.add("hcms-card"),se(o,t),ve(i))return e&&typeof e=="object"&&!Array.isArray(e)&&(dr(o,e,t),ur(o,e,r)),o;let a=Pe(o,".hcms-card-fields",i,t);if(e&&typeof e=="object"&&!Array.isArray(e))for(let[s,l]of Object.entries(e)){let u=r==null?null:r[s],c=bt(l,[...t,s],u,n);c&&a.appendChild(c)}return o}function Dn(e,t,r,n){let i=qe(t,"@scalar-array",n);if(!i)throw new Error(`hypercms: missing template for scalar-array at "${t.join(".")}"`);let o=oe(i,n);se(o,t),$e(o,V(t)),De(o,V(t)),sr(o,i),lr(o,i,t);let a=Pe(o,".hcms-array-items",i,t);return(Array.isArray(r)?r:[]).forEach((l,u)=>{let c=ir([...t,u],l,n);c&&a.appendChild(c)}),ar(o),o}function ir(e,t,r){let n=or(e,"scalar-array-item",r);if(!n)throw new Error(`hypercms: missing item template for "${e.join(".")}"`);let i=oe(n,r);return i.setAttribute("data-hcms-array-item",""),i.classList.contains("hcms-array-item")||i.classList.add("hcms-array-item"),se(i,e),cr(i,t),i}function qe(e,t,r){let n=e.join("."),i=e.map(o=>typeof o=="number"?"*":o).join(".");return n&&U(r,n)||i&&i!==n&&U(r,i)||U(r,t)}function or(e,t,r){let n=e.map(i=>typeof i=="number"?"*":i).join(".");return U(r,n)||U(r,"@"+t)}function oe(e,t){let r=e.content||e,n=t.createElement("div");return n.appendChild(r.cloneNode(!0)),n.firstElementChild||n}function se(e,t){e.setAttribute("data-hcms-path",t.join("."))}function Pn(e,t){let r=t==null?"":String(t);if(e.matches&&e.matches("[data-hcms-field]")){e.getAttribute("data-hcms-field")||e.setAttribute("data-hcms-field",r);return}(e.querySelectorAll?e.querySelectorAll("[data-hcms-field]"):[]).forEach(i=>{i.getAttribute("data-hcms-field")||i.setAttribute("data-hcms-field",r)})}function $e(e,t){t==null||t===""||!e.setAttribute||e.hasAttribute?.("data-hcms-field")||e.setAttribute("data-hcms-field",String(t))}function De(e,t){if(t==null||t==="")return;(e.querySelectorAll?e.querySelectorAll("[data-hcms-label]"):[]).forEach(n=>{(n.textContent||"").trim()===""&&(n.textContent=Gt(String(t)))})}function sr(e,t){["data-hcms-no-add","data-hcms-no-remove","data-hcms-no-reorder"].forEach(r=>{t.hasAttribute(r)&&e.setAttribute(r,"")}),["data-hcms-min-items","data-hcms-max-items"].forEach(r=>{t.hasAttribute(r)&&e.setAttribute(r,t.getAttribute(r))})}function ar(e){let t=e.querySelector?e.querySelector(".hcms-array-items"):null;if(!t)return;let r=Array.from(t.querySelectorAll(":scope > [data-hcms-card], :scope > [data-hcms-array-item]")),n=r.length,i=tr(e,"data-hcms-max-items"),o=tr(e,"data-hcms-min-items"),a=e.hasAttribute("data-hcms-no-add"),s=e.hasAttribute("data-hcms-no-remove"),l=e.hasAttribute("data-hcms-no-reorder"),u=e.querySelector('[data-hcms-action="add"]');u&&(u.hidden=a||i!=null&&n>=i),r.forEach((c,f)=>{let b=c.querySelector('[data-hcms-action="remove"]');b&&(b.hidden=s||o!=null&&n<=o);let w=c.querySelector('[data-hcms-action="move-up"]');w&&(w.hidden=l||f===0);let v=c.querySelector('[data-hcms-action="move-down"]');v&&(v.hidden=l||f===n-1)})}function tr(e,t){if(!e||!e.hasAttribute(t))return null;let r=parseInt(e.getAttribute(t),10);return Number.isFinite(r)?r:null}function lr(e,t,r){if(e.hasAttribute("data-hcms-no-reorder")||t.hasAttribute("data-hcms-no-reorder"))return;let n=e.querySelector(".hcms-array-items");if(!n)return;let i="hcms-"+r.join(".");n.setAttribute("sortable",i),n.setAttribute("onsorted","hypercmsCommit && hypercmsCommit()")}function V(e){return e.length?e[e.length-1]:null}function cr(e,t){let r=Hn(e);if(r.length!==0)for(let n of r)mr(n,t)}function Hn(e){if(!e)return[];let t=[];return e.matches?.("[data-hcms-field]")&&Un(e)&&t.push(e),(e.querySelectorAll?e.querySelectorAll("input[data-hcms-field], textarea[data-hcms-field], select[data-hcms-field], img[data-hcms-field], a[data-hcms-field], [contenteditable][data-hcms-field]"):[]).forEach(n=>t.push(n)),t}function Un(e){let t=(e.tagName||"").toUpperCase();return!!(t==="INPUT"||t==="TEXTAREA"||t==="SELECT"||t==="IMG"||t==="A"||e.hasAttribute?.("contenteditable"))}function ur(e,t,r){(e.querySelectorAll?e.querySelectorAll("[data-hcms-field]"):[]).forEach(i=>{let o=i.getAttribute("data-hcms-field");if(!o)return;if(!t||typeof t!="object"||!(o in t)){console.warn(`[hypercms] inline template field "${o}" is not in the rule shape; ignoring`);return}let a=r==null?null:r[o];mr(i,a)})}function dr(e,t,r){if(!e.querySelectorAll)return;e.querySelectorAll("[data-hcms-field]").forEach(i=>{let o=i.getAttribute("data-hcms-field");if(!o||t&&typeof t=="object"&&!(o in t))return;let a=[...r,o].join(".");i.setAttribute("data-hcms-path",a)})}function Pe(e,t,r,n){if(!e.querySelector)return e;let i=e.querySelector(t);if(i)return i;let o=r?.getAttribute?.("data-hcms-tpl")||n.join(".");throw new Error(`hypercms: template "${o}" is in slotted mode but has no ${t} element`)}function mr(e,t){let r=Ne(e),n=(e.tagName||"").toUpperCase(),i=(e.getAttribute("type")||"").toLowerCase();if(n==="INPUT"&&i==="radio"){e.checked=e.value!=null&&String(e.value)===String(t??"");return}if(r==="checked"){e.checked=t===!0||t==="true";return}if(r){e[r]=t==null?"":String(t);return}e.textContent=t==null?"":String(t)}var hr={skip:"[data-hcms-shell]",templateAttr:"cms-template"};function fr(e,t,r,n={}){let{observerHandle:i,shellRoot:o,structural:a,structuralPath:s}=n;i?.pause?.();try{if(!a)try{return q.apply(e,t,r,hr),{ok:!0}}catch(f){return{ok:!1,error:f}}let l=Bn(e,t,s),u=l?Wn(l):null,c=l?null:Kn(e,o);try{return q.apply(e,t,r,hr),{ok:!0}}catch(f){return u?Vn(l,u):c&&Gn(e,o,c),{ok:!1,error:f}}}finally{i?.resume?.()}}function Bn(e,t,r){if(!r||!e)return null;let n=W(r),i=[],o=t;for(let a of n){if(typeof o=="string"||o==null||Array.isArray(o))break;if(typeof o=="object"&&a in o){if(i.push(a),o=o[a],Array.isArray(o)||typeof o=="string"&&o.endsWith("[]"))break}else return null}return!Array.isArray(o)&&!(typeof o=="string"&&o.endsWith("[]"))?null:zn(e,t,i)}function zn(e,t,r){if(r.length===0)return null;let n=e,i=t;for(let o=0;o<r.length;o++){let a=r[o];if(!i||typeof i!="object"||Array.isArray(i))return null;let s=i[a];if(s==null)return null;if(o===r.length-1){if(Array.isArray(s)){let[l]=s;return n.querySelector?.(l)?.parentElement||null}if(typeof s=="string"&&s.endsWith("[]")){let l=s.slice(0,-2);return n.querySelector?.(l)?.parentElement||null}return null}i=s}return null}function Wn(e){let t=[];for(let r of Array.from(e.childNodes))t.push(r.cloneNode(!0));return t}function Vn(e,t){for(;e.firstChild;)e.removeChild(e.firstChild);for(let r of t)e.appendChild(r)}function Kn(e,t){let r=[];for(let n of Array.from(e.childNodes))n===t||t&&n.contains?.(t)||r.push(n.cloneNode(!0));return r}function Gn(e,t,r){for(let i of Array.from(e.childNodes))i===t||t&&i.contains?.(t)||e.removeChild(i);let n=Yn(e,t);for(let i of r)e.insertBefore(i,n||null)}function Yn(e,t){if(!t)return null;for(let r of Array.from(e.childNodes))if(r===t||r.contains?.(t))return r;return null}var gt=new WeakSet;function le(e,t){let r=typeof window<"u"&&window.hyperclay&&window.hyperclay.undo||null;if(!r)return t();r.pause();try{let n=t();return n&&n.ok?r.commitCaptured(e):r.discardCaptured(),n}finally{r.resume()}}function Be(e){let t=typeof window<"u"&&window.hyperclay&&window.hyperclay.undo||null;if(!t)return e();t.pause();try{return e()}finally{t.discardCaptured(),t.resume()}}function gr(e){let{formRoot:t}=e;if(!t||gt.has(t))return;gt.add(t);let r=a=>{let s=a.target;!s||!s.closest||s.closest("[data-hcms-form-root]")&&s.matches("input, textarea, select")&&(s.matches('input[type="file"]')||!s.closest("[data-hcms-field]")&&!s.hasAttribute?.("data-hcms-field")||pr(s,e))},n=a=>{let s=a.target;if(!(!s||!s.closest)&&s.closest("[data-hcms-form-root]")){if(s.matches('input[type="file"][data-hcms-upload]')){Qn(s,e);return}s.matches('input[type="checkbox"], input[type="radio"], select')&&pr(s,e)}},i=a=>{let s=a.target;if(!s||!s.closest)return;let l=s.closest("[data-hcms-action]");if(!l)return;let u=l.getAttribute("data-hcms-action");if(u==="add"||u==="remove"||u==="move-up"||u==="move-down"||u==="clear-upload"){if(!l.closest("[data-hcms-form-root]"))return}else if(u==="close"&&!l.closest("[data-hcms-shell]"))return;if(u==="add"){let c=l.closest("[data-hcms-path]");if(!c)return;let f=c.getAttribute("data-hcms-path");kt(f,e)}else if(u==="remove"){let c=l.closest("[data-hcms-card], [data-hcms-array-item]");if(!c)return;oi(c,e)}else if(u==="move-up"||u==="move-down"){let c=l.closest("[data-hcms-card], [data-hcms-array-item]");if(!c)return;ni(c,u==="move-up"?-1:1,e)}else u==="clear-upload"?ei(l,e):u==="close"&&e.onCloseRequested?.()},o=t.ownerDocument;o.addEventListener("input",r,!0),o.addEventListener("change",n,!0),o.addEventListener("click",i,!0),e.detachEvents=()=>{o.removeEventListener("input",r,!0),o.removeEventListener("change",n,!0),o.removeEventListener("click",i,!0),gt.delete(t)}}var Jn=new Set(["value","checked"]);function Xn(e,t){if(!t)return null;let r=W(t);if(r.some(l=>typeof l=="number"||l==="*"))return null;let n=X(e.pageRules,r);if(typeof n!="string")return null;let i=n.lastIndexOf("@");if(i===-1)return null;let o=n.slice(i+1);if(!Jn.has(o))return null;let a=n.slice(0,i),s=a?e.pageRoot.querySelector(a):e.pageRoot;return s?{el:s,prop:o,oldValue:s[o]}:null}function pr(e,t){let n=(e.closest("[data-hcms-field]")||e).closest("[data-hcms-path]")?.getAttribute("data-hcms-path")||"",i=Xn(t,n);if(B($(t),{path:n,structural:!1},t),i){let o=typeof window<"u"&&window.hyperclay&&window.hyperclay.undo||null;o&&typeof o.recordValue=="function"&&o.recordValue(i.el,{prop:i.prop,oldValue:i.oldValue,newValue:i.el[i.prop]})}}async function Zn(e){return{file:e}}async function Qn(e,t){let r=e.files&&e.files[0];if(!r)return;let n=e.closest("[data-hcms-path]");if(!n)return;let i=n.getAttribute("data-hcms-path")||"",o=await Zn(r,n);if(!o||t.closed){Q(e);return}let a=o.file,s=o.dataURL||null,l=typeof window<"u"&&window.hyperclay&&window.hyperclay.uploadFileBasic||null,u=null;if(typeof l=="function")try{let c=await l(a);u=c&&c.uploads&&c.uploads[0]&&c.uploads[0].url}catch(c){if(t.closed){Q(e);return}yt(n,c&&c.message||"Upload failed"),t.dispatch?.("hcms:error",{error:c,path:i}),Q(e);return}if(t.closed){Q(e);return}if(u||(u=s||ri(a)),!u){Q(e);return}yt(n,null),yr(n,u,a.name),B($(t),{path:i,structural:!1},t),Q(e)}function ei(e,t){let r=e.closest("[data-hcms-path]");if(!r)return;let n=r.getAttribute("data-hcms-path")||"";yr(r,"","");let i=r.querySelector('input[type="file"][data-hcms-upload]');i&&Q(i),yt(r,null),B($(t),{path:n,structural:!1},t)}function ti(e){return e.querySelector?e.querySelector("img[data-hcms-field], a[data-hcms-field]"):null}function yr(e,t,r){let n=ti(e);if(!n)return;let i=(n.tagName||"").toUpperCase();i==="IMG"?n.src=t||"":i==="A"&&(n.href=t||"",n.textContent=t?r||pt(t):"")}function Q(e){try{e.value=""}catch{}}function ri(e){let t=typeof URL<"u"&&URL.createObjectURL?URL:null;if(!t)return"";try{return t.createObjectURL(e)}catch{return""}}function yt(e,t){let r=e.querySelector?e.querySelector(":scope > .hcms-error"):null;r&&(t?(r.textContent=t,r.hidden=!1):(r.textContent="",r.hidden=!0))}function kt(e,t){let{formRoot:r,pageRules:n}=t,i=r.querySelector(`[data-hcms-path="${di(e)}"]`);if(!i)throw new Error(`hypercms: no element at path "${e}"`);let o=i.querySelector(".hcms-array-items");if(!o)throw new Error(`hypercms: array container missing .hcms-array-items at "${e}"`);let a=W(e),s=ci(n,a),l=Array.isArray(s),u=typeof s=="string"&&s.endsWith("[]");if(!l&&!u)throw new Error(`hypercms: path "${e}" is not an array`);let c=Ue(i,"data-hcms-max-items"),f=o.querySelectorAll(":scope > [data-hcms-card], :scope > [data-hcms-array-item]");if(i.hasAttribute("data-hcms-no-add")||c!=null&&f.length>=c)return;let b=f.length,w=l?s[1]:s.replace(/\[\]$/,""),v=ye(l?w:"string"),T=rr({shape:l?"object-array-item":"scalar-array-item",itemShape:w,pathArr:[...a,b],data:v,doc:t.doc});return o.appendChild(T),xt(i),le(`Add ${e}`,()=>B($(t),{path:e,structural:!0},t))}function ni(e,t,r){let n=e.closest('[data-hcms-shape="object-array"], [data-hcms-shape="scalar-array"]');if(!n||n.hasAttribute("data-hcms-no-reorder"))return;let i=n.querySelector(".hcms-array-items");if(!i)return;let o=Array.from(i.querySelectorAll(":scope > [data-hcms-card], :scope > [data-hcms-array-item]")),a=o.indexOf(e);if(a<0)return;let s=a+t;if(s<0||s>=o.length)return;let l=e.querySelector(`[data-hcms-action="${t<0?"move-up":"move-down"}"]`);return t<0?i.insertBefore(e,o[s]):i.insertBefore(e,o[s].nextSibling),At(i),xt(n),l&&typeof l.focus=="function"&&e.querySelector(`[data-hcms-action="${t<0?"move-up":"move-down"}"]`)?.focus?.(),le(`Reorder ${n.getAttribute("data-hcms-path")||""}`,()=>B($(r),{path:n.getAttribute("data-hcms-path")||"",structural:!0},r))}var He="Delete this item?";function ii(e,t){let r=e&&e.getAttribute("data-hcms-confirm-remove");if(r!=null)return/^(off|false|no|0)$/i.test(r.trim())?null:r||He;let n=t&&t.confirmRemove;return n===!1?null:typeof n=="string"?n||He:n===!0||e&&e.getAttribute("data-hcms-shape")==="object-array"?He:null}function oi(e,t){let r=e.closest('[data-hcms-shape="object-array"], [data-hcms-shape="scalar-array"]'),n=ii(r,t);if(n==null)return ae(e,t);let i=typeof window<"u"&&(window.hyperclay?.consent||window.consent);typeof i=="function"?Promise.resolve(i(n)).then(()=>ae(e,t),()=>{}):typeof window<"u"&&typeof window.confirm=="function"?window.confirm(n)&&ae(e,t):ae(e,t)}function ae(e,t){let r=e.getAttribute("data-hcms-path")||"",n=e.parentElement,i=e.closest('[data-hcms-shape="object-array"], [data-hcms-shape="scalar-array"]');if(!i?.hasAttribute("data-hcms-no-remove")){if(i){let o=Ue(i,"data-hcms-min-items"),a=i.querySelector(".hcms-array-items"),s=a?a.querySelectorAll(":scope > [data-hcms-card], :scope > [data-hcms-array-item]").length:0;if(o!=null&&s<=o)return}return e.remove(),n&&At(n),i&&xt(i),le(`Remove ${r}`,()=>B($(t),{path:r,structural:!0},t))}}function B(e,t,r){let n=xe(e);if(n===r.lastFingerprint)return{ok:!0,skipped:!0};let i=fr(r.pageRoot,r.pageRules,e,{observerHandle:r.observerHandle,shellRoot:r.shellRoot,structural:!!t.structural,structuralPath:t.path||null});return i.ok?(r.lastFingerprint=n,r.lastData=e,br(r,null),r.dispatch?.("hcms:change",{data:e,path:t.path,structural:!!t.structural}),r.onChange?.(e,t)):(br(r,li(i.error,t.path)),r.dispatch?.("hcms:error",{error:i.error,attemptedData:e}),r.onError?.(i.error)),i}function $(e){let t=q.extract(e.formRoot,e.formRules);return K(t,e.formRules)}function K(e,t){if(t==null||e==null)return e;if(typeof t=="string")return t.endsWith("@checked")?e===!0||e==="true":e;if(Array.isArray(t)){if(!Array.isArray(e))return e;let[,r]=t;return e.map(n=>K(n,r))}if(typeof t=="object"){if(typeof e!="object"||Array.isArray(e))return e;let r={};for(let[n,i]of Object.entries(t))r[n]=K(e[n],i);return r}return e}function br(e,t){e.lastErrors=t&&t.length?t:null,vt(e)}function vt(e){if(si(e),e.errorEl&&(e.errorEl.textContent="",e.errorEl.hidden=!0),!e.lastErrors)return;let t=[];for(let{message:r,path:n}of e.lastErrors){if(n!=null&&n!==""){let i=ai(e.formRoot,n);if(i){i.textContent=i.textContent?`${i.textContent}
+${r}`:r,i.hidden=!1;continue}}t.push(r)}t.length&&e.errorEl&&(e.errorEl.textContent=t.join(`
+`),e.errorEl.hidden=!1)}function si(e){if(e.formRoot)for(let t of e.formRoot.querySelectorAll(".hcms-error"))t.textContent="",t.hidden=!0}function ai(e,t){if(!e)return null;let r=t.split(".");for(;r.length>0;){let n=r.join("."),i=typeof CSS<"u"&&CSS.escape?CSS.escape(n):n.replace(/[^a-zA-Z0-9_\-.*]/g,a=>"\\"+a),o=e.querySelector(`[data-hcms-path="${i}"]`);if(o){for(let a of o.children)if(a.classList&&a.classList.contains("hcms-error"))return a}r.pop()}return null}function li(e,t){return e?e.name==="EmptyListInsert"?[{message:"Add a seed item in HTML first.",path:t}]:e.name==="ShapeMismatch"&&Array.isArray(e.mismatches)&&e.mismatches.length?e.mismatches.map(r=>({message:`Shape mismatch: expected ${r.expected}, got ${r.got}`,path:r.path})):[{message:e.message||String(e),path:t}]:[{message:"unknown error",path:t}]}function ci(e,t){let r=e;for(let n of t){if(r==null||typeof r=="string")return;if(Array.isArray(r)){if(typeof n!="number"&&n!=="*")return;r=r[1];continue}if(typeof r=="object"){if(typeof n=="number"||!(n in r))return;r=r[n];continue}return}return r}function Ue(e,t){if(!e||!e.hasAttribute(t))return null;let r=parseInt(e.getAttribute(t),10);return Number.isFinite(r)?r:null}function xt(e){if(!e)return;let t=e.querySelector(".hcms-array-items");if(!t)return;let r=Array.from(t.querySelectorAll(":scope > [data-hcms-card], :scope > [data-hcms-array-item]")),n=r.length,i=Ue(e,"data-hcms-max-items"),o=Ue(e,"data-hcms-min-items"),a=e.hasAttribute("data-hcms-no-add"),s=e.hasAttribute("data-hcms-no-remove"),l=e.hasAttribute("data-hcms-no-reorder"),u=e.querySelector(':scope > .hcms-add, :scope > * > .hcms-add, :scope > [data-hcms-action="add"]');u&&(u.hidden=a||i!=null&&n>=i),r.forEach((c,f)=>{let b=c.querySelector('[data-hcms-action="remove"]');b&&(b.hidden=s||o!=null&&n<=o);let w=c.querySelector('[data-hcms-action="move-up"]');w&&(w.hidden=l||f===0);let v=c.querySelector('[data-hcms-action="move-down"]');v&&(v.hidden=l||f===n-1)})}function wt(e){!e||!e.querySelectorAll||e.querySelectorAll(".hcms-array-items").forEach(t=>At(t))}function At(e){let t=0;for(let r of e.children){if(!r.matches?.("[data-hcms-card], [data-hcms-array-item]"))continue;let n=r.getAttribute("data-hcms-path");if(!n)continue;let i=n.split(".");i[i.length-1]=String(t);let o=i.join(".");o!==n&&ui(r,n,o),t++}}function ui(e,t,r){let n=e.querySelectorAll("[data-hcms-path]");e.setAttribute("data-hcms-path",r);for(let i of n){let o=i.getAttribute("data-hcms-path");o===t?i.setAttribute("data-hcms-path",r):o&&o.startsWith(t+".")&&i.setAttribute("data-hcms-path",r+o.slice(t.length))}}function xe(e){return JSON.stringify(e,(t,r)=>{if(r&&typeof r=="object"&&!Array.isArray(r)){let n=Object.create(null);for(let i of Object.keys(r).sort())n[i]=r[i];return n}return r})}function di(e){return typeof CSS<"u"&&CSS.escape?CSS.escape(e):String(e).replace(/[^a-zA-Z0-9_\-.*]/g,t=>"\\"+t)}var yi={},ze="hcms-shell-styles",mi="hcms-bundled-styles-installed",hi='a[href], area[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',ce=new WeakSet,St="";function vr(e){St=e}var fi=0;function kr(e){return String(e).replace(/[&<>"]/g,t=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[t])}function xr({mountTo:e,side:t="right",overlay:r=!1,showSaveButton:n=!1,title:i="Page content",eyebrow:o="Edit",theme:a=null,doc:s}){wr(s);let l=`hcms-shell-title-${++fi}`,u=s.createElement("div");u.setAttribute("data-hcms-shell",""),u.setAttribute("save-remove",""),u.setAttribute("save-ignore",""),u.setAttribute("tabindex","-1"),u.setAttribute("role","dialog"),u.setAttribute("aria-modal","true"),u.setAttribute("aria-labelledby",l);let c=a==="dark"?" dark":a==="light"?" light":"";u.className="hcms-shell pixel-quiet hcms-side-"+t+(r?" hcms-overlay":"")+c;let f=kr(i),b=kr(o);u.innerHTML=`
+    <div class="hcms-shell-minibar" aria-hidden="true">
+      <span class="hcms-shell-minibar-title">${f}</span>
+      <button type="button" class="hcms-shell-close mirk-button mirk-button--small" data-hcms-action="close" aria-label="Close">
+        <span class="mirk-button__label">\xD7</span>
+      </button>
+    </div>
+    <div class="hcms-shell-body">
+      <header class="hcms-shell-header">
+        <div class="hcms-shell-heading">
+          <div class="hcms-shell-eyebrow">${b}</div>
+          <h2 class="hcms-shell-title" id="${l}">${f}</h2>
+        </div>
+        <button type="button" class="hcms-shell-close mirk-button mirk-button--small" data-hcms-action="close" aria-label="Close">
+          <span class="mirk-button__label">\xD7</span>
+        </button>
+      </header>
+      <div class="hcms-shell-error" role="alert" hidden></div>
+      <div data-hcms-form-root class="hcms-form"></div>
+      <footer class="hcms-shell-footer"${n?"":" hidden"}>
+        <button type="button" class="hcms-shell-save mirk-button" trigger-save>
+          <span class="mirk-button__label">Save</span>
+        </button>
+      </footer>
+    </div>
+  `,(e||s.body).appendChild(u);let v=s.body;v.classList.add("hcms-open"),r&&v.classList.add("hcms-overlay"),t==="left"&&v.classList.add("hcms-side-left");let T=gi(u,s),y=bi(u);return{root:u,formRoot:u.querySelector("[data-hcms-form-root]"),errorEl:u.querySelector(".hcms-shell-error"),saveButton:u.querySelector(".hcms-shell-save"),destroy(){T.detach(),y.detach(),u.remove(),v.classList.remove("hcms-open","hcms-overlay","hcms-side-left")},restoreChrome(){pi(s),v.classList.add("hcms-open"),r&&v.classList.add("hcms-overlay"),t==="left"&&v.classList.add("hcms-side-left")}}}function pi(e){e&&(e.getElementById(ze)||e.querySelector("style[data-hcms-bundled-styles]")||(ce.delete(e),wr(e)))}function wr(e){if(e&&!ce.has(e)){if(e[mi]){ce.add(e);return}if(e.getElementById(ze)||e.querySelector("style[data-hcms-bundled-styles]")){ce.add(e);return}if(St){let t=e.createElement("style");t.id=ze,t.setAttribute("save-remove",""),t.textContent=St,(e.head||e.documentElement).appendChild(t),ce.add(e);return}try{let t=new URL("./theme.generated.css",yi.url).href,r=e.createElement("link");r.rel="stylesheet",r.id=ze,r.setAttribute("save-remove",""),r.href=t,(e.head||e.documentElement).appendChild(r),ce.add(e)}catch{}}}function bi(e){let t=e.querySelector(".hcms-shell-body"),r=e.querySelector(".hcms-shell-header");if(!t||!r||typeof t.addEventListener!="function")return{detach(){}};let n=()=>{let i=(r.offsetHeight||0)-12;e.classList.toggle("is-condensed",t.scrollTop>i)};return t.addEventListener("scroll",n,{passive:!0}),n(),{detach(){t.removeEventListener("scroll",n)}}}function gi(e,t){function r(n){if(n.key!=="Tab"||!e.contains(t.activeElement))return;let i=Array.from(e.querySelectorAll(hi));if(i.length===0)return;let o=i[0],a=i[i.length-1];n.shiftKey&&t.activeElement===o?(n.preventDefault(),a.focus()):!n.shiftKey&&t.activeElement===a&&(n.preventDefault(),o.focus())}return t.addEventListener("keydown",r),{detach:()=>t.removeEventListener("keydown",r)}}var ki={skip:"[data-hcms-shell]",templateAttr:"cms-template"};function We(e,{ignoreActiveValue:t}={}){let r=q.findRules(e.doc,e.rulesSource||"cms");r&&(e.pageRules=r.rules,e.rulesTagNode=r.tagNode),Le(e.doc),je(e.doc,e.pageRules),e.formRules=Ie(e.pageRules,e.doc);let n=K(q.extract(e.pageRoot,e.pageRules,ki),e.pageRules),i=Fe({pageRules:e.pageRules,formRules:e.formRules,data:n,doc:e.doc});Oe(e.formRoot,i,{ignoreActiveValue:t}),vt(e),e.updateFingerprint&&e.updateFingerprint()}function Ar({debounce:e=100,onRefresh:t}){let r=typeof window<"u"&&window.hyperclay&&window.hyperclay.Mutation||null;if(!r||typeof r.onAnyChange!="function")throw new Error("hypercms: window.hyperclay.Mutation is required. Load hyperclayjs (or just the mutation utility) before initializing hypercms.");let n=0,i=r.onAnyChange({debounce:e},()=>{n>0||t()});return{unsubscribe:typeof i=="function"?i:()=>{},pause(){n++},resume(){n=Math.max(0,n-1)}}}var vi="[hypercms]";function Sr(e,t){if(!e||!e.querySelectorAll||!t)return;let r=xi(t);e.querySelectorAll("template[data-hcms-tpl]").forEach(i=>{let o=i.getAttribute("data-hcms-tpl");o&&(o.startsWith("@")||r.has(o)||console.warn(`${vi} template "${o}" doesn't match any rule path; ignored`))})}function xi(e){let t=new Set;return r([],e),t;function r(n,i){let o=n.join("."),a=n.map(l=>typeof l=="number"?"*":l).join(".");o&&t.add(o),a&&t.add(a);let s=Z(i);if(s==="object")for(let[l,u]of Object.entries(i))r([...n,l],u);else if(s==="object-array"||s==="scalar-array"){let l=[...n,"*"],u=l.map(c=>typeof c=="number"?"*":c).join(".");if(t.add(u),s==="object-array"){let c=i[1];if(c&&typeof c=="object"&&!Array.isArray(c))for(let[f,b]of Object.entries(c))r([...l,f],b)}}}}function Mr(e){vr(e)}var L={isOpen:!1,ctx:null,shell:null,opts:null};function _r(e,t){if(L.ctx!==e)return;let r=t==="livesync";t==="livesync"&&L.shell?.restoreChrome?.(),We(e,{ignoreActiveValue:r})}var Er=!1;function wi(){if(Er)return;let e=typeof window<"u"&&window.hyperclay&&window.hyperclay.onPrepareForSave||null;typeof e=="function"&&(e(t=>{let r=t&&t.querySelector&&t.querySelector("body");r&&r.classList.remove("hcms-open","hcms-overlay","hcms-side-left")}),Er=!0)}function Cr(e={}){if(L.isOpen){console.warn("cms.open() called while already open; ignoring");return}wi();let t=e.pageRoot||(typeof document<"u"?document.body:null);if(!t)throw new Error("hypercms: no pageRoot available");let r=t.ownerDocument||(typeof document<"u"?document:null);if(!r)throw new Error("hypercms: no document available");let n=e.rules!==void 0?e.rules:"cms",i=q.findRules(r,n);if(!i){let f=typeof n=="string"?`data-rules-name~="${n}"`:"the provided rules object";throw new Error(`hypercms: no rules found for ${f}`)}let o=i.rules,a=i.tagNode;Le(r),je(r,o),Sr(r,o);let s=Ie(o,r),l=K(q.extract(t,o,{skip:"[data-hcms-shell]",templateAttr:"cms-template"}),o),u=Be(()=>xr({mountTo:e.mountTo||r.body,side:e.side||"right",overlay:!!e.overlay,showSaveButton:!!e.showSaveButton,title:e.title,eyebrow:e.eyebrow,theme:e.theme,doc:r})),c={doc:r,pageRoot:t,pageRules:o,formRules:s,rulesTagNode:a,rulesSource:n,formRoot:u.formRoot,shellRoot:u.root,errorEl:u.errorEl,lastFingerprint:null,lastData:null,observerHandle:null,undoUnsub:null,livesyncUnsub:null,onChange:e.onChange,onError:e.onError,confirmRemove:e.confirmRemove,previouslyFocused:r.activeElement,dispatch(f,b){let w=r.defaultView&&r.defaultView.CustomEvent||(typeof CustomEvent<"u"?CustomEvent:null);if(!w)return;let v=new w(f,{bubbles:!0,cancelable:f==="hcms:change",detail:b});u.root.dispatchEvent(v)},onCloseRequested(){Rr()}};c.updateFingerprint=()=>{c.lastFingerprint=xe($(c))};try{let f=Fe({pageRules:o,formRules:s,data:l,doc:r});u.formRoot.appendChild(f),gr(c),c.updateFingerprint(),c.observerHandle=Ar({onRefresh:()=>We(c)});let b=typeof window<"u"&&window.hyperclay&&window.hyperclay.undo||null;if(b&&typeof b.on=="function"){let v=()=>{if(L.ctx!==c)return;_r(c,"undo");let T=K(q.extract(c.pageRoot,c.pageRules,{skip:"[data-hcms-shell]",templateAttr:"cms-template"}),c.pageRules);xe(T)!==xe(c.lastData)&&(c.lastData=T,c.onChange?.(T,{path:"",structural:!1}))};b.on("undo",v),b.on("redo",v),c.undoUnsub=()=>{b.off("undo",v),b.off("redo",v)}}let w=()=>_r(c,"livesync");r.addEventListener("hyperclay:livesync-applied",w),c.livesyncUnsub=()=>r.removeEventListener("hyperclay:livesync-applied",w),we.ctx=c,Si(r),Ai(u.root),L.isOpen=!0,L.ctx=c,L.shell=u,L.opts=e,c.dispatch("hcms:open",{pageRoot:t})}catch(f){throw c.observerHandle?.unsubscribe?.(),c.undoUnsub?.(),c.livesyncUnsub?.(),c.detachEvents?.(),we.ctx===c&&(we.ctx=null),Be(()=>u.destroy()),L.isOpen=!1,L.ctx=null,L.shell=null,L.opts=null,f}}function Ai(e){let r=e.querySelector('input:not([disabled]):not([type="hidden"]), textarea:not([disabled]), select:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])');r&&typeof r.focus=="function"&&r.focus()}var we={ctx:null};function Si(e){let t=e.defaultView||(typeof globalThis<"u"?globalThis:null);if(!t)return;let r=function(){let i=we.ctx;if(i)return wt(i.formRoot),le("Reorder",()=>B($(i),{path:"",structural:!0},i))};typeof t.hypercmsCommit!="function"&&(t.hypercmsCommit=r),typeof globalThis<"u"&&typeof globalThis.hypercmsCommit!="function"&&(globalThis.hypercmsCommit=r)}var Et="cms";function _i(e){let t=typeof e=="string"?e:"",r=t.indexOf("?"),n=r===-1?t:t.slice(r+1);if(!n)return t;let i=new URLSearchParams(n);return i.get(Et)!=="true"?t:(i.set(Et,"false"),"?"+i.toString())}function Ei(e){let t=typeof e=="string"?e:"",r=t.indexOf("?"),n=r===-1?t:t.slice(r+1);return n?new URLSearchParams(n).get(Et)==="true":!1}function Mi(){if(typeof window>"u"||!window.location||!window.history||typeof window.history.replaceState!="function")return;let e=window.location.search,t=_i(e);t!==e&&window.history.replaceState(window.history.state,"",t+window.location.hash)}function Rr(){if(!L.isOpen)return;let{ctx:e,shell:t}=L;e.closed=!0;let r=e.previouslyFocused;if(e.dispatch("hcms:close",null),Mi(),e.observerHandle?.unsubscribe?.(),e.undoUnsub?.(),e.livesyncUnsub?.(),e.detachEvents?.(),Be(()=>t.destroy()),L.isOpen=!1,L.ctx=null,L.shell=null,L.opts=null,we.ctx=null,r&&typeof r.focus=="function")try{r.focus()}catch{}}function Tr(){L.isOpen&&We(L.ctx)}var Ci={getData(){return L.isOpen?$(L.ctx):null},setValue(e,t){if(!L.isOpen)throw new Error("hypercms: cms is not open");let r=L.ctx,n=W(e),i=X(r.pageRules,n);if(i===void 0)throw new Error(`hypercms: no rule at path "${e}"`);if(typeof i!="string"||i.endsWith("[]"))throw new Error(`hypercms: setValue requires a leaf scalar path; "${e}" is not a leaf`);let o=Ri(r.formRoot,e);if(!o)throw new Error(`hypercms: no field element at path "${e}"`);Ti(o,t,r.formRoot,e),B($(r),{path:e,structural:!1},r)},addItem(e){if(!L.isOpen)throw new Error("hypercms: cms is not open");kt(e,L.ctx)},removeItem(e){if(!L.isOpen)throw new Error("hypercms: cms is not open");let t=L.ctx,r=W(e);if(typeof r[r.length-1]!="number")throw new Error(`hypercms: removeItem requires an item path; "${e}" is not an array index`);let i=X(t.pageRules,r.slice(0,-1));if(!(Array.isArray(i)||typeof i=="string"&&i.endsWith("[]")))throw new Error(`hypercms: removeItem requires an item path; parent of "${e}" is not an array`);let a=t.formRoot.querySelector(`[data-hcms-path="${Ct(e)}"]`);if(!a)throw new Error(`hypercms: no element at path "${e}"`);ae(a,t)},refresh:Tr,_commit(){if(!L.isOpen)return;let e=L.ctx;return wt(e.formRoot),le("Update",()=>B($(e),{path:"",structural:!0},e))}};function Ri(e,t){let r=Ct(t),n=`[data-hcms-path="${r}"] input[data-hcms-field], [data-hcms-path="${r}"] textarea[data-hcms-field], [data-hcms-path="${r}"] select[data-hcms-field], [data-hcms-path="${r}"] img[data-hcms-field], [data-hcms-path="${r}"] a[data-hcms-field], [data-hcms-path="${r}"] [contenteditable][data-hcms-field], input[data-hcms-path="${r}"][data-hcms-field], textarea[data-hcms-path="${r}"][data-hcms-field], select[data-hcms-path="${r}"][data-hcms-field], img[data-hcms-path="${r}"][data-hcms-field], a[data-hcms-path="${r}"][data-hcms-field], [contenteditable][data-hcms-path="${r}"][data-hcms-field]`;return e.querySelector(n)}function Ti(e,t,r,n){let i=(e.tagName||"").toUpperCase(),o=(e.getAttribute("type")||"").toLowerCase();if(i==="INPUT"&&o==="checkbox"){e.checked=t===!0||t==="true";return}if(i==="INPUT"&&o==="radio"){let a=Ct(n),s=r.querySelectorAll(`[data-hcms-path="${a}"][data-hcms-field][type="radio"], [data-hcms-path="${a}"] [data-hcms-field][type="radio"]`);s.length?s.forEach(l=>{l.checked=String(l.value)===String(t??"")}):e.checked=String(e.value)===String(t??"");return}if(i==="IMG"){e.src=t==null?"":String(t);return}if(i==="A"){e.href=t==null?"":String(t);return}if("value"in e){e.value=t==null?"":String(t);return}e.textContent=t==null?"":String(t)}var Oi=250,Li=1e4;function ji(){typeof window>"u"||typeof document>"u"||Ei(window.location?window.location.search:"")&&(L.isOpen||Ni(()=>{if(!L.isOpen)try{Cr()}catch(e){console.warn("hypercms: auto-open failed",e)}}))}function _t(){return!!document.body&&!!(window.hyperclay&&window.hyperclay.Mutation)}function Ni(e){if(_t()){e();return}let t=Date.now()+Li,r=!1,n=null,i=()=>{r||(r=!0,n!==null&&clearInterval(n),document.removeEventListener("hyperclay:mutation-ready",o))};function o(){if(L.isOpen){i();return}_t()&&(i(),e())}document.addEventListener("hyperclay:mutation-ready",o,{once:!0}),n=setInterval(()=>{if(L.isOpen){i();return}if(_t()){i(),e();return}Date.now()>=t&&(i(),console.warn("hypercms: ?cms=true auto-open gave up \u2014 window.hyperclay.Mutation never appeared. Load hyperclayjs (or the mutation utility) so the CMS can initialize."))},Oi)}ji();var Mt={open:Cr,close:Rr,refresh:Tr,api:Ci,get isOpen(){return L.isOpen},path:ht,scaffold:ye,morphForm:Oe};function Ct(e){return typeof CSS<"u"&&CSS.escape?CSS.escape(e):String(e).replace(/[^a-zA-Z0-9_\-.*]/g,t=>"\\"+t)}var Or=`/* GENERATED by scripts/build-theme.js from mirk-ui-kit/mirk.css \u2014 DO NOT EDIT.
+   Source of truth: mirk-ui-kit/mirk.css + src/theme/pixel-quiet.overrides.css.
+   Regenerate with: npm run build:theme */
+
+/* ===== mirk-interface@2.0.1, scoped to .hcms-shell ===== */
+/*
+ * mirk.css \u2014 the mirk UI kit, v2.
+ * Hand-written, no build. Fourteen form components as semantic BEM classes in
+ * @layer components, so utilities (Tailwind or your own) always override them
+ * with zero !important. Renders fully standalone; Tailwind is optional.
+ *
+ * Two hinges (see mirk-ui-guide.md):
+ *   1. Components live in @layer components \u2192 utilities win.
+ *   2. State serializes into the DOM (native attrs, :has(), inline --mirk-value)
+ *      so document.documentElement.outerHTML round-trips every visible state.
+ *
+ * This @layer statement makes the file self-sufficient without Tailwind, and
+ * merges into Tailwind's own order (@layer theme, base, components, utilities)
+ * when present.
+ */
+@layer base, components;
+
+@layer base {
+  /* Components are authored border-box (a 2px bevel must not grow the box). */
+  .hcms-shell *, .hcms-shell *::before, .hcms-shell *::after { box-sizing: border-box; }
+  .hcms-shell button, .hcms-shell input, .hcms-shell optgroup, .hcms-shell select, .hcms-shell textarea { margin: 0; }
+
+  @font-face {
+    font-family: 'Departure Mono';
+    src: url('https://cdn.jsdelivr.net/npm/mirk-interface@2.0.1/fonts/DepartureMono-1.500/DepartureMono-Regular.woff2') format('woff2');
+    font-weight: 400; font-style: normal; font-display: swap;
+  }
+
+  .hcms-shell { font-family: 'Departure Mono', ui-monospace, "Menlo", monospace; }
+  /* Preflight sets these to ui-monospace; keep them in Departure Mono. */
+  .hcms-shell pre, .hcms-shell code, .hcms-shell kbd, .hcms-shell samp { font-family: inherit; }
+
+  /* 28 tokens, one value each. light-dark() picks the side from color-scheme. */
+  .hcms-shell {
+    color-scheme: light dark;                 /* default: follow the OS */
+
+    --mirk-canvas:        light-dark(#F7F2EA, #0B0C13);
+    --mirk-bg:            light-dark(#F7F2EA, #1D1F2F);
+    --mirk-fg:            light-dark(#15120e, #F6F7F9);
+    --mirk-accent:        light-dark(#efefe5, #232639);
+    --mirk-destructive:   light-dark(#d4183d, #ff5566);
+    --mirk-focus-color:   light-dark(#BBA288, #5A607F);
+    --mirk-bevel-bg:      light-dark(#e9d3bd, #1D1F2F);
+    --mirk-bevel-fg:      light-dark(#15120e, #F6F7F9);
+    --mirk-bevel-tl:      light-dark(#f3ddc7, #474C65);
+    --mirk-bevel-br:      light-dark(#c2ad95, #131725);
+    --mirk-bevel-hover-bg: light-dark(#dfc9b3, #232639);
+    --mirk-pill-inner-top: light-dark(#efdac7, #232639);
+    --mirk-input-border:  light-dark(#957E65, #6E738E);
+    --mirk-placeholder-color: light-dark(#7F7366, #545973);
+    --mirk-ctrl-bg:       light-dark(#8C7660, #5F6582);
+    --mirk-toggle-bg:     light-dark(#DFC9AF, #656D95);
+    --mirk-toggle-hi:     light-dark(#E9D6C3, #7F87AD);
+    --mirk-toggle-lo:     light-dark(#C7A88A, #505677);
+    --mirk-mark-fg:       light-dark(#3F3225, #E1E3EA);
+    --mirk-sortable-dot:  light-dark(#e2c5a6, #393f5b);
+    --mirk-sortable-shadow:    light-dark(#c7a47f, #111527);
+    --mirk-sortable-label:     light-dark(#231e18, #edeef2);
+    --mirk-sortable-placeholder: light-dark(#99826c, #6f7695);
+    --mirk-slider-fill:   light-dark(#e9d3bd, #232639);
+    --mirk-slider-nub-bg: light-dark(#DFC9AF, #656D95);
+    --mirk-slider-nub-hi: light-dark(#E9D6C3, #7F87AD);
+    --mirk-slider-nub-lo: light-dark(#C7A88A, #505677);
+
+    --mirk-radius: 5px;                        /* the "rounded" corner */
+    --mirk-focus-offset: 2px;                  /* non-color \u2192 can't ride light-dark() */
+
+    background: var(--mirk-canvas);
+    color: var(--mirk-fg);
+  }
+
+  /* The one non-color token with a real light/dark split (was 2px / 3px). */
+  @media (prefers-color-scheme: dark) { .hcms-shell { --mirk-focus-offset: 3px; } }
+
+  /* Force a mode on any subtree with one attribute (class aliases for hosts that
+     prefer class-based theming and Tailwind's dark-variant convention). Each also
+     paints its own canvas so a wrapper visibly flips. */
+  .hcms-shell[data-theme="light"], .hcms-shell.light {
+    color-scheme: light; --mirk-focus-offset: 2px;
+    background: var(--mirk-canvas); color: var(--mirk-fg);
+  }
+  .hcms-shell[data-theme="dark"], .hcms-shell.dark {
+    color-scheme: dark; --mirk-focus-offset: 3px;
+    background: var(--mirk-canvas); color: var(--mirk-fg);
+  }
+
+  /* Brand-theme escape hatch:
+     [data-theme="sunset"] { color-scheme: light; --mirk-accent: #f0a868; \u2026 } */
+}
+
+@layer components {
+  /* Visually hidden, still focusable/announced. The hidden native input behind
+     every custom control relies on it; Tailwind is optional now. */
+  .hcms-shell .mirk-sr-only {
+    position: absolute; width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
+  }
+
+  /* ============================ BUTTON ============================ */
+  .hcms-shell .mirk-button {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+    font: inherit; line-height: 1.5; cursor: pointer; user-select: none;
+    text-align: center;
+    color: var(--mirk-bevel-fg);
+    background: var(--mirk-bevel-bg);
+    border: 2px solid;
+    /* Raised bevel: light top+left, dark right+bottom. Shorthand is T R B L. */
+    border-color: var(--mirk-bevel-tl) var(--mirk-bevel-br) var(--mirk-bevel-br) var(--mirk-bevel-tl);
+    padding: 4px 14px 5px;                     /* medium */
+    outline: none;
+  }
+  .hcms-shell .mirk-button__label { white-space: nowrap; user-select: none; display: inline-block; }
+
+  /* States, written once, shared by every size and shape. */
+  .hcms-shell .mirk-button:hover { background-color: var(--mirk-bevel-hover-bg); }
+  .hcms-shell .mirk-button:active {
+    border-color: var(--mirk-bevel-br) var(--mirk-bevel-tl) var(--mirk-bevel-tl) var(--mirk-bevel-br);
+  }
+  .hcms-shell .mirk-button:not(.mirk-button--round):active .mirk-button__label { translate: 1.5px 1.5px; }
+  /* Direct focus (a real <button>) or a focus-visible descendant (a <label>
+     wrapping a hidden input, as the file/image upload triggers do). */
+  .hcms-shell .mirk-button:focus-visible, .hcms-shell .mirk-button:has(:focus-visible) {
+    outline: 1px solid var(--mirk-focus-color); outline-offset: var(--mirk-focus-offset);
+  }
+  .hcms-shell .mirk-button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Sizes set padding + font (rect); round re-homes padding to the label below. */
+  .hcms-shell .mirk-button--small { padding: 3px 12px; font-size: 14px; }
+  .hcms-shell .mirk-button--large { padding: 4px 17px 7px; font-size: 18px; border-width: 3px; }
+
+  /* Round register: a gradient pill frame with the label as the inner fill. */
+  .hcms-shell .mirk-button--round {
+    border: none; padding: 2px; border-radius: 14px;
+    background-color: var(--mirk-canvas);
+    background-image: linear-gradient(to top in oklab, var(--mirk-bevel-br), var(--mirk-bevel-tl));
+    opacity: 0.9; transition: opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .hcms-shell .mirk-button--round:hover { opacity: 1; }
+  .hcms-shell .mirk-button--round:active {
+    background-image: linear-gradient(to bottom in oklab, var(--mirk-bevel-br), var(--mirk-bevel-tl));
+  }
+  .hcms-shell .mirk-button--round .mirk-button__label {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 4px 17px 6px; border-radius: 12px;
+    color: var(--mirk-bevel-fg);
+    background-color: var(--mirk-bevel-bg);
+    background-image: linear-gradient(to top in oklab, var(--mirk-bevel-bg), var(--mirk-pill-inner-top));
+  }
+  .hcms-shell .mirk-button--round.mirk-button--small { border-radius: 12px; }
+  .hcms-shell .mirk-button--round.mirk-button--small .mirk-button__label { padding: 2px 14px; border-radius: 10px; }
+  .hcms-shell .mirk-button--round.mirk-button--large { border-radius: 16px; }
+  .hcms-shell .mirk-button--round.mirk-button--large .mirk-button__label { padding: 7px 24px 9px; border-radius: 14px; }
+
+  /* ============================ TEXT INPUT ============================ */
+  .hcms-shell .mirk-input {
+    width: 100%;
+    background: var(--mirk-bevel-bg); color: var(--mirk-bevel-fg);
+    border: 1px solid var(--mirk-input-border);
+    padding: 5px 14px 6px;                     /* medium */
+    font: inherit; line-height: 1.5; border-radius: 0; outline: none;
+  }
+  .hcms-shell .mirk-input::placeholder { color: var(--mirk-placeholder-color); }
+  .hcms-shell .mirk-input:focus-visible {
+    outline: 1px solid var(--mirk-focus-color); outline-offset: var(--mirk-focus-offset);
+  }
+  .hcms-shell .mirk-input--small { padding: 4px 12px; font-size: 14px; }
+  .hcms-shell .mirk-input--large { padding: 6px 17px 9px; font-size: 18px; }
+  .hcms-shell .mirk-input--rounded { border-radius: var(--mirk-radius); }
+
+  /* ============================ TEXTAREA ============================ */
+  .hcms-shell .mirk-textarea {
+    width: 100%;
+    background: var(--mirk-bevel-bg); color: var(--mirk-bevel-fg);
+    border: 1px solid var(--mirk-input-border);
+    padding: 6px 17px 9px; font: inherit; font-size: 18px; line-height: 1.5;
+    border-radius: 0; outline: none; resize: vertical;
+  }
+  .hcms-shell .mirk-textarea::placeholder { color: var(--mirk-placeholder-color); }
+  .hcms-shell .mirk-textarea:focus-visible {
+    outline: 1px solid var(--mirk-focus-color); outline-offset: var(--mirk-focus-offset);
+  }
+  .hcms-shell .mirk-textarea--rounded { border-radius: var(--mirk-radius); }
+
+  /* ============================ NUMBER ============================ */
+  .hcms-shell .mirk-number {
+    display: flex; align-items: stretch; width: 100%;
+    background: var(--mirk-bevel-bg);
+    border: 1px solid var(--mirk-input-border); border-radius: 0;
+  }
+  .hcms-shell .mirk-number:has(:focus-visible) {
+    outline: 1px solid var(--mirk-focus-color); outline-offset: var(--mirk-focus-offset);
+  }
+  .hcms-shell .mirk-number__input {
+    flex: 1; min-width: 0; background: transparent; color: var(--mirk-bevel-fg);
+    padding: 5px 10px 6px 14px;                /* medium */
+    font: inherit; line-height: 1.5; outline: none;
+    appearance: textfield; -webkit-appearance: textfield;
+  }
+  .hcms-shell .mirk-number__input::-webkit-outer-spin-button, .hcms-shell .mirk-number__input::-webkit-inner-spin-button { -webkit-appearance: none; appearance: none; }
+  .hcms-shell .mirk-number__steps { display: flex; flex-direction: column; padding: 2px; gap: 2px; }
+  .hcms-shell .mirk-number__step {
+    flex: 1; cursor: pointer; line-height: 1; padding: 0 10px; font-size: 9px;  /* medium */
+    display: flex; align-items: center; justify-content: center;
+    background: var(--mirk-bevel-bg); outline: none;
+    border: 2px solid;
+    border-color: var(--mirk-bevel-tl) var(--mirk-bevel-br) var(--mirk-bevel-br) var(--mirk-bevel-tl);
+  }
+  .hcms-shell .mirk-number__step:hover { background: var(--mirk-bevel-hover-bg); }
+  .hcms-shell .mirk-number__step:active {
+    border-color: var(--mirk-bevel-br) var(--mirk-bevel-tl) var(--mirk-bevel-tl) var(--mirk-bevel-br);
+  }
+  .hcms-shell .mirk-number__step:focus-visible { outline: 1px solid var(--mirk-focus-color); outline-offset: 1px; }
+
+  .hcms-shell .mirk-number--small .mirk-number__input { padding: 4px 8px 4px 12px; font-size: 14px; }
+  .hcms-shell .mirk-number--small .mirk-number__step { padding: 0 8px; font-size: 8px; }
+  .hcms-shell .mirk-number--large .mirk-number__input { padding: 6px 12px 9px 17px; font-size: 18px; }
+  .hcms-shell .mirk-number--large .mirk-number__step { padding: 0 12px; font-size: 10px; }
+
+  .hcms-shell .mirk-number--rounded { border-radius: var(--mirk-radius); }
+  .hcms-shell .mirk-number--rounded .mirk-number__step { border-radius: 3px; }
+
+  /* ============================ SELECT / DROPDOWN ============================ */
+  /* Keeps appearance:none + a real chevron (renders identically everywhere today);
+     base-select/::picker is a future enhancement. */
+  .hcms-shell .mirk-select { position: relative; }
+  .hcms-shell .mirk-select__field {
+    width: 100%; appearance: none; -webkit-appearance: none;
+    background: var(--mirk-bevel-bg); color: var(--mirk-bevel-fg);
+    border: 2px solid;
+    border-color: var(--mirk-bevel-tl) var(--mirk-bevel-br) var(--mirk-bevel-br) var(--mirk-bevel-tl);
+    padding: 4px 40px 5px 14px;                /* medium */
+    font: inherit; line-height: 1.5; border-radius: 0; outline: none;
+  }
+  .hcms-shell .mirk-select__field:focus-visible {
+    outline: 1px solid var(--mirk-focus-color); outline-offset: var(--mirk-focus-offset);
+  }
+  .hcms-shell .mirk-select__chevron {
+    pointer-events: none; position: absolute; top: 50%; right: 14px;  /* medium */
+    translate: 0 -50%; rotate: 90deg; display: inline-block; line-height: 1; font-size: 20px;
+  }
+  .hcms-shell .mirk-select--small .mirk-select__field { padding: 3px 36px 3px 12px; font-size: 14px; }
+  .hcms-shell .mirk-select--small .mirk-select__chevron { right: 12px; font-size: 18px; }
+  .hcms-shell .mirk-select--large .mirk-select__field { padding: 4px 48px 7px 17px; font-size: 18px; border-width: 3px; }
+  .hcms-shell .mirk-select--large .mirk-select__chevron { right: 16px; font-size: 24px; }
+
+  /* Round: gradient pill frame around a borderless, pill-filled select. */
+  .hcms-shell .mirk-select--round .mirk-select__frame {
+    padding: 2px; border-radius: 14px;         /* medium */
+    background-color: var(--mirk-canvas);
+    background-image: linear-gradient(to top in oklab, var(--mirk-bevel-br), var(--mirk-bevel-tl));
+  }
+  .hcms-shell .mirk-select--round .mirk-select__frame:has(:focus-visible) {
+    outline: 1px solid var(--mirk-focus-color); outline-offset: var(--mirk-focus-offset);
+  }
+  .hcms-shell .mirk-select--round .mirk-select__field {
+    border: none; background-color: transparent;
+    background-image: linear-gradient(to top in oklab, var(--mirk-bevel-bg), var(--mirk-pill-inner-top));
+    border-radius: 12px; padding: 4px 40px 6px 17px;   /* medium */
+  }
+  .hcms-shell .mirk-select--round.mirk-select--small .mirk-select__frame { border-radius: 12px; }
+  .hcms-shell .mirk-select--round.mirk-select--small .mirk-select__field { border-radius: 10px; padding: 2px 36px 2px 14px; }
+  .hcms-shell .mirk-select--round.mirk-select--large .mirk-select__frame { border-radius: 16px; }
+  .hcms-shell .mirk-select--round.mirk-select--large .mirk-select__field { border-radius: 14px; padding: 7px 48px 9px 24px; }
+  .hcms-shell .mirk-select--round.mirk-select--large .mirk-select__chevron { right: 16px; font-size: 24px; }
+
+  /* ============================ CHECKBOX ============================ */
+  .hcms-shell .mirk-checkbox { display: inline-flex; align-items: center; gap: 0.75rem; cursor: pointer; width: fit-content; }
+  .hcms-shell .mirk-checkbox__box {
+    position: relative; flex-shrink: 0; width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center; border-radius: 0;
+    background: var(--mirk-bevel-bg);
+    border: 2px solid;
+    border-color: var(--mirk-bevel-tl) var(--mirk-bevel-br) var(--mirk-bevel-br) var(--mirk-bevel-tl);
+  }
+  .hcms-shell .mirk-checkbox__mark {
+    opacity: 0; display: block; width: 6px; height: 12px;
+    border-right: 2.5px solid var(--mirk-mark-fg); border-bottom: 2.5px solid var(--mirk-mark-fg);
+    rotate: 45deg; translate: 0.5px -1.5px;
+  }
+  .hcms-shell .mirk-checkbox__label { font-size: 18px; line-height: 1.5; }
+
+  .hcms-shell .mirk-checkbox:has(:checked) .mirk-checkbox__box { border-color: var(--mirk-input-border); }
+  .hcms-shell .mirk-checkbox:has(:checked) .mirk-checkbox__mark { opacity: 1; }
+  .hcms-shell .mirk-checkbox:has(:focus-visible) .mirk-checkbox__box {
+    outline: 1px solid var(--mirk-focus-color); outline-offset: var(--mirk-focus-offset);
+  }
+
+  /* ============================ RADIO ============================ */
+  .hcms-shell .mirk-radio { display: inline-flex; align-items: center; gap: 0.75rem; cursor: pointer; width: fit-content; }
+  .hcms-shell .mirk-radio__ring {
+    position: relative; flex-shrink: 0; width: 25px; height: 25px; border-radius: 9999px;
+    background-image: linear-gradient(to top in oklab, var(--mirk-bevel-br), var(--mirk-bevel-tl));
+  }
+  .hcms-shell .mirk-radio__fill {
+    display: block; position: absolute; inset: 2px; border-radius: 9999px;
+    background-image: linear-gradient(to top in oklab, var(--mirk-bevel-bg), var(--mirk-pill-inner-top));
+  }
+  .hcms-shell .mirk-radio__dot {
+    display: none; position: absolute; top: 50%; left: 50%; translate: -50% -50%;
+    width: 9px; height: 9px; border-radius: 9999px; background: var(--mirk-mark-fg);
+  }
+  .hcms-shell .mirk-radio__label { font-size: 18px; line-height: 1.5; }
+
+  .hcms-shell .mirk-radio:has(:checked) .mirk-radio__ring {
+    background-image: none; background-color: var(--mirk-bevel-bg);
+    border: 2px solid var(--mirk-input-border);
+  }
+  .hcms-shell .mirk-radio:has(:checked) .mirk-radio__fill { display: none; }
+  .hcms-shell .mirk-radio:has(:checked) .mirk-radio__dot { display: block; }
+  .hcms-shell .mirk-radio:has(:focus-visible) .mirk-radio__ring {
+    outline: 1px solid var(--mirk-focus-color); outline-offset: var(--mirk-focus-offset);
+  }
+
+  /* ============================ TOGGLE ============================ */
+  .hcms-shell .mirk-toggle { display: inline-flex; align-items: center; gap: 0.75rem; cursor: pointer; width: fit-content; }
+  .hcms-shell .mirk-toggle__track {
+    position: relative; flex-shrink: 0; width: 49px; height: 27px; border-radius: 0;
+    border: 1px solid var(--mirk-input-border);
+  }
+  .hcms-shell .mirk-toggle__thumb {
+    position: absolute; top: 3px; left: 3px; width: 19px; height: 19px;
+    background-color: var(--mirk-toggle-bg);
+    border: 2px solid;
+    border-color: var(--mirk-toggle-hi) var(--mirk-toggle-lo) var(--mirk-toggle-lo) var(--mirk-toggle-hi);
+    transition-property: transform, translate, scale, rotate;
+    transition-duration: 0.15s; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .hcms-shell .mirk-toggle__label { font-size: 18px; line-height: 1.5; }
+
+  .hcms-shell .mirk-toggle:has(:checked) .mirk-toggle__thumb { translate: 22px; }
+  .hcms-shell .mirk-toggle:has(:focus-visible) .mirk-toggle__track {
+    outline: 1px solid var(--mirk-focus-color); outline-offset: var(--mirk-focus-offset);
+  }
+
+  .hcms-shell .mirk-toggle--round .mirk-toggle__track { width: 50px; height: 29px; border-radius: 9999px; }
+  .hcms-shell .mirk-toggle--round .mirk-toggle__thumb {
+    width: 21px; height: 21px; border: none; border-radius: 9999px;
+    background-color: transparent;
+    background-image: linear-gradient(to top in oklab, var(--mirk-toggle-lo), var(--mirk-toggle-hi));
+  }
+  .hcms-shell .mirk-toggle--round .mirk-toggle__thumb::after {
+    content: ""; position: absolute; inset: 2px; border-radius: 9999px; background: var(--mirk-toggle-bg);
+  }
+  .hcms-shell .mirk-toggle--round:has(:checked) .mirk-toggle__thumb { translate: 21px; }
+
+  /* ============================ SLIDER ============================ */
+  .hcms-shell .mirk-slider { position: relative; height: 32px; width: 100%; --mirk-value: 0%; }
+  .hcms-shell .mirk-slider__input {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    opacity: 0; cursor: pointer; z-index: 10;
+  }
+  .hcms-shell .mirk-slider__track {
+    position: absolute; left: 0; right: 0; top: 50%; translate: 0 -50%; height: 12px;
+    background: var(--mirk-canvas); border: 1px solid var(--mirk-input-border); overflow: hidden;
+  }
+  .hcms-shell .mirk-slider__fill { height: 100%; width: var(--mirk-value); background: var(--mirk-slider-fill); }
+  .hcms-shell .mirk-slider__nub {
+    position: absolute; top: 50%; left: var(--mirk-value); translate: -50% -50%;
+    width: 21px; height: 21px; pointer-events: none;
+    background-color: var(--mirk-slider-nub-bg);
+    border: 2px solid;
+    border-color: var(--mirk-slider-nub-hi) var(--mirk-slider-nub-lo) var(--mirk-slider-nub-lo) var(--mirk-slider-nub-hi);
+  }
+  .hcms-shell .mirk-slider__input:focus-visible ~ .mirk-slider__nub {
+    outline: 1px solid var(--mirk-focus-color); outline-offset: var(--mirk-focus-offset);
+  }
+
+  .hcms-shell .mirk-slider--round .mirk-slider__track { height: 10px; border-radius: 9999px; }
+  .hcms-shell .mirk-slider--round .mirk-slider__nub {
+    width: 24px; height: 24px; border: none; border-radius: 9999px;
+    background-color: transparent;
+    background-image: linear-gradient(to top in oklab, var(--mirk-slider-nub-lo), var(--mirk-slider-nub-hi));
+  }
+  .hcms-shell .mirk-slider--round .mirk-slider__nub::after {
+    content: ""; position: absolute; inset: 2px; border-radius: 9999px; background: var(--mirk-slider-nub-bg);
+  }
+
+  /* ============================ DATE ============================ */
+  .hcms-shell .mirk-date { position: relative; }
+  .hcms-shell .mirk-date__field {
+    width: 100%; background: var(--mirk-bevel-bg); color: var(--mirk-bevel-fg);
+    border: 1px solid var(--mirk-input-border);
+    padding: 6px 44px 9px 17px; font: inherit; font-size: 18px; line-height: 1.5;
+    border-radius: 0; outline: none;
+  }
+  .hcms-shell .mirk-date__field:focus-visible {
+    outline: 1px solid var(--mirk-focus-color); outline-offset: var(--mirk-focus-offset);
+  }
+  .hcms-shell .mirk-date__field::-webkit-calendar-picker-indicator {
+    opacity: 0; position: absolute; right: 0; top: 0; bottom: 0; width: 44px; margin: 0; cursor: pointer;
+  }
+  .hcms-shell .mirk-date__field::-webkit-inner-spin-button { -webkit-appearance: none; appearance: none; }
+  .hcms-shell .mirk-date__field::-webkit-clear-button { -webkit-appearance: none; appearance: none; }
+  .hcms-shell .mirk-date__icon {
+    pointer-events: none; position: absolute; right: 16px; top: 50%; translate: 0 -50%;
+  }
+  .hcms-shell .mirk-date--rounded .mirk-date__field { border-radius: var(--mirk-radius); }
+
+  /* The native file/image inputs are visually hidden; their styled label drives
+     them, and the focus ring rides :has(:focus-visible) on button or container. */
+  .hcms-shell .mirk-file__input, .hcms-shell .mirk-image__input {
+    position: absolute; width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
+  }
+
+  /* ============================ FILE ============================ */
+  .hcms-shell .mirk-file { display: flex; align-items: center; gap: 0.75rem; width: 100%; }
+  .hcms-shell .mirk-file__name {
+    color: var(--mirk-placeholder-color); font-size: 18px; line-height: 1.5;
+    min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .hcms-shell .mirk-file__name[data-filled] { color: var(--mirk-bevel-fg); }
+
+  /* Compact: a shared bordered container holds a smaller button + the name. */
+  .hcms-shell .mirk-file--compact {
+    padding: 4px 8px; background: var(--mirk-bevel-bg);
+    border: 1px solid var(--mirk-input-border); border-radius: 0;
+  }
+  .hcms-shell .mirk-file--compact:has(:focus-visible) {
+    outline: 1px solid var(--mirk-focus-color); outline-offset: var(--mirk-focus-offset);
+  }
+  /* The upload trigger is a .mirk-button; nudge it onto the container's left
+     border so the bevel sits flush (covers compact and round-compact). */
+  .hcms-shell .mirk-file--compact .mirk-button { margin-left: -1px; }
+  .hcms-shell .mirk-file--compact .mirk-file__name { font-size: 16px; }
+  .hcms-shell .mirk-file--compact.mirk-file--round { border-radius: 15px; }
+
+  /* Filled: the name slot becomes a link to the chosen file, beside a bare \xD7 to
+     clear it (the tags-remove pattern). Empty keeps the placeholder span. */
+  .hcms-shell a.mirk-file__name { text-decoration: underline; text-underline-offset: 2px; }
+  .hcms-shell .mirk-file__remove {
+    appearance: none; -webkit-appearance: none; flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    margin: 0; padding: 0; border: 0; background: none; color: inherit;
+    cursor: pointer; line-height: 0;
+  }
+  .hcms-shell .mirk-file__remove svg { display: block; width: 14px; height: 14px; }
+  .hcms-shell .mirk-file__remove:hover { color: var(--mirk-destructive); }
+
+  /* ============================ IMAGE ============================ */
+  .hcms-shell .mirk-image { display: flex; flex-direction: column; gap: 0.5rem; }
+  .hcms-shell .mirk-image__frame {
+    position: relative; width: 120px; height: 120px; overflow: hidden; border-radius: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--mirk-bevel-bg); border: 1px solid var(--mirk-input-border);
+    color: var(--mirk-placeholder-color); font-size: 14px; line-height: 1.5;
+  }
+  .hcms-shell .mirk-image__preview { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .hcms-shell .mirk-image--rounded .mirk-image__frame { border-radius: var(--mirk-radius); }
+  /* The upload trigger is a .mirk-button; keep it hugging its label instead of
+     stretching to fill this column-flex container. */
+  .hcms-shell .mirk-image .mirk-button { width: fit-content; }
+
+  /* Compact: a focused 56px thumbnail upload. Empty shows a small upload button;
+     once an image is chosen the button hides and a thumbnail + corner \xD7 takes its
+     place. The frame clips the image (overflow hidden) while the thumb wrapper
+     stays visible, so the \xD7 can sit just outside the corner without being cut. */
+  .hcms-shell .mirk-image--compact { flex-direction: row; align-items: center; gap: 0; }
+  .hcms-shell .mirk-image__thumb { position: relative; display: inline-block; width: fit-content; margin: 0; line-height: 0; }
+  .hcms-shell .mirk-image--compact .mirk-image__frame {
+    width: 56px; height: 56px; overflow: hidden; border-radius: 0;
+    border: 1px solid var(--mirk-input-border);
+  }
+  .hcms-shell .mirk-image--compact.mirk-image--rounded .mirk-image__frame { border-radius: var(--mirk-radius); }
+  .hcms-shell .mirk-image--compact .mirk-image__preview {
+    position: static; inset: auto; width: 100%; height: 100%; display: block; object-fit: cover;
+  }
+  .hcms-shell .mirk-image__remove {
+    position: absolute; top: -7px; right: -7px;
+    width: 18px; height: 18px; border-radius: 50%; padding: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    appearance: none; -webkit-appearance: none; cursor: pointer; line-height: 0;
+    color: var(--mirk-bevel-fg); background: var(--mirk-bevel-bg);
+    border: 1px solid var(--mirk-input-border);
+  }
+  .hcms-shell .mirk-image__remove svg { display: block; width: 10px; height: 10px; }
+  .hcms-shell .mirk-image__remove:hover { color: var(--mirk-destructive); border-color: var(--mirk-destructive); }
+
+  /* ============================ TAGS ============================ */
+  .hcms-shell .mirk-tags {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; padding: 0.5rem;
+    background: var(--mirk-bevel-bg); border: 1px solid var(--mirk-input-border);
+    border-radius: 0; cursor: text;
+  }
+  .hcms-shell .mirk-tags:has(:focus-visible) {
+    outline: 1px solid var(--mirk-focus-color); outline-offset: var(--mirk-focus-offset);
+  }
+  .hcms-shell .mirk-tags__chip {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 2px 8px 2px 12px; font-size: 14px; line-height: 1.5;
+    color: var(--mirk-bevel-fg); background: var(--mirk-bevel-bg);
+    border: 2px solid;
+    border-color: var(--mirk-bevel-tl) var(--mirk-bevel-br) var(--mirk-bevel-br) var(--mirk-bevel-tl);
+  }
+  .hcms-shell .mirk-tags__remove {
+    appearance: none; -webkit-appearance: none;
+    margin: 0; padding: 0; border: 0; background: none; color: inherit;
+    cursor: pointer; font-size: 14px; line-height: 1;
+  }
+  .hcms-shell .mirk-tags__remove:hover { color: var(--mirk-destructive); }
+  .hcms-shell .mirk-tags__input {
+    appearance: none; -webkit-appearance: none;
+    border: 0; padding: 0;
+    flex: 1; min-width: 120px; background: transparent; color: var(--mirk-bevel-fg);
+    outline: none; font-size: 18px; line-height: 1.5;
+  }
+  .hcms-shell .mirk-tags__input::placeholder { color: var(--mirk-placeholder-color); }
+
+  .hcms-shell .mirk-tags--round { border-radius: 15px; }
+  .hcms-shell .mirk-tags--round .mirk-tags__chip {
+    padding: 2px; border: none; border-radius: 12px;
+    background-color: transparent;
+    background-image: linear-gradient(to top in oklab, var(--mirk-bevel-br), var(--mirk-bevel-tl));
+  }
+  .hcms-shell .mirk-tags__chip-inner {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 1px 8px 1px 12px; border-radius: 10px;
+    color: var(--mirk-bevel-fg); background-color: var(--mirk-bevel-bg);
+    background-image: linear-gradient(to top in oklab, var(--mirk-bevel-bg), var(--mirk-pill-inner-top));
+  }
+
+  /* ============================ SORTABLE ============================ */
+  .hcms-shell .mirk-sortable { display: flex; flex-direction: column; gap: 0.5rem; }
+  .hcms-shell .mirk-sortable__item {
+    display: flex; flex-direction: row; width: 100%;
+    background: var(--mirk-bevel-bg); border: 1px solid var(--mirk-input-border);
+  }
+  .hcms-shell .mirk-sortable__grip {
+    width: 28px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    cursor: grab; border-right: 1px solid var(--mirk-input-border);
+  }
+  .hcms-shell .mirk-sortable__grip:active { cursor: grabbing; }
+  .hcms-shell .mirk-sortable__dots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3px; }
+  .hcms-shell .mirk-sortable__dot {
+    display: block; width: 4px; height: 4px; background: var(--mirk-sortable-dot);
+    box-shadow: 1px 0 0 0 var(--mirk-sortable-shadow), 0 1px 0 0 var(--mirk-sortable-shadow), 1px 1px 0 0 var(--mirk-sortable-shadow);
+  }
+  .hcms-shell .mirk-sortable__body { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+  .hcms-shell .mirk-sortable__row { padding: 8px 17px 9px; }
+  .hcms-shell .mirk-sortable__row:not(:last-child) { border-bottom: 1px solid var(--mirk-input-border); }
+  .hcms-shell .mirk-sortable__label {
+    display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em;
+    margin-bottom: 2px; color: var(--mirk-sortable-label);
+  }
+  .hcms-shell .mirk-sortable__field {
+    width: 100%; background: transparent; color: var(--mirk-bevel-fg);
+    font-size: 18px; line-height: 1.5; outline: none;
+  }
+  .hcms-shell .mirk-sortable__field::placeholder { color: var(--mirk-sortable-placeholder); }
+  .hcms-shell .mirk-sortable__field:focus-visible {
+    outline: 1px solid var(--mirk-focus-color); outline-offset: var(--mirk-focus-offset);
+  }
+}
+
+/* Respect the machine \u2014 outside @layer components so it always wins. */
+@media (prefers-reduced-motion: reduce) {
+  .hcms-shell .mirk-button--round, .hcms-shell .mirk-toggle__thumb { transition: none; }
+  .hcms-shell .mirk-button:active .mirk-button__label { translate: none; }
+}
+@media (forced-colors: active) {
+  .hcms-shell .mirk-button, .hcms-shell .mirk-select__field, .hcms-shell .mirk-checkbox__box, .hcms-shell .mirk-toggle__track { border: 1px solid ButtonText; }
+}
+
+/* ===== pixel-quiet overrides (hypercms-owned) ===== */
+/* =====================================================================
+   Pixel Quiet \u2014 hypercms theme overrides (hypercms-owned).
+
+   Adapted from cms-sidebar/pixel-quiet/overrides.css. Two jobs:
+     1. Retune --mirk-* tokens, scoped to .hcms-shell.pixel-quiet (never :root).
+     2. Author the panel geometry + the functional chrome the static mockup
+        doesn't have (error banner, add/remove/move controls, the engine's
+        sortable cards, push / overlay / left-dock modes) on top of the
+        .hcms-* structural hooks.
+
+   This file is concatenated AFTER the scoped mirk base+components by
+   scripts/build-theme.js, so plain rules here win over mirk's @layer
+   components with zero !important. Loaded only inside .hcms-shell, so nothing
+   here leaks onto the host page.
+   ===================================================================== */
+
+/* ============================================================
+   TOKEN RETUNE \u2014 LIGHT (warm cream, gentle near-equal bevel)
+   ============================================================ */
+.hcms-shell.pixel-quiet {
+  color-scheme: light;
+  --mirk-canvas: #F7F2EA;
+  --mirk-bg: #F7F2EA;
+  --mirk-fg: #2B241B;
+  --mirk-accent: #efefe5;
+  --mirk-destructive: #C24A3A;
+  --mirk-focus-color: #C7AE93;
+
+  --mirk-bevel-bg: #FCF8F1;
+  --mirk-bevel-fg: #2B241B;
+  --mirk-bevel-tl: #F0E7D8;
+  --mirk-bevel-br: #E2D4BF;
+  --mirk-bevel-hover-bg: #F4ECDF;
+  --mirk-pill-inner-top: #FBF6EE;
+  --mirk-input-border: #D8C8AF;
+  --mirk-placeholder-color: #A8987F;
+
+  --mirk-mark-fg: #6B5942;
+  --mirk-toggle-bg: #EFDBBD;
+  --mirk-toggle-hi: #F4EADA;
+  --mirk-toggle-lo: #C2A87E;
+  --mirk-sortable-dot: #DDCBB0;
+  --mirk-sortable-shadow: #C9B493;
+  --mirk-sortable-label: #8C7B62;
+  --mirk-sortable-placeholder: #A8987F;
+
+  --mirk-radius: 5px;
+  --mirk-focus-offset: 2px;
+}
+
+/* dark token deltas, shared by the explicit .dark opt-in and OS preference */
+.hcms-shell.pixel-quiet.dark,
+.hcms-shell.pixel-quiet[data-theme="dark"] {
+  color-scheme: dark;
+  --mirk-canvas: #0B0C13;
+  --mirk-bg: #11131E;
+  --mirk-fg: #ECEAF2;
+  --mirk-accent: #1D1F2F;
+  --mirk-focus-color: #4A506B;
+
+  --mirk-bevel-bg: #1A1D2C;
+  --mirk-bevel-fg: #ECEAF2;
+  --mirk-bevel-tl: #2A2E42;
+  --mirk-bevel-br: #14182A;
+  --mirk-bevel-hover-bg: #202436;
+  --mirk-pill-inner-top: #202436;
+  --mirk-input-border: #353B52;
+  --mirk-placeholder-color: #6A7090;
+
+  --mirk-mark-fg: #C9CDE0;
+  --mirk-toggle-bg: #3E4660;
+  --mirk-toggle-hi: #4E567A;
+  --mirk-toggle-lo: #262B42;
+  --mirk-sortable-dot: #353B52;
+  --mirk-sortable-shadow: #0E1120;
+  --mirk-sortable-label: #8A90AB;
+  --mirk-sortable-placeholder: #6A7090;
+}
+
+/* Auto-dark on OS preference, unless the shell pins light with .light */
+@media (prefers-color-scheme: dark) {
+  .hcms-shell.pixel-quiet:not(.light):not([data-theme="light"]) {
+    color-scheme: dark;
+    --mirk-canvas: #0B0C13;
+    --mirk-bg: #11131E;
+    --mirk-fg: #ECEAF2;
+    --mirk-accent: #1D1F2F;
+    --mirk-focus-color: #4A506B;
+
+    --mirk-bevel-bg: #1A1D2C;
+    --mirk-bevel-fg: #ECEAF2;
+    --mirk-bevel-tl: #2A2E42;
+    --mirk-bevel-br: #14182A;
+    --mirk-bevel-hover-bg: #202436;
+    --mirk-pill-inner-top: #202436;
+    --mirk-input-border: #353B52;
+    --mirk-placeholder-color: #6A7090;
+
+    --mirk-mark-fg: #C9CDE0;
+    --mirk-toggle-bg: #3E4660;
+    --mirk-toggle-hi: #4E567A;
+    --mirk-toggle-lo: #262B42;
+    --mirk-sortable-dot: #353B52;
+    --mirk-sortable-shadow: #0E1120;
+    --mirk-sortable-label: #8A90AB;
+    --mirk-sortable-placeholder: #6A7090;
+  }
+}
+
+/* ============================================================
+   SHELL GEOMETRY \u2014 fixed, docked panel, single column.
+   position: fixed makes the shell a containing block so the absolute
+   minibar anchors to it; flex column so the body owns the scroll.
+   ============================================================ */
+.hcms-shell.pixel-quiet {
   box-sizing: border-box;
   position: fixed;
   top: 0;
-  bottom: 0;
   right: 0;
-  width: 100vw;
-  max-width: 400px;
-  overflow-y: auto;
-  border-left: 1px solid var(--hcms-border);
+  bottom: 0;
+  width: 380px;
+  max-width: 100vw;
   z-index: 2147483000;
   display: flex;
   flex-direction: column;
-  box-shadow: -4px 0 24px rgba(15, 23, 42, 0.08);
+  color: var(--mirk-fg);
+  background: var(--mirk-bg);
+  border-left: 1px solid var(--mirk-input-border);
+  box-shadow: -16px 0 48px -28px rgba(43, 36, 27, 0.45);
+}
+.hcms-shell.pixel-quiet.dark {
+  box-shadow: -16px 0 48px -28px rgba(0, 0, 0, 0.6);
 }
 
-.hcms-shell.hcms-side-left {
-  left: 0;
+.hcms-shell.pixel-quiet.hcms-side-left {
   right: auto;
+  left: 0;
   border-left: 0;
-  border-right: 1px solid var(--hcms-border);
-  box-shadow: 4px 0 24px rgba(15, 23, 42, 0.08);
+  border-right: 1px solid var(--mirk-input-border);
+  box-shadow: 16px 0 48px -28px rgba(43, 36, 27, 0.45);
 }
 
-.hcms-shell * {
-  box-sizing: border-box;
+/* Push the page over so docked content is never hidden underneath. */
+body.hcms-open:not(.hcms-overlay) { padding-right: 380px; }
+body.hcms-open.hcms-side-left:not(.hcms-overlay) { padding-right: 0; padding-left: 380px; }
+body.hcms-open.hcms-overlay { overflow: hidden; }
+
+@media (max-width: 799px) {
+  .hcms-shell.pixel-quiet { width: 100vw; }
+  body.hcms-open:not(.hcms-overlay),
+  body.hcms-open.hcms-side-left:not(.hcms-overlay) { padding-right: 0; padding-left: 0; }
+  body.hcms-open { overflow: hidden; }
 }
 
-.hcms-shell-header {
+/* ---------- SCROLL REGION \u2014 holds the (scrollable) header + form + save ---------- */
+.hcms-shell-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* ---------- CONDENSED MINIBAR \u2014 appears once the full header scrolls away ---------- */
+.hcms-shell-minibar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px;
-  border-bottom: 1px solid var(--hcms-border);
+  gap: 12px;
+  padding: 9px 24px 10px;
+  background: var(--mirk-bg);
+  border-bottom: 1px solid var(--mirk-input-border);
+  opacity: 0;
+  transform: translateY(-100%);
+  pointer-events: none;
+  transition: opacity 140ms ease, transform 160ms ease;
+}
+.hcms-shell.is-condensed .hcms-shell-minibar {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.hcms-shell-minibar-title {
+  font-size: 14px;
+  line-height: 1;
+  color: var(--mirk-fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* ---------- HEADER (no underline rule \u2014 whitespace separates the bands) ---------- */
+.hcms-shell-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 24px 24px 4px;
+}
+.hcms-shell-heading { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.hcms-shell-eyebrow {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--mirk-placeholder-color);
+}
 .hcms-shell-title {
   margin: 0;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--mirk-fg);
 }
-
-.hcms-shell-close {
-  background: transparent;
-  border: 0;
-  color: var(--hcms-muted);
-  font-size: 24px;
+.hcms-shell-close.mirk-button {
+  flex-shrink: 0;
+  padding: 2px 9px 3px;
   line-height: 1;
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 6px;
 }
-.hcms-shell-close:hover { background: rgba(15, 23, 42, 0.06); color: var(--hcms-text); }
+.hcms-shell-close .mirk-button__label { font-size: 16px; }
 
-.hcms-shell-error {
-  margin: 12px 16px;
-  padding: 10px 12px;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: var(--hcms-error);
-  border-radius: 6px;
-  font-size: 13px;
-}
-
+/* ---------- FORM \u2014 generous, even vertical rhythm ---------- */
 .hcms-form {
-  flex: 1;
-  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  padding: 24px 24px 28px;
+}
+
+/* one labeled scalar field */
+.hcms-field { display: flex; flex-direction: column; gap: 9px; }
+.hcms-field--row {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* themed field label */
+.hcms-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--mirk-sortable-label);
+}
+
+/* comfortable control padding + readable size, in mirk's own mono */
+.hcms-shell.pixel-quiet .mirk-input,
+.hcms-shell.pixel-quiet .mirk-textarea {
+  font-size: 15px;
+  padding: 9px 14px 10px;
+}
+.hcms-shell.pixel-quiet textarea.mirk-input { min-height: 76px; resize: vertical; }
+.hcms-shell.pixel-quiet .mirk-select__field {
+  font-size: 15px;
+  padding: 8px 40px 9px 14px;
+}
+.hcms-shell.pixel-quiet .mirk-radio__label,
+.hcms-shell.pixel-quiet .mirk-toggle__label,
+.hcms-shell.pixel-quiet .mirk-tags__input { font-size: 15px; }
+
+/* inline radio row */
+.hcms-radio-row { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+
+/* ---------- OBJECT GROUP \u2014 a quiet framed band, not a heavy card ---------- */
+.hcms-object {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
-
-.hcms-field {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.hcms-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--hcms-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.hcms-input {
-  font-family: inherit;
-  font-size: 14px;
-  padding: 8px 10px;
-  border: 1px solid var(--hcms-border);
-  border-radius: 6px;
-  background: #fdfdfd;
-  color: var(--hcms-text);
-  width: 100%;
-}
-.hcms-input:focus {
-  outline: 2px solid var(--hcms-primary);
-  outline-offset: -1px;
-  border-color: var(--hcms-primary);
-}
-
-textarea.hcms-input { min-height: 80px; resize: vertical; }
-
-.hcms-object {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 12px;
-  border: 1px solid var(--hcms-border);
-  border-radius: 8px;
-  background: #fdfdfd;
-}
-
-.hcms-object-title,
-.hcms-array-title {
-  margin: 0 0 8px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--hcms-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.hcms-array {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.hcms-array-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-}
-
-.hcms-array-items {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  list-style: none;
-  padding: 0;
+.hcms-object-title {
   margin: 0;
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--mirk-sortable-label);
 }
+.hcms-object-fields { display: flex; flex-direction: column; gap: 16px; }
 
-.hcms-array-item,
-.hcms-card {
+/* ---------- SCALAR ARRAY \u2014 a calm list of mirk-input rows ---------- */
+.hcms-array { display: flex; flex-direction: column; gap: 14px; }
+.hcms-array-header { display: flex; align-items: baseline; justify-content: space-between; }
+.hcms-array-title {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--mirk-sortable-label);
+}
+/* The generic stacked-list layout is unlayered, so it would beat mirk's
+   @layer-components rules on any slot that is also a mirk component. Exempt a
+   mirk tags box so it keeps mirk's own row-wrap layout and inner padding. */
+.hcms-array-items:not(.mirk-tags) {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.hcms-array-item {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px;
-  background: #fdfdfd;
-  border: 1px solid var(--hcms-border);
-  border-radius: 6px;
 }
+.hcms-array-item .mirk-input { flex: 1; min-width: 0; }
 
-.hcms-card {
-  flex-direction: column;
-  align-items: stretch;
-  padding: 12px;
-  gap: 10px;
+/* ---------- OBJECT ARRAY \u2014 mirk-sortable cards from the engine markup ---------- */
+.hcms-array--cards .hcms-array-items { gap: 14px; }
+.hcms-card.mirk-sortable__item { background: var(--mirk-bevel-bg); position: relative; }
+.hcms-card .hcms-card-fields { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.hcms-card .hcms-field {
+  gap: 2px;
+  padding: 8px 14px 9px;
 }
-
-.hcms-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.hcms-card-fields {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.hcms-drag-handle {
-  cursor: grab;
-  color: var(--hcms-muted);
-  user-select: none;
-  font-family: monospace;
-  font-size: 14px;
-}
-
-.hcms-remove,
-.hcms-add {
-  font-family: inherit;
+.hcms-card .hcms-field:not(:last-child) { border-bottom: 1px solid var(--mirk-input-border); }
+.hcms-card .hcms-label { letter-spacing: 0.16em; }
+/* fields inside a card read as quiet rows, not chunky boxed inputs */
+.hcms-card .mirk-input,
+.hcms-card .mirk-textarea {
+  border: none;
   background: transparent;
-  border: 1px solid var(--hcms-border);
-  border-radius: 6px;
-  padding: 4px 10px;
-  cursor: pointer;
-  font-size: 13px;
-  color: var(--hcms-muted);
+  padding: 0;
+  font-size: 15px;
 }
-.hcms-remove:hover { color: var(--hcms-error); border-color: #fecaca; }
-.hcms-add { align-self: flex-start; padding: 6px 12px; color: var(--hcms-text); }
-.hcms-add:hover { border-color: var(--hcms-primary); color: var(--hcms-primary); }
+.hcms-card .mirk-input:focus-visible,
+.hcms-card .mirk-textarea:focus-visible { outline: none; }
+/* the remove \xD7 is pulled out to the card corner (below), so the controls row
+   now only holds the sr-only move buttons \u2014 collapse it until one is focused. */
+.hcms-card-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: 0;
+}
 
-.hcms-error {
-  margin: 6px 0;
-  padding: 6px 10px;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: var(--hcms-error);
-  border-radius: 6px;
-  font-size: 12px;
+/* quiet \xD7 remove control, shared by scalar-array rows and object-array cards */
+.hcms-remove {
+  flex-shrink: 0;
+  appearance: none;
+  border: 0;
+  background: none;
+  color: var(--mirk-placeholder-color);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 2px 6px;
 }
+.hcms-remove:hover { color: var(--mirk-destructive); }
+.hcms-remove[hidden] { display: none; }
+
+/* object-array card: the delete control is a square corner button pinned
+   top-right, carrying the card's own 1px border + a crisp-line \xD7 icon. */
+.hcms-remove--card {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--mirk-input-border);
+  background: var(--mirk-bevel-bg);
+  color: var(--mirk-placeholder-color);
+}
+.hcms-remove--card:hover { border-color: var(--mirk-destructive); }
+.hcms-remove--card .hcms-x { width: 64%; height: 64%; display: block; }
+
+/* "+ Add" \u2014 quiet, pinned left */
+.hcms-add.mirk-button { align-self: flex-start; }
+
+/* ---------- UPLOAD COMPONENTS (@file / @image) ----------
+   Built on the kit's mirk-file / mirk-image--compact chrome. The native picker
+   is visually hidden but focusable (the mirk-button label is the visible
+   trigger and rings via :has(:focus-visible)); it is NOT .mirk-*__input, so the
+   vendored mirk runtime never handles it. The empty/filled chrome is driven by
+   the bound leaf's value attribute (src/href) in CSS \u2014 no JS state to desync. */
+.hcms-upload input[type="file"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* @image: show the upload button until the bound <img> carries a real src. */
+.hcms-upload--image .mirk-image__thumb { display: none; }
+.hcms-upload--image:has(.mirk-image__preview[src]:not([src=""])) .mirk-image__upload { display: none; }
+.hcms-upload--image:has(.mirk-image__preview[src]:not([src=""])) .mirk-image__thumb { display: inline-block; }
+
+/* @file: reveal the clear \xD7 and the filename only once the bound <a> has href. */
+.hcms-upload--file .hcms-upload-clear { display: none; }
+.hcms-upload--file:has(a.mirk-file__name[href]:not([href=""])) .hcms-upload-clear { display: inline-flex; }
+/* A filled filename uses the bright foreground (the kit's [data-filled] look),
+   driven by the bound href so there's no JS attribute to keep in sync \u2014 the
+   vendored runtime that would otherwise stamp data-filled is inert here. */
+.hcms-upload--file:has(a.mirk-file__name[href]:not([href=""])) a.mirk-file__name {
+  color: var(--mirk-bevel-fg);
+}
+.hcms-upload--file a.mirk-file__name:empty {
+  text-decoration: none;
+  cursor: default;
+}
+.hcms-upload--file a.mirk-file__name:empty::after {
+  content: "No file chosen";
+  color: var(--mirk-placeholder-color);
+}
+
+/* clear-\xD7 (vendored-inert; data-hcms-action, never .mirk-*__remove). Bare \xD7 for
+   @file, a pinned corner badge for @image \u2014 mirroring .hcms-remove / --card. */
+.hcms-upload-clear {
+  flex-shrink: 0;
+  appearance: none;
+  border: 0;
+  background: none;
+  color: var(--mirk-placeholder-color);
+  cursor: pointer;
+  line-height: 0;
+  padding: 2px 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.hcms-upload-clear:hover { color: var(--mirk-destructive); }
+.hcms-upload-clear .hcms-x { display: block; width: 14px; height: 14px; }
+
+.hcms-upload-clear--badge {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--mirk-input-border);
+  background: var(--mirk-bevel-bg);
+  color: var(--mirk-bevel-fg);
+}
+.hcms-upload-clear--badge:hover { color: var(--mirk-destructive); border-color: var(--mirk-destructive); }
+.hcms-upload-clear--badge .hcms-x { width: 10px; height: 10px; }
+
+/* ---------- ERROR BANNER + inline errors ---------- */
+.hcms-shell-error,
+.hcms-error {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--mirk-destructive);
+  background: var(--mirk-bevel-bg);
+  border: 1px solid var(--mirk-destructive);
+  padding: 8px 12px;
+}
+.hcms-shell-error { margin: 0 24px; }
+.hcms-error { margin-top: 6px; }
+.hcms-shell-error[hidden],
 .hcms-error[hidden] { display: none; }
 
+/* ---------- SAVE (sits at the end of the scrolling form, not pinned) ---------- */
 .hcms-shell-footer {
-  border-top: 1px solid var(--hcms-border);
-  padding: 12px 16px;
   display: flex;
   justify-content: flex-end;
+  padding: 4px 24px 28px;
 }
+.hcms-shell-footer[hidden] { display: none; }
 
-.hcms-shell-save {
-  font-family: inherit;
-  background: var(--hcms-primary);
-  color: #fdfdfd;
-  border: 0;
-  border-radius: 6px;
-  padding: 8px 16px;
-  font-size: 14px;
-  cursor: pointer;
-  font-weight: 500;
-}
-.hcms-shell-save:hover { filter: brightness(1.08); }
-
-@media (max-width: 799px) {
-  .hcms-shell { max-width: 100vw; }
-}
-
-/* Scroll lock only when the sidebar covers the page (overlay + mobile fullscreen). In push mode the page keeps its own scroll. */
-body.hcms-open.hcms-overlay {
-  overflow: hidden;
-}
-
-body.hcms-open:not(.hcms-overlay) {
-  padding-right: 400px;
-}
-body.hcms-open.hcms-side-left:not(.hcms-overlay) {
-  padding-right: 0;
-  padding-left: 400px;
-}
-@media (max-width: 799px) {
-  body.hcms-open:not(.hcms-overlay),
-  body.hcms-open.hcms-side-left:not(.hcms-overlay) {
-    padding-right: 0;
-    padding-left: 0;
-  }
-  body.hcms-open {
-    overflow: hidden;
-  }
-}
-
-/* sr-only: visually hidden but accessible to screen readers + becomes
-   visible on keyboard focus, so keyboard users can see move buttons land. */
+/* ---------- sr-only move buttons: hidden, visible on keyboard focus ---------- */
 .hcms-sr-only {
   position: absolute;
   width: 1px;
@@ -351,15 +1172,14 @@ body.hcms-open.hcms-side-left:not(.hcms-overlay) {
   overflow: visible;
   clip: auto;
   white-space: normal;
-  background: #F6F7F9;
-  border: 1px solid #c0c8d6;
-  border-radius: 3px;
-  color: #1f2532;
+  background: var(--mirk-bevel-bg);
+  border: 1px solid var(--mirk-input-border);
+  color: var(--mirk-fg);
   font-size: 12px;
   cursor: pointer;
 }
 .hcms-sr-only[hidden] { display: none; }
-`;mr(gr);var no=bt,oo={cms:bt};return xr(so);})();
+`;typeof window<"u"&&typeof document<"u"&&(function(){if(window.__mirk)return;window.__mirk=!0;let e='<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4 12 12M12 4 4 12" stroke="currentColor" stroke-width="2" stroke-linecap="square" fill="none"/></svg>';document.addEventListener("click",r=>{let n=r.target.closest(".mirk-number__step");if(!n)return;let i=n.closest(".mirk-number").querySelector("input[type=number]");i&&(n.dataset.step==="up"?i.stepUp():i.stepDown(),i.dispatchEvent(new Event("change",{bubbles:!0})))}),document.addEventListener("input",r=>{let n=r.target.closest(".mirk-slider__input");n&&n.closest(".mirk-slider").style.setProperty("--mirk-value",`${n.value}%`)}),document.addEventListener("change",r=>{let n=r.target.closest(".mirk-file__input");if(!n||!n.files.length)return;let i=n.closest(".mirk-file"),o=i.querySelector(".mirk-file__name");if(!o)return;let a=n.files[0],s=document.createElement("a");if(s.className="mirk-file__name",s.dataset.filled="",s.href=URL.createObjectURL(a),s.target="_blank",s.rel="noopener",s.textContent=a.name,o.replaceWith(s),!i.querySelector(".mirk-file__remove")){let l=document.createElement("button");l.type="button",l.className="mirk-file__remove",l.setAttribute("aria-label","Remove file"),l.innerHTML=e,s.after(l)}}),document.addEventListener("change",r=>{let n=r.target.closest(".mirk-image__input");if(!n||!n.files.length)return;let i=n.closest(".mirk-image"),o=i.querySelector(".mirk-image__preview");if(!o)return;let a=i.querySelector(".mirk-image__placeholder"),s=new FileReader;s.onload=l=>{o.src=l.target.result,o.removeAttribute("hidden"),a&&a.setAttribute("hidden",""),i.querySelector(".mirk-image__thumb")?.removeAttribute("hidden"),i.querySelector(".mirk-image__upload")?.setAttribute("hidden","")},s.readAsDataURL(n.files[0])}),document.addEventListener("click",r=>{let n=r.target.closest(".mirk-file__remove");if(n){let o=n.closest(".mirk-file"),a=o?.querySelector(".mirk-file__input"),s=o?.querySelector(".mirk-file__name");if(a&&(a.value=""),s){let l=document.createElement("span");l.className="mirk-file__name",l.textContent="No file chosen",s.replaceWith(l)}n.remove();return}let i=r.target.closest(".mirk-image__remove");if(i){let o=i.closest(".mirk-image"),a=o?.querySelector(".mirk-image__input"),s=o?.querySelector(".mirk-image__preview");a&&(a.value=""),s&&(s.removeAttribute("src"),s.setAttribute("hidden","")),o?.querySelector(".mirk-image__thumb")?.setAttribute("hidden",""),o?.querySelector(".mirk-image__upload")?.removeAttribute("hidden")}});function t(r,n){let i=document.createElement("span");i.textContent=r;let o=document.createElement("input");o.type="hidden",o.name="tags[]",o.value=r;let a=document.createElement("button");a.type="button",a.className="mirk-tags__remove",a.textContent="\xD7";let s=document.createElement("span");if(s.className="mirk-tags__chip",n){let l=document.createElement("span");l.className="mirk-tags__chip-inner",l.append(i,o,a),s.append(l)}else s.append(i,o,a);return s}document.addEventListener("keydown",r=>{let n=r.target.closest(".mirk-tags__input");if(!n)return;let i=n.closest(".mirk-tags");if(r.key==="Enter"||r.key===","){let o=n.value.trim();if(!o)return;r.preventDefault(),n.before(t(o,i.classList.contains("mirk-tags--round"))),n.value=""}else if(r.key==="Backspace"&&!n.value){let o=i.querySelectorAll(".mirk-tags__chip");o[o.length-1]?.remove()}}),document.addEventListener("click",r=>{let n=r.target.closest(".mirk-tags__remove");if(n){n.closest(".mirk-tags__chip").remove();return}let i=r.target.closest(".mirk-tags");i&&r.target===i&&i.querySelector(".mirk-tags__input")?.focus()}),document.addEventListener("click",r=>{let n=r.target.closest("[data-copy-btn]");if(!n)return;let i=n.closest("[data-copy]");if(!i)return;let o=i.cloneNode(!0);o.querySelectorAll("[data-copy-btn]").forEach(l=>l.remove());let s=i.getAttribute("data-copy")==="text"?o.textContent.replace(/^\s+|\s+$/g,""):o.innerHTML.replace(/\s+data-copy(="[^"]*")?/g,"").replace(/^\s*\n/gm,"").trim();navigator.clipboard.writeText(s).then(()=>{let l=n.textContent;n.textContent="copied",n.dataset.copied="",setTimeout(()=>{n.textContent=l,delete n.dataset.copied},1200)}).catch(()=>{n.textContent="error",setTimeout(()=>{n.textContent="copy"},1200)})})})();Mr(Or);var qi=Mt,$i={cms:Mt};return Fr(Di);})();
 
 // Auto-export to window unless suppressed by loader.
 // Per hypercms plan locked decision 3: flatten to hyperclay.hypercms.open(),
