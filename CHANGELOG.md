@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.32.0] - 2026-06-07
+
+### Added
+- named hypercms controls (checkbox, toggle, select, radio, textarea, number, chips)
+- crop-on-upload for hypercms via quickcrop
+
+### Changed
+- purge-cdn-cache now purges all changed files instead of capping at 10, throttled to 1/s with 429 backoff and retries
+
+
+
 ## [1.31.0] - 2026-06-06
 
 ### Added
