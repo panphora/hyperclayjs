@@ -11,84 +11,39 @@
 */
 import Mutation from "../utilities/mutation.js";
 
-const observers = new WeakMap();
-
-function setupMutationObserver(element) {
-  if (observers.has(element)) return;
-
-  const executeMutation = async () => {
-    try {
-      const code = element.getAttribute('onmutation');
-      if (!code) return;
-      const asyncFn = new Function(`return (async function() { ${code} })`)();
-      await asyncFn.call(element);
-    } catch (error) {
-      console.error('Error in onmutation execution:', error);
-    }
-  };
-
-  const observer = new MutationObserver(() => {
-    executeMutation();
-  });
-
-  observer.observe(element, {
-    childList: true,
-    subtree: true,
-    characterData: true,
-    attributes: true
-  });
-
-  observers.set(element, observer);
-}
-
-function teardownMutationObserver(element) {
-  const observer = observers.get(element);
-  if (observer) {
-    observer.disconnect();
-    observers.delete(element);
+async function executeMutation(element) {
+  try {
+    const code = element.getAttribute('onmutation');
+    if (!code) return;
+    const asyncFn = new Function(`return (async function() { ${code} })`)();
+    await asyncFn.call(element);
+  } catch (error) {
+    console.error('Error in onmutation execution:', error);
   }
 }
 
 function init() {
-  // Set up existing elements
-  document.querySelectorAll('[onmutation]').forEach(setupMutationObserver);
-
-  // Watch for dynamically added elements with onmutation
-  Mutation.onAddElement({
-    selectorFilter: '[onmutation]',
-    debounce: 200,
-    require: 'observed',
-    pausable: false
-  }, (changes) => {
-    changes.forEach(({ element }) => {
-      setupMutationObserver(element);
-    });
-  });
-
-  // Clean up when elements are removed
-  Mutation.onRemoveElement({
-    selectorFilter: '[onmutation]',
-    debounce: 200,
-    require: 'observed',
-    pausable: false
-  }, (changes) => {
-    changes.forEach(({ element }) => {
-      teardownMutationObserver(element);
-    });
-  });
-
-  // Watch for attribute removal
-  Mutation.onAttribute({
-    selectorFilter: '[onmutation]',
-    debounce: 200,
-    require: 'observed',
-    pausable: false
-  }, (changes) => {
-    changes.forEach(({ element, attribute, newValue }) => {
-      if (attribute === 'onmutation' && newValue === null) {
-        teardownMutationObserver(element);
+  // Source from the single shared observer instead of one MutationObserver per
+  // [onmutation] element. For each change, fire every [onmutation] element whose
+  // subtree it belongs to: walk up from the element whose subtree actually
+  // changed — the still-attached parent for add/remove (the removed node is
+  // detached), otherwise the changed element itself — and run any [onmutation]
+  // ancestor, exactly as a per-element subtree observer would. An element's own
+  // insertion is its parent's childList change, so (correctly) doesn't fire it.
+  //
+  // require:'observed' makes it region-aware (skips no-watch / extension noise),
+  // which the old per-element observers were not; pausable:false keeps the
+  // reactivity firing through a live-sync morph, matching [onpagemutation].
+  Mutation.onAnyChange({ require: 'observed', pausable: false }, (changes) => {
+    const toFire = new Set();
+    for (const change of changes) {
+      let el = (change.type === 'add' || change.type === 'remove') ? change.parent : change.element;
+      while (el && el.nodeType === 1) {
+        if (el.hasAttribute('onmutation')) toFire.add(el);
+        el = el.parentElement;
       }
-    });
+    }
+    toFire.forEach(executeMutation);
   });
 }
 

@@ -74,6 +74,16 @@ const Mutation = {
   _hasNonPausable: false,
   debug: false,
 
+  // Raw lane: subscribers that need the untransformed MutationRecords (the undo
+  // recorder). Each gets a private buffer so a global takeRecords() drain by one
+  // subscriber can't steal records owed to another. See _drainBrowserQueue.
+  _rawSubscribers: [],
+  // Change-lane records pulled by a raw subscriber's drain, deferred to a
+  // microtask so a debounce:0 mutating subscriber (autosize) never fires
+  // synchronously inside undo's commit boundary.
+  _deferredChangeRecords: null,
+  _deferredChangeScheduled: false,
+
   /**
    * Pause mutation observation.
    * Use this when making programmatic DOM changes that shouldn't trigger callbacks.
@@ -100,14 +110,13 @@ const Mutation = {
     this._pauseDepth--;
     // Drain pending mutation records only on the outermost release — observer
     // stays connected during pause, so morph mutations are recorded and would
-    // fire async once the depth returns to zero. Non-pausable callbacks (pure
-    // enhancers like sortable / optionVisibility) still need that boundary
-    // batch, so route it to them before discarding the rest.
+    // fire async once the depth returns to zero. Route through the one drain
+    // funnel: non-pausable callbacks (pure enhancers like sortable /
+    // optionVisibility) get that boundary batch, and raw subscribers (undo) get
+    // it into their buffer so the morph-boundary records aren't lost (then
+    // undo.resume()'s own drain-discard excludes the morph, matching today).
     if (this._pauseDepth === 0 && this._observer) {
-      const pending = this._observer.takeRecords();
-      if (pending.length && this._hasNonPausable) {
-        this._processMutations(pending, true);
-      }
+      this._drainBrowserQueue(this);
     }
     if (typeof window !== 'undefined' && window.hyperclay && window.hyperclay.undo && window.hyperclay.undo.resume) {
       window.hyperclay.undo.resume();
@@ -244,6 +253,150 @@ const Mutation = {
     }
     change.__policy = policy;
     return policy;
+  },
+
+  // The real MutationObserver's callback target. Two lanes, in this order:
+  //   1. raw fan-out FIRST, unconditionally (even while paused / on the fast
+  //      path) so the raw lane's push timing matches a real MutationObserver and
+  //      undo's own paused-drop keeps working.
+  //   2. the change lane (pause-gated, as before).
+  _onRecords(records) {
+    this._fanOutRaw(records);
+    this._handleMutations(records);
+  },
+
+  // Push the untransformed records to every raw subscriber's callback. No
+  // filtering and no pause gating: raw means raw (undo runs its own filter and
+  // its own pause). Captured BEFORE the change lane's isInert / extension-attr
+  // intake drops, which the raw subscriber must not inherit.
+  _fanOutRaw(records) {
+    if (!this._rawSubscribers.length || !records.length) return;
+    for (const sub of this._rawSubscribers) {
+      try {
+        sub.cb(records);
+      } catch (e) {
+        this._log('Error in raw subscriber callback:', e, 'error');
+        console.error('Error in Mutation raw subscriber:', e);
+      }
+    }
+  },
+
+  // The ONLY caller of this._observer.takeRecords(). Pulls the browser's pending
+  // (undelivered) records and routes them three ways so nobody loses a record
+  // the global takeRecords() just emptied:
+  //   (a) every OTHER raw subscriber: into its private buffer + a microtask flush
+  //   (b) the change lane: deferred to a microtask when the requester is a raw
+  //       subscriber (so a debounce:0 mutating subscriber can't fire inside
+  //       undo's synchronous commit); synchronous-to-non-pausables when the hub
+  //       itself is the requester (the resume() boundary, matching today)
+  //   (c) the requester: returns the pulled records merged with its own buffer,
+  //       then clears the buffer.
+  _drainBrowserQueue(requester) {
+    const pulled = this._observer ? this._observer.takeRecords() : [];
+    const requesterIsRaw = !!requester && this._rawSubscribers.indexOf(requester) !== -1;
+
+    if (pulled.length) {
+      // (a) records owed to other raw subscribers (the global queue is now empty
+      // for them too, so hand them their copy via their buffer).
+      for (const sub of this._rawSubscribers) {
+        if (sub === requester) continue;
+        sub.buffer.push(...pulled);
+        this._scheduleBufferFlush(sub);
+      }
+
+      // (b) change lane.
+      if (requesterIsRaw) {
+        this._deferChangeLane(pulled);
+      } else if (this._hasNonPausable) {
+        this._processMutations(pulled, true);
+      }
+    }
+
+    // (c) hand the requester its records (own buffer first = chronological).
+    if (requesterIsRaw) {
+      const own = requester.buffer;
+      requester.buffer = [];
+      return own.length ? own.concat(pulled) : pulled;
+    }
+    return pulled;
+  },
+
+  // Deliver a raw subscriber's buffered records on a microtask, reading the
+  // CURRENT buffer at flush time so a synchronous drain() in between makes this
+  // a no-op (the buffer is consume-and-clear; a record is delivered exactly once
+  // — via flush OR via drain, never both).
+  _scheduleBufferFlush(sub) {
+    if (sub._flushScheduled) return;
+    sub._flushScheduled = true;
+    queueMicrotask(() => {
+      sub._flushScheduled = false;
+      if (!sub.buffer.length) return;
+      const batch = sub.buffer;
+      sub.buffer = [];
+      try {
+        sub.cb(batch);
+      } catch (e) {
+        this._log('Error in raw subscriber flush:', e, 'error');
+        console.error('Error in Mutation raw subscriber:', e);
+      }
+    });
+  },
+
+  // Queue change-lane records pulled by a raw subscriber's drain for a single
+  // microtask-deferred pass through _handleMutations (pause rules apply at
+  // processing time, not capture time).
+  _deferChangeLane(records) {
+    if (!this._deferredChangeRecords) this._deferredChangeRecords = [];
+    this._deferredChangeRecords.push(...records);
+    if (this._deferredChangeScheduled) return;
+    this._deferredChangeScheduled = true;
+    queueMicrotask(() => {
+      this._deferredChangeScheduled = false;
+      const batch = this._deferredChangeRecords;
+      this._deferredChangeRecords = null;
+      if (batch && batch.length) this._handleMutations(batch);
+    });
+  },
+
+  // Raw lane primitive: an explicit push+pull subscription to the untransformed
+  // MutationRecords. Internal plumbing for the vendored undo recorder (so the
+  // page runs ONE MutationObserver). Not public API yet.
+  subscribeRaw(cb) {
+    const sub = { cb, buffer: [], _flushScheduled: false };
+    this._rawSubscribers.push(sub);
+    // A raw subscriber may register before any change subscriber, and the hub
+    // only starts observing on first subscription (the lazy-start trap), so
+    // force it on or undo records nothing when it starts first.
+    this._startObserving();
+    return {
+      drain: () => this._drainBrowserQueue(sub),
+      unsubscribe: () => {
+        const i = this._rawSubscribers.indexOf(sub);
+        if (i !== -1) this._rawSubscribers.splice(i, 1);
+      },
+    };
+  },
+
+  // Thin MutationObserver-shaped adapter over subscribeRaw, so undo's scope.js
+  // changes one construction line and keeps its observe/disconnect/takeRecords
+  // calls. Only document.body is supported (the singleton's scope); created
+  // shadow scopes keep a real MutationObserver. Options are accepted and ignored
+  // — the hub already observes with options identical to undo's.
+  createObserver(cb) {
+    let subscription = null;
+    return {
+      observe: (target /*, options */) => {
+        if (target !== document.body) {
+          throw new Error('Mutation.createObserver only supports observing document.body');
+        }
+        this._startObserving();
+        if (!subscription) subscription = this.subscribeRaw(cb);
+      },
+      disconnect: () => {
+        if (subscription) { subscription.unsubscribe(); subscription = null; }
+      },
+      takeRecords: () => (subscription ? subscription.drain() : []),
+    };
   },
 
   _handleMutations(mutations) {
@@ -422,7 +575,7 @@ const Mutation = {
   _initializeObserver() {
     if (!this._observer) {
       this._log('Initializing MutationObserver');
-      this._observer = new MutationObserver(this._handleMutations.bind(this));
+      this._observer = new MutationObserver(this._onRecords.bind(this));
     }
   },
 

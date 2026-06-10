@@ -172,3 +172,24 @@ export function skipForPolicy(policy, require, skip) {
       return !policy.watched || !policy.autosaveTriggered || policy.persist !== PERSIST.FULL;
   }
 }
+
+// Expose the canonical region API on window so the vendored hyper-undo (a
+// separate bundle that can't import this module) can delegate "is this
+// undoable?" to the SAME resolver instead of hand-mirroring the marker list —
+// the two can no longer drift. Standalone undo (no hyperclay) keeps its own
+// fallback list. Guarded like the other modules' auto-exports.
+if (typeof window !== 'undefined' && !window.__hyperclayNoAutoExport) {
+  window.hyperclay = window.hyperclay || {};
+  window.hyperclay.region = {
+    resolveRegionPolicy,
+    isInert,
+    skipForPolicy,
+    strictestPolicy,
+    PERSIST,
+    REGION_ATTRS,
+    STRIP_FROM_SAVE,
+    FREEZE_SELECTOR,
+    STRIP_FROM_COMPARISON,
+  };
+  window.h = window.hyperclay;
+}
