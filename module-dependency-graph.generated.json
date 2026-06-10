@@ -88,7 +88,8 @@
       "dom-utilities/onDomReady.js"
     ],
     "core/snapshot.js": [
-      "utilities/extension-noise.js"
+      "utilities/extension-noise.js",
+      "utilities/region-policy.js"
     ],
     "core/unsavedWarning.js": [
       "core/isAdminOfCurrentResource.js",
@@ -101,7 +102,8 @@
     ],
     "custom-attributes/autosize.esm.js": [],
     "custom-attributes/autosize.js": [
-      "custom-attributes/autosize.esm.js"
+      "custom-attributes/autosize.esm.js",
+      "utilities/mutation.js"
     ],
     "custom-attributes/domHelpers.js": [
       "utilities/nearest.js",
@@ -141,7 +143,9 @@
     "custom-attributes/refetchOnSave.js": [],
     "custom-attributes/saveFreeze.js": [
       "core/isAdminOfCurrentResource.js",
-      "core/snapshot.js"
+      "core/snapshot.js",
+      "utilities/mutation.js",
+      "utilities/region-policy.js"
     ],
     "custom-attributes/sortable.js": [
       "core/isAdminOfCurrentResource.js",
@@ -185,10 +189,14 @@
     "utilities/extension-noise.js": [],
     "utilities/loadVendorScript.js": [],
     "utilities/mutation.js": [
-      "utilities/extension-noise.js"
+      "utilities/extension-noise.js",
+      "utilities/region-policy.js"
     ],
     "utilities/nearest.js": [],
     "utilities/pipe.js": [],
+    "utilities/region-policy.js": [
+      "utilities/extension-noise.js"
+    ],
     "utilities/throttle.js": [],
     "vendor/Sortable.vendor.js": [],
     "vendor/hyper-html-api.vendor.js": [],
@@ -215,7 +223,7 @@
     "save-system": {
       "name": "save-system",
       "category": "core",
-      "size": 15.4,
+      "size": 15.5,
       "isEditModeOnly": true,
       "files": [
         "core/savePage.js"
@@ -306,7 +314,7 @@
     "snapshot": {
       "name": "snapshot",
       "category": "core",
-      "size": 11.9,
+      "size": 12.1,
       "isEditModeOnly": true,
       "files": [
         "core/snapshot.js"
@@ -346,7 +354,7 @@
     "option-visibility": {
       "name": "option-visibility",
       "category": "core",
-      "size": 7.1,
+      "size": 7.2,
       "files": [
         "core/optionVisibility.js"
       ],
@@ -403,7 +411,7 @@
     "sortable": {
       "name": "sortable",
       "category": "custom-attributes",
-      "size": 3.3,
+      "size": 3.5,
       "isEditModeOnly": true,
       "files": [
         "custom-attributes/sortable.js"
@@ -414,7 +422,7 @@
     "movable": {
       "name": "movable",
       "category": "custom-attributes",
-      "size": 2.5,
+      "size": 2.6,
       "isEditModeOnly": true,
       "files": [
         "custom-attributes/movable.js"
@@ -435,7 +443,7 @@
     "input-helpers": {
       "name": "input-helpers",
       "category": "custom-attributes",
-      "size": 3.9,
+      "size": 4.2,
       "files": [
         "custom-attributes/inputHelpers.js",
         "custom-attributes/preventEnter.js",
@@ -459,7 +467,7 @@
     "save-freeze": {
       "name": "save-freeze",
       "category": "custom-attributes",
-      "size": 2.8,
+      "size": 3.4,
       "isEditModeOnly": true,
       "files": [
         "custom-attributes/saveFreeze.js"
@@ -557,7 +565,7 @@
     "mutation": {
       "name": "mutation",
       "category": "utilities",
-      "size": 16.4,
+      "size": 18.4,
       "files": [
         "utilities/mutation.js"
       ],

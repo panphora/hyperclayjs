@@ -185,7 +185,9 @@ const optionVisibility = {
       selectorFilter: el => [...el.attributes].some(attr =>
         attr.name.startsWith('option:') || attr.name.startsWith('option-not:')
       ),
-      omitChangeDetails: true
+      omitChangeDetails: true,
+      require: 'observed',
+      pausable: false
     }, () => this.update());
 
     this.log('Started');

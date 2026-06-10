@@ -81,7 +81,9 @@ function init() {
 
   Mutation.onAddElement({
     selectorFilter: "[movable]",
-    debounce: 200
+    debounce: 200,
+    require: 'observed',
+    pausable: false
   }, (changes) => {
     changes.forEach(({ element }) => makeMovable(element));
   });

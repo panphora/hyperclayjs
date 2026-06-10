@@ -37,6 +37,7 @@
  */
 
 import { stripExtensionNoise } from '../utilities/extension-noise.js';
+import { STRIP_FROM_SAVE, STRIP_FROM_COMPARISON } from '../utilities/region-policy.js';
 
 // =============================================================================
 // HOOK REGISTRIES
@@ -132,12 +133,12 @@ function prepareCloneForSave(clone) {
     new Function(el.getAttribute('onbeforesave')).call(el);
   }
 
-  // Remove elements that shouldn't be saved
-  for (const el of clone.querySelectorAll('[save-remove]')) {
+  // Remove elements that shouldn't be saved ([no-save] / legacy [save-remove])
+  for (const el of clone.querySelectorAll(STRIP_FROM_SAVE)) {
     el.remove();
   }
 
-  // Run registered prepare hooks
+  // Run registered prepare hooks ([freeze]/[save-freeze] innerHTML restore lives here)
   for (const hook of prepareForSaveHooks) {
     hook(clone);
   }
@@ -148,10 +149,11 @@ function prepareCloneForSave(clone) {
 /**
  * Capture snapshot prepared for dirty/change comparison.
  *
- * Like captureForSave but also strips [save-ignore] elements.
- * Use this for comparing current state against baselines.
+ * Like captureForSave but also strips every region whose autosave-trigger is off
+ * (no-trigger-autosave, freeze, no-watch, plus the legacy equivalents), so their
+ * churn never marks the page dirty.
  *
- * @returns {string} HTML string with [save-remove] and [save-ignore] stripped
+ * @returns {string} HTML string with all autosave-off regions stripped
  */
 export function captureForComparison() {
   // CodeMirror pages: return editor content directly (same for save and compare)
@@ -167,7 +169,7 @@ export function captureForComparison() {
   }
 
   // Strip before hooks (hooks see the "final" state)
-  for (const el of clone.querySelectorAll('[save-remove], [save-ignore]')) {
+  for (const el of clone.querySelectorAll(STRIP_FROM_COMPARISON)) {
     el.remove();
   }
 
@@ -221,8 +223,8 @@ export function captureForSaveAndComparison({ emitForSync = true } = {}) {
   // Clone for comparison before stripping (cheaper than cloning live DOM)
   const compareClone = clonePreventingOnclone(clone);
 
-  // Save clone: strip [save-remove], then run hooks
-  for (const el of clone.querySelectorAll('[save-remove]')) {
+  // Save clone: strip [no-save]/[save-remove], then run hooks (freeze restore in hooks)
+  for (const el of clone.querySelectorAll(STRIP_FROM_SAVE)) {
     el.remove();
   }
   for (const hook of prepareForSaveHooks) {
@@ -230,8 +232,8 @@ export function captureForSaveAndComparison({ emitForSync = true } = {}) {
   }
   const forSave = "<!DOCTYPE html>" + clone.outerHTML;
 
-  // Compare clone: strip both, then run hooks
-  for (const el of compareClone.querySelectorAll('[save-remove], [save-ignore]')) {
+  // Compare clone: strip every autosave-off region, then run hooks
+  for (const el of compareClone.querySelectorAll(STRIP_FROM_COMPARISON)) {
     el.remove();
   }
   for (const hook of prepareForSaveHooks) {

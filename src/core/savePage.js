@@ -153,8 +153,8 @@ export function savePage(callback = () => {}) {
     }
 
     // Single capture: clone once, get both versions
-    // forComparison has [save-remove] and [save-ignore] stripped
-    // forSave has only [save-remove] stripped
+    // forSave strips non-persisted regions ([no-save]/[save-remove])
+    // forComparison additionally strips every autosave-off region
     let forSave, forComparison;
     try {
       ({ forSave, forComparison } = captureForSaveAndComparison());
@@ -375,9 +375,11 @@ function initBaselineCapture() {
     document.documentElement.setAttribute('savestatus', 'saved');
   };
 
-  // Start settle observer - fires when no mutations for SETTLE_MS
+  // Start settle observer - fires when no mutations for SETTLE_MS.
+  // require:'autosave' so churn in no-save / save-* / no-watch regions doesn't
+  // keep resetting the settle timer or count toward the baseline.
   unsubscribeMutation = Mutation.onAnyChange(
-    { debounce: SETTLE_MS, omitChangeDetails: true },
+    { debounce: SETTLE_MS, omitChangeDetails: true, require: 'autosave' },
     captureBaseline
   );
 

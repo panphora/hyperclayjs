@@ -21,7 +21,8 @@ import { savePageThrottled } from "./savePage.js";
 function initSavePageOnChange() {
   Mutation.onAnyChange({
     debounce: 1500,
-    omitChangeDetails: true
+    omitChangeDetails: true,
+    require: 'autosave'
   }, () => {
     savePageThrottled();
   });

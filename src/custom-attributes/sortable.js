@@ -88,10 +88,14 @@ async function init() {
   // Set up sortable on page load
   document.querySelectorAll('[sortable]').forEach(el => makeSortable(el, Sortable));
 
-  // Set up listener for dynamically added elements
+  // Set up listener for dynamically added elements.
+  // require:'observed' so drag works inside no-save / save-* regions (e.g. the
+  // CMS panel); pausable:false so it keeps wiring during a live-sync pause.
   Mutation.onAddElement({
     selectorFilter: "[sortable]",
-    debounce: 200
+    debounce: 200,
+    require: 'observed',
+    pausable: false
   }, (changes) => {
     changes.forEach(({ element }) => {
       makeSortable(element, Sortable);

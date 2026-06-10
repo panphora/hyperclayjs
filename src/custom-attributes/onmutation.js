@@ -56,7 +56,9 @@ function init() {
   // Watch for dynamically added elements with onmutation
   Mutation.onAddElement({
     selectorFilter: '[onmutation]',
-    debounce: 200
+    debounce: 200,
+    require: 'observed',
+    pausable: false
   }, (changes) => {
     changes.forEach(({ element }) => {
       setupMutationObserver(element);
@@ -66,7 +68,9 @@ function init() {
   // Clean up when elements are removed
   Mutation.onRemoveElement({
     selectorFilter: '[onmutation]',
-    debounce: 200
+    debounce: 200,
+    require: 'observed',
+    pausable: false
   }, (changes) => {
     changes.forEach(({ element }) => {
       teardownMutationObserver(element);
@@ -76,7 +80,9 @@ function init() {
   // Watch for attribute removal
   Mutation.onAttribute({
     selectorFilter: '[onmutation]',
-    debounce: 200
+    debounce: 200,
+    require: 'observed',
+    pausable: false
   }, (changes) => {
     changes.forEach(({ element, attribute, newValue }) => {
       if (attribute === 'onmutation' && newValue === null) {

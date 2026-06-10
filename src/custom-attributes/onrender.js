@@ -20,7 +20,9 @@ function init() {
   // Execute onrender when new elements are added
   Mutation.onAddElement({
     selectorFilter: "[onrender]",
-    debounce: 200
+    debounce: 200,
+    require: 'observed',
+    pausable: false
   }, (changes) => {
     changes.forEach(({ element }) => executeRender(element));
   });

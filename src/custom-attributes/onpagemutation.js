@@ -23,7 +23,9 @@ function init() {
 
   Mutation.onAnyChange({
     debounce: 200,
-    omitChangeDetails: true
+    omitChangeDetails: true,
+    require: 'observed',
+    pausable: false
   }, () => {
     document.querySelectorAll('[onglobalmutation], [onpagemutation]').forEach(executeGlobalMutation);
   });

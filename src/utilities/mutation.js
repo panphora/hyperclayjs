@@ -55,7 +55,8 @@
  *  
  */
 
-import { EXTENSION_NODE_SELECTOR, EXTENSION_ATTR_PATTERN } from './extension-noise.js';
+import { EXTENSION_ATTR_PATTERN } from './extension-noise.js';
+import { resolveRegionPolicy, isInert, strictestPolicy, skipForPolicy } from './region-policy.js';
 
 const dummyElem = document.createElement("div");
 
@@ -70,6 +71,7 @@ const Mutation = {
 
   _observing: false,
   _pauseDepth: 0,
+  _hasNonPausable: false,
   debug: false,
 
   /**
@@ -98,9 +100,14 @@ const Mutation = {
     this._pauseDepth--;
     // Drain pending mutation records only on the outermost release — observer
     // stays connected during pause, so morph mutations are recorded and would
-    // fire async once the depth returns to zero.
+    // fire async once the depth returns to zero. Non-pausable callbacks (pure
+    // enhancers like sortable / optionVisibility) still need that boundary
+    // batch, so route it to them before discarding the rest.
     if (this._pauseDepth === 0 && this._observer) {
-      this._observer.takeRecords();
+      const pending = this._observer.takeRecords();
+      if (pending.length && this._hasNonPausable) {
+        this._processMutations(pending, true);
+      }
     }
     if (typeof window !== 'undefined' && window.hyperclay && window.hyperclay.undo && window.hyperclay.undo.resume) {
       window.hyperclay.undo.resume();
@@ -121,17 +128,30 @@ const Mutation = {
     }
   },
 
-  _notify(type, changes) {
+  _notify(type, changes, onlyNonPausable = false) {
     this._log(`Notifying ${this._callbacks[type].length} callbacks of type "${type}"`, { changes });
 
     for (const callback of this._callbacks[type]) {
-      const { fn, debounce = 0, selectorFilter, omitChangeDetails } = callback;
+      // While paused, only non-pausable callbacks (pure enhancers) run.
+      if (onlyNonPausable && callback.pausable !== false) continue;
+
+      const { fn, debounce = 0, selectorFilter, omitChangeDetails, require, skip } = callback;
+
+      // Per-consumer region policy: drop changes whose region this consumer
+      // doesn't participate in (no-save / no-trigger-autosave / no-undo / freeze
+      // and their legacy equivalents), resolved against the callback's `require`.
+      let filteredChanges = changes.filter(
+        change => !skipForPolicy(this._policyForChange(change), require, skip)
+      );
+      if (!filteredChanges.length) {
+        this._log('No changes passed the region policy, skipping callback');
+        continue;
+      }
 
       // Apply filtering if there's a selector filter
-      let filteredChanges = changes;
       if (selectorFilter) {
         this._log('Applying selector filter', { selectorFilter });
-        filteredChanges = changes.filter(change => {
+        filteredChanges = filteredChanges.filter(change => {
           if (typeof selectorFilter === 'string') {
             const matches = change.element.matches?.(selectorFilter) || false;
             this._log(`Selector "${selectorFilter}" match:`, { element: change.element, matches });
@@ -147,8 +167,8 @@ const Mutation = {
         this._log('Changes after filtering:', { filteredChanges });
       }
 
-      // Skip if we have a selector filter and no matching changes
-      if (selectorFilter && !filteredChanges.length) {
+      // Skip if nothing remains after filtering
+      if (!filteredChanges.length) {
         this._log('No changes passed the filter, skipping callback');
         continue;
       }
@@ -212,34 +232,35 @@ const Mutation = {
     }
   },
 
-  _shouldIgnore(node) {
-    // For non-element nodes (like text nodes), start from parent
-    let element = (node && node.nodeType !== 1) ? node.parentElement : node;
-
-    // Browser-extension injected elements (and their descendants) are not page content.
-    if (element && element.closest && element.closest(EXTENSION_NODE_SELECTOR)) {
-      return true;
+  // Resolve a change's region policy once per batch (memoized on the change).
+  // Removed/detached elements carry their region markers on the still-attached
+  // parent (the region they were removed FROM), so merge it in for those.
+  _policyForChange(change) {
+    if (change.__policy) return change.__policy;
+    const el = change.element;
+    let policy = resolveRegionPolicy(el);
+    if (change.parent && el && el.isConnected === false) {
+      policy = strictestPolicy(policy, resolveRegionPolicy(change.parent));
     }
-
-    while (element && element.nodeType === 1) {
-      if (element.hasAttribute?.('mutations-ignore') ||
-          element.hasAttribute?.('save-remove') ||
-          element.hasAttribute?.('save-ignore') ||
-          element.hasAttribute?.('save-freeze')) {
-        return true;
-      }
-      element = element.parentElement;
-    }
-    return false;
+    change.__policy = policy;
+    return policy;
   },
 
   _handleMutations(mutations) {
-    // Skip all mutations while paused (e.g., during live-sync morph)
     if (this._pauseDepth > 0) {
-      this._log(`Skipping ${mutations.length} mutations (paused)`);
+      // While paused (e.g. during a live-sync morph), only non-pausable
+      // callbacks should run. With none registered, take the fast path.
+      if (!this._hasNonPausable) {
+        this._log(`Skipping ${mutations.length} mutations (paused)`);
+        return;
+      }
+      this._processMutations(mutations, true);
       return;
     }
+    this._processMutations(mutations, false);
+  },
 
+  _processMutations(mutations, onlyNonPausable = false) {
     const changes = [];
     const changesByType = {
       add: [],
@@ -249,8 +270,10 @@ const Mutation = {
     };
 
     for (const mutation of mutations) {
-      // Check if the target or any parent has mutations-ignore attribute
-      if (this._shouldIgnore(mutation.target)) {
+      // Intake drop: a no-watch / mutations-ignore subtree (or extension noise)
+      // is invisible to every consumer, so skip it without walking. All other
+      // region attributes are resolved per-consumer in _notify.
+      if (isInert(mutation.target)) {
         continue;
       }
 
@@ -284,7 +307,7 @@ const Mutation = {
         });
 
         for (const node of mutation.addedNodes) {
-          if (node.nodeType === 1 && !this._shouldIgnore(node)) {
+          if (node.nodeType === 1 && !isInert(node)) {
             const addedNodes = [node, ...node.querySelectorAll('*')];
             this._log(`Processing ${addedNodes.length} added nodes`, { addedNodes });
             
@@ -303,7 +326,7 @@ const Mutation = {
         }
         
         for (const node of mutation.removedNodes) {
-          if (node.nodeType === 1 && !this._shouldIgnore(node)) {
+          if (node.nodeType === 1 && !isInert(node)) {
             const removedNodes = [node, ...node.querySelectorAll('*')];
             this._log(`Processing ${removedNodes.length} removed nodes`, { removedNodes });
 
@@ -375,21 +398,21 @@ const Mutation = {
         }
       });
 
-      this._notify('anyChange', changes);
+      this._notify('anyChange', changes, onlyNonPausable);
 
       const addOrRemove = [...changesByType.add, ...changesByType.remove];
       if (addOrRemove.length) {
-        this._notify('addOrRemove', addOrRemove);
+        this._notify('addOrRemove', addOrRemove, onlyNonPausable);
       }
 
       if (changesByType.add.length) {
-        this._notify('addElement', changesByType.add);
+        this._notify('addElement', changesByType.add, onlyNonPausable);
       }
       if (changesByType.remove.length) {
-        this._notify('removeElement', changesByType.remove);
+        this._notify('removeElement', changesByType.remove, onlyNonPausable);
       }
       if (changesByType.attribute.length) {
-        this._notify('attribute', changesByType.attribute);
+        this._notify('attribute', changesByType.attribute, onlyNonPausable);
       }
     }
   },
@@ -415,17 +438,25 @@ const Mutation = {
       debounce: options.debounce || 0,
       selectorFilter: options.selectorFilter,
       omitChangeDetails: options.omitChangeDetails,
+      // Region policy: axis this consumer needs ('observed' | 'autosave' | 'undo')
+      // or a literal attribute escape-hatch. Unset => legacy four-marker skip.
+      require: options.require,
+      skip: options.skip,
+      // pausable:false keeps the callback firing during Mutation.pause() (pure
+      // enhancers that never save/record/rebroadcast). Default true.
+      pausable: options.pausable !== false,
       timeout: null,
       pendingChanges: null
     };
-    
+
     this._callbacks[type].push(cb);
+    this._recomputeHasNonPausable();
     this._log(`Added callback to ${type}. Total callbacks:`, {
       [type]: this._callbacks[type].length
     });
-    
+
     this._startObserving();
-    
+
     return () => {
       this._log('Removing callback', { type });
       const index = this._callbacks[type].indexOf(cb);
@@ -433,11 +464,18 @@ const Mutation = {
         clearTimeout(cb.timeout);
         cb.pendingChanges = null;
         this._callbacks[type].splice(index, 1);
+        this._recomputeHasNonPausable();
         this._log(`Removed callback from ${type}. Remaining callbacks:`, {
           [type]: this._callbacks[type].length
         });
       }
     };
+  },
+
+  _recomputeHasNonPausable() {
+    this._hasNonPausable = Object.values(this._callbacks).some(
+      list => list.some(cb => cb.pausable === false)
+    );
   },
 
   _startObserving() {

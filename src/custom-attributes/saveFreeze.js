@@ -18,6 +18,8 @@
 
 import { onSnapshot, onPrepareForSave } from "../core/snapshot.js";
 import { isEditMode } from "../core/isAdminOfCurrentResource.js";
+import { FREEZE_SELECTOR } from "../utilities/region-policy.js";
+import Mutation from "../utilities/mutation.js";
 
 const originals = new WeakMap();
 
@@ -35,7 +37,7 @@ function capture(el) {
 }
 
 function captureAll() {
-  const els = document.querySelectorAll('[save-freeze]');
+  const els = document.querySelectorAll(FREEZE_SELECTOR);
   log('captureAll found', els.length, 'elements');
   for (const el of els) {
     capture(el);
@@ -43,8 +45,8 @@ function captureAll() {
 }
 
 function freezeClone(clone) {
-  const liveElements = document.querySelectorAll('[save-freeze]');
-  const cloneElements = clone.querySelectorAll('[save-freeze]');
+  const liveElements = document.querySelectorAll(FREEZE_SELECTOR);
+  const cloneElements = clone.querySelectorAll(FREEZE_SELECTOR);
 
   log('freezing clone — live:', liveElements.length, 'clone:', cloneElements.length);
 
@@ -68,18 +70,23 @@ function init() {
 
   captureAll();
 
-  const observer = new MutationObserver(mutations => {
-    for (const m of mutations) {
-      for (const node of m.addedNodes) {
-        if (node.nodeType !== 1) continue;
-        if (node.hasAttribute?.('save-freeze')) capture(node);
-        for (const el of node.querySelectorAll?.('[save-freeze]') || []) {
-          capture(el);
-        }
-      }
-    }
+  // Capture the original innerHTML of dynamically added [freeze]/[save-freeze]
+  // regions. Folded onto the single Mutation observer (Phase 2 — was its own).
+  // debounce:0 so we snapshot the authored content before any runtime edit
+  // mutates it; the callback is a pure read into a WeakMap (no DOM writes).
+  // require:'observed' (skip only no-watch); pausable:false so a morphed-in
+  // freeze region is still captured. NOTE: the old observer watched
+  // document.documentElement; Mutation watches document.body, so a [freeze] added
+  // directly to <head> at runtime is no longer captured (authored <head> freeze
+  // regions are still handled by captureAll() on load) — an accepted edge.
+  Mutation.onAddElement({
+    selectorFilter: FREEZE_SELECTOR,
+    require: 'observed',
+    pausable: false,
+    debounce: 0
+  }, (changes) => {
+    changes.forEach(({ element }) => capture(element));
   });
-  observer.observe(document.documentElement, { childList: true, subtree: true });
 
   // Phase 2: Freeze in snapshot — before snapshot-ready fires.
   // This prevents live-sync from writing unfrozen content to disk.
