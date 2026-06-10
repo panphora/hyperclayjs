@@ -33,6 +33,22 @@ export function isSaveInProgress() {
   return saveInProgress;
 }
 
+/**
+ * Resolve the save endpoint for the current host.
+ *
+ * htmlclay (the local Go app for .htmlclay files) authenticates each save with
+ * a per-file token injected as the `htmlclaytoken` attribute on <html>, and
+ * carries it in the URL path so the same token works for fetch and EventSource.
+ * When that attribute is present, save to `/_/save/{token}`; otherwise use the
+ * bare `/_/save` (platform and Hyperclay Local, which authenticate by cookie).
+ *
+ * @returns {string} The endpoint URL for the current save.
+ */
+function getSaveEndpoint() {
+  const htmlclayToken = document.documentElement.getAttribute('htmlclaytoken');
+  return htmlclayToken ? `${saveEndpoint}/${htmlclayToken}` : saveEndpoint;
+}
+
 // =============================================================================
 // RE-EXPORTS FROM SNAPSHOT (for backwards compat)
 // =============================================================================
@@ -151,7 +167,7 @@ export function savePage(callback = () => {}) {
       fetchOptions.body = currentContents;
     }
 
-    fetch(saveEndpoint, fetchOptions)
+    fetch(getSaveEndpoint(), fetchOptions)
       .then(res => {
         clearTimeout(timeoutId);
         return res.json().then(data => {
@@ -266,7 +282,7 @@ export function saveHtml(html, callback = () => {}) {
       fetchOptions.body = html;
     }
 
-    fetch(saveEndpoint, fetchOptions)
+    fetch(getSaveEndpoint(), fetchOptions)
       .then(res => {
         clearTimeout(timeoutId);
         return res.json().then(data => {
