@@ -87,6 +87,25 @@ test('removing the onmutation attribute stops it from firing (no per-element obs
   expect(window.__fires.a).toBeUndefined();
 });
 
+test('does NOT fire during a Mutation.pause() window, then fires normally after (live-sync loop guard)', async () => {
+  document.body.innerHTML = `<div id="a" onmutation="${HOOK('a')}"><span id="s">x</span></div>`;
+  await flush();
+  window.__fires = {};
+
+  // A live-sync morph happens inside pause()/resume(): the hook must stay silent
+  // so its DOM writes can't kick off the cross-tab autosave→broadcast loop.
+  Mutation.pause();
+  document.getElementById('s').textContent = 'morphed';
+  Mutation.resume();
+  await flush();
+  expect(window.__fires.a).toBeUndefined();
+
+  // A normal local edit after the morph still fires it.
+  document.getElementById('s').textContent = 'local';
+  await flush();
+  expect(window.__fires.a).toBeGreaterThanOrEqual(1);
+});
+
 test('a sibling subtree change does NOT fire an unrelated [onmutation] element', async () => {
   document.body.innerHTML =
     `<div id="a" onmutation="${HOOK('a')}"><span id="s">x</span></div><div id="b"><span id="t">y</span></div>`;

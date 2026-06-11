@@ -21,11 +21,14 @@ function init() {
     }
   };
 
+  // Pausable (the default): a live-sync morph must NOT trigger these hooks, or
+  // their DOM writes would autosave → broadcast → morph the other tab → fire the
+  // same hook → broadcast back, looping forever. Safe to skip morphs because the
+  // other tab already ran the identical hook and the morph carries the result.
   Mutation.onAnyChange({
     debounce: 200,
     omitChangeDetails: true,
-    require: 'observed',
-    pausable: false
+    require: 'observed'
   }, () => {
     document.querySelectorAll('[onglobalmutation], [onpagemutation]').forEach(executeGlobalMutation);
   });

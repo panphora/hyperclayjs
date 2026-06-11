@@ -32,9 +32,12 @@ function init() {
   // insertion is its parent's childList change, so (correctly) doesn't fire it.
   //
   // require:'observed' makes it region-aware (skips no-watch / extension noise),
-  // which the old per-element observers were not; pausable:false keeps the
-  // reactivity firing through a live-sync morph, matching [onpagemutation].
-  Mutation.onAnyChange({ require: 'observed', pausable: false }, (changes) => {
+  // which the old per-element observers were not. It stays PAUSABLE (the
+  // default): a live-sync morph must NOT fire the hook, or the hook's own DOM
+  // writes would autosave → broadcast → morph the other tab → fire the same hook
+  // → broadcast back, looping forever. Skipping morphs is safe because the other
+  // tab already ran this identical hook, so the morph carries the result.
+  Mutation.onAnyChange({ require: 'observed' }, (changes) => {
     const toFire = new Set();
     for (const change of changes) {
       let el = (change.type === 'add' || change.type === 'remove') ? change.parent : change.element;
