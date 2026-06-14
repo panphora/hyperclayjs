@@ -182,6 +182,11 @@
       "core/isAdminOfCurrentResource.js",
       "vendor/hyper-undo.vendor.js"
     ],
+    "upgrade.js": [
+      "core/isAdminOfCurrentResource.js",
+      "core/savePageCore.js",
+      "vendor/hyper-html-api-upgrade.vendor.js"
+    ],
     "utilities/autosaveDebug.js": [],
     "utilities/cacheBust.js": [],
     "utilities/cookie.js": [],
@@ -199,6 +204,7 @@
     ],
     "utilities/throttle.js": [],
     "vendor/Sortable.vendor.js": [],
+    "vendor/hyper-html-api-upgrade.vendor.js": [],
     "vendor/hyper-html-api.vendor.js": [],
     "vendor/hyper-morph.vendor.js": [],
     "vendor/hyper-undo.vendor.js": [],
@@ -208,7 +214,7 @@
     "save-core": {
       "name": "save-core",
       "category": "core",
-      "size": 11.5,
+      "size": 12.2,
       "isEditModeOnly": true,
       "files": [
         "core/savePageCore.js"
@@ -386,7 +392,7 @@
     "event-attrs": {
       "name": "event-attrs",
       "category": "custom-attributes",
-      "size": 5.3,
+      "size": 5.6,
       "files": [
         "custom-attributes/events.js",
         "custom-attributes/onclickaway.js",
@@ -565,7 +571,7 @@
     "mutation": {
       "name": "mutation",
       "category": "utilities",
-      "size": 18.4,
+      "size": 24.8,
       "files": [
         "utilities/mutation.js"
       ],
@@ -803,6 +809,21 @@
         ]
       }
     },
+    "upgrade": {
+      "name": "upgrade",
+      "category": "other",
+      "size": 5.6,
+      "isEditModeOnly": true,
+      "files": [
+        "upgrade.js"
+      ],
+      "description": "Template upgrades: update-available popover for forks + one-click data migration from the hyper-source page — window.hyperclay.upgrade.",
+      "exports": {
+        "upgrade": [
+          "hyperclay"
+        ]
+      }
+    },
     "slugify": {
       "name": "slugify",
       "category": "string-utilities",
@@ -973,6 +994,7 @@
     "hypercms": "./vendor/hypercms.vendor.js",
     "undo": "./undo.js",
     "data": "./data.js",
+    "upgrade": "./upgrade.js",
     "slugify": "./string-utilities/slugify.js",
     "copy-to-clipboard": "./string-utilities/copy-to-clipboard.js",
     "query-params": "./string-utilities/query.js",
@@ -1078,7 +1100,8 @@
       "description": "Page data and undo history",
       "modules": [
         "undo",
-        "data"
+        "data",
+        "upgrade"
       ]
     }
   },
@@ -1173,6 +1196,7 @@
         "hypercms",
         "undo",
         "data",
+        "upgrade",
         "slugify",
         "copy-to-clipboard",
         "query-params",
@@ -1225,6 +1249,7 @@
         "hypercms",
         "undo",
         "data",
+        "upgrade",
         "slugify",
         "copy-to-clipboard",
         "query-params",

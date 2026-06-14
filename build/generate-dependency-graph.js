@@ -359,6 +359,15 @@ const MODULE_DEFINITIONS = {
       applyData: ['hyperclay']
     }
   },
+  'upgrade.js': {
+    name: 'upgrade',
+    moduleId: 'upgrade',
+    description: 'Template upgrades: update-available popover for forks + one-click data migration from the hyper-source page — window.hyperclay.upgrade.',
+    isEditModeOnly: true,
+    exports: {
+      upgrade: ['hyperclay']
+    }
+  },
   'string-utilities/slugify.js': {
     name: 'slugify',
     moduleId: 'slugify',

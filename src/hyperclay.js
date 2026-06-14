@@ -65,6 +65,7 @@ const MODULE_PATHS = {
   "hypercms": "./vendor/hypercms.vendor.js",
   "undo": "./undo.js",
   "data": "./data.js",
+  "upgrade": "./upgrade.js",
   "slugify": "./string-utilities/slugify.js",
   "copy-to-clipboard": "./string-utilities/copy-to-clipboard.js",
   "query-params": "./string-utilities/query.js",
@@ -166,6 +167,7 @@ const PRESETS = {
       "hypercms",
       "undo",
       "data",
+      "upgrade",
       "slugify",
       "copy-to-clipboard",
       "query-params",
@@ -218,6 +220,7 @@ const PRESETS = {
       "hypercms",
       "undo",
       "data",
+      "upgrade",
       "slugify",
       "copy-to-clipboard",
       "query-params",
@@ -247,6 +250,7 @@ const EDIT_MODE_ONLY = new Set([
   "cache-bust",
   "hyper-morph",
   "undo",
+  "upgrade",
   "file-upload",
   "live-sync",
   "refetch-on-save"
@@ -394,6 +398,7 @@ export const cms = window.hyperclayModules['hypercms']?.cms ?? window.hyperclayM
 export const undo = window.hyperclayModules['undo']?.undo ?? window.hyperclayModules['undo']?.default;
 export const extractData = window.hyperclayModules['data']?.extractData ?? window.hyperclayModules['data']?.default;
 export const applyData = window.hyperclayModules['data']?.applyData ?? window.hyperclayModules['data']?.default;
+export const upgrade = window.hyperclayModules['upgrade']?.upgrade ?? window.hyperclayModules['upgrade']?.default;
 export const slugify = window.hyperclayModules['slugify']?.slugify ?? window.hyperclayModules['slugify']?.default;
 export const copyToClipboard = window.hyperclayModules['copy-to-clipboard']?.copyToClipboard ?? window.hyperclayModules['copy-to-clipboard']?.default;
 export const query = window.hyperclayModules['query-params']?.query ?? window.hyperclayModules['query-params']?.default;
