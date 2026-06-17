@@ -76,7 +76,7 @@ Some modules with large vendor dependencies are **lazy-loaded** to optimize page
 - The wrapper module checks if the page is in edit mode (`isEditMode`)
 - If true, it injects a `<script save-remove>` tag that loads the vendor script
 - If false, nothing is loaded - viewers don't download the heavy scripts
-- The `save-remove` attribute strips the script tag when the page is saved
+- The `save-remove` attribute (the legacy alias for `no-save`) strips the script tag when the page is saved
 
 This means:
 - **Editors** get full functionality when needed

@@ -79,16 +79,19 @@ hyperclay.replacePageWith('/templates/blog.html');
 
 | Attribute | Effect |
 |-----------|--------|
-| `save-remove` | Element is removed from saved HTML entirely |
-| `save-ignore` | Element is excluded from dirty-checking but still saved as-is |
-| `save-freeze` | Element is saved with its original content, ignoring runtime changes |
+| `no-save` | Element is removed from saved HTML entirely |
+| `no-trigger-autosave` | Element is excluded from dirty-checking but still saved as-is |
+| `freeze` | Element is saved with its original content, ignoring runtime changes |
 | `onbeforesave` | Inline JS that runs on the snapshot clone before save |
 | `onaftersave` | Inline JS that runs on the live DOM after a successful save |
 | `trigger-save` | Click triggers a save |
 
+The first three are part of the [region attributes](./region-attributes.md) model. Their legacy aliases (`save-remove`, `save-ignore`, `save-freeze`) still work.
+
 ## Related Modules
 
 - `autosave` - Auto-save on DOM changes
-- `save-freeze` - Freeze element content for saves
+- `region-attributes` - Declare how a region is saved, watched, and undone
+- `freeze` - Freeze element content for saves
 - `save-toast` - Toast notifications for save events
 - `unsaved-warning` - Warn before leaving with unsaved changes

@@ -6,7 +6,7 @@ Large vendor scripts (Sortable.js ~118KB) were bundled directly into modules, fo
 
 ## Solution
 
-Conditionally load heavy vendor scripts only when in edit mode via dynamically injected `<script save-remove>` tags.
+Conditionally load heavy vendor scripts only when in edit mode via dynamically injected `<script save-remove>` tags (`save-remove` is the legacy alias for the [`no-save`](./api/region-attributes.md) region attribute).
 
 ## How It Works
 

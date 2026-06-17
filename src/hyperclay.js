@@ -63,6 +63,7 @@ const MODULE_PATHS = {
   "form-data": "./dom-utilities/getDataFromForm.js",
   "hyper-morph": "./vendor/hyper-morph.vendor.js",
   "hypercms": "./vendor/hypercms.vendor.js",
+  "sap": "./vendor/sapjs.vendor.js",
   "undo": "./undo.js",
   "data": "./data.js",
   "upgrade": "./upgrade.js",
@@ -218,6 +219,7 @@ const PRESETS = {
       "form-data",
       "hyper-morph",
       "hypercms",
+      "sap",
       "undo",
       "data",
       "upgrade",
@@ -395,6 +397,7 @@ export const getDataFromForm = window.hyperclayModules['form-data']?.getDataFrom
 export const HyperMorph = window.hyperclayModules['hyper-morph']?.HyperMorph ?? window.hyperclayModules['hyper-morph']?.default;
 export const morph = window.hyperclayModules['hyper-morph']?.morph ?? window.hyperclayModules['hyper-morph']?.default;
 export const cms = window.hyperclayModules['hypercms']?.cms ?? window.hyperclayModules['hypercms']?.default;
+export const Sap = window.hyperclayModules['sap']?.Sap ?? window.hyperclayModules['sap']?.default;
 export const undo = window.hyperclayModules['undo']?.undo ?? window.hyperclayModules['undo']?.default;
 export const extractData = window.hyperclayModules['data']?.extractData ?? window.hyperclayModules['data']?.default;
 export const applyData = window.hyperclayModules['data']?.applyData ?? window.hyperclayModules['data']?.default;

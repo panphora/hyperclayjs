@@ -2,7 +2,7 @@
 
 Live edit-in-place CMS sidebar. Reads a page through a [`hyper-html-api`](https://github.com/panphora/hyper-html-api) rules tag, builds a form from those rules, mounts it as a side panel, and streams edits back into the page DOM in real time.
 
-The CMS only mutates the live DOM. Saving the page (Hyperclay Cmd+S or autosave) is what writes the file. The sidebar (`[data-hcms-shell]`, marked `save-ignore`/`save-remove`) and the `hcms-open` body class are stripped from the saved output.
+The CMS only mutates the live DOM. Saving the page (Hyperclay Cmd+S or autosave) is what writes the file. The sidebar (`[data-hcms-shell]`, marked `save-ignore`/`save-remove`, the legacy aliases for `no-trigger-autosave`/`no-save` — see [region attributes](./region-attributes.md)) and the `hcms-open` body class are stripped from the saved output.
 
 Vendored from `@panphora/hyper-cms`. In the `smooth-sailing` and `everything` presets. Not in `minimal` or `standard`.
 
@@ -133,6 +133,8 @@ document.addEventListener('hcms:save', (e) => save(e.detail.data))
 | `save-ignore` | any element | Engine skips it during extract and apply. The shell sets this on itself. |
 | `save-freeze`, `save-remove`, `mutations-ignore` | any element | Same observer-ignore behavior as `save-ignore`. |
 | `cms-template` | an element matching a list rule | Treated as a seed template, not data. Lets a list grow from empty. |
+
+The CMS engine matches the legacy marker names above. They are aliases for the [region attributes](./region-attributes.md) (`save-ignore` → `no-trigger-autosave`, `save-remove` → `no-save`, `save-freeze` → `freeze`, `mutations-ignore` → `no-watch`); the hyperclay save system recognizes both spellings.
 
 ### Template seeding
 

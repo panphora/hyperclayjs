@@ -27,12 +27,12 @@ In every preset: `minimal`, `standard`, `smooth-sailing`, and `everything`. The 
 2. SNAPSHOT   onSnapshot hooks + [onbeforesnapshot] + [snapshot-remove] + extension-noise strip
               ├─ used by SAVE and LIVE-SYNC
               └─ emits hyperclay:snapshot-ready
-3. PREPARE    [onbeforesave] + [save-remove] + onPrepareForSave hooks
+3. PREPARE    [onbeforesave] + [no-save] + onPrepareForSave hooks
               └─ used by SAVE only (live-sync stops at step 2)
 4. SERIALIZE  "<!DOCTYPE html>" + clone.outerHTML  →  sent to server
 ```
 
-`captureForComparison` and the compare half of `captureForSaveAndComparison` additionally strip `[save-ignore]` so runtime-only elements do not trip dirty-checking.
+`captureForComparison` and the compare half of `captureForSaveAndComparison` additionally strip every region whose autosave-trigger is off (`[no-trigger-autosave]`, plus `[no-save]`, `[freeze]`, and `[no-watch]`) so runtime-only elements do not trip dirty-checking. See [region attributes](./region-attributes.md); the legacy `save-*` / `mutations-ignore` markers are recognized as aliases.
 
 ## Hooks
 
@@ -50,7 +50,7 @@ Each callback receives the cloned `<html>` element (`HTMLElement`) and mutates i
 |----------|---------|-------------|
 | `captureSnapshot()` | `HTMLElement` | Clones `<html>`, runs `onSnapshot` hooks, `[onbeforesnapshot]`, `[snapshot-remove]`, and strips extension noise. Nothing save-specific stripped yet |
 | `captureForSave({ emitForSync = true })` | `string` | Full save pipeline. Emits `hyperclay:snapshot-ready`, then runs prepare phase. Returns `"<!DOCTYPE html>" + outerHTML` |
-| `captureForComparison()` | `string` | Like the save path but also strips `[save-ignore]`. For comparing current state against a baseline. Does not emit `snapshot-ready` |
+| `captureForComparison()` | `string` | Like the save path but also strips every region whose autosave-trigger is off (`[no-trigger-autosave]` and friends). For comparing current state against a baseline. Does not emit `snapshot-ready` |
 | `captureForSaveAndComparison({ emitForSync = true })` | `{ forSave, forComparison }` | Single clone, then forks into a save string and a comparison string. Cheaper than calling both separately |
 | `captureBodyForSync()` | `string` | `<body>` innerHTML with form values synced, no stripping. Prefer the `hyperclay:snapshot-ready` event instead |
 | `getPageContents()` | `string` | Current page HTML for change detection. Calls `captureForSave({ emitForSync: false })`, so it never triggers live-sync |
@@ -72,8 +72,10 @@ These markup hooks are processed during capture. Inline attribute handlers run v
 | `onbeforesnapshot` | snapshot (save + sync) | Inline JS runs on the cloned element before any stripping |
 | `snapshot-remove` | snapshot (save + sync) | Element is removed from every snapshot, so it never reaches a save, a comparison, or a live-sync broadcast |
 | `onbeforesave` | prepare (save + compare) | Inline JS runs on the cloned element before save-specific stripping |
-| `save-remove` | prepare (save + compare) | Element is removed from the saved HTML entirely |
-| `save-ignore` | comparison only | Element is excluded from dirty-checking but still saved as-is |
+| `no-save` | prepare (save + compare) | Element is removed from the saved HTML entirely (legacy alias: `save-remove`) |
+| `no-trigger-autosave` | comparison only | Element is excluded from dirty-checking but still saved as-is (legacy alias: `save-ignore`) |
+
+The first two are part of the [region attributes](./region-attributes.md) model.
 
 ## Events
 
@@ -116,8 +118,8 @@ const html = captureForSave({ emitForSync: false });
 <!-- Markup-level hooks -->
 <div onbeforesnapshot="this.dataset.snappedAt = Date.now()">...</div>
 <div snapshot-remove>Never appears in any snapshot</div>
-<button save-remove>Hidden from the saved file</button>
-<div save-ignore>Saved as-is but skipped by dirty-checking</div>
+<button no-save>Hidden from the saved file</button>
+<div no-trigger-autosave>Saved as-is but skipped by dirty-checking</div>
 ```
 
 ```js

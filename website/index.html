@@ -158,37 +158,82 @@
                 </div>
             </div>
 
-            <!-- save-ignore -->
-            <div class="demo-card" id="save-ignore">
-                <h3>[save-ignore]</h3>
+            <!-- ========== REGION ATTRIBUTES ========== -->
+            <div class="category-label">Region attributes</div>
+            <p class="desc" style="flex: 1 1 100%; margin-top: 0.5rem; font-size: 0.85rem;">Composable markers that declare how a region is saved, watched, and undone. Set one on an element and it applies to that element and its descendants.</p>
+
+            <!-- region attributes table -->
+            <div class="demo-card region-table-card">
+                <table class="region-table">
+                    <thead>
+                        <tr>
+                            <th>Attribute</th>
+                            <th>What it does</th>
+                            <th>When to use it</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>no-save</code></td>
+                            <td>Stripped from the saved file. Still live and interactive at runtime.</td>
+                            <td>Admin-only chrome that should never land in the saved page (toolbars, edit panels, CMS sidebar).</td>
+                        </tr>
+                        <tr>
+                            <td><code>no-trigger-autosave</code></td>
+                            <td>Saved as-is, but editing it never triggers an autosave or marks the page dirty. Still undoable.</td>
+                            <td>Content you want persisted but not on every keystroke (status readouts, computed fields).</td>
+                        </tr>
+                        <tr>
+                            <td><code>no-undo</code></td>
+                            <td>Edits here aren't recorded in the undo stack. Saved and autosaved normally.</td>
+                            <td>Programmatic or high-frequency regions you don't want cluttering Cmd+Z history.</td>
+                        </tr>
+                        <tr>
+                            <td><code>no-watch</code></td>
+                            <td>Invisible to the whole mutation system: no behaviors, autosave, or undo. Still saved.</td>
+                            <td>High-churn machine regions (clocks, counters, logs) where watching every change is wasteful.</td>
+                        </tr>
+                        <tr>
+                            <td><code>freeze</code></td>
+                            <td>Saved exactly as authored; runtime changes aren't persisted. Still live and interactive.</td>
+                            <td>Live widgets or demos whose authored starting state is what should be saved.</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="region-table-note">Legacy aliases still work: <code>save-remove</code>→<code>no-save</code>, <code>save-ignore</code>→<code>no-trigger-autosave</code>, <code>save-freeze</code>→<code>freeze</code>, <code>mutations-ignore</code>→<code>no-watch</code> (each legacy marker also implies <code>no-undo</code>).</p>
+            </div>
+
+            <!-- no-trigger-autosave -->
+            <div class="demo-card" id="no-trigger-autosave">
+                <h3>[no-trigger-autosave]</h3>
                 <p class="desc">Exclude element from dirty detection, but still save it</p>
-                <pre><code>&lt;div save-ignore&gt;
+                <pre><code>&lt;div no-trigger-autosave&gt;
   Changes here won't mark dirty
 &lt;/div&gt;</code></pre>
                 <div class="demo-area" style="flex-direction: column; align-items: stretch;">
-                    <div class="mini-editor" contenteditable save-ignore id="save-ignore-editor">Edit me — page stays "saved"</div>
-                    <span class="output" id="save-ignore-log">savestatus won't change</span>
+                    <div class="mini-editor" contenteditable no-trigger-autosave id="no-trigger-autosave-editor">Edit me — page stays "saved"</div>
+                    <span class="output" id="no-trigger-autosave-log">savestatus won't change</span>
                 </div>
             </div>
 
-            <!-- save-freeze -->
-            <div class="demo-card" id="save-freeze">
-                <h3>[save-freeze]</h3>
+            <!-- freeze -->
+            <div class="demo-card" id="freeze">
+                <h3>[freeze]</h3>
                 <p class="desc">Always save the original innerHTML, even if it changes live</p>
-                <pre><code>&lt;div save-freeze&gt;
+                <pre><code>&lt;div freeze&gt;
   Original content is preserved on save
 &lt;/div&gt;</code></pre>
                 <div class="demo-area" style="flex-direction: column; align-items: stretch;">
-                    <div class="mini-editor" contenteditable save-freeze id="save-freeze-editor">Edit me — original saves</div>
+                    <div class="mini-editor" contenteditable freeze id="freeze-editor">Edit me — original saves</div>
                     <span class="output">Live DOM can change, saves use the frozen original</span>
                 </div>
             </div>
 
-            <!-- save-remove -->
-            <div class="demo-card" id="save-remove">
-                <h3>[save-remove]</h3>
+            <!-- no-save -->
+            <div class="demo-card" id="no-save">
+                <h3>[no-save]</h3>
                 <p class="desc">Strip element entirely from saved HTML</p>
-                <pre><code>&lt;div save-remove&gt;
+                <pre><code>&lt;div no-save&gt;
   Admin-only UI, never saved
 &lt;/div&gt;</code></pre>
                 <div class="demo-area" style="flex-direction: column; align-items: stretch;">

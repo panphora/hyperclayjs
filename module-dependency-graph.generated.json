@@ -208,7 +208,8 @@
     "vendor/hyper-html-api.vendor.js": [],
     "vendor/hyper-morph.vendor.js": [],
     "vendor/hyper-undo.vendor.js": [],
-    "vendor/hypercms.vendor.js": []
+    "vendor/hypercms.vendor.js": [],
+    "vendor/sapjs.vendor.js": []
   },
   "modules": {
     "save-core": {
@@ -478,7 +479,7 @@
       "files": [
         "custom-attributes/saveFreeze.js"
       ],
-      "description": "[save-freeze] attribute - freeze element innerHTML for saves, live DOM changes freely",
+      "description": "[freeze] attribute (legacy alias: save-freeze) - freeze element innerHTML for saves, live DOM changes freely",
       "exports": {}
     },
     "dialogs": {
@@ -762,7 +763,7 @@
     "hypercms": {
       "name": "hypercms",
       "category": "vendor",
-      "size": 135.4,
+      "size": 141.5,
       "files": [
         "vendor/hypercms.vendor.js"
       ],
@@ -772,6 +773,22 @@
           "window",
           "hyperclay",
           "hypercms"
+        ]
+      }
+    },
+    "sap": {
+      "name": "sap",
+      "category": "vendor",
+      "size": 40.8,
+      "difficulty": "advanced",
+      "files": [
+        "vendor/sapjs.vendor.js"
+      ],
+      "description": "sapjs reactive runtime — the DOM is the only state store. Structure-first, one write path. window.Sap / window.hyperclay.Sap.",
+      "exports": {
+        "Sap": [
+          "window",
+          "hyperclay"
         ]
       }
     },
@@ -992,6 +1009,7 @@
     "form-data": "./dom-utilities/getDataFromForm.js",
     "hyper-morph": "./vendor/hyper-morph.vendor.js",
     "hypercms": "./vendor/hypercms.vendor.js",
+    "sap": "./vendor/sapjs.vendor.js",
     "undo": "./undo.js",
     "data": "./data.js",
     "upgrade": "./upgrade.js",
@@ -1092,7 +1110,8 @@
       "description": "Third-party libraries",
       "modules": [
         "hyper-morph",
-        "hypercms"
+        "hypercms",
+        "sap"
       ]
     },
     "other": {
@@ -1247,6 +1266,7 @@
         "form-data",
         "hyper-morph",
         "hypercms",
+        "sap",
         "undo",
         "data",
         "upgrade",

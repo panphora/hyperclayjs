@@ -123,7 +123,7 @@ Each MutationRecord becomes one or more inverse-able primitives: `attr-add`, `at
 
 ## Ignored mutations
 
-A mutation is excluded from recording when its target's ancestor chain contains any of: `mutations-ignore`, `save-remove`, `save-ignore`, `save-freeze`. Browser-extension DOM is also filtered out.
+A mutation is excluded from recording when its region resolves to non-undoable, i.e. its target's ancestor chain carries `no-undo` or `no-watch`. The legacy markers `mutations-ignore`, `save-remove`, `save-ignore`, and `save-freeze` all imply `no-undo`, so they are excluded too. See [region attributes](./region-attributes.md). Browser-extension DOM is also filtered out.
 
 ## Example
 

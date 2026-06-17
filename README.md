@@ -84,7 +84,7 @@ To load a full preset, use the CDN loader with `?preset=standard`:
 | movable | 2.6KB | Free-positioning drag with [movable] and [movable-handle], edit mode only |
 | onaftersave | 1KB | [onaftersave] attribute - run JS when save status changes |
 | refetch-on-save | 0.9KB | Flash-free refetch of href/src resources on save via [refetch-on-save] attribute |
-| save-freeze | 3.4KB | [save-freeze] attribute - freeze element innerHTML for saves, live DOM changes freely |
+| save-freeze | 3.4KB | [freeze] attribute (legacy alias: save-freeze) - freeze element innerHTML for saves, live DOM changes freely |
 | sortable | 3.5KB | Drag-drop sorting with [sortable], lazy-loads ~118KB Sortable.js in edit mode |
 
 ### UI Components (User interface elements)
@@ -145,7 +145,8 @@ To load a full preset, use the CDN loader with `?preset=standard`:
 | Module | Size | Description |
 |--------|------|-------------|
 | hyper-morph | 18.8KB | DOM morphing with content-based element matching |
-| hypercms | 135.4KB | Live edit-in-place CMS sidebar driven by a hyper-html-api rules tag. Pairs with [sortable] and [hyper-morph]. |
+| hypercms | 141.5KB | Live edit-in-place CMS sidebar driven by a hyper-html-api rules tag. Pairs with [sortable] and [hyper-morph]. |
+| sap | 40.8KB | sapjs reactive runtime — the DOM is the only state store. Structure-first, one write path. window.Sap / window.hyperclay.Sap. |
 
 ## Presets
 
@@ -159,17 +160,17 @@ Standard feature set for most use cases
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `unsaved-warning`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `data`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### CMS (~222.7KB)
+### CMS (~228.8KB)
 Visual CMS editing for rules-tag pages: hypercms sidebar, undo, drag-reorder, save
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `unsaved-warning`, `toast`, `save-toast`, `mutation`, `hypercms`, `sortable`, `undo`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Smooth Sailing (~375.5KB)
+### Smooth Sailing (~381.6KB)
 Everything, without gotchas
 
 **Modules:** `save-core`, `save-system`, `unsaved-warning`, `save-toast`, `edit-mode-helpers`, `persist`, `snapshot`, `option-visibility`, `edit-mode`, `event-attrs`, `ajax-elements`, `sortable`, `movable`, `dom-helpers`, `input-helpers`, `onaftersave`, `save-freeze`, `dialogs`, `quickcrop`, `toast`, `the-modal`, `mutation`, `nearest`, `cookie`, `throttle`, `debounce`, `dom-ready`, `window-load`, `all-js`, `style-injection`, `form-data`, `hypercms`, `undo`, `data`, `upgrade`, `slugify`, `copy-to-clipboard`, `query-params`, `behavior-collector`, `send-message`, `file-upload`, `refetch-on-save`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Everything (~422.2KB)
+### Everything (~469.1KB)
 All available features
 
 Includes all available modules across all categories.
@@ -186,7 +187,7 @@ Some modules with large vendor dependencies are **lazy-loaded** to optimize page
 - The wrapper module checks if the page is in edit mode (`isEditMode`)
 - If true, it injects a `<script save-remove>` tag that loads the vendor script
 - If false, nothing is loaded - viewers don't download the heavy scripts
-- The `save-remove` attribute strips the script tag when the page is saved
+- The `save-remove` attribute (the legacy alias for `no-save`) strips the script tag when the page is saved
 
 This means:
 - **Editors** get full functionality when needed

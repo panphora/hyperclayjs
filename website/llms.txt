@@ -22,7 +22,9 @@ One script tag gives you: auto-save on DOM changes, edit/view mode toggling, for
 
 **Persist** — Add `persist` to any `<input>`, `<textarea>`, or `<select>` to save its value to the DOM on save.
 
-**Admin-Only Attributes** — `editmode:contenteditable`, `viewmode:disabled`, `editmode:onclick`, `editmode:resource` restrict functionality to editors. `save-ignore` excludes elements from dirty-checking. `save-freeze` preserves an element's original innerHTML on save, ignoring runtime changes.
+**Admin-Only Attributes** — `editmode:contenteditable`, `viewmode:disabled`, `editmode:onclick`, `editmode:resource` restrict functionality to editors.
+
+**Region Attributes** — composable markers for how a region is saved, watched, and undone: `no-save` (stripped from the saved file), `no-trigger-autosave` (saved but doesn't mark the page dirty), `no-undo` (not recorded in undo), `no-watch` (invisible to the mutation system), `freeze` (saved as authored, runtime changes don't persist). Legacy aliases `save-remove`, `save-ignore`, `save-freeze`, and `mutations-ignore` still work.
 
 **Custom Event Attributes** — `onrender`, `onbeforesave`, `onclickaway`, `onpagemutation`, `onclone` for declarative behavior.
 
@@ -941,6 +943,63 @@ hyperclay.toggleEditMode();
 
 ---
 
+# freeze
+
+Freeze an element's innerHTML for save purposes. The live DOM can change freely at runtime, but the saved HTML always contains the original content from when the element first appeared.
+
+`freeze` is one of the [region attributes](./region-attributes.md). The legacy alias `save-freeze` still works (it additionally implies `no-undo`).
+
+## Usage
+
+```html
+<div freeze>Content that JS will modify at runtime</div>
+```
+
+## How It Works
+
+1. On page load, the original `innerHTML` of every `[freeze]` element is captured
+2. For elements added dynamically after load, the content is captured when they enter the DOM
+3. At save time, the clone's innerHTML is replaced with the stored original
+
+Changes inside `[freeze]` elements do not trigger autosave dirty checks.
+
+## Example
+
+```html
+<!-- Live counter that doesn't persist -->
+<span freeze>0</span>
+<script>
+  setInterval(() => {
+    document.querySelector('[freeze]').textContent = Date.now();
+  }, 1000);
+</script>
+
+<!-- Interactive demo that resets on save -->
+<div freeze>
+  <div contenteditable>Try editing this — it won't save.</div>
+  <select>
+    <option selected>Default</option>
+    <option>Changed</option>
+  </select>
+</div>
+```
+
+## Related region attributes
+
+See [region attributes](./region-attributes.md) for the full model. The ones most often paired with `freeze`:
+
+| Attribute | Effect |
+|-----------|--------|
+| `no-save` | Element is removed from saved HTML entirely (legacy alias: `save-remove`) |
+| `no-trigger-autosave` | Element is excluded from dirty-checking but still saved as-is (legacy alias: `save-ignore`) |
+| `freeze` | Element is saved with its original content, ignoring runtime changes (legacy alias: `save-freeze`) |
+
+## Edit Mode Only
+
+This module only runs in edit mode. In view mode, no capturing or freezing occurs.
+
+---
+
 # getDataFromForm
 
 Extract all form field values as a plain JavaScript object. Works with `<form>` elements or any container with named inputs.
@@ -1001,7 +1060,7 @@ fetch('/api/submit', {
 
 Live edit-in-place CMS sidebar. Reads a page through a [`hyper-html-api`](https://github.com/panphora/hyper-html-api) rules tag, builds a form from those rules, mounts it as a side panel, and streams edits back into the page DOM in real time.
 
-The CMS only mutates the live DOM. Saving the page (Hyperclay Cmd+S or autosave) is what writes the file. The sidebar (`[data-hcms-shell]`, marked `save-ignore`/`save-remove`) and the `hcms-open` body class are stripped from the saved output.
+The CMS only mutates the live DOM. Saving the page (Hyperclay Cmd+S or autosave) is what writes the file. The sidebar (`[data-hcms-shell]`, marked `save-ignore`/`save-remove`, the legacy aliases for `no-trigger-autosave`/`no-save` — see [region attributes](./region-attributes.md)) and the `hcms-open` body class are stripped from the saved output.
 
 Vendored from `@panphora/hyper-cms`. In the `smooth-sailing` and `everything` presets. Not in `minimal` or `standard`.
 
@@ -1132,6 +1191,8 @@ document.addEventListener('hcms:save', (e) => save(e.detail.data))
 | `save-ignore` | any element | Engine skips it during extract and apply. The shell sets this on itself. |
 | `save-freeze`, `save-remove`, `mutations-ignore` | any element | Same observer-ignore behavior as `save-ignore`. |
 | `cms-template` | an element matching a list rule | Treated as a seed template, not data. Lets a list grow from empty. |
+
+The CMS engine matches the legacy marker names above. They are aliases for the [region attributes](./region-attributes.md) (`save-ignore` → `no-trigger-autosave`, `save-remove` → `no-save`, `save-freeze` → `freeze`, `mutations-ignore` → `no-watch`); the hyperclay save system recognizes both spellings.
 
 ### Template seeding
 
@@ -2113,7 +2174,7 @@ Add `refetch-on-save` to any element with an `href` or `src` attribute. After ev
 4. When the new element finishes loading (`onload`), removes the old one
 5. Fallback: if `onload` doesn't fire within 2 seconds, removes the old element anyway
 
-The new element keeps the `refetch-on-save` attribute so it works on subsequent saves. It's also marked `save-ignore` so it doesn't trigger dirty-checking.
+The new element keeps the `refetch-on-save` attribute so it works on subsequent saves. It's also marked `save-ignore` (the legacy alias for `no-trigger-autosave`) so it doesn't trigger dirty-checking.
 
 ## Example
 
@@ -2142,56 +2203,101 @@ Use `refetch-on-save` for stylesheets where a flash matters. Use `cacheBust` for
 
 ---
 
-# save-freeze
+# Region attributes
 
-Freeze an element's innerHTML for save purposes. The live DOM can change freely at runtime, but the saved HTML always contains the original content from when the element first appeared.
+A region declares how a part of the page participates in the framework using a
+small set of composable naked attributes. Set one on an element and it applies to
+that element and its descendants. Combine them freely.
 
-## Usage
+These five attributes replace the older `save-*` / `mutations-ignore` markers,
+which conflated several independent concerns. The old markers still work as
+back-compat aliases (see [Legacy aliases](#legacy-aliases)).
 
-```html
-<div save-freeze>Content that JS will modify at runtime</div>
-```
+## The attributes
 
-## How It Works
+| Attribute | What it does | When to use it |
+|-----------|--------------|----------------|
+| `no-save` | Stripped from the saved file. Still live and interactive at runtime. | Admin-only chrome that should never land in the saved page (toolbars, edit panels, CMS sidebar). |
+| `no-trigger-autosave` | Saved as-is, but editing it never triggers an autosave or marks the page dirty. Still undoable. | Content you want persisted but not on every keystroke (status readouts, computed/derived fields). |
+| `no-undo` | Edits here are not recorded in the undo stack. Saved and autosaved normally. | Programmatic or high-frequency regions you don't want cluttering Cmd+Z history. |
+| `no-watch` | Invisible to the whole mutation system: no behaviors, no autosave, no undo. Still saved. | High-churn machine regions (clocks, counters, logs) where watching every change is wasteful. |
+| `freeze` | Saved exactly as authored; runtime changes are not persisted. Still live and interactive. | Live widgets or demos whose authored starting state is what should be saved. |
 
-1. On page load, the original `innerHTML` of every `[save-freeze]` element is captured
-2. For elements added dynamically after load, the content is captured when they enter the DOM
-3. At save time, the clone's innerHTML is replaced with the stored original
+## Effect matrix
 
-Changes inside `[save-freeze]` elements do not trigger autosave dirty checks.
+| Attribute | Watched | Behaviors | Autosave + dirty | Undo | Saved to file |
+|-----------|---------|-----------|------------------|------|---------------|
+| (none) | yes | run | triggers | records | yes, live |
+| `no-save` | yes | run | no¹ | records | **no (stripped)** |
+| `no-trigger-autosave` | yes | run | **no** | records | yes, live |
+| `no-undo` | yes | run | triggers | **no** | yes, live |
+| `no-watch` | **no** | off | no | **no** | yes, live |
+| `freeze` | yes | run | no² | records | yes, **frozen** |
+
+¹ Nothing to save, so autosave is moot. ² Runtime changes won't persist, so autosaving them is pointless.
+
+## Composing intents
+
+Every intent is a composition of the attributes above:
+
+| Use case | Attributes |
+|----------|------------|
+| Normal region | (none) |
+| Functional but not saved (chrome, CMS panel) | `no-save` |
+| Functional, saved, no autosave, still undoable | `no-trigger-autosave` |
+| Saved, no autosave, not undoable (server-synced / external) | `no-trigger-autosave no-undo` |
+| High-churn, saved, inert (clock, counter, log) | `no-watch` |
+| High-churn, not saved, inert (debug overlay, 3rd-party churn) | `no-watch no-save` |
+| Frozen (functional, saved as authored) | `freeze` |
+
+## Implication rules
+
+The resolver enforces a few implications automatically:
+
+- `no-watch` ⟹ no autosave **and** no undo (you can't track what isn't watched). Still saved.
+- `no-save` ⟹ no autosave (nothing to persist).
+- `freeze` ⟹ no autosave (runtime changes won't persist).
+- `no-save` and `freeze` are mutually exclusive. If both are present, `no-save` wins.
+
+## Legacy aliases
+
+The old markers still work and resolve to bundles of the new attributes. Each
+legacy marker also implies `no-undo` (matching its historical behavior); the new
+`no-save` / `freeze` keep undo on, the cleaner default.
+
+| Legacy | Resolves to |
+|--------|-------------|
+| `mutations-ignore` | `no-watch` |
+| `save-remove` | `no-save no-undo` |
+| `save-ignore` | `no-trigger-autosave no-undo` |
+| `save-freeze` | `freeze no-undo` |
 
 ## Example
 
 ```html
-<!-- Live counter that doesn't persist -->
-<span save-freeze>0</span>
-<script>
-  setInterval(() => {
-    document.querySelector('[save-freeze]').textContent = Date.now();
-  }, 1000);
-</script>
+<!-- Admin toolbar: live in edit mode, never written to the saved file -->
+<div no-save class="admin-toolbar">…</div>
 
-<!-- Interactive demo that resets on save -->
-<div save-freeze>
-  <div contenteditable>Try editing this — it won't save.</div>
-  <select>
-    <option selected>Default</option>
-    <option>Changed</option>
-  </select>
+<!-- Live clock: saved, but its ticking never marks the page dirty or floods undo -->
+<span no-watch id="clock">12:00</span>
+
+<!-- Interactive demo: saved exactly as authored, edits don't persist -->
+<div freeze>
+  <div contenteditable>Try editing — it won't save.</div>
 </div>
+
+<!-- Derived field: persisted, but recomputing it doesn't trigger autosave -->
+<output no-trigger-autosave id="total">$0.00</output>
 ```
 
-## Comparison with Other Save Attributes
+## Implementation
 
-| Attribute | Effect |
-|-----------|--------|
-| `save-remove` | Element is removed from saved HTML entirely |
-| `save-ignore` | Element is excluded from dirty-checking but still saved as-is |
-| `save-freeze` | Element is saved with its original content, ignoring runtime changes |
-
-## Edit Mode Only
-
-This module only runs in edit mode. In view mode, no capturing or freezing occurs.
+The model lives in `src/utilities/region-policy.js`. `resolveRegionPolicy(node)`
+walks an element's self-or-ancestor chain once and returns the four independent
+axes the rest of the framework keys off: `{ watched, autosaveTriggered, undoable,
+persist }`. The save serializer (`src/core/snapshot.js`), autosave
+(`src/core/autosave.js`), and undo all consume this single resolver, so the
+attributes can never drift apart.
 
 ---
 
@@ -2276,17 +2382,20 @@ hyperclay.replacePageWith('/templates/blog.html');
 
 | Attribute | Effect |
 |-----------|--------|
-| `save-remove` | Element is removed from saved HTML entirely |
-| `save-ignore` | Element is excluded from dirty-checking but still saved as-is |
-| `save-freeze` | Element is saved with its original content, ignoring runtime changes |
+| `no-save` | Element is removed from saved HTML entirely |
+| `no-trigger-autosave` | Element is excluded from dirty-checking but still saved as-is |
+| `freeze` | Element is saved with its original content, ignoring runtime changes |
 | `onbeforesave` | Inline JS that runs on the snapshot clone before save |
 | `onaftersave` | Inline JS that runs on the live DOM after a successful save |
 | `trigger-save` | Click triggers a save |
 
+The first three are part of the [region attributes](./region-attributes.md) model. Their legacy aliases (`save-remove`, `save-ignore`, `save-freeze`) still work.
+
 ## Related Modules
 
 - `autosave` - Auto-save on DOM changes
-- `save-freeze` - Freeze element content for saves
+- `region-attributes` - Declare how a region is saved, watched, and undone
+- `freeze` - Freeze element content for saves
 - `save-toast` - Toast notifications for save events
 - `unsaved-warning` - Warn before leaving with unsaved changes
 
@@ -2440,12 +2549,12 @@ In every preset: `minimal`, `standard`, `smooth-sailing`, and `everything`. The 
 2. SNAPSHOT   onSnapshot hooks + [onbeforesnapshot] + [snapshot-remove] + extension-noise strip
               ├─ used by SAVE and LIVE-SYNC
               └─ emits hyperclay:snapshot-ready
-3. PREPARE    [onbeforesave] + [save-remove] + onPrepareForSave hooks
+3. PREPARE    [onbeforesave] + [no-save] + onPrepareForSave hooks
               └─ used by SAVE only (live-sync stops at step 2)
 4. SERIALIZE  "<!DOCTYPE html>" + clone.outerHTML  →  sent to server
 ```
 
-`captureForComparison` and the compare half of `captureForSaveAndComparison` additionally strip `[save-ignore]` so runtime-only elements do not trip dirty-checking.
+`captureForComparison` and the compare half of `captureForSaveAndComparison` additionally strip every region whose autosave-trigger is off (`[no-trigger-autosave]`, plus `[no-save]`, `[freeze]`, and `[no-watch]`) so runtime-only elements do not trip dirty-checking. See [region attributes](./region-attributes.md); the legacy `save-*` / `mutations-ignore` markers are recognized as aliases.
 
 ## Hooks
 
@@ -2463,7 +2572,7 @@ Each callback receives the cloned `<html>` element (`HTMLElement`) and mutates i
 |----------|---------|-------------|
 | `captureSnapshot()` | `HTMLElement` | Clones `<html>`, runs `onSnapshot` hooks, `[onbeforesnapshot]`, `[snapshot-remove]`, and strips extension noise. Nothing save-specific stripped yet |
 | `captureForSave({ emitForSync = true })` | `string` | Full save pipeline. Emits `hyperclay:snapshot-ready`, then runs prepare phase. Returns `"<!DOCTYPE html>" + outerHTML` |
-| `captureForComparison()` | `string` | Like the save path but also strips `[save-ignore]`. For comparing current state against a baseline. Does not emit `snapshot-ready` |
+| `captureForComparison()` | `string` | Like the save path but also strips every region whose autosave-trigger is off (`[no-trigger-autosave]` and friends). For comparing current state against a baseline. Does not emit `snapshot-ready` |
 | `captureForSaveAndComparison({ emitForSync = true })` | `{ forSave, forComparison }` | Single clone, then forks into a save string and a comparison string. Cheaper than calling both separately |
 | `captureBodyForSync()` | `string` | `<body>` innerHTML with form values synced, no stripping. Prefer the `hyperclay:snapshot-ready` event instead |
 | `getPageContents()` | `string` | Current page HTML for change detection. Calls `captureForSave({ emitForSync: false })`, so it never triggers live-sync |
@@ -2485,8 +2594,10 @@ These markup hooks are processed during capture. Inline attribute handlers run v
 | `onbeforesnapshot` | snapshot (save + sync) | Inline JS runs on the cloned element before any stripping |
 | `snapshot-remove` | snapshot (save + sync) | Element is removed from every snapshot, so it never reaches a save, a comparison, or a live-sync broadcast |
 | `onbeforesave` | prepare (save + compare) | Inline JS runs on the cloned element before save-specific stripping |
-| `save-remove` | prepare (save + compare) | Element is removed from the saved HTML entirely |
-| `save-ignore` | comparison only | Element is excluded from dirty-checking but still saved as-is |
+| `no-save` | prepare (save + compare) | Element is removed from the saved HTML entirely (legacy alias: `save-remove`) |
+| `no-trigger-autosave` | comparison only | Element is excluded from dirty-checking but still saved as-is (legacy alias: `save-ignore`) |
+
+The first two are part of the [region attributes](./region-attributes.md) model.
 
 ## Events
 
@@ -2529,8 +2640,8 @@ const html = captureForSave({ emitForSync: false });
 <!-- Markup-level hooks -->
 <div onbeforesnapshot="this.dataset.snappedAt = Date.now()">...</div>
 <div snapshot-remove>Never appears in any snapshot</div>
-<button save-remove>Hidden from the saved file</button>
-<div save-ignore>Saved as-is but skipped by dirty-checking</div>
+<button no-save>Hidden from the saved file</button>
+<div no-trigger-autosave>Saved as-is but skipped by dirty-checking</div>
 ```
 
 ```js
@@ -3012,7 +3123,7 @@ Each MutationRecord becomes one or more inverse-able primitives: `attr-add`, `at
 
 ## Ignored mutations
 
-A mutation is excluded from recording when its target's ancestor chain contains any of: `mutations-ignore`, `save-remove`, `save-ignore`, `save-freeze`. Browser-extension DOM is also filtered out.
+A mutation is excluded from recording when its region resolves to non-undoable, i.e. its target's ancestor chain carries `no-undo` or `no-watch`. The legacy markers `mutations-ignore`, `save-remove`, `save-ignore`, and `save-freeze` all imply `no-undo`, so they are excluded too. See [region attributes](./region-attributes.md). Browser-extension DOM is also filtered out.
 
 ## Example
 
@@ -3235,7 +3346,7 @@ Large vendor scripts (Sortable.js ~118KB) were bundled directly into modules, fo
 
 ## Solution
 
-Conditionally load heavy vendor scripts only when in edit mode via dynamically injected `<script save-remove>` tags.
+Conditionally load heavy vendor scripts only when in edit mode via dynamically injected `<script save-remove>` tags (`save-remove` is the legacy alias for the [`no-save`](./api/region-attributes.md) region attribute).
 
 ## How It Works
 

@@ -22,7 +22,9 @@ One script tag gives you: auto-save on DOM changes, edit/view mode toggling, for
 
 **Persist** — Add `persist` to any `<input>`, `<textarea>`, or `<select>` to save its value to the DOM on save.
 
-**Admin-Only Attributes** — `editmode:contenteditable`, `viewmode:disabled`, `editmode:onclick`, `editmode:resource` restrict functionality to editors. `save-ignore` excludes elements from dirty-checking. `save-freeze` preserves an element's original innerHTML on save, ignoring runtime changes.
+**Admin-Only Attributes** — `editmode:contenteditable`, `viewmode:disabled`, `editmode:onclick`, `editmode:resource` restrict functionality to editors.
+
+**Region Attributes** — composable markers for how a region is saved, watched, and undone: `no-save` (stripped from the saved file), `no-trigger-autosave` (saved but doesn't mark the page dirty), `no-undo` (not recorded in undo), `no-watch` (invisible to the mutation system), `freeze` (saved as authored, runtime changes don't persist). Legacy aliases `save-remove`, `save-ignore`, `save-freeze`, and `mutations-ignore` still work.
 
 **Custom Event Attributes** — `onrender`, `onbeforesave`, `onclickaway`, `onpagemutation`, `onclone` for declarative behavior.
 

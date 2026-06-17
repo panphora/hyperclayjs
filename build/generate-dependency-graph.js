@@ -181,7 +181,7 @@ const MODULE_DEFINITIONS = {
   'custom-attributes/saveFreeze.js': {
     name: 'save-freeze',
     moduleId: 'save-freeze',
-    description: '[save-freeze] attribute - freeze element innerHTML for saves, live DOM changes freely',
+    description: '[freeze] attribute (legacy alias: save-freeze) - freeze element innerHTML for saves, live DOM changes freely',
     isEditModeOnly: true
     // No exports - auto-inits on load
   },
@@ -339,6 +339,15 @@ const MODULE_DEFINITIONS = {
     description: 'Live edit-in-place CMS sidebar driven by a hyper-html-api rules tag. Pairs with [sortable] and [hyper-morph].',
     exports: {
       cms: ['window', 'hyperclay', 'hypercms']
+    }
+  },
+  'vendor/sapjs.vendor.js': {
+    name: 'sap',
+    moduleId: 'sap',
+    description: 'sapjs reactive runtime — the DOM is the only state store. Structure-first, one write path. window.Sap / window.hyperclay.Sap.',
+    difficulty: 'advanced',
+    exports: {
+      Sap: ['window', 'hyperclay']
     }
   },
   'undo.js': {

@@ -18,7 +18,7 @@ Add `refetch-on-save` to any element with an `href` or `src` attribute. After ev
 4. When the new element finishes loading (`onload`), removes the old one
 5. Fallback: if `onload` doesn't fire within 2 seconds, removes the old element anyway
 
-The new element keeps the `refetch-on-save` attribute so it works on subsequent saves. It's also marked `save-ignore` so it doesn't trigger dirty-checking.
+The new element keeps the `refetch-on-save` attribute so it works on subsequent saves. It's also marked `save-ignore` (the legacy alias for `no-trigger-autosave`) so it doesn't trigger dirty-checking.
 
 ## Example
 
