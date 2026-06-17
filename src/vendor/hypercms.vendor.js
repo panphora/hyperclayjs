@@ -172,7 +172,7 @@ ${r}`:r,i.hidden=!1;continue}}t.push(r)}t.length&&e.errorEl&&(e.errorEl.textCont
    Source of truth: mirk-interface/mirk.css + src/theme/pixel-quiet.overrides.css.
    Regenerate with: npm run build:theme */
 
-/* ===== mirk-interface@2.0.1, scoped to .hcms-shell ===== */
+/* ===== mirk-interface@2.2.0, scoped to .hcms-shell ===== */
 /*
  * mirk.css \u2014 the mirk UI kit, v2.
  * Hand-written, no build. Fourteen form components as semantic BEM classes in
@@ -197,7 +197,7 @@ ${r}`:r,i.hidden=!1;continue}}t.push(r)}t.length&&e.errorEl&&(e.errorEl.textCont
 
   @font-face {
     font-family: 'Departure Mono';
-    src: url('https://cdn.jsdelivr.net/npm/mirk-interface@2.0.1/fonts/DepartureMono-1.500/DepartureMono-Regular.woff2') format('woff2');
+    src: url('https://cdn.jsdelivr.net/npm/mirk-interface@2.2.0/fonts/DepartureMono-1.500/DepartureMono-Regular.woff2') format('woff2');
     font-weight: 400; font-style: normal; font-display: swap;
   }
 
