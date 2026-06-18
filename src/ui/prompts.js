@@ -64,6 +64,11 @@ function createModal(promptText, yesCallback, extraContent = "", includeInput = 
     }
   }, 0);
 
+  // Fire-and-forget callers (e.g. consent(msg, cb) with no await) don't consume
+  // the reject path; dismissal now rejects, so swallow it here to avoid an
+  // unhandled rejection. Awaiters still observe the rejection via their await.
+  promise.catch(() => {});
+
   return promise;
 }
 
@@ -106,6 +111,10 @@ export function tell(promptText, ...content) {
   });
 
   themodal.open();
+
+  // See createModal: swallow the reject for fire-and-forget tell() callers;
+  // awaiters still observe it via their await.
+  promise.catch(() => {});
 
   return promise;
 }

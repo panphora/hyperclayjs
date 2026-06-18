@@ -58,6 +58,10 @@ function submitAjax(elem) {
         handleResponse(elem, { ...resData, ok: res.ok, msgType: res.ok ? "success" : "error" });
       })
       .catch(error => console.error('Error:', error));
+  }).catch((err) => {
+    // A rejected onbeforesubmit aborts the submit (e.g. a confirm/ask dialog was
+    // dismissed — consent()/ask() reject with no value). Log anything else.
+    if (err !== undefined) console.error('onbeforesubmit error:', err);
   });
 }
 

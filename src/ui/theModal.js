@@ -141,7 +141,13 @@ const MicroModal = (() => {
     }
 
     closeModalById (targetModal) {
-      this.modal = document.getElementById(targetModal)
+      // Fall back to the stored modal reference when the node was removed from
+      // the DOM externally (e.g. a live-sync morph). Without this, getElementById
+      // returns null, closeModal() is skipped, and its cleanup never runs — the
+      // onClose callback, this.removeEventListeners() (which drops MicroModal's
+      // document keydown listener), and scroll restore are all stranded.
+      const modal = document.getElementById(targetModal)
+      if (modal) this.modal = modal
       if (this.modal) this.closeModal()
     }
 
@@ -640,23 +646,41 @@ const themodal = (() => {
   const themodalMain = {
     isShowing: false,
     open() {
-      // Clean up stale modal if DOM was removed externally (e.g. live-sync morph)
-      if (this.isShowing && !document.querySelector('.micromodal-parent')) {
+      // This modal's callbacks were registered (onYes pushed / onNo assigned)
+      // immediately before open(). Capture them for THIS open() call, then clear
+      // the shared arrays so the next modal starts clean. Every handler below
+      // fires ONLY these captured callbacks, so stacked modals can never drain
+      // each other's promises.
+      const myOnYes = onYes;
+      const myOnNo = onNo;
+      const myOnOpen = onOpen;
+      onYes = [];
+      onNo = [];
+      onOpen = [];
+
+      // The prompt promise must settle exactly once: resolve on yes, reject on
+      // any dismissal (no / close / backdrop / Esc / superseded). dismiss() runs
+      // the no-callbacks at most once; the yes path sets `settled` to block it.
+      let settled = false;
+      const dismiss = () => {
+        if (settled) return;
+        settled = true;
+        myOnNo.forEach(cb => cb());
+      };
+
+      // Singleton: only one modal on screen at a time. If one is still up (or
+      // left stale state behind, e.g. a live-sync morph removed its DOM), reject
+      // its promise and tear it down before opening the new one.
+      if (this.isShowing || document.querySelector('.micromodal-parent')) {
+        this._dismiss?.();
         this._cleanupListeners?.();
-        html = "";
-        yes = "";
-        no = "";
-        zIndex = "100";
-        closeHtml = "";
-        enableClickOutsideCloses = true;
-        disableScroll = true;
-        disableFocus = false;
-        onYes = [];
-        onNo = [];
-        onOpen = [];
+        document.querySelectorAll('.micromodal-parent').forEach(n => n.remove());
         this.isShowing = false;
         document.body.style.overflow = '';
       }
+
+      // Expose this modal's dismiss so a later open()/close can settle it.
+      this._dismiss = dismiss;
 
       document.body.insertAdjacentHTML("afterbegin", "<div save-remove snapshot-remove class='micromodal-parent'>" + modalCss + modalHtml + "</div>");
 
@@ -684,15 +708,14 @@ const themodal = (() => {
       }
 
       function handleClick(event) {
+        // Just close on no / close-button / backdrop; onClose runs dismiss().
         if (event.target.closest(".micromodal__no") || event.target.closest(".micromodal__close")) {
-          onNo.forEach(cb => cb());
           MicroModal.close("micromodal");
         // MODIFIED so modal doesn't close if mousedown happened inside the modal
         } else if (enableClickOutsideCloses && mousedownOnBackdrop && !event.target.closest(".micromodal__container") && event.target.closest(".micromodal__overlay")) {
-          onNo.forEach(cb => cb());
           MicroModal.close("micromodal");
         }
-        
+
         // Reset after handling
         mousedownOnBackdrop = false;
       }
@@ -703,8 +726,8 @@ const themodal = (() => {
           
           // Execute callbacks and check if any return false or throw errors
           let shouldClose = true;
-          
-          for (const cb of onYes) {
+
+          for (const cb of myOnYes) {
             try {
               const result = cb();
               // If callback explicitly returns false, don't close
@@ -719,9 +742,11 @@ const themodal = (() => {
               break;
             }
           }
-          
-          // Only close if all callbacks succeeded
+
+          // Only close if all callbacks succeeded. The yes callbacks already
+          // scheduled their resolve, so mark settled to stop onClose rejecting.
           if (shouldClose) {
+            settled = true;
             MicroModal.close("micromodal");
           }
         }
@@ -752,6 +777,10 @@ const themodal = (() => {
         disableFocus: true, // we use our own
         // reset everything on close
         onClose: modal => {
+          // Settle the promise as rejected if it closed without a yes
+          // (no / close / backdrop / Esc). No-op once already resolved.
+          dismiss();
+
           document.querySelector(".micromodal-parent")?.remove();
 
           html = "";
@@ -765,9 +794,9 @@ const themodal = (() => {
           disableScroll = true;
           disableFocus = false;
 
-          onYes = [];
-          onNo = [];
-          onOpen = [];
+          // onYes/onNo/onOpen are owned by open() now (captured into this call's
+          // locals and cleared there), so they are deliberately not reset here:
+          // a late onClose must not wipe a newer modal's freshly-registered cbs.
 
           this.isShowing = false;
 
@@ -776,12 +805,13 @@ const themodal = (() => {
           document.removeEventListener("click", handleClick);
           document.removeEventListener("submit", handleSubmit);
           this._cleanupListeners = null;
+          this._dismiss = null;
         }
       });
 
       this.isShowing = true;
 
-      onOpen.forEach(cb => cb());
+      myOnOpen.forEach(cb => cb());
 
       if (!disableFocus) {
         let firstInput = modalOverlayElem.querySelector(".micromodal__content :is(input,textarea,button):not(.micromodal__hide), .micromodal__buttons :is(input,textarea,button):not(.micromodal__hide)");
@@ -790,7 +820,7 @@ const themodal = (() => {
       }
     },
     close() {
-      onNo.forEach(cb => cb());
+      // onClose runs the dismiss/reject path; just trigger the close.
       MicroModal.close("micromodal");
     },
     get html() {
@@ -836,15 +866,16 @@ const themodal = (() => {
       disableScroll = newVal;
     },
 
-    onYes: (cb) => {
-      onYes.push(cb);
-    },
-    onNo: (cb) => {
-      onNo.push(cb);
-    },
-    onOpen: (cb) => {
-      onOpen.push(cb);
-    },
+    // Two registration forms are in use across callers: themodal.onYes(cb)
+    // (call → push, supports multiple) and themodal.onNo = cb (assign → replace).
+    // Expose both via get (returns a push fn) + set (replaces with one cb), so
+    // the assign form registers a callback instead of clobbering the method.
+    get onYes() { return (cb) => { onYes.push(cb); }; },
+    set onYes(cb) { onYes = [cb]; },
+    get onNo() { return (cb) => { onNo.push(cb); }; },
+    set onNo(cb) { onNo = [cb]; },
+    get onOpen() { return (cb) => { onOpen.push(cb); }; },
+    set onOpen(cb) { onOpen = [cb]; },
   };
 
   return themodalMain;
