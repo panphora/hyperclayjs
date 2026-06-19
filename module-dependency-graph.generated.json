@@ -55,7 +55,8 @@
       "core/setPageTypeOnDocumentElement.js"
     ],
     "core/enablePersistentFormInputValues.js": [
-      "core/snapshot.js"
+      "core/snapshot.js",
+      "vendor/control-serialize.vendor.js"
     ],
     "core/exportToWindow.js": [],
     "core/isAdminOfCurrentResource.js": [
@@ -204,6 +205,7 @@
     ],
     "utilities/throttle.js": [],
     "vendor/Sortable.vendor.js": [],
+    "vendor/control-serialize.vendor.js": [],
     "vendor/hyper-html-api-upgrade.vendor.js": [],
     "vendor/hyper-html-api.vendor.js": [],
     "vendor/hyper-morph.vendor.js": [],
@@ -310,7 +312,7 @@
     "persist": {
       "name": "persist",
       "category": "core",
-      "size": 6.4,
+      "size": 5,
       "isEditModeOnly": true,
       "files": [
         "core/enablePersistentFormInputValues.js"
@@ -408,7 +410,7 @@
     "ajax-elements": {
       "name": "ajax-elements",
       "category": "custom-attributes",
-      "size": 2.8,
+      "size": 3,
       "files": [
         "custom-attributes/ajaxElements.js"
       ],
@@ -485,7 +487,7 @@
     "dialogs": {
       "name": "dialogs",
       "category": "ui",
-      "size": 8.5,
+      "size": 8.9,
       "files": [
         "ui/prompts.js"
       ],
@@ -557,7 +559,7 @@
     "the-modal": {
       "name": "the-modal",
       "category": "ui",
-      "size": 23,
+      "size": 25.3,
       "files": [
         "ui/theModal.js"
       ],
@@ -779,7 +781,7 @@
     "sap": {
       "name": "sap",
       "category": "vendor",
-      "size": 40.8,
+      "size": 41.6,
       "difficulty": "advanced",
       "files": [
         "vendor/sapjs.vendor.js"

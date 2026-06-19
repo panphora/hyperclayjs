@@ -23,7 +23,7 @@ describe('optionVisibility', () => {
       test('parses single value', () => {
         const result = parseOptionAttribute('option:editmode', 'true');
 
-        expect(result).toEqual({
+        expect(result).toMatchObject({
           name: 'editmode',
           rawValue: 'true',
           values: ['true'],
@@ -34,7 +34,7 @@ describe('optionVisibility', () => {
       test('parses multi-value with pipe delimiter', () => {
         const result = parseOptionAttribute('option:status', 'saved|error|offline');
 
-        expect(result).toEqual({
+        expect(result).toMatchObject({
           name: 'status',
           rawValue: 'saved|error|offline',
           values: ['saved', 'error', 'offline'],
@@ -45,7 +45,7 @@ describe('optionVisibility', () => {
       test('parses two values', () => {
         const result = parseOptionAttribute('option:savestatus', 'saved|error');
 
-        expect(result).toEqual({
+        expect(result).toMatchObject({
           name: 'savestatus',
           rawValue: 'saved|error',
           values: ['saved', 'error'],
@@ -56,7 +56,7 @@ describe('optionVisibility', () => {
       test('keeps empty values in pipes for empty string matching', () => {
         const result = parseOptionAttribute('option:foo', 'a||b');
 
-        expect(result).toEqual({
+        expect(result).toMatchObject({
           name: 'foo',
           rawValue: 'a||b',
           values: ['a', '', 'b'],
@@ -67,7 +67,7 @@ describe('optionVisibility', () => {
       test('keeps leading/trailing empty values', () => {
         const result = parseOptionAttribute('option:foo', '|a|b|');
 
-        expect(result).toEqual({
+        expect(result).toMatchObject({
           name: 'foo',
           rawValue: '|a|b|',
           values: ['', 'a', 'b', ''],
@@ -78,7 +78,7 @@ describe('optionVisibility', () => {
       test('parses empty value for matching empty attribute', () => {
         const result = parseOptionAttribute('option:status', '');
 
-        expect(result).toEqual({
+        expect(result).toMatchObject({
           name: 'status',
           rawValue: '',
           values: [''],
@@ -89,7 +89,7 @@ describe('optionVisibility', () => {
       test('parses empty OR value with leading pipe', () => {
         const result = parseOptionAttribute('option:status', '|saved');
 
-        expect(result).toEqual({
+        expect(result).toMatchObject({
           name: 'status',
           rawValue: '|saved',
           values: ['', 'saved'],
@@ -102,7 +102,7 @@ describe('optionVisibility', () => {
       test('parses single negated value', () => {
         const result = parseOptionAttribute('option-not:savestatus', 'saving');
 
-        expect(result).toEqual({
+        expect(result).toMatchObject({
           name: 'savestatus',
           rawValue: 'saving',
           values: ['saving'],
@@ -113,7 +113,7 @@ describe('optionVisibility', () => {
       test('parses multi-value negation', () => {
         const result = parseOptionAttribute('option-not:status', 'saving|error');
 
-        expect(result).toEqual({
+        expect(result).toMatchObject({
           name: 'status',
           rawValue: 'saving|error',
           values: ['saving', 'error'],
@@ -138,7 +138,7 @@ describe('optionVisibility', () => {
       test('handles attribute names with special characters', () => {
         const result = parseOptionAttribute('option:my-attr', 'value');
 
-        expect(result).toEqual({
+        expect(result).toMatchObject({
           name: 'my-attr',
           rawValue: 'value',
           values: ['value'],
@@ -149,7 +149,7 @@ describe('optionVisibility', () => {
       test('handles values with special characters', () => {
         const result = parseOptionAttribute('option:foo', 'value-1');
 
-        expect(result).toEqual({
+        expect(result).toMatchObject({
           name: 'foo',
           rawValue: 'value-1',
           values: ['value-1'],
@@ -160,7 +160,7 @@ describe('optionVisibility', () => {
       test('preserves whitespace in values', () => {
         const result = parseOptionAttribute('option:foo', 'hello world');
 
-        expect(result).toEqual({
+        expect(result).toMatchObject({
           name: 'foo',
           rawValue: 'hello world',
           values: ['hello world'],
@@ -330,6 +330,60 @@ describe('optionVisibility', () => {
 
         expect(css).toContain('my-attr');
       });
+    });
+  });
+
+  // ========================================
+  // shared verbs: show-when: / hide-when:
+  // ========================================
+
+  describe('show-when: / hide-when: (sapjs-aligned spellings)', () => {
+    test('parses show-when: as a positive (show) pattern', () => {
+      expect(parseOptionAttribute('show-when:tab', 'overview')).toMatchObject({
+        name: 'tab', values: ['overview'], kind: 'show', prefix: 'show-when', negated: false
+      });
+    });
+
+    test('parses hide-when: as a hide pattern', () => {
+      expect(parseOptionAttribute('hide-when:tab', 'overview')).toMatchObject({
+        name: 'tab', values: ['overview'], kind: 'hide', prefix: 'hide-when'
+      });
+    });
+
+    test('option: still parses with kind/prefix', () => {
+      expect(parseOptionAttribute('option:tab', 'overview')).toMatchObject({
+        kind: 'show', prefix: 'option', negated: false
+      });
+    });
+
+    test('option-not: still parses with kind/prefix', () => {
+      expect(parseOptionAttribute('option-not:tab', 'overview')).toMatchObject({
+        kind: 'show-not', prefix: 'option-not', negated: true
+      });
+    });
+
+    test('show-when targets its own attribute, same scope logic as option:', () => {
+      const css = optionVisibility.generateCSS([parseOptionAttribute('show-when:tab', 'overview')]);
+      expect(css).toContain('[show-when\\:tab="overview"]:not(:is(');
+      expect(css).toContain('[tab="overview"]');
+      expect(css).toContain('[tab="overview"] *');
+      expect(css).toContain('display:none!important');
+    });
+
+    test('hide-when uses the INVERSE selector shape (hide when inside a match)', () => {
+      const css = optionVisibility.generateCSS([parseOptionAttribute('hide-when:tab', 'overview')]);
+      // hides WHEN matching: :is(...) with no :not() wrapper
+      expect(css).toContain('[hide-when\\:tab="overview"]:is([tab="overview"],[tab="overview"] *){display:none!important}');
+      expect(css).not.toContain('[hide-when\\:tab="overview"]:not(');
+    });
+
+    test('option: and show-when: for the same mode produce distinct rules', () => {
+      const css = optionVisibility.generateCSS([
+        parseOptionAttribute('option:tab', 'overview'),
+        parseOptionAttribute('show-when:tab', 'overview')
+      ]);
+      expect(css).toContain('[option\\:tab="overview"]');
+      expect(css).toContain('[show-when\\:tab="overview"]');
     });
   });
 });

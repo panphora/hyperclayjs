@@ -5,11 +5,17 @@
  *
  * SYNTAX:
  *   option:name="value"       - Show when ancestor has name="value"
+ *   show-when:name="value"    - Same as option: (the canonical, sapjs-aligned spelling)
  *   option:name="a|b|c"       - Show when ancestor has name="a" OR "b" OR "c"
  *   option:name=""            - Show when ancestor has name="" (empty value)
  *   option:name="|saved"      - Show when ancestor has name="" OR name="saved"
+ *   hide-when:name="value"    - Inverse of show-when: hide WHEN ancestor has name="value"
  *   option-not:name="value"   - Show when ancestor has name attr but ≠ "value"
  *   option-not:name="a|b"     - Show when ancestor has name attr but ≠ "a" AND ≠ "b"
+ *
+ * show-when:/hide-when: are honored identically here and in sapjs, so visibility
+ * authored against either library just works. option:/option-not: stay permanent
+ * aliases.
  *
  * EXAMPLES:
  *   <div editmode="true">
@@ -44,32 +50,37 @@ import insertStyles from "../dom-utilities/insertStyleTag.js";
 
 const STYLE_NAME = 'option-visibility';
 
+// The visibility prefixes, longest-disambiguating first. show-when/option are the
+// "show when match" pair; hide-when is its inverse; option-not is "present but not
+// match". All four compile to ancestor-attribute CSS below.
+const OPTION_PREFIXES = [
+  { prefix: 'option-not', kind: 'show-not' },
+  { prefix: 'option', kind: 'show' },
+  { prefix: 'show-when', kind: 'show' },
+  { prefix: 'hide-when', kind: 'hide' },
+];
+
 /**
- * Parse an option:/option-not: attribute into a pattern object.
+ * Parse an option:/option-not:/show-when:/hide-when: attribute into a pattern object.
  * Pure function for easy testing.
  *
- * @param {string} attrName - Attribute name (e.g., 'option:editmode', 'option-not:status')
+ * @param {string} attrName - Attribute name (e.g., 'show-when:editmode', 'option-not:status')
  * @param {string} attrValue - Attribute value (e.g., 'true', 'a|b|c')
- * @returns {Object|null} Pattern object or null if not a valid option attribute
+ * @returns {Object|null} Pattern object or null if not a valid visibility attribute
  */
 export function parseOptionAttribute(attrName, attrValue) {
-  let negated = false;
-  let name;
-
-  if (attrName.startsWith('option-not:')) {
-    negated = true;
-    name = attrName.slice(11);
-  } else if (attrName.startsWith('option:')) {
-    name = attrName.slice(7);
-  } else {
-    return null;
+  let match = null;
+  for (const p of OPTION_PREFIXES) {
+    if (attrName.startsWith(p.prefix + ':')) { match = p; break; }
   }
+  if (!match) return null;
 
+  const name = attrName.slice(match.prefix.length + 1);
   const rawValue = attrValue;
   // Split by pipe, keep empty strings (they match empty attribute values)
   const values = rawValue.split('|');
 
-  return { name, rawValue, values, negated };
+  return { name, rawValue, values, kind: match.kind, prefix: match.prefix, negated: match.kind === 'show-not' };
 }
 
 const optionVisibility = {
@@ -90,7 +101,7 @@ const optionVisibility = {
 
     try {
       const snapshot = document.evaluate(
-        '//*[@*[starts-with(name(), "option:") or starts-with(name(), "option-not:")]]',
+        '//*[@*[starts-with(name(), "option:") or starts-with(name(), "option-not:") or starts-with(name(), "show-when:") or starts-with(name(), "hide-when:")]]',
         document.documentElement,
         null,
         XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
@@ -103,7 +114,9 @@ const optionVisibility = {
           const pattern = parseOptionAttribute(attr.name, attr.value);
           if (!pattern) continue;
 
-          const key = `${pattern.negated ? '!' : ''}${pattern.name}=${pattern.rawValue}`;
+          // key includes the prefix so each authored spelling gets its own rule
+          // (option:tab and show-when:tab target different attributes, same scope).
+          const key = `${pattern.prefix}:${pattern.name}=${pattern.rawValue}`;
           if (!patterns.has(key)) {
             patterns.set(key, pattern);
           }
@@ -126,23 +139,35 @@ const optionVisibility = {
   generateCSS(patterns) {
     if (!patterns.length) return '';
 
-    return patterns.map(({ name, rawValue, values, negated }) => {
+    return patterns.map((pattern) => {
+      const { name, rawValue, values } = pattern;
+      // Tolerate the legacy {negated} pattern shape so external callers keep working.
+      const kind = pattern.kind || (pattern.negated ? 'show-not' : 'show');
+      const prefix = pattern.prefix || (kind === 'show-not' ? 'option-not' : kind === 'hide' ? 'hide-when' : 'option');
       const safeName = CSS.escape(name);
       const safeRawValue = CSS.escape(rawValue);
-      const prefix = negated ? 'option-not' : 'option';
-      const attrSelector = `[${prefix}\\:${safeName}="${safeRawValue}"]`;
+      const safePrefix = CSS.escape(prefix);
+      const attrSelector = `[${safePrefix}\\:${safeName}="${safeRawValue}"]`;
+
+      // The "matching scope": an ancestor (or self) carries name="value".
+      const self = values.map(v => `[${safeName}="${CSS.escape(v)}"]`);
+      const desc = values.map(v => `[${safeName}="${CSS.escape(v)}"] *`);
+      const matchScope = [...self, ...desc].join(',');
+
+      if (kind === 'hide') {
+        // hide-when: hide WHEN inside a matching scope — the inverse selector shape.
+        return `${attrSelector}:is(${matchScope}){display:none!important}`;
+      }
 
       let scopeSelectors;
-      if (negated) {
+      if (kind === 'show-not') {
         // option-not: active when ancestor has attr but NOT any of the values
         const notList = values.map(v => `[${safeName}="${CSS.escape(v)}"]`).join(',');
         const scope = `[${safeName}]:not(${notList})`;
         scopeSelectors = `${scope},${scope} *`;
       } else {
-        // option: active when ancestor has ANY of the values
-        const self = values.map(v => `[${safeName}="${CSS.escape(v)}"]`);
-        const desc = values.map(v => `[${safeName}="${CSS.escape(v)}"] *`);
-        scopeSelectors = [...self, ...desc].join(',');
+        // option / show-when: active when ancestor has ANY of the values
+        scopeSelectors = matchScope;
       }
 
       return `${attrSelector}:not(:is(${scopeSelectors})){display:none!important}`;
@@ -183,7 +208,8 @@ const optionVisibility = {
     this._unsubscribe = Mutation.onAnyChange({
       debounce: 200,
       selectorFilter: el => [...el.attributes].some(attr =>
-        attr.name.startsWith('option:') || attr.name.startsWith('option-not:')
+        attr.name.startsWith('option:') || attr.name.startsWith('option-not:') ||
+        attr.name.startsWith('show-when:') || attr.name.startsWith('hide-when:')
       ),
       omitChangeDetails: true,
       require: 'observed',

@@ -66,7 +66,7 @@ To load a full preset, use the CDN loader with `?preset=standard`:
 | edit-mode | 1.8KB | Toggle edit mode on hyperclay on/off |
 | edit-mode-helpers | 6.8KB | Admin-only functionality: [viewmode:disabled], [editmode:resource], [editmode:onclick] |
 | option-visibility | 7.2KB | Dynamic show/hide based on ancestor state with option:attribute="value" |
-| persist | 6.4KB | Persist input/select/textarea values to the DOM with [persist] attribute |
+| persist | 5KB | Persist input/select/textarea values to the DOM with [persist] attribute |
 | save-core | 12.2KB | Basic save function only - hyperclay.savePage() |
 | save-system | 15.5KB | CMD+S, [trigger-save] button, savestatus attribute |
 | save-toast | 0.9KB | Toast notifications for save events |
@@ -77,7 +77,7 @@ To load a full preset, use the CDN loader with `?preset=standard`:
 
 | Module | Size | Description |
 |--------|------|-------------|
-| ajax-elements | 2.8KB | [ajax-form], [ajax-button] for async form submissions |
+| ajax-elements | 3KB | [ajax-form], [ajax-button] for async form submissions |
 | dom-helpers | 6.8KB | el.nearest, el.val, el.text, el.exec, el.cycle |
 | event-attrs | 5.6KB | [onclickaway], [onclickchildren], [onclone], [onpagemutation], [onrender] |
 | input-helpers | 4.2KB | [prevent-enter], [autosize] for textareas |
@@ -91,9 +91,9 @@ To load a full preset, use the CDN loader with `?preset=standard`:
 
 | Module | Size | Description |
 |--------|------|-------------|
-| dialogs | 8.5KB | ask(), consent(), tell(), snippet() dialog functions |
+| dialogs | 8.9KB | ask(), consent(), tell(), snippet() dialog functions |
 | quickcrop | 16.8KB | Image-crop modal for upload flows - quickcrop(file) returns a cropped Blob; uses themodal when available |
-| the-modal | 23KB | Full modal window creation system - window.theModal |
+| the-modal | 25.3KB | Full modal window creation system - window.theModal |
 | toast | 15.8KB | Success/error message notifications, toast(msg, msgType) |
 
 ### Utilities (Core utilities (often auto-included))
@@ -146,7 +146,7 @@ To load a full preset, use the CDN loader with `?preset=standard`:
 |--------|------|-------------|
 | hyper-morph | 18.8KB | DOM morphing with content-based element matching |
 | hypercms | 141.5KB | Live edit-in-place CMS sidebar driven by a hyper-html-api rules tag. Pairs with [sortable] and [hyper-morph]. |
-| sap | 40.8KB | sapjs reactive runtime — the DOM is the only state store. Structure-first, one write path. window.Sap / window.hyperclay.Sap. |
+| sap | 41.6KB | sapjs reactive runtime — the DOM is the only state store. Structure-first, one write path. window.Sap / window.hyperclay.Sap. |
 
 ## Presets
 
@@ -155,7 +155,7 @@ Essential features for basic editing
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `edit-mode-helpers`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Standard (~91.5KB)
+### Standard (~90.1KB)
 Standard feature set for most use cases
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `unsaved-warning`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `data`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
@@ -165,12 +165,12 @@ Visual CMS editing for rules-tag pages: hypercms sidebar, undo, drag-reorder, sa
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `unsaved-warning`, `toast`, `save-toast`, `mutation`, `hypercms`, `sortable`, `undo`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Smooth Sailing (~381.6KB)
+### Smooth Sailing (~383.1KB)
 Everything, without gotchas
 
 **Modules:** `save-core`, `save-system`, `unsaved-warning`, `save-toast`, `edit-mode-helpers`, `persist`, `snapshot`, `option-visibility`, `edit-mode`, `event-attrs`, `ajax-elements`, `sortable`, `movable`, `dom-helpers`, `input-helpers`, `onaftersave`, `save-freeze`, `dialogs`, `quickcrop`, `toast`, `the-modal`, `mutation`, `nearest`, `cookie`, `throttle`, `debounce`, `dom-ready`, `window-load`, `all-js`, `style-injection`, `form-data`, `hypercms`, `undo`, `data`, `upgrade`, `slugify`, `copy-to-clipboard`, `query-params`, `behavior-collector`, `send-message`, `file-upload`, `refetch-on-save`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Everything (~469.1KB)
+### Everything (~471.4KB)
 All available features
 
 Includes all available modules across all categories.

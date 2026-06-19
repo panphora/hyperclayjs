@@ -1,4 +1,5 @@
 import { onSnapshot } from './snapshot.js';
+import { serializeControlToAttributes, finalizeControlForSave } from '../vendor/control-serialize.vendor.js';
 
 // Persistent Form Input Values
 //
@@ -6,6 +7,13 @@ import { onSnapshot } from './snapshot.js';
 // memory, not in DOM attributes. When Hyperclay serializes the page via
 // cloneNode() or outerHTML, those JS-only values are lost. This module syncs
 // them back to the DOM so they survive saves, live-sync, and cloning.
+//
+// The per-control rules (which attribute represents which control's state) live
+// in control-serialize.vendor.js — the single source of truth shared verbatim
+// with sapjs (carrier mirror) so the two implementations never drift. This
+// module owns only the triggers (which elements, on which events) and the
+// snapshot safety net; serializeControlToAttributes / finalizeControlForSave do
+// the actual attribute writes.
 //
 // Strategy: sync to the DOM immediately on every user interaction, not just at
 // snapshot time. This means cloneNode() always gets current values.
@@ -47,97 +55,42 @@ export default function enablePersistentFormInputValues(filterBySelector = "[per
 
   // --- Live DOM sync: keep attributes in sync on every user interaction ---
 
+  // Text-like inputs and textareas serialize on every keystroke; the shared
+  // serializer keeps it cursor-safe (value via the dirty flag, textarea via
+  // an inert data-value attribute).
   document.addEventListener('input', (e) => {
     const el = e.target;
-
-    // Text-like inputs: setAttribute("value") is safe — dirty flag prevents display change
-    if (el.matches(inputSelector) && el.type !== 'checkbox' && el.type !== 'radio') {
-      el.setAttribute('value', el.value);
-      return;
-    }
-
-    // Textareas: write to data-value (inert, no cursor/scroll disruption)
-    if (el.matches(textareaSelector)) {
-      el.setAttribute('data-value', el.value);
-      return;
+    if ((el.matches(inputSelector) && el.type !== 'checkbox' && el.type !== 'radio') ||
+        el.matches(textareaSelector)) {
+      serializeControlToAttributes(el);
     }
   }, true);
 
+  // Checkboxes, radios, and selects settle on change.
   document.addEventListener('change', (e) => {
     const el = e.target;
-
-    // Checkboxes and radios
-    if (el.matches(inputSelector) && (el.type === 'checkbox' || el.type === 'radio')) {
-      el.checked ? el.setAttribute('checked', '') : el.removeAttribute('checked');
-      return;
-    }
-
-    // Selects: sync selected attribute on options
-    if (el.matches(selectSelector)) {
-      const options = el.querySelectorAll('option');
-      options.forEach(opt => opt.removeAttribute('selected'));
-      if (el.multiple) {
-        Array.from(el.selectedOptions).forEach(opt => {
-          const idx = Array.from(el.options).indexOf(opt);
-          if (options[idx]) options[idx].setAttribute('selected', '');
-        });
-      } else if (el.selectedIndex >= 0 && options[el.selectedIndex]) {
-        options[el.selectedIndex].setAttribute('selected', '');
-      }
-      return;
+    if ((el.matches(inputSelector) && (el.type === 'checkbox' || el.type === 'radio')) ||
+        el.matches(selectSelector)) {
+      serializeControlToAttributes(el);
     }
   }, true);
 
   // --- Snapshot hook: final safety net at serialize time ---
 
+  // Safety net at serialize time: write each cloned control's attributes from
+  // the live element (the true source of truth — catches values set
+  // programmatically without firing an input event, and resolves textarea
+  // data-value into real textContent). Matched by index per selector; another
+  // hook mutating the clone could diverge the lists, hence the per-type loops.
   onSnapshot((doc) => {
-    // Guard: if another onSnapshot hook mutated the clone, lists may diverge
-    const liveInputs = document.querySelectorAll(inputSelector);
-    const clonedInputs = doc.querySelectorAll(inputSelector);
-    clonedInputs.forEach((cloned, i) => {
-      const live = liveInputs[i];
-      if (!live) return;
-      if (live.type === 'checkbox' || live.type === 'radio') {
-        if (live.checked) {
-          cloned.setAttribute('checked', '');
-        } else {
-          cloned.removeAttribute('checked');
-        }
-      } else {
-        cloned.setAttribute('value', live.value);
-      }
-    });
-
-    // Always read the live .value — it's the true source of truth.
-    // data-value is useful for cloneNode() outside of snapshots, but here
-    // we must use .value because code may have set textarea.value directly
-    // without firing an input event (which would leave data-value stale).
-    const liveTextareas = document.querySelectorAll(textareaSelector);
-    const clonedTextareas = doc.querySelectorAll(textareaSelector);
-    clonedTextareas.forEach((cloned, i) => {
-      const live = liveTextareas[i];
-      if (!live) return;
-      cloned.textContent = live.value;
-      cloned.removeAttribute('data-value');
-    });
-
-    const liveSelects = document.querySelectorAll(selectSelector);
-    const clonedSelects = doc.querySelectorAll(selectSelector);
-    clonedSelects.forEach((cloned, i) => {
-      const live = liveSelects[i];
-      if (!live) return;
-      const clonedOptions = cloned.querySelectorAll('option');
-      clonedOptions.forEach(opt => opt.removeAttribute('selected'));
-
-      if (live.multiple) {
-        Array.from(live.selectedOptions).forEach(opt => {
-          const idx = Array.from(live.options).indexOf(opt);
-          if (clonedOptions[idx]) clonedOptions[idx].setAttribute('selected', '');
-        });
-      } else if (live.selectedIndex >= 0 && clonedOptions[live.selectedIndex]) {
-        clonedOptions[live.selectedIndex].setAttribute('selected', '');
-      }
-    });
+    const finalize = (selector) => {
+      const live = document.querySelectorAll(selector);
+      const cloned = doc.querySelectorAll(selector);
+      cloned.forEach((c, i) => { if (live[i]) finalizeControlForSave(c, live[i]); });
+    };
+    finalize(inputSelector);
+    finalize(textareaSelector);
+    finalize(selectSelector);
   });
 }
 
