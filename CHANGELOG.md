@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.33.0] - 2026-06-18
+
+### Added
+- `window.__hyperclayEditMode` global for standalone edit mode
+- Region capability model with per-consumer Mutation policy
+- Save routing to the htmlclay token endpoint when `htmlclaytoken` is present
+- Upgrade module with initialization and popover UI
+- Freeze and region-attributes API documentation, plus website updates
+- Tests for AJAX elements and modal UI
+
+### Changed
+- Unified the undo observer onto a shared hub with a raw lane and region delegation
+- Refactored the modal component
+- Consolidated form control and visibility logic
+- Re-vendored hypercms with the theme pinned to mirk-interface@2.2.0 (font URL and label)
+- Re-vendored sapjs
+
+### Fixed
+- Made `onmutation` and `onpagemutation` pausable to prevent a live-sync feedback loop
+- Unstyled `?cms=true` auto-open shell with hypercms theme resync
+- Deflaked undo-shim idle-window timing under full test-suite load
+
+
+
 ## [1.32.0] - 2026-06-07
 
 ### Added
