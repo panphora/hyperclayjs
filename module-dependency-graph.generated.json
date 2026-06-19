@@ -363,7 +363,7 @@
     "option-visibility": {
       "name": "option-visibility",
       "category": "core",
-      "size": 7.2,
+      "size": 8.9,
       "files": [
         "core/optionVisibility.js"
       ],
@@ -781,7 +781,7 @@
     "sap": {
       "name": "sap",
       "category": "vendor",
-      "size": 41.6,
+      "size": 43.3,
       "difficulty": "advanced",
       "files": [
         "vendor/sapjs.vendor.js"
