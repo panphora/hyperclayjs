@@ -18,6 +18,8 @@ import '../src/utilities/region-policy.js';            // sets window.hyperclay.
 import { undo } from '../src/vendor/hyper-undo.vendor.js'; // sets window.hyperclay.undo
 
 const flush = (ms = 0) => new Promise(r => setTimeout(r, ms));
+const IDLE = 20;                        // undo idle-batch window these tests start with
+const settle = () => flush(IDLE + 80);  // wait out the idle window with slack for full-suite load
 
 afterEach(async () => {
   try { undo.stop(); } catch {}
@@ -36,7 +38,7 @@ test('undo on document.body sources records from the shared hub (one raw subscri
   expect(typeof window.hyperclay.Mutation.createObserver).toBe('function');
   expect(typeof window.hyperclay.undo).toBe('object');
 
-  undo.start({ scope: document.body, bindKeys: false, idleWindowMs: 20 });
+  undo.start({ scope: document.body, bindKeys: false, idleWindowMs: IDLE });
   // The shim registered exactly one raw subscriber on the hub — undo did NOT
   // spin up its own MutationObserver.
   expect(Mutation._rawSubscribers.length).toBe(1);
@@ -45,11 +47,11 @@ test('undo on document.body sources records from the shared hub (one raw subscri
 test('§6.3 morph exclusion end-to-end: pause/morph/resume is not undoable; pre- and post-morph edits are', async () => {
   document.body.innerHTML = '<h1 id="h">Hi</h1>';
   const h = document.getElementById('h');
-  undo.start({ scope: document.body, bindKeys: false, idleWindowMs: 20 });
+  undo.start({ scope: document.body, bindKeys: false, idleWindowMs: IDLE });
   undo.clear();
 
   h.textContent = 'Hello';            // pre-morph local edit
-  await flush(30);
+  await settle();
   const beforeMorph = undo.history.length;
   expect(beforeMorph).toBe(1);
 
@@ -57,11 +59,11 @@ test('§6.3 morph exclusion end-to-end: pause/morph/resume is not undoable; pre-
   const remote = document.createElement('p'); remote.id = 'remote'; remote.textContent = 'remote';
   document.body.appendChild(remote); // remote content morphed in (a different node than the local edits)
   Mutation.resume();
-  await flush(30);
+  await settle();
   expect(undo.history.length).toBe(beforeMorph);   // the morph left the undo stack untouched
 
   h.textContent = 'After';            // post-morph local edit records normally
-  await flush(30);
+  await settle();
   expect(undo.history.length).toBe(beforeMorph + 1);
 
   undo.undo();                        // reverts only the local edit...
@@ -85,7 +87,7 @@ test('§6.1 commit boundary with a live debounce:0 attribute-writing subscriber 
     });
   });
 
-  undo.start({ scope: document.body, bindKeys: false, idleWindowMs: 20 });
+  undo.start({ scope: document.body, bindKeys: false, idleWindowMs: IDLE });
   undo.clear();
 
   inCommit = true;
@@ -96,7 +98,7 @@ test('§6.1 commit boundary with a live debounce:0 attribute-writing subscriber 
   expect(undo.history.length).toBe(1);    // the commit landed intact as one step
   expect(undo.history[0].label).toBe('Edit');
 
-  await flush(30);
+  await settle();
   expect(t.style.height).toBe('40px');    // the subscriber DID run, just deferred to a microtask
 
   off();
@@ -104,38 +106,38 @@ test('§6.1 commit boundary with a live debounce:0 attribute-writing subscriber 
 
 test('C×D: a [no-undo] region is not recorded even though records flow through the shim; a normal region is', async () => {
   document.body.innerHTML = '<div no-undo><span id="s">x</span></div><h1 id="h">Hi</h1>';
-  undo.start({ scope: document.body, bindKeys: false, idleWindowMs: 20 });
+  undo.start({ scope: document.body, bindKeys: false, idleWindowMs: IDLE });
   expect(Mutation._rawSubscribers.length).toBe(1);  // confirm the shim path is live
   undo.clear();
 
   document.getElementById('s').textContent = 'changed';   // inside no-undo
-  await flush(30);
+  await settle();
   expect(undo.history.length).toBe(0);
 
   document.getElementById('h').textContent = 'changed';   // normal region
-  await flush(30);
+  await settle();
   expect(undo.history.length).toBe(1);
 });
 
 test('C×D: a [no-watch] region is not recorded through the shim', async () => {
   document.body.innerHTML = '<div no-watch><span id="s">x</span></div>';
-  undo.start({ scope: document.body, bindKeys: false, idleWindowMs: 20 });
+  undo.start({ scope: document.body, bindKeys: false, idleWindowMs: IDLE });
   undo.clear();
 
   document.getElementById('s').textContent = 'changed';
-  await flush(30);
+  await settle();
   expect(undo.history.length).toBe(0);
 });
 
 test('§6.6 pin (D3-1): recordValue still works on the shimmed path (record() bypasses the observer)', async () => {
   document.body.innerHTML = '<input id="i">';
   const i = document.getElementById('i');
-  undo.start({ scope: document.body, bindKeys: false, idleWindowMs: 20 });
+  undo.start({ scope: document.body, bindKeys: false, idleWindowMs: IDLE });
   undo.clear();
 
   i.value = 'abc';
   undo.recordValue(i, { prop: 'value', oldValue: '', newValue: 'abc' });
-  await flush(30);
+  await settle();
   expect(undo.history.length).toBe(1);
 
   undo.undo();
@@ -145,22 +147,22 @@ test('§6.6 pin (D3-1): recordValue still works on the shimmed path (record() by
 test('§6.6 pin (A2-2): extension marker attribute noise is still filtered through the shim', async () => {
   document.body.innerHTML = '<div id="d">x</div>';
   const d = document.getElementById('d');
-  undo.start({ scope: document.body, bindKeys: false, idleWindowMs: 20 });
+  undo.start({ scope: document.body, bindKeys: false, idleWindowMs: IDLE });
   undo.clear();
 
   d.setAttribute('data-1p-watching', 'true');  // password-manager marker — must be ignored
-  await flush(30);
+  await settle();
   expect(undo.history.length).toBe(0);
 
   d.setAttribute('data-real', '1');            // a real attribute IS recorded
-  await flush(30);
+  await settle();
   expect(undo.history.length).toBe(1);
 });
 
 test('§6.6 pin (focused-field resync): undo/redo events are still emitted on the shimmed path', async () => {
   document.body.innerHTML = '<h1 id="h">Hi</h1>';
   const h = document.getElementById('h');
-  undo.start({ scope: document.body, bindKeys: false, idleWindowMs: 20 });
+  undo.start({ scope: document.body, bindKeys: false, idleWindowMs: IDLE });
   undo.clear();
 
   const events = [];
@@ -168,7 +170,7 @@ test('§6.6 pin (focused-field resync): undo/redo events are still emitted on th
   undo.on('redo', () => events.push('redo'));
 
   h.textContent = 'Hello';
-  await flush(30);
+  await settle();
   undo.undo();
   undo.redo();
   expect(events).toEqual(['undo', 'redo']);
