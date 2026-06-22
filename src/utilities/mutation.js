@@ -52,7 +52,18 @@
  *      console.log(`${element.tagName} ${attribute} changed from ${oldValue} to ${newValue}`);
  *    });
  *  });
- *  
+ *
+ *  // External reactive consumers (e.g. sapjs, which re-derives state on ANY DOM change)
+ *  // subscribe through the region-aware, pause-gated lane:
+ *  //
+ *  //   Mutation.onAnyChange({ require: 'observed' }, changes => { ... })
+ *  //
+ *  // Leaving `pausable` at its default (true) is load-bearing: by wrapping its own write
+ *  // phase in Mutation.pause()/resume(), such a consumer's derived writes are vacuumed on
+ *  // resume and routed only to non-pausable consumers, so they never loop back to it.
+ *  // The raw lane (subscribeRaw/createObserver) is internal — reserved for undo/region
+ *  // plumbing — and is NOT part of the public contract for external consumers.
+ *
  */
 
 import { EXTENSION_ATTR_PATTERN } from './extension-noise.js';
