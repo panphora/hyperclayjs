@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.34.0] - 2026-06-22
+
+### Added
+- LLM documentation to the website
+
+### Changed
+- Updated README documentation
+- Re-vendored sapjs with mutation reactivity support
+
+### Fixed
+- Dispatch input event on sortable element drop
+
+
+
 ## [1.33.0] - 2026-06-18
 
 ### Added
