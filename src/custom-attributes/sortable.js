@@ -53,18 +53,22 @@ function makeSortable(sortableElem, Sortable) {
     };
   }
 
-  // Add onsorted callback if attribute exists (fires after drop)
+  // After a drop, run any author onsorted code, then notify reactive libraries.
   const onsortedCode = sortableElem.getAttribute('onsorted');
-  if (onsortedCode) {
-    options.onEnd = function(evt) {
+  options.onEnd = function(evt) {
+    if (onsortedCode) {
       try {
         const asyncFn = new Function(`return (async function(evt) { ${onsortedCode} })`)();
         asyncFn.call(sortableElem, evt);
       } catch (error) {
         console.error('Error in onsorted execution:', error);
       }
-    };
-  }
+    }
+    // SortableJS fires no native input/change on drop. Tell reactive libs that
+    // listen for input (e.g. Sap re-derives its list order / $index; any other
+    // input-driven library too) that the DOM order changed.
+    sortableElem.dispatchEvent(new Event('input', { bubbles: true }));
+  };
 
   Sortable.create(sortableElem, options);
 }

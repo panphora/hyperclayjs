@@ -23,6 +23,11 @@
  *     <button option:editmode="false">Hidden</button>
  *   </div>
  *
+ *   editmode/pageowner are stamped on <html> at load by setPageTypeOnDocumentElement.js
+ *   (and reset to false before save), so option:/show-when:editmode is an edit-mode
+ *   bridge that sapjs honors too — it reads the same ancestor attribute. Edit-only UI
+ *   is visible while editing and always hidden in the saved file.
+ *
  *   <div savestatus="error">
  *     <span option:savestatus="saved|error">Visible (matches error)</span>
  *     <span option-not:savestatus="saving">Visible (error ≠ saving)</span>
