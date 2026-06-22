@@ -1388,7 +1388,18 @@ All methods share the same signature and return an unsubscribe function.
 | options.debounce | number | `0` | Debounce delay in milliseconds |
 | options.selectorFilter | string\|function | — | Filter changes to matching elements |
 | options.omitChangeDetails | boolean | `false` | Call callback without change data |
+| options.require | `'observed'`\|`'autosave'`\|`'undo'` | — | Region-policy axis: only deliver changes inside a region that opts into this concern (e.g. `'observed'` skips no-watch regions and extension noise). Unset uses the legacy four-marker skip. |
+| options.pausable | boolean | `true` | When `true` (default) the callback is silenced inside a `Mutation.pause()` window and its queued changes are dropped on resume. Set `false` only for pure enhancers that never save, record, or rebroadcast (e.g. `autosize`, `sortable`) so they keep firing through a morph or live-sync pause. |
 | callback | function | — | Called with array of changes |
+
+## The sanctioned lane for an external reactive consumer
+
+A library that wants to react to *every* DOM change (regardless of who made it) — for example **sapjs**, which re-derives its state on any mutation — should subscribe through `onAnyChange({ require: 'observed' })`. This is the supported, region-aware, pause-gated lane:
+
+- `require: 'observed'` makes it skip no-watch regions and platform-internal extension noise automatically.
+- Leaving `pausable` at its default (`true`) is load-bearing: it is what lets such a consumer suppress its *own* derived writes. By wrapping its write phase in `Mutation.pause()` / `Mutation.resume()`, the consumer's writes are vacuumed on resume and routed only to non-pausable consumers, so they never loop back to re-trigger it.
+
+The raw fan-out lane (`subscribeRaw` / `createObserver`) is **internal to hyperclayjs** and not part of the public contract. It fires before-and-after the pause bridge and is reserved for the hub's own undo/region plumbing; external consumers should not use it.
 
 ## Change Object
 

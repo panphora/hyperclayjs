@@ -363,7 +363,7 @@
     "option-visibility": {
       "name": "option-visibility",
       "category": "core",
-      "size": 8.9,
+      "size": 9.2,
       "files": [
         "core/optionVisibility.js"
       ],
@@ -420,7 +420,7 @@
     "sortable": {
       "name": "sortable",
       "category": "custom-attributes",
-      "size": 3.5,
+      "size": 3.8,
       "isEditModeOnly": true,
       "files": [
         "custom-attributes/sortable.js"
@@ -574,7 +574,7 @@
     "mutation": {
       "name": "mutation",
       "category": "utilities",
-      "size": 24.8,
+      "size": 25.4,
       "files": [
         "utilities/mutation.js"
       ],
@@ -781,7 +781,7 @@
     "sap": {
       "name": "sap",
       "category": "vendor",
-      "size": 43.3,
+      "size": 47.8,
       "difficulty": "advanced",
       "files": [
         "vendor/sapjs.vendor.js"
