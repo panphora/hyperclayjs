@@ -19,6 +19,15 @@
  *   save-ignore       ->  no-trigger-autosave  no-undo
  *   save-freeze       ->  freeze  no-undo
  *
+ * Separately, a snapshot-layer marker controls whether an element appears in any
+ * snapshot at all (save file, live-sync broadcast, and dirty-comparison):
+ *
+ *   snapshot-remove / no-snapshot  — removed from every snapshot. Runtime-only
+ *     local chrome. hyper-morph also treats it as sync-ignored, so a live-sync
+ *     receiver preserves its own copy instead of deleting it. Handled in
+ *     snapshot.js, not by the policy axes below; no-snapshot is the consistent
+ *     alias for the original snapshot-remove.
+ *
  * resolveRegionPolicy() walks an element's self-or-ancestor chain once and
  * returns the four independent axes the rest of the framework keys off:
  *   { watched, autosaveTriggered, undoable, persist, extension }
@@ -40,6 +49,16 @@ export const FREEZE_SELECTOR = '[freeze], [save-freeze]';
 // longer counted as a change).
 export const STRIP_FROM_COMPARISON =
   '[no-save], [save-remove], [no-trigger-autosave], [save-ignore], [freeze], [save-freeze], [no-watch], [mutations-ignore]';
+
+// Snapshot-layer marker: removed from EVERY snapshot (save, live-sync broadcast,
+// dirty-comparison) in snapshot.js. `no-snapshot` is the consistent alias for the
+// original `snapshot-remove`; hyper-morph treats both as sync-ignored so a
+// live-sync receiver keeps its own local copy instead of deleting it.
+export const SNAPSHOT_REMOVE_SELECTOR = '[snapshot-remove], [no-snapshot]';
+
+export function isSnapshotRemoved(el) {
+  return el.hasAttribute('snapshot-remove') || el.hasAttribute('no-snapshot');
+}
 
 const PERSIST_RANK = { full: 0, frozen: 1, none: 2 };
 const RANK_PERSIST = ['full', 'frozen', 'none'];

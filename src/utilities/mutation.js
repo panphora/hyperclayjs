@@ -68,6 +68,7 @@
 
 import { EXTENSION_ATTR_PATTERN } from './extension-noise.js';
 import { resolveRegionPolicy, isInert, strictestPolicy, skipForPolicy } from './region-policy.js';
+import { isGestureActive, markUserDriven } from './user-gesture.js';
 
 const dummyElem = document.createElement("div");
 
@@ -561,6 +562,19 @@ const Mutation = {
           attribute: changesByType.attribute.length
         }
       });
+
+      // Data-guard provenance: if a trusted gesture drove THIS turn and any
+      // change is autosave-relevant (matches the save's region scope), mark the
+      // pending save user-driven. Runs synchronously in the MO callback, the
+      // same turn as the gesture; skipped during paused-morph drains.
+      if (!onlyNonPausable && isGestureActive()) {
+        for (const change of changes) {
+          if (!skipForPolicy(this._policyForChange(change), 'autosave')) {
+            markUserDriven();
+            break;
+          }
+        }
+      }
 
       this._notify('anyChange', changes, onlyNonPausable);
 

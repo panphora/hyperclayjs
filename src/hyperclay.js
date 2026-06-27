@@ -50,6 +50,7 @@ const MODULE_PATHS = {
   "toast": "./ui/toast.js",
   "toast-hyperclay": "./ui/toast-hyperclay.js",
   "the-modal": "./ui/theModal.js",
+  "data-loss-panel": "./ui/data-loss-panel.js",
   "mutation": "./utilities/mutation.js",
   "nearest": "./utilities/nearest.js",
   "cookie": "./utilities/cookie.js",
@@ -64,6 +65,7 @@ const MODULE_PATHS = {
   "hyper-morph": "./vendor/hyper-morph.vendor.js",
   "hypercms": "./vendor/hypercms.vendor.js",
   "sap": "./vendor/sapjs.vendor.js",
+  "richclay": "./vendor/richclay.vendor.js",
   "undo": "./undo.js",
   "data": "./data.js",
   "upgrade": "./upgrade.js",
@@ -106,6 +108,7 @@ const PRESETS = {
       "event-attrs",
       "dom-helpers",
       "data",
+      "data-loss-panel",
       "toast",
       "save-toast",
       "export-to-window",
@@ -126,6 +129,7 @@ const PRESETS = {
       "hypercms",
       "sortable",
       "undo",
+      "data-loss-panel",
       "export-to-window",
       "view-mode-excludes-edit-modules"
     ]
@@ -155,6 +159,7 @@ const PRESETS = {
       "quickcrop",
       "toast",
       "the-modal",
+      "data-loss-panel",
       "mutation",
       "nearest",
       "cookie",
@@ -206,6 +211,7 @@ const PRESETS = {
       "quickcrop",
       "toast",
       "the-modal",
+      "data-loss-panel",
       "mutation",
       "nearest",
       "cookie",
@@ -220,6 +226,7 @@ const PRESETS = {
       "hyper-morph",
       "hypercms",
       "sap",
+      "richclay",
       "undo",
       "data",
       "upgrade",
@@ -249,8 +256,10 @@ const EDIT_MODE_ONLY = new Set([
   "movable",
   "onaftersave",
   "save-freeze",
+  "data-loss-panel",
   "cache-bust",
   "hyper-morph",
+  "richclay",
   "undo",
   "upgrade",
   "file-upload",
@@ -398,6 +407,7 @@ export const HyperMorph = window.hyperclayModules['hyper-morph']?.HyperMorph ?? 
 export const morph = window.hyperclayModules['hyper-morph']?.morph ?? window.hyperclayModules['hyper-morph']?.default;
 export const cms = window.hyperclayModules['hypercms']?.cms ?? window.hyperclayModules['hypercms']?.default;
 export const Sap = window.hyperclayModules['sap']?.Sap ?? window.hyperclayModules['sap']?.default;
+export const RichClay = window.hyperclayModules['richclay']?.RichClay ?? window.hyperclayModules['richclay']?.default;
 export const undo = window.hyperclayModules['undo']?.undo ?? window.hyperclayModules['undo']?.default;
 export const extractData = window.hyperclayModules['data']?.extractData ?? window.hyperclayModules['data']?.default;
 export const applyData = window.hyperclayModules['data']?.applyData ?? window.hyperclayModules['data']?.default;

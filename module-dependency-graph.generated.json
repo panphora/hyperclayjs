@@ -3,6 +3,7 @@
     "communication/behaviorCollector.js": [],
     "communication/live-sync.js": [
       "utilities/mutation.js",
+      "utilities/region-policy.js",
       "vendor/hyper-morph.vendor.js"
     ],
     "communication/sendMessage.js": [
@@ -44,7 +45,8 @@
     "core/autosave.js": [
       "core/isAdminOfCurrentResource.js",
       "core/savePage.js",
-      "utilities/mutation.js"
+      "utilities/mutation.js",
+      "utilities/user-gesture.js"
     ],
     "core/editmode.js": [
       "core/isAdminOfCurrentResource.js"
@@ -77,7 +79,8 @@
     ],
     "core/savePageCore.js": [
       "core/isAdminOfCurrentResource.js",
-      "core/snapshot.js"
+      "core/snapshot.js",
+      "utilities/user-gesture.js"
     ],
     "core/saveToast.js": [
       "core/isAdminOfCurrentResource.js",
@@ -167,6 +170,9 @@
     "string-utilities/copy-to-clipboard.js": [],
     "string-utilities/query.js": [],
     "string-utilities/slugify.js": [],
+    "ui/data-loss-panel.js": [
+      "core/isAdminOfCurrentResource.js"
+    ],
     "ui/prompts.js": [
       "dom-utilities/onDomReady.js",
       "string-utilities/copy-to-clipboard.js",
@@ -196,7 +202,8 @@
     "utilities/loadVendorScript.js": [],
     "utilities/mutation.js": [
       "utilities/extension-noise.js",
-      "utilities/region-policy.js"
+      "utilities/region-policy.js",
+      "utilities/user-gesture.js"
     ],
     "utilities/nearest.js": [],
     "utilities/pipe.js": [],
@@ -204,6 +211,7 @@
       "utilities/extension-noise.js"
     ],
     "utilities/throttle.js": [],
+    "utilities/user-gesture.js": [],
     "vendor/Sortable.vendor.js": [],
     "vendor/control-serialize.vendor.js": [],
     "vendor/hyper-html-api-upgrade.vendor.js": [],
@@ -211,13 +219,14 @@
     "vendor/hyper-morph.vendor.js": [],
     "vendor/hyper-undo.vendor.js": [],
     "vendor/hypercms.vendor.js": [],
+    "vendor/richclay.vendor.js": [],
     "vendor/sapjs.vendor.js": []
   },
   "modules": {
     "save-core": {
       "name": "save-core",
       "category": "core",
-      "size": 12.2,
+      "size": 12.7,
       "isEditModeOnly": true,
       "files": [
         "core/savePageCore.js"
@@ -263,7 +272,7 @@
     "autosave": {
       "name": "autosave",
       "category": "core",
-      "size": 1.4,
+      "size": 1.7,
       "isEditModeOnly": true,
       "difficulty": "intermediate",
       "files": [
@@ -323,7 +332,7 @@
     "snapshot": {
       "name": "snapshot",
       "category": "core",
-      "size": 12.1,
+      "size": 12.2,
       "isEditModeOnly": true,
       "files": [
         "core/snapshot.js"
@@ -571,10 +580,21 @@
         ]
       }
     },
+    "data-loss-panel": {
+      "name": "data-loss-panel",
+      "category": "ui",
+      "size": 14.6,
+      "isEditModeOnly": true,
+      "files": [
+        "ui/data-loss-panel.js"
+      ],
+      "description": "Data-clobber guard chip: when a save overwrites saved island data, offers restore-my-data / revert-page / dismiss. Edit-mode only; pairs with the /_/data-loss endpoint.",
+      "exports": {}
+    },
     "mutation": {
       "name": "mutation",
       "category": "utilities",
-      "size": 25.4,
+      "size": 26,
       "files": [
         "utilities/mutation.js"
       ],
@@ -744,7 +764,7 @@
     "hyper-morph": {
       "name": "hyper-morph",
       "category": "vendor",
-      "size": 18.8,
+      "size": 19,
       "isEditModeOnly": true,
       "difficulty": "intermediate",
       "files": [
@@ -781,7 +801,7 @@
     "sap": {
       "name": "sap",
       "category": "vendor",
-      "size": 47.8,
+      "size": 48.1,
       "difficulty": "advanced",
       "files": [
         "vendor/sapjs.vendor.js"
@@ -789,6 +809,23 @@
       "description": "sapjs reactive runtime — the DOM is the only state store. Structure-first, one write path. window.Sap / window.hyperclay.Sap.",
       "exports": {
         "Sap": [
+          "window",
+          "hyperclay"
+        ]
+      }
+    },
+    "richclay": {
+      "name": "richclay",
+      "category": "vendor",
+      "size": 117.7,
+      "isEditModeOnly": true,
+      "difficulty": "intermediate",
+      "files": [
+        "vendor/richclay.vendor.js"
+      ],
+      "description": "DOM-first rich text editor for [data-richclay] regions; bundles its own Squire + DOMPurify. Edit-mode-only. window.RichClay / window.hyperclay.RichClay.",
+      "exports": {
+        "RichClay": [
           "window",
           "hyperclay"
         ]
@@ -939,7 +976,7 @@
     "live-sync": {
       "name": "live-sync",
       "category": "communication",
-      "size": 25.9,
+      "size": 26.2,
       "isEditModeOnly": true,
       "difficulty": "advanced",
       "files": [
@@ -998,6 +1035,7 @@
     "toast": "./ui/toast.js",
     "toast-hyperclay": "./ui/toast-hyperclay.js",
     "the-modal": "./ui/theModal.js",
+    "data-loss-panel": "./ui/data-loss-panel.js",
     "mutation": "./utilities/mutation.js",
     "nearest": "./utilities/nearest.js",
     "cookie": "./utilities/cookie.js",
@@ -1012,6 +1050,7 @@
     "hyper-morph": "./vendor/hyper-morph.vendor.js",
     "hypercms": "./vendor/hypercms.vendor.js",
     "sap": "./vendor/sapjs.vendor.js",
+    "richclay": "./vendor/richclay.vendor.js",
     "undo": "./undo.js",
     "data": "./data.js",
     "upgrade": "./upgrade.js",
@@ -1064,7 +1103,8 @@
         "dialogs",
         "quickcrop",
         "toast",
-        "the-modal"
+        "the-modal",
+        "data-loss-panel"
       ]
     },
     "utilities": {
@@ -1113,7 +1153,8 @@
       "modules": [
         "hyper-morph",
         "hypercms",
-        "sap"
+        "sap",
+        "richclay"
       ]
     },
     "other": {
@@ -1155,6 +1196,7 @@
         "event-attrs",
         "dom-helpers",
         "data",
+        "data-loss-panel",
         "toast",
         "save-toast",
         "export-to-window",
@@ -1175,6 +1217,7 @@
         "hypercms",
         "sortable",
         "undo",
+        "data-loss-panel",
         "export-to-window",
         "view-mode-excludes-edit-modules"
       ]
@@ -1204,6 +1247,7 @@
         "quickcrop",
         "toast",
         "the-modal",
+        "data-loss-panel",
         "mutation",
         "nearest",
         "cookie",
@@ -1255,6 +1299,7 @@
         "quickcrop",
         "toast",
         "the-modal",
+        "data-loss-panel",
         "mutation",
         "nearest",
         "cookie",
@@ -1269,6 +1314,7 @@
         "hyper-morph",
         "hypercms",
         "sap",
+        "richclay",
         "undo",
         "data",
         "upgrade",

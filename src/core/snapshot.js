@@ -37,7 +37,7 @@
  */
 
 import { stripExtensionNoise } from '../utilities/extension-noise.js';
-import { STRIP_FROM_SAVE, STRIP_FROM_COMPARISON } from '../utilities/region-policy.js';
+import { STRIP_FROM_SAVE, STRIP_FROM_COMPARISON, SNAPSHOT_REMOVE_SELECTOR } from '../utilities/region-policy.js';
 
 // =============================================================================
 // HOOK REGISTRIES
@@ -108,7 +108,7 @@ export function captureSnapshot() {
     new Function(el.getAttribute('onbeforesnapshot')).call(el);
   }
 
-  for (const el of clone.querySelectorAll('[snapshot-remove]')) {
+  for (const el of clone.querySelectorAll(SNAPSHOT_REMOVE_SELECTOR)) {
     el.remove();
   }
 

@@ -31,6 +31,7 @@
 
 import { HyperMorph } from "../vendor/hyper-morph.vendor.js";
 import Mutation from "../utilities/mutation.js";
+import { isSnapshotRemoved } from "../utilities/region-policy.js";
 
 class LiveSync {
   constructor() {
@@ -231,7 +232,7 @@ class LiveSync {
 
       const liveKids = [];
       for (const c of live.children) {
-        if (!c.hasAttribute('snapshot-remove')) liveKids.push(c);
+        if (!isSnapshotRemoved(c)) liveKids.push(c);
       }
       const cloneKids = clone.children;
 
@@ -298,7 +299,7 @@ class LiveSync {
       }
       const liveKids = [];
       for (const c of live.children) {
-        if (!c.hasAttribute('snapshot-remove')) liveKids.push(c);
+        if (!isSnapshotRemoved(c)) liveKids.push(c);
       }
       const parsedKids = parsed.children;
       if (liveKids.length !== parsedKids.length) return;
@@ -672,26 +673,32 @@ class LiveSync {
    * Shows a toast and emits an event for custom handling
    * @param {Object} data - { msgType, msg, action?, persistent? }
    */
-  handleNotification({ msgType, msg, action, persistent }) {
+  handleNotification({ msgType, msg, action, persistent, data }) {
     this._log(`Notification received: ${msgType} - ${msg}`);
 
+    // The data-loss guard rides this channel but is NOT a toast — the panel
+    // module handles it via the hyperclay:notification event below.
+    const isDataLoss = msgType === 'data-loss';
+
     // Show toast if available
-    if (persistent && window.toastPersistent) {
-      window.toastPersistent(msg, msgType);
-    } else if (window.toast) {
-      window.toast(msg, msgType);
-    } else {
-      console.log(`[LiveSync] Notification: ${msg}`);
+    if (!isDataLoss) {
+      if (persistent && window.toastPersistent) {
+        window.toastPersistent(msg, msgType);
+      } else if (window.toast) {
+        window.toast(msg, msgType);
+      } else {
+        console.log(`[LiveSync] Notification: ${msg}`);
+      }
     }
 
-    // Emit event for custom handling (e.g., reload button)
+    // Emit event for custom handling (e.g., reload button, data-loss chip)
     document.dispatchEvent(new CustomEvent('hyperclay:notification', {
-      detail: { msgType, msg, action, persistent }
+      detail: { msgType, msg, action, persistent, data }
     }));
 
     // Call notification callback if set
     if (this.onNotification) {
-      this.onNotification({ msgType, msg, action, persistent });
+      this.onNotification({ msgType, msg, action, persistent, data });
     }
   }
 

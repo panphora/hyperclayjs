@@ -8,6 +8,7 @@
  */
 
 import { isEditMode } from "./isAdminOfCurrentResource.js";
+import { consumeUserDriven } from "../utilities/user-gesture.js";
 import {
   captureForSave,
   isCodeMirrorPage,
@@ -146,11 +147,15 @@ export function savePage(callback = () => {}) {
     const isHyperclayLocal = window.location.hostname === 'localhost' ||
                              window.location.hostname === '127.0.0.1';
 
+    // Read-and-reset the data-guard provenance bit at the ACTUAL send (past the
+    // early returns above), so it's never consumed on a save that never ships.
+    const userDriven = consumeUserDriven();
+
     const fetchOptions = {
       method: 'POST',
       credentials: 'include',
       signal: controller.signal,
-      headers: { 'Page-URL': window.location.href }
+      headers: { 'Page-URL': window.location.href, 'X-Hyperclay-User-Driven': userDriven ? '1' : '0' }
     };
 
     if (isHyperclayLocal && window.__hyperclaySnapshotHtml) {
@@ -158,7 +163,8 @@ export function savePage(callback = () => {}) {
       fetchOptions.headers['Content-Type'] = 'application/json';
       fetchOptions.body = JSON.stringify({
         content: currentContents,
-        snapshotHtml: window.__hyperclaySnapshotHtml
+        snapshotHtml: window.__hyperclaySnapshotHtml,
+        userDriven
       });
       // Clear after use to avoid stale data
       window.__hyperclaySnapshotHtml = null;
@@ -261,11 +267,13 @@ export function saveHtml(html, callback = () => {}) {
     const isHyperclayLocal = window.location.hostname === 'localhost' ||
                              window.location.hostname === '127.0.0.1';
 
+    const userDriven = consumeUserDriven();
+
     const fetchOptions = {
       method: 'POST',
       credentials: 'include',
       signal: controller.signal,
-      headers: { 'Page-URL': window.location.href }
+      headers: { 'Page-URL': window.location.href, 'X-Hyperclay-User-Driven': userDriven ? '1' : '0' }
     };
 
     if (isHyperclayLocal && window.__hyperclaySnapshotHtml) {
@@ -273,7 +281,8 @@ export function saveHtml(html, callback = () => {}) {
       fetchOptions.headers['Content-Type'] = 'application/json';
       fetchOptions.body = JSON.stringify({
         content: html,
-        snapshotHtml: window.__hyperclaySnapshotHtml
+        snapshotHtml: window.__hyperclaySnapshotHtml,
+        userDriven
       });
       // Clear after use to avoid stale data
       window.__hyperclaySnapshotHtml = null;

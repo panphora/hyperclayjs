@@ -13,6 +13,7 @@
 import Mutation from "../utilities/mutation.js";
 import { isEditMode } from "./isAdminOfCurrentResource.js";
 import { savePageThrottled } from "./savePage.js";
+import { initUserGesture, markUserDriven } from "../utilities/user-gesture.js";
 
 /**
  * Initialize auto-save on DOM changes
@@ -36,6 +37,9 @@ let inputSaveTimer = null;
 function initSaveOnPersistInput() {
   document.addEventListener('input', (e) => {
     if (!e.target.closest('[persist]')) return;
+    // A trusted input on a [persist] field is itself a user-driven change the
+    // Mutation hub can't see (form values aren't DOM mutations). Attribute it.
+    if (e.isTrusted) markUserDriven();
     clearTimeout(inputSaveTimer);
     inputSaveTimer = setTimeout(savePageThrottled, 1500);
   }, true);
@@ -43,6 +47,7 @@ function initSaveOnPersistInput() {
 
 function init() {
   if (!isEditMode) return;
+  initUserGesture();
   initSavePageOnChange();
   initSaveOnPersistInput();
 }

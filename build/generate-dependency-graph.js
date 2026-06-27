@@ -229,6 +229,13 @@ const MODULE_DEFINITIONS = {
       themodal: ['window', 'hyperclay']
     }
   },
+  'ui/data-loss-panel.js': {
+    name: 'data-loss-panel',
+    moduleId: 'data-loss-panel',
+    description: 'Data-clobber guard chip: when a save overwrites saved island data, offers restore-my-data / revert-page / dismiss. Edit-mode only; pairs with the /_/data-loss endpoint.',
+    isEditModeOnly: true
+    // No exports - auto-inits on load, GET /_/data-loss + listens for data-loss notifications
+  },
   'utilities/mutation.js': {
     name: 'mutation',
     moduleId: 'mutation',
@@ -348,6 +355,16 @@ const MODULE_DEFINITIONS = {
     difficulty: 'advanced',
     exports: {
       Sap: ['window', 'hyperclay']
+    }
+  },
+  'vendor/richclay.vendor.js': {
+    name: 'richclay',
+    moduleId: 'richclay',
+    description: 'DOM-first rich text editor for [data-richclay] regions; bundles its own Squire + DOMPurify. Edit-mode-only. window.RichClay / window.hyperclay.RichClay.',
+    isEditModeOnly: true,
+    difficulty: 'intermediate',
+    exports: {
+      RichClay: ['window', 'hyperclay']
     }
   },
   'undo.js': {
@@ -514,12 +531,12 @@ const PRESETS = {
   'standard': {
     name: 'Standard',
     description: 'Standard feature set for most use cases',
-    modules: ['save-core', 'snapshot', 'save-system', 'unsaved-warning', 'edit-mode-helpers', 'persist', 'option-visibility', 'event-attrs', 'dom-helpers', 'data', 'toast', 'save-toast', 'export-to-window', 'view-mode-excludes-edit-modules']
+    modules: ['save-core', 'snapshot', 'save-system', 'unsaved-warning', 'edit-mode-helpers', 'persist', 'option-visibility', 'event-attrs', 'dom-helpers', 'data', 'data-loss-panel', 'toast', 'save-toast', 'export-to-window', 'view-mode-excludes-edit-modules']
   },
   'cms': {
     name: 'CMS',
     description: 'Visual CMS editing for rules-tag pages: hypercms sidebar, undo, drag-reorder, save',
-    modules: ['save-core', 'snapshot', 'save-system', 'unsaved-warning', 'toast', 'save-toast', 'mutation', 'hypercms', 'sortable', 'undo', 'export-to-window', 'view-mode-excludes-edit-modules']
+    modules: ['save-core', 'snapshot', 'save-system', 'unsaved-warning', 'toast', 'save-toast', 'mutation', 'hypercms', 'sortable', 'undo', 'data-loss-panel', 'export-to-window', 'view-mode-excludes-edit-modules']
   },
   'smooth-sailing': {
     name: 'Smooth Sailing',

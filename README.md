@@ -62,15 +62,15 @@ To load a full preset, use the CDN loader with `?preset=standard`:
 
 | Module | Size | Description |
 |--------|------|-------------|
-| autosave | 1.4KB | Auto-save on DOM changes |
+| autosave | 1.7KB | Auto-save on DOM changes |
 | edit-mode | 1.8KB | Toggle edit mode on hyperclay on/off |
 | edit-mode-helpers | 6.8KB | Admin-only functionality: [viewmode:disabled], [editmode:resource], [editmode:onclick] |
 | option-visibility | 9.2KB | Dynamic show/hide based on ancestor state with option:attribute="value" |
 | persist | 5KB | Persist input/select/textarea values to the DOM with [persist] attribute |
-| save-core | 12.2KB | Basic save function only - hyperclay.savePage() |
+| save-core | 12.7KB | Basic save function only - hyperclay.savePage() |
 | save-system | 15.5KB | CMD+S, [trigger-save] button, savestatus attribute |
 | save-toast | 0.9KB | Toast notifications for save events |
-| snapshot | 12.1KB | Source of truth for page state - captures DOM snapshots for save and sync |
+| snapshot | 12.2KB | Source of truth for page state - captures DOM snapshots for save and sync |
 | unsaved-warning | 1.3KB | Warn before leaving page with unsaved changes |
 
 ### Custom Attributes (HTML enhancements)
@@ -91,6 +91,7 @@ To load a full preset, use the CDN loader with `?preset=standard`:
 
 | Module | Size | Description |
 |--------|------|-------------|
+| data-loss-panel | 14.6KB | Data-clobber guard chip: when a save overwrites saved island data, offers restore-my-data / revert-page / dismiss. Edit-mode only; pairs with the /_/data-loss endpoint. |
 | dialogs | 8.9KB | ask(), consent(), tell(), snippet() dialog functions |
 | quickcrop | 16.8KB | Image-crop modal for upload flows - quickcrop(file) returns a cropped Blob; uses themodal when available |
 | the-modal | 25.3KB | Full modal window creation system - window.theModal |
@@ -103,7 +104,7 @@ To load a full preset, use the CDN loader with `?preset=standard`:
 | cache-bust | 0.6KB | Cache-bust href/src attributes |
 | cookie | 1.4KB | Cookie management (often auto-included) |
 | debounce | 0.7KB | Function debouncing |
-| mutation | 25.4KB | DOM mutation observation (often auto-included) |
+| mutation | 26KB | DOM mutation observation (often auto-included) |
 | nearest | 3.4KB | Find nearest elements (often auto-included) |
 | throttle | 1.3KB | Function throttling |
 
@@ -129,7 +130,7 @@ To load a full preset, use the CDN loader with `?preset=standard`:
 | Module | Size | Description |
 |--------|------|-------------|
 | file-upload | 11.3KB | File upload with progress |
-| live-sync | 25.9KB | Real-time DOM sync across browsers |
+| live-sync | 26.2KB | Real-time DOM sync across browsers |
 | send-message | 1.3KB | Message sending utility |
 
 ### Data & Undo (Page data and undo history)
@@ -144,33 +145,34 @@ To load a full preset, use the CDN loader with `?preset=standard`:
 
 | Module | Size | Description |
 |--------|------|-------------|
-| hyper-morph | 18.8KB | DOM morphing with content-based element matching |
+| hyper-morph | 19KB | DOM morphing with content-based element matching |
 | hypercms | 141.5KB | Live edit-in-place CMS sidebar driven by a hyper-html-api rules tag. Pairs with [sortable] and [hyper-morph]. |
-| sap | 47.8KB | sapjs reactive runtime — the DOM is the only state store. Structure-first, one write path. window.Sap / window.hyperclay.Sap. |
+| richclay | 117.7KB | DOM-first rich text editor for [data-richclay] regions; bundles its own Squire + DOMPurify. Edit-mode-only. window.RichClay / window.hyperclay.RichClay. |
+| sap | 48.1KB | sapjs reactive runtime — the DOM is the only state store. Structure-first, one write path. window.Sap / window.hyperclay.Sap. |
 
 ## Presets
 
-### Minimal (~63.7KB)
+### Minimal (~64.3KB)
 Essential features for basic editing
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `edit-mode-helpers`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Standard (~92.1KB)
+### Standard (~107.3KB)
 Standard feature set for most use cases
 
-**Modules:** `save-core`, `snapshot`, `save-system`, `unsaved-warning`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `data`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
+**Modules:** `save-core`, `snapshot`, `save-system`, `unsaved-warning`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `data`, `data-loss-panel`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### CMS (~229.7KB)
+### CMS (~245.5KB)
 Visual CMS editing for rules-tag pages: hypercms sidebar, undo, drag-reorder, save
 
-**Modules:** `save-core`, `snapshot`, `save-system`, `unsaved-warning`, `toast`, `save-toast`, `mutation`, `hypercms`, `sortable`, `undo`, `export-to-window`, `view-mode-excludes-edit-modules`
+**Modules:** `save-core`, `snapshot`, `save-system`, `unsaved-warning`, `toast`, `save-toast`, `mutation`, `hypercms`, `sortable`, `undo`, `data-loss-panel`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Smooth Sailing (~386KB)
+### Smooth Sailing (~401.8KB)
 Everything, without gotchas
 
-**Modules:** `save-core`, `save-system`, `unsaved-warning`, `save-toast`, `edit-mode-helpers`, `persist`, `snapshot`, `option-visibility`, `edit-mode`, `event-attrs`, `ajax-elements`, `sortable`, `movable`, `dom-helpers`, `input-helpers`, `onaftersave`, `save-freeze`, `dialogs`, `quickcrop`, `toast`, `the-modal`, `mutation`, `nearest`, `cookie`, `throttle`, `debounce`, `dom-ready`, `window-load`, `all-js`, `style-injection`, `form-data`, `hypercms`, `undo`, `data`, `upgrade`, `slugify`, `copy-to-clipboard`, `query-params`, `behavior-collector`, `send-message`, `file-upload`, `refetch-on-save`, `export-to-window`, `view-mode-excludes-edit-modules`
+**Modules:** `save-core`, `save-system`, `unsaved-warning`, `save-toast`, `edit-mode-helpers`, `persist`, `snapshot`, `option-visibility`, `edit-mode`, `event-attrs`, `ajax-elements`, `sortable`, `movable`, `dom-helpers`, `input-helpers`, `onaftersave`, `save-freeze`, `dialogs`, `quickcrop`, `toast`, `the-modal`, `data-loss-panel`, `mutation`, `nearest`, `cookie`, `throttle`, `debounce`, `dom-ready`, `window-load`, `all-js`, `style-injection`, `form-data`, `hypercms`, `undo`, `data`, `upgrade`, `slugify`, `copy-to-clipboard`, `query-params`, `behavior-collector`, `send-message`, `file-upload`, `refetch-on-save`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Everything (~480.5KB)
+### Everything (~615.1KB)
 All available features
 
 Includes all available modules across all categories.
