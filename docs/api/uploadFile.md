@@ -13,7 +13,7 @@ uploadFile(eventOrFile, callback, extraData)
 | Name | Type | Default | Description |
 |------|------|---------|-------------|
 | eventOrFile | Event\|File | — | File input change event or File object |
-| callback | function | `() => {}` | Called with response on success |
+| callback | function | `() => {}` | Called with the response on success. Pass a function or omit it; passing `null` throws on completion |
 | extraData | object | `{}` | Additional data to include in the request |
 
 ## Returns
@@ -22,7 +22,7 @@ uploadFile(eventOrFile, callback, extraData)
 
 ## Limits
 
-- Maximum file size: **10 MB**. Larger files are rejected with an error toast.
+- Maximum file size: `window.env.MAX_UPLOAD_SIZE` when set, otherwise **10 MB**. Larger files are rejected with an error toast.
 
 ## Example
 
@@ -38,8 +38,8 @@ document.querySelector('input[type="file"]').onchange = (e) => {
 const file = new File(['content'], 'test.txt', { type: 'text/plain' });
 uploadFile(file);
 
-// With extra metadata
-uploadFile(event, null, {
+// With extra metadata (pass a function or omit the callback — do NOT pass null)
+uploadFile(event, (response) => console.log(response.urls), {
   folder: 'images',
   public: true
 });

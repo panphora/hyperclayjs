@@ -34,6 +34,21 @@ import { extractData, applyData } from 'https://cdn.jsdelivr.net/npm/hyper-html-
 
 The full `hyper-html-api.js` entry pulls in `cms`, which references a bare `hyper-morph` specifier that does not resolve over jsdelivr. Use the lean entry above.
 
+## The engine object
+
+`engine` is the lower-level, DOM-bound API behind `extractData` / `applyData`. It is import-only — the vendor wrapper attaches only `extractData`/`applyData` to `window.hyperclay`, so reach `engine` via `import { engine } from '…/src/data.js'`. Beyond `bind`, it exposes:
+
+| Member | Description |
+|--------|-------------|
+| `engine.extract(root, rules, opts?)` | Extract with an explicit rules object |
+| `engine.apply(root, rules, data, opts?)` | Apply with an explicit rules object |
+| `engine.findRules(root, source)` | Resolve a rules source (token or object) to `{ rules, tagNode }` (or `null`) |
+| `engine.findRulesIn(root, token)` | Find the `data-rules-name~="token"` tag in `root`'s document |
+| `engine.bind(root, source, opts?)` | Returns `{ rules, tagNode, get(), set(data) }` bound to `root` |
+| `engine.parseStrict` / `engine.parseRelaxed` | Rule-JSON parsers (relaxed accepts unquoted keys, single quotes, trailing commas) |
+| `engine.errors` | The engine's error classes (`ShapeMismatch`, `RuleTargetReadOnly`, `UnknownRulesVersion`, `EmptyListInsert`, …) |
+| `engine.DOM_PROPERTIES` | The list of `@attr` names read/written as DOM properties (see Rules grammar) |
+
 ## Rules grammar
 
 Rules are JSON (relaxed: unquoted keys, single quotes, and trailing commas are accepted). A rule is a string selector, an object, or a two-element array.

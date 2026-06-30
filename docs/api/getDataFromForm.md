@@ -26,6 +26,14 @@ getDataFromForm(container)
 - Multi-select (collected as arrays)
 - Disabled fields are skipped
 
+## Behavior details
+
+- **Value source:** each field's value is `element.value || element.getAttribute('value')`. Clearing a field that also has a `value="…"` attribute therefore reports the attribute value, not an empty string.
+- **Checkboxes:** the key is always present as an array; a value is pushed only when the box is checked, so an unchecked box yields `{ name: [] }`.
+- **Buttons / submit / reset:** included only when they have both a `name` and a value.
+- **Flat keys only:** names are used literally, with no nested-name parsing, so `name="a[b]"` becomes the key `"a[b]"`, not `{ a: { b } }`.
+- **Last write wins** for duplicate non-array names.
+
 ## Example
 
 ```js

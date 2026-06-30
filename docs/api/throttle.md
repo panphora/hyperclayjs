@@ -18,7 +18,7 @@ throttle(callback, delay, executeFirst)
 
 ## Returns
 
-`function` - Throttled version of the callback
+`function` - Throttled version of the callback. It runs leading + trailing within each window (the trailing call uses the args from the call that scheduled it). Every call returns a `Promise` that resolves with the execution's return value (async callbacks are awaited).
 
 ## Example
 

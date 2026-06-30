@@ -340,7 +340,8 @@ cacheBust(element)
 // Cache-bust a stylesheet link
 const link = document.querySelector('link[rel="stylesheet"]');
 cacheBust(link);
-// href="/styles.css" becomes "/styles.css?v=1702847291234"
+// href="/styles.css" becomes the absolute "https://yoursite.com/styles.css?v=1702847291234"
+// (the value is written back fully resolved; the param is always `v` and overwrites any existing `v`)
 
 // Cache-bust an image
 const img = document.querySelector('img');
@@ -546,6 +547,46 @@ createFile('config.json', JSON.stringify({ theme: 'dark' }));
 
 ---
 
+# data-loss-panel
+
+The recovery UI for the data-clobber guard. When the server reports that a save overwrote previously-saved island data, this mounts a small fixed chip offering to restore the overwritten data, revert the page, or dismiss. Include the module; there is no function to call from app code.
+
+## Presets
+
+In `standard`, `cms`, `smooth-sailing`, and `everything`. Not in `minimal`. It auto-initializes on import and is edit-mode only (silent for viewers).
+
+## How it works
+
+- On load it fetches `GET /_/data-loss?file=<page-url>`; if the server reports a clobber, the chip mounts.
+- Live, it listens for the `hyperclay:notification` event with `msgType: 'data-loss'` and mounts/unmounts accordingly.
+- A user choice POSTs to `POST /_/data-loss/<id>` with `{ choice, file }`. Restore and revert reload the page (~350ms) after success.
+- On init it also calls `initUserGesture()` (so save provenance is correct even in presets without autosave) and `Mutation.ensureObserving()`.
+- The chip's root carries `no-save` and `snapshot-remove`, so it never reaches a saved file. Feedback uses `window.toast`.
+
+## Requirements
+
+- A server implementing `GET /_/data-loss` and `POST /_/data-loss/<id>` (the Hyperclay platform and Hyperclay Local both do).
+- The owner in edit mode. It stays silent in view mode.
+
+## Methods
+
+| Method | Description |
+|--------|-------------|
+| default export `init()` | Auto-called on import; installs listeners and does the first check. Apps do not call it |
+| `mount(event)` | Mount the chip for a data-loss event. Exported for tests |
+| `unmount()` | Remove the chip. Exported for tests |
+
+## Example
+
+```html
+<!-- No code needed: load a preset that includes it, e.g. -->
+<script type="module">
+  import 'https://cdn.jsdelivr.net/npm/hyperclayjs@1/src/hyperclay.js?preset=standard';
+</script>
+```
+
+---
+
 # data
 
 Read structured data out of the live DOM and write a JS object back into it. The `extractData` / `applyData` helpers mirror the hyper-html-api engine in the browser. They operate on the LOCAL DOM only and do not write to the server.
@@ -581,6 +622,21 @@ import { extractData, applyData } from 'https://cdn.jsdelivr.net/npm/hyper-html-
 ```
 
 The full `hyper-html-api.js` entry pulls in `cms`, which references a bare `hyper-morph` specifier that does not resolve over jsdelivr. Use the lean entry above.
+
+## The engine object
+
+`engine` is the lower-level, DOM-bound API behind `extractData` / `applyData`. It is import-only — the vendor wrapper attaches only `extractData`/`applyData` to `window.hyperclay`, so reach `engine` via `import { engine } from '…/src/data.js'`. Beyond `bind`, it exposes:
+
+| Member | Description |
+|--------|-------------|
+| `engine.extract(root, rules, opts?)` | Extract with an explicit rules object |
+| `engine.apply(root, rules, data, opts?)` | Apply with an explicit rules object |
+| `engine.findRules(root, source)` | Resolve a rules source (token or object) to `{ rules, tagNode }` (or `null`) |
+| `engine.findRulesIn(root, token)` | Find the `data-rules-name~="token"` tag in `root`'s document |
+| `engine.bind(root, source, opts?)` | Returns `{ rules, tagNode, get(), set(data) }` bound to `root` |
+| `engine.parseStrict` / `engine.parseRelaxed` | Rule-JSON parsers (relaxed accepts unquoted keys, single quotes, trailing commas) |
+| `engine.errors` | The engine's error classes (`ShapeMismatch`, `RuleTargetReadOnly`, `UnknownRulesVersion`, `EmptyListInsert`, …) |
+| `engine.DOM_PROPERTIES` | The list of `@attr` names read/written as DOM properties (see Rules grammar) |
 
 ## Rules grammar
 
@@ -728,7 +784,7 @@ debounce(callback, delay)
 
 ## Returns
 
-`function` - Debounced version of the callback
+`function` - Debounced version of the callback. It is trailing-edge only (the timer resets on each call). Every call returns a `Promise` that resolves with the trailing execution's return value (async callbacks are awaited), so callers within one window all resolve with the same result.
 
 ## Example
 
@@ -1028,6 +1084,14 @@ getDataFromForm(container)
 - Multi-select (collected as arrays)
 - Disabled fields are skipped
 
+## Behavior details
+
+- **Value source:** each field's value is `element.value || element.getAttribute('value')`. Clearing a field that also has a `value="…"` attribute therefore reports the attribute value, not an empty string.
+- **Checkboxes:** the key is always present as an array; a value is pushed only when the box is checked, so an unchecked box yields `{ name: [] }`.
+- **Buttons / submit / reset:** included only when they have both a `name` and a value.
+- **Flat keys only:** names are used literally, with no nested-name parsing, so `name="a[b]"` becomes the key `"a[b]"`, not `{ a: { b } }`.
+- **Last write wins** for duplicate non-array names.
+
 ## Example
 
 ```js
@@ -1274,7 +1338,7 @@ import { cms } from '@panphora/hyper-cms'
 
 # insertStyles
 
-Insert styles into the document — either an external stylesheet or inline CSS. With a persistent DOM (hyperclay), new styles are inserted first, then duplicates are removed to prevent flickering.
+Insert or update styles in the document, either an external stylesheet or inline CSS. With a persistent DOM (hyperclay) it reuses a matching element in place rather than creating a new one, so it never churns the DOM or trips a false "unsaved changes" diff. External stylesheets are matched by normalized base URL (the `?v=` query is ignored); inline styles are matched by `name` (the `data-name` attribute). An optional callback runs on the resolved element every call.
 
 ## Signature
 
@@ -1290,10 +1354,11 @@ insertStyles(name, css)
 | href | string | — | URL of the stylesheet to inject (1-arg form) |
 | name | string | — | Unique name for inline styles, used as data-name attribute (2-arg form) |
 | css | string | — | CSS content to inject inline (2-arg form) |
+| callback | function | — | Optional. Runs on the resolved element (existing or new) every call, so you can update its attributes |
 
 ## Returns
 
-`HTMLElement` — The created link or style element
+`HTMLElement` — The resolved link or style element (reused in place if a match already exists, otherwise created in `<head>`)
 
 ## Example
 
@@ -1309,8 +1374,11 @@ insertStyles('my-theme', `
   .dark-mode { background: #1a1a1a; color: #fff; }
 `);
 
-// Safe to call multiple times - old duplicates are removed
-insertStyles('/styles/theme.css'); // Replaces previous
+// Safe to call multiple times — reuses the existing element in place
+insertStyles('/styles/theme.css'); // Updates, does not duplicate
+
+// Pass a callback to tweak the resolved element every call
+insertStyles('/styles/theme.css', (link) => { link.media = 'print'; });
 ```
 
 ---
@@ -1318,6 +1386,10 @@ insertStyles('/styles/theme.css'); // Replaces previous
 # live-sync
 
 Real-time DOM sync across browsers via SSE. When one user saves, all connected browsers see the changes instantly via HyperMorph. Works with Hyperclay Local app.
+
+## Access
+
+`liveSync` is import-only — it is not attached to `window.hyperclay`. Import the module (or load it via a preset/feature) to set callbacks. It auto-starts on DOM-ready; call `stop()` to disable.
 
 ## Methods
 
@@ -1330,7 +1402,7 @@ Real-time DOM sync across browsers via SSE. When one user saves, all connected b
 
 | Name | Type | Default | Description |
 |------|------|---------|-------------|
-| file | string | — | Site identifier to sync (e.g. `'index'`, `'about'`). Auto-detected from URL pathname if omitted |
+| file | string | — | Optional. A presence guard and log label only; it does **not** select the sync channel. The channel is keyed off the page URL (`window.location.href` / the `Page-URL` header). Auto-detected from the pathname when omitted |
 
 ## Example
 
@@ -1340,7 +1412,7 @@ await import('hyperclay.js?features=live-sync');
 
 // Manual control
 import liveSync from 'hyperclay.js/live-sync';
-liveSync.start('my-page');
+liveSync.start(); // the optional arg is a log label, not a channel selector
 
 // Callbacks
 liveSync.onConnect = () => console.log('Connected');
@@ -1351,6 +1423,10 @@ liveSync.onError = (err) => console.error(err);
 // Stop syncing
 liveSync.stop();
 ```
+
+## Events
+
+Besides the callbacks, live-sync dispatches `hyperclay:livesync-applied` on `document` (`detail.seq`) after a remote update is morphed in, and `hyperclay:notification` for server-pushed notifications.
 
 ---
 
@@ -1390,6 +1466,8 @@ All methods share the same signature and return an unsubscribe function.
 | options.omitChangeDetails | boolean | `false` | Call callback without change data |
 | options.require | `'observed'`\|`'autosave'`\|`'undo'` | — | Region-policy axis: only deliver changes inside a region that opts into this concern (e.g. `'observed'` skips no-watch regions and extension noise). Unset uses the legacy four-marker skip. |
 | options.pausable | boolean | `true` | When `true` (default) the callback is silenced inside a `Mutation.pause()` window and its queued changes are dropped on resume. Set `false` only for pure enhancers that never save, record, or rebroadcast (e.g. `autosize`, `sortable`) so they keep firing through a morph or live-sync pause. |
+| options.skip | string[] | — | Literal region-attribute escape hatch: any change whose region carries one of these attribute names is dropped. Takes precedence over `require` when both are set (e.g. `['no-undo']`) |
+| options.debug | boolean | `false` | Turn on verbose logging. Note: this flips logging on for the whole `Mutation` singleton, not just this subscription |
 | callback | function | — | Called with array of changes |
 
 ## The sanctioned lane for an external reactive consumer
@@ -1400,6 +1478,19 @@ A library that wants to react to *every* DOM change (regardless of who made it) 
 - Leaving `pausable` at its default (`true`) is load-bearing: it is what lets such a consumer suppress its *own* derived writes. By wrapping its write phase in `Mutation.pause()` / `Mutation.resume()`, the consumer's writes are vacuumed on resume and routed only to non-pausable consumers, so they never loop back to re-trigger it.
 
 The raw fan-out lane (`subscribeRaw` / `createObserver`) is **internal to hyperclayjs** and not part of the public contract. It fires before-and-after the pause bridge and is reserved for the hub's own undo/region plumbing; external consumers should not use it.
+
+## Control methods
+
+These act on the shared singleton, not on a single subscription:
+
+| Method | Description |
+|--------|-------------|
+| `Mutation.pause()` | Suspend delivery to pausable subscribers. Reference-counted, so nested pauses need matching resumes. Bridges to `hyperclay.undo.pause()` when undo is loaded |
+| `Mutation.resume()` | Resume delivery (underflow-guarded) |
+| `Mutation.ensureObserving()` | Start the shared observer without registering a callback (used to enable save-provenance tracking) |
+| `Mutation.debug` | Boolean property; set `true` for timestamped console tracing across the singleton |
+
+The singleton dispatches a one-shot `hyperclay:mutation-ready` event (`detail.Mutation`) when it installs, so consumers can react instead of polling.
 
 ## Change Object
 
@@ -2161,6 +2252,56 @@ const sort = query.sort || 'date';
 
 // Destructure parameters
 const { name, page, sort = 'date' } = query;
+```
+
+---
+
+# quickcrop
+
+Open an image-crop modal and get back a cropped image. Handy in upload flows: crop first, then upload the resulting Blob. Uses `themodal` when available, otherwise it brings its own built-in modal.
+
+## Signature
+
+```js
+quickcrop(file, options)
+```
+
+## Parameters
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| file | File\|Blob | — | The image to crop |
+| options | object | `{}` | See below |
+| options.aspect | number\|null | `null` | Lock the crop ratio. `null` = free crop |
+| options.type | string | source type | Output MIME type. Falls back to `image/png` when the source type is not encodable |
+| options.quality | number | `0.92` | Encode quality for `image/jpeg` and `image/webp` |
+| options.maxWidth | number\|null | `null` | Cap the output width |
+| options.maxHeight | number\|null | `null` | Cap the output height |
+| options.minSize | number | `40` | Minimum crop-box size in px |
+| options.labels | object | `{ confirm: 'Crop' }` | Button labels |
+| options.modal | string\|object | `'auto'` | `'auto'` uses `themodal` when present else built-in; `'builtin'`; a themodal instance; or any adapter object with an `open()` method |
+
+## Returns
+
+`Promise<{ blob, dataURL, width, height } | null>` — resolves with the crop on confirm, resolves `null` on cancel, and rejects only on bad input or a decode/encode failure.
+
+## Presets
+
+In `smooth-sailing` and `everything`. Exposed as `window.hyperclay.quickcrop`.
+
+## Notes
+
+- Single-instance: a second concurrent call rejects with `"quickcrop: already open"`.
+- Branch on `result === null` to detect a cancel.
+- `image/jpeg` output is flattened onto a white background. Very large images are area-capped and downscaled to avoid blank canvases on iOS Safari.
+
+## Example
+
+```js
+const result = await quickcrop(file, { aspect: 1, maxWidth: 512 });
+if (result) {
+  await uploadFile(result.blob); // null means the user cancelled
+}
 ```
 
 ---
@@ -2948,7 +3089,7 @@ throttle(callback, delay, executeFirst)
 
 ## Returns
 
-`function` - Throttled version of the callback
+`function` - Throttled version of the callback. It runs leading + trailing within each window (the trailing call uses the args from the call that scheduled it). Every call returns a `Promise` that resolves with the execution's return value (async callbacks are awaited).
 
 ## Example
 
@@ -2988,7 +3129,7 @@ toast(message, messageType)
 | Name | Type | Default | Description |
 |------|------|---------|-------------|
 | message | string | — | The message to display |
-| messageType | string | `'success'` | Either `'success'` or `'error'` |
+| messageType | string | `'success'` | One of `'success'`, `'error'`, `'warning'`, or `'info'`. An unknown value falls back to `'success'` |
 
 ## Returns
 
@@ -3006,6 +3147,35 @@ toast('Something went wrong', 'error');
 // Success is the default type
 toast('Uploaded successfully');
 ```
+
+## Notes
+
+- `message` is inserted as HTML (`innerHTML`), so do not pass untrusted user input.
+- A toast auto-dismisses after ~6.6s and is also click-to-dismiss. Its container and styles carry `save-remove`/`snapshot-remove`, so they never reach a saved file.
+
+## toastPersistent
+
+A sticky variant that does **not** auto-dismiss: it adds a close button and only closes on click. Calling it again with the same `message` replaces the existing toast (de-duped) instead of stacking.
+
+```js
+toastPersistent(message, messageType)
+```
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| message | string | — | The message to display (inserted as HTML) |
+| messageType | string | `'warning'` | One of `'success'`, `'error'`, `'warning'`, `'info'` |
+
+```js
+// A standing warning the user must dismiss
+toastPersistent('You are offline. Changes will not save.', 'warning');
+```
+
+Both `toast` and `toastPersistent` are exported from the `toast` module (`window.toast` / `window.toastPersistent`, plus the `window.hyperclay.*` aliases).
+
+## Theme
+
+The optional `toast-hyperclay` module (not in any preset; add with `?features=toast-hyperclay`) switches every toast to the "hyperclay" theme app-wide, as a side effect of being imported.
 
 ---
 
@@ -3232,6 +3402,50 @@ Warns users before leaving the page if there are unsaved changes. On `beforeunlo
 
 ---
 
+# upgrade
+
+One-click template upgrades. When a forked page's `<meta name="hyper-source">` points at a template whose `<meta name="hyper-version">` is newer than the page's own, the owner can migrate the page's keyed data into the new template and save. The mechanism (version check, pristine fetch, optional transform tag, keyed apply) is `hyper-html-api`'s upgrade engine vendored into hyperclayjs and re-exported as `window.hyperclay.upgrade`; hyperclayjs adds the owner-only popover UI, save, and reload.
+
+## Presets
+
+In `smooth-sailing` and `everything`. With any other preset add `&features=upgrade`. The module auto-runs on load and shows its popover only for the owner in edit mode.
+
+## Auto-start
+
+On load (owner + edit mode only) it calls `checkForUpdate()`. If an update is available and not previously dismissed, it shows a bottom-right "Update available" popover with Upgrade / Later / Skip. Upgrade runs the migration, saves with `saveHtml()`, and reloads.
+
+## Methods
+
+`window.hyperclay.upgrade` (also the module's default export):
+
+| Method | Description |
+|--------|-------------|
+| `checkForUpdate(opts?)` | Compare the page version to the source's. Resolves `null` when inert (no `hyper-source`, self-pointing, unreachable, or unparseable), else `{ available, currentVersion, sourceVersion, sourceUrl }`. Result is cached 24h per source+version; pass `{ force: true }` to bypass |
+| `run(opts?)` | Run the full migration without an iframe: pack keyed data, fetch the source's pristine HTML, apply its optional `text/hyper-upgrade` transform, return `{ html, fromVersion, toVersion, summary }`. Does **not** save |
+| `extractAll(root?)` | Read every named rules tag under `root` into `{ dataByName, version }` |
+| `shapeMatch(rules, data)` | Carry `data` across a rules shape, returning `{ data, summary }` (`summary` counts `carriedOver` / `discarded` / `listItems`) |
+
+`run()` throws `UpgradeSourceUnreachable`, `UpgradeSourceHasNoRules`, `UpgradeTransformInvalid`, or `UpgradeMultipleTransforms` on the respective failures.
+
+## Requirements
+
+- `<meta name="hyper-source" content="…">` and `<meta name="hyper-version" content="…">` on the page.
+- A reachable source page that carries at least one `script[data-rules-name][data-rules-version="1"]` tag (and optionally one `script[type="text/hyper-upgrade"]` transform that `export default`s a `(dataByName, { fromVersion, toVersion }) => dataByName` function).
+- The popover appears only for the owner in edit mode. `run()` returns HTML; the caller persists it (the popover calls `saveHtml()` then reloads).
+
+## Example
+
+```js
+const info = await hyperclay.upgrade.checkForUpdate();
+if (info?.available) {
+  const { html, summary } = await hyperclay.upgrade.run();
+  console.log(`carried ${summary.totals.carriedOver} field(s)`);
+  await hyperclay.saveHtml(html); // then reload
+}
+```
+
+---
+
 # uploadFile
 
 Upload a file to the `/_/upload` endpoint with progress toasts and automatic clipboard copy of the resulting URL.
@@ -3247,7 +3461,7 @@ uploadFile(eventOrFile, callback, extraData)
 | Name | Type | Default | Description |
 |------|------|---------|-------------|
 | eventOrFile | Event\|File | — | File input change event or File object |
-| callback | function | `() => {}` | Called with response on success |
+| callback | function | `() => {}` | Called with the response on success. Pass a function or omit it; passing `null` throws on completion |
 | extraData | object | `{}` | Additional data to include in the request |
 
 ## Returns
@@ -3256,7 +3470,7 @@ uploadFile(eventOrFile, callback, extraData)
 
 ## Limits
 
-- Maximum file size: **10 MB**. Larger files are rejected with an error toast.
+- Maximum file size: `window.env.MAX_UPLOAD_SIZE` when set, otherwise **10 MB**. Larger files are rejected with an error toast.
 
 ## Example
 
@@ -3272,8 +3486,8 @@ document.querySelector('input[type="file"]').onchange = (e) => {
 const file = new File(['content'], 'test.txt', { type: 'text/plain' });
 uploadFile(file);
 
-// With extra metadata
-uploadFile(event, null, {
+// With extra metadata (pass a function or omit the callback — do NOT pass null)
+uploadFile(event, (response) => console.log(response.urls), {
   folder: 'images',
   public: true
 });

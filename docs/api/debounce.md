@@ -17,7 +17,7 @@ debounce(callback, delay)
 
 ## Returns
 
-`function` - Debounced version of the callback
+`function` - Debounced version of the callback. It is trailing-edge only (the timer resets on each call). Every call returns a `Promise` that resolves with the trailing execution's return value (async callbacks are awaited), so callers within one window all resolve with the same result.
 
 ## Example
 

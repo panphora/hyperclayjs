@@ -34,6 +34,8 @@ All methods share the same signature and return an unsubscribe function.
 | options.omitChangeDetails | boolean | `false` | Call callback without change data |
 | options.require | `'observed'`\|`'autosave'`\|`'undo'` | — | Region-policy axis: only deliver changes inside a region that opts into this concern (e.g. `'observed'` skips no-watch regions and extension noise). Unset uses the legacy four-marker skip. |
 | options.pausable | boolean | `true` | When `true` (default) the callback is silenced inside a `Mutation.pause()` window and its queued changes are dropped on resume. Set `false` only for pure enhancers that never save, record, or rebroadcast (e.g. `autosize`, `sortable`) so they keep firing through a morph or live-sync pause. |
+| options.skip | string[] | — | Literal region-attribute escape hatch: any change whose region carries one of these attribute names is dropped. Takes precedence over `require` when both are set (e.g. `['no-undo']`) |
+| options.debug | boolean | `false` | Turn on verbose logging. Note: this flips logging on for the whole `Mutation` singleton, not just this subscription |
 | callback | function | — | Called with array of changes |
 
 ## The sanctioned lane for an external reactive consumer
@@ -44,6 +46,19 @@ A library that wants to react to *every* DOM change (regardless of who made it) 
 - Leaving `pausable` at its default (`true`) is load-bearing: it is what lets such a consumer suppress its *own* derived writes. By wrapping its write phase in `Mutation.pause()` / `Mutation.resume()`, the consumer's writes are vacuumed on resume and routed only to non-pausable consumers, so they never loop back to re-trigger it.
 
 The raw fan-out lane (`subscribeRaw` / `createObserver`) is **internal to hyperclayjs** and not part of the public contract. It fires before-and-after the pause bridge and is reserved for the hub's own undo/region plumbing; external consumers should not use it.
+
+## Control methods
+
+These act on the shared singleton, not on a single subscription:
+
+| Method | Description |
+|--------|-------------|
+| `Mutation.pause()` | Suspend delivery to pausable subscribers. Reference-counted, so nested pauses need matching resumes. Bridges to `hyperclay.undo.pause()` when undo is loaded |
+| `Mutation.resume()` | Resume delivery (underflow-guarded) |
+| `Mutation.ensureObserving()` | Start the shared observer without registering a callback (used to enable save-provenance tracking) |
+| `Mutation.debug` | Boolean property; set `true` for timestamped console tracing across the singleton |
+
+The singleton dispatches a one-shot `hyperclay:mutation-ready` event (`detail.Mutation`) when it installs, so consumers can react instead of polling.
 
 ## Change Object
 

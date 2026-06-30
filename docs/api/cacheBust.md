@@ -24,7 +24,8 @@ cacheBust(element)
 // Cache-bust a stylesheet link
 const link = document.querySelector('link[rel="stylesheet"]');
 cacheBust(link);
-// href="/styles.css" becomes "/styles.css?v=1702847291234"
+// href="/styles.css" becomes the absolute "https://yoursite.com/styles.css?v=1702847291234"
+// (the value is written back fully resolved; the param is always `v` and overwrites any existing `v`)
 
 // Cache-bust an image
 const img = document.querySelector('img');

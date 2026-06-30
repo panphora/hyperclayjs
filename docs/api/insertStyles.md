@@ -1,6 +1,6 @@
 # insertStyles
 
-Insert styles into the document — either an external stylesheet or inline CSS. With a persistent DOM (hyperclay), new styles are inserted first, then duplicates are removed to prevent flickering.
+Insert or update styles in the document, either an external stylesheet or inline CSS. With a persistent DOM (hyperclay) it reuses a matching element in place rather than creating a new one, so it never churns the DOM or trips a false "unsaved changes" diff. External stylesheets are matched by normalized base URL (the `?v=` query is ignored); inline styles are matched by `name` (the `data-name` attribute). An optional callback runs on the resolved element every call.
 
 ## Signature
 
@@ -16,10 +16,11 @@ insertStyles(name, css)
 | href | string | — | URL of the stylesheet to inject (1-arg form) |
 | name | string | — | Unique name for inline styles, used as data-name attribute (2-arg form) |
 | css | string | — | CSS content to inject inline (2-arg form) |
+| callback | function | — | Optional. Runs on the resolved element (existing or new) every call, so you can update its attributes |
 
 ## Returns
 
-`HTMLElement` — The created link or style element
+`HTMLElement` — The resolved link or style element (reused in place if a match already exists, otherwise created in `<head>`)
 
 ## Example
 
@@ -35,6 +36,9 @@ insertStyles('my-theme', `
   .dark-mode { background: #1a1a1a; color: #fff; }
 `);
 
-// Safe to call multiple times - old duplicates are removed
-insertStyles('/styles/theme.css'); // Replaces previous
+// Safe to call multiple times — reuses the existing element in place
+insertStyles('/styles/theme.css'); // Updates, does not duplicate
+
+// Pass a callback to tweak the resolved element every call
+insertStyles('/styles/theme.css', (link) => { link.media = 'print'; });
 ```
