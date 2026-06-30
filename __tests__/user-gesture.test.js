@@ -2,12 +2,13 @@
  * @jest-environment jsdom
  *
  * user-gesture: the per-batch "was a human driving this write?" signal for the
- * data-clobber guard. Covers the synchronous-in-handler vs deferred timing, the
- * isTrusted gate, the userActivation corroborator, and the read-and-reset bit.
+ * data-clobber guard. Covers the same-turn flag, the bounded recency window that
+ * attributes cross-turn first-party edits (click handlers, confirm-modal
+ * deletes), the isTrusted gate, and the read-and-reset bit.
  */
 import {
   initUserGesture,
-  isGestureActive,
+  isUserDrivenNow,
   markUserDriven,
   consumeUserDriven,
   _resetUserGesture,
@@ -22,6 +23,10 @@ beforeAll(() => {
 
 beforeEach(() => {
   _resetUserGesture();
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
 });
 
 describe('userDriven accumulation (read-and-reset)', () => {
@@ -44,48 +49,47 @@ describe('userDriven accumulation (read-and-reset)', () => {
   });
 });
 
-describe('isGestureActive timing (synchronous-in-handler vs deferred)', () => {
+describe('isUserDrivenNow — same-turn flag', () => {
   it('is false before any gesture', () => {
-    expect(isGestureActive()).toBe(false);
+    expect(isUserDrivenNow()).toBe(false);
   });
 
-  it('is active synchronously in the gesture turn, cleared on the next macrotask', async () => {
+  it('is active synchronously in the gesture turn, independent of the clock', () => {
     _simulateGestureTurn();
-    // Same turn as the gesture — what the MutationObserver microtask sees.
-    expect(isGestureActive()).toBe(true);
-    await flush();
-    // A setTimeout / fetch().then() mutation lands here: flag already cleared.
-    expect(isGestureActive()).toBe(false);
+    // Same turn as the gesture — what a synchronous handler's MutationObserver
+    // microtask sees. The flag answers true without consulting the clock.
+    expect(isUserDrivenNow()).toBe(true);
   });
 
   it('ignores synthetic (isTrusted=false) events — a script cannot fake a gesture', () => {
     // A real jsdom-dispatched event is isTrusted=false; the capture listener
     // installed by initUserGesture must leave the turn inactive.
     document.dispatchEvent(new Event('pointerdown', { bubbles: true }));
-    expect(isGestureActive()).toBe(false);
+    expect(isUserDrivenNow()).toBe(false);
   });
 });
 
-describe('userActivation corroborator', () => {
-  afterEach(() => {
-    delete navigator.userActivation;
+describe('isUserDrivenNow — bounded recency window (cross-turn attribution)', () => {
+  it('stays user-driven after the same-turn flag clears, within the window', async () => {
+    let t = 1000;
+    jest.spyOn(performance, 'now').mockImplementation(() => t);
+    _simulateGestureTurn();        // stamps t=1000, sets the flag
+    await flush();                 // the flag clears on the next macrotask
+    // A click handler / confirm-modal delete mutates here, a turn after the
+    // gesture: the flag is gone but the recency window carries it.
+    expect(isUserDrivenNow()).toBe(true);   // 0ms since the gesture
+    t = 1499;
+    expect(isUserDrivenNow()).toBe(true);   // 499ms < 500
   });
 
-  it('suppresses the signal when userActivation is present but inactive', () => {
-    Object.defineProperty(navigator, 'userActivation', {
-      value: { isActive: false },
-      configurable: true,
-    });
+  it('reverts to background once the window elapses', async () => {
+    let t = 1000;
+    jest.spyOn(performance, 'now').mockImplementation(() => t);
     _simulateGestureTurn();
-    expect(isGestureActive()).toBe(false);
-  });
-
-  it('passes through when userActivation agrees', () => {
-    Object.defineProperty(navigator, 'userActivation', {
-      value: { isActive: true },
-      configurable: true,
-    });
-    _simulateGestureTurn();
-    expect(isGestureActive()).toBe(true);
+    await flush();                 // flag cleared
+    t = 1500;
+    expect(isUserDrivenNow()).toBe(false);  // 500ms is not < 500
+    t = 5000;
+    expect(isUserDrivenNow()).toBe(false);
   });
 });

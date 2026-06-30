@@ -68,7 +68,7 @@
 
 import { EXTENSION_ATTR_PATTERN } from './extension-noise.js';
 import { resolveRegionPolicy, isInert, strictestPolicy, skipForPolicy } from './region-policy.js';
-import { isGestureActive, markUserDriven } from './user-gesture.js';
+import { isUserDrivenNow, markUserDriven } from './user-gesture.js';
 
 const dummyElem = document.createElement("div");
 
@@ -563,11 +563,11 @@ const Mutation = {
         }
       });
 
-      // Data-guard provenance: if a trusted gesture drove THIS turn and any
-      // change is autosave-relevant (matches the save's region scope), mark the
-      // pending save user-driven. Runs synchronously in the MO callback, the
-      // same turn as the gesture; skipped during paused-morph drains.
-      if (!onlyNonPausable && isGestureActive()) {
+      // Data-guard provenance: if a trusted gesture drove this turn (or one
+      // happened within the recency window) and any change is autosave-relevant
+      // (matches the save's region scope), mark the pending save user-driven.
+      // Runs synchronously in the MO callback; skipped during paused-morph drains.
+      if (!onlyNonPausable && isUserDrivenNow()) {
         for (const change of changes) {
           if (!skipForPolicy(this._policyForChange(change), 'autosave')) {
             markUserDriven();
@@ -694,6 +694,16 @@ const Mutation = {
 
   onAttribute(options = {}, callback) {
     return this._addCallback('attribute', options, callback);
+  },
+
+  /**
+   * Start the singleton observer without registering a callback. The data-clobber
+   * chip (data-loss-panel) calls this so user-driven attribution runs wherever the
+   * chip ships, not only when another module (e.g. option-visibility) happens to
+   * subscribe. Idempotent — the _observing guard makes repeat calls a no-op.
+   */
+  ensureObserving() {
+    this._startObserving();
   }
 };
 

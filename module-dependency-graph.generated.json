@@ -171,7 +171,9 @@
     "string-utilities/query.js": [],
     "string-utilities/slugify.js": [],
     "ui/data-loss-panel.js": [
-      "core/isAdminOfCurrentResource.js"
+      "core/isAdminOfCurrentResource.js",
+      "utilities/mutation.js",
+      "utilities/user-gesture.js"
     ],
     "ui/prompts.js": [
       "dom-utilities/onDomReady.js",
@@ -226,7 +228,7 @@
     "save-core": {
       "name": "save-core",
       "category": "core",
-      "size": 12.7,
+      "size": 13.3,
       "isEditModeOnly": true,
       "files": [
         "core/savePageCore.js"
@@ -583,7 +585,7 @@
     "data-loss-panel": {
       "name": "data-loss-panel",
       "category": "ui",
-      "size": 14.6,
+      "size": 15.4,
       "isEditModeOnly": true,
       "files": [
         "ui/data-loss-panel.js"
@@ -594,7 +596,7 @@
     "mutation": {
       "name": "mutation",
       "category": "utilities",
-      "size": 26,
+      "size": 26.4,
       "files": [
         "utilities/mutation.js"
       ],
@@ -817,7 +819,7 @@
     "richclay": {
       "name": "richclay",
       "category": "vendor",
-      "size": 117.7,
+      "size": 119.5,
       "isEditModeOnly": true,
       "difficulty": "intermediate",
       "files": [

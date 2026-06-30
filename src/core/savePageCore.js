@@ -8,7 +8,7 @@
  */
 
 import { isEditMode } from "./isAdminOfCurrentResource.js";
-import { consumeUserDriven } from "../utilities/user-gesture.js";
+import { consumeUserDriven, markUserDriven } from "../utilities/user-gesture.js";
 import {
   captureForSave,
   isCodeMirrorPage,
@@ -166,8 +166,6 @@ export function savePage(callback = () => {}) {
         snapshotHtml: window.__hyperclaySnapshotHtml,
         userDriven
       });
-      // Clear after use to avoid stale data
-      window.__hyperclaySnapshotHtml = null;
     } else {
       // Platform: send plain text as before
       fetchOptions.body = currentContents;
@@ -184,6 +182,9 @@ export function savePage(callback = () => {}) {
         });
       })
       .then(data => {
+        // Clear the snapshot only once the save actually landed (a failed save
+        // keeps it so a retry still carries the provenance snapshot).
+        window.__hyperclaySnapshotHtml = null;
         const result = { msg: data.msg, msgType: data.msgType || 'success' };
         if (typeof callback === 'function') {
           callback(result);
@@ -193,6 +194,10 @@ export function savePage(callback = () => {}) {
       .catch(err => {
         clearTimeout(timeoutId);
         console.error('Failed to save page:', err);
+
+        // The save never landed: re-arm the user-driven bit so the next (retry)
+        // save still reports the human gesture instead of reading as background.
+        if (userDriven) markUserDriven();
 
         const msg = err.name === 'AbortError'
           ? 'Server not responding'
@@ -284,8 +289,6 @@ export function saveHtml(html, callback = () => {}) {
         snapshotHtml: window.__hyperclaySnapshotHtml,
         userDriven
       });
-      // Clear after use to avoid stale data
-      window.__hyperclaySnapshotHtml = null;
     } else {
       // Platform: send plain text as before
       fetchOptions.body = html;
@@ -302,6 +305,9 @@ export function saveHtml(html, callback = () => {}) {
         });
       })
       .then(data => {
+        // Clear the snapshot only once the save actually landed (a failed save
+        // keeps it so a retry still carries the provenance snapshot).
+        window.__hyperclaySnapshotHtml = null;
         if (typeof callback === 'function') {
           callback(null, data);
         }
@@ -310,6 +316,10 @@ export function saveHtml(html, callback = () => {}) {
       .catch(err => {
         clearTimeout(timeoutId);
         console.error('Failed to save page:', err);
+
+        // The save never landed: re-arm the user-driven bit so the next (retry)
+        // save still reports the human gesture instead of reading as background.
+        if (userDriven) markUserDriven();
 
         // Normalize timeout errors
         const error = err.name === 'AbortError'

@@ -15,11 +15,13 @@
  * client raw — only the now/yours preview strings the server computed.
  */
 import { isEditMode } from '../core/isAdminOfCurrentResource.js';
+import { initUserGesture } from '../utilities/user-gesture.js';
+import Mutation from '../utilities/mutation.js';
 
 const ROOT_ID = 'hyperclay-data-loss-guard';
 const STYLE_ID = 'hyperclay-data-loss-guard-style';
 
-const ICON_ALERT = '<svg class="dg-x" width="15" height="15" viewBox="0 0 24 24" fill="var(--mirk-destructive)" aria-hidden="true"><path d="M10 2h2v2h-2zM12 2h2v2h-2zM8 4h2v2h-2zM8 6h2v2h-2zM6 8h2v2h-2zM6 10h2v2h-2zM4 12h2v2h-2zM4 14h2v2h-2zM2 16h2v2h-2zM2 18h2v2h-2zM14 4h2v2h-2zM14 6h2v2h-2zM16 8h2v2h-2zM16 10h2v2h-2zM18 12h2v2h-2zM18 14h2v2h-2zM20 16h2v2h-2zM20 18h2v2h-2zM2 20h2v2h-2zM4 20h2v2h-2zM6 20h2v2h-2zM8 20h2v2h-2zM10 20h2v2h-2zM12 20h2v2h-2zM14 20h2v2h-2zM16 20h2v2h-2zM18 20h2v2h-2zM20 20h2v2h-2z"/><path d="M11 8h2v6h-2zM11 16h2v2h-2z"/></svg>';
+const ICON_ALERT = '<svg class="dg-x" width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2h2v2h-2zM12 2h2v2h-2zM8 4h2v2h-2zM8 6h2v2h-2zM6 8h2v2h-2zM6 10h2v2h-2zM4 12h2v2h-2zM4 14h2v2h-2zM2 16h2v2h-2zM2 18h2v2h-2zM14 4h2v2h-2zM14 6h2v2h-2zM16 8h2v2h-2zM16 10h2v2h-2zM18 12h2v2h-2zM18 14h2v2h-2zM20 16h2v2h-2zM20 18h2v2h-2zM2 20h2v2h-2zM4 20h2v2h-2zM6 20h2v2h-2zM8 20h2v2h-2zM10 20h2v2h-2zM12 20h2v2h-2zM14 20h2v2h-2zM16 20h2v2h-2zM18 20h2v2h-2zM20 20h2v2h-2z"/><path d="M11 8h2v6h-2zM11 16h2v2h-2z"/></svg>';
 const ICON_COLLAPSE = '<svg class="dg-ic" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 8h-2v2h2V8Zm-2 2H9v2h2v-2Zm4 0h-2v2h2v-2Zm-6 2H7v2h2v-2Zm8 0h-2v2h2v-2ZM7 14H5v2h2v-2Zm12 0h-2v2h2v-2Z"/></svg>';
 
 const STYLE = `
@@ -75,6 +77,8 @@ const STYLE = `
 }
 
 .hcdl .dg-chip .mirk-button__label { gap: 6px; font-size: 14px; padding: 5px 14px; }
+/* Alert glyph color via CSS, not an SVG fill="var(...)" attr — var() is not reliably honored there. */
+.hcdl .dg-x { fill: var(--mirk-destructive); }
 .hcdl .dg-chip .dg-x { vertical-align: -2px; }
 .hcdl .dg-panel {
   width: 300px; max-width: calc(100vw - 44px);
@@ -303,6 +307,15 @@ function init() {
   if (!isEditMode) return;
   if (installed) return;
   installed = true;
+  // Install the trusted-gesture tracker here too (not only from autosave): this
+  // panel ships in presets that don't bundle autosave (e.g. cms), and without the
+  // capture-phase listeners userDriven would always be false, so the server would
+  // read every UI save as ui-background and fire on any destruction — a chip on
+  // every deliberate delete.
+  initUserGesture();
+  // Start the singleton DOM observer ourselves so attribution runs wherever the
+  // chip ships, not only when another module (e.g. option-visibility) subscribes.
+  Mutation.ensureObserving();
   document.addEventListener('hyperclay:notification', onNotification);
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', fetchAndMount, { once: true });
