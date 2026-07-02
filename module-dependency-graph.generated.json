@@ -585,7 +585,7 @@
     "data-loss-panel": {
       "name": "data-loss-panel",
       "category": "ui",
-      "size": 15.4,
+      "size": 20.6,
       "isEditModeOnly": true,
       "files": [
         "ui/data-loss-panel.js"

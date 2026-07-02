@@ -6,8 +6,10 @@
  * data / revert entire page / dismiss. Visual spec: mirk Pixel Quiet, from
  * plans/hyperclay-local/data-clobber-guard-panel-chip.html.
  *
- * Two mount paths (plan §6): on page load (GET /_/data-loss) and live (the
- * hyperclay:notification event with msgType 'data-loss'). The root carries
+ * Three surfacing triggers: on page load (GET /_/data-loss), live on this tab's
+ * own save (re-check /_/data-loss on a bounded backoff after `hyperclay:save-saved`),
+ * and — only in the `everything` preset — the livesync `hyperclay:notification`
+ * event (msgType 'data-loss') as an optional accelerator. The root carries
  * `no-save` + `snapshot-remove` so it never persists into the saved file.
  *
  * The server owns all detection + recovery; this module only renders and posts
@@ -123,13 +125,13 @@ const STYLE = `
   font-family: inherit; font-size: 11.5px; line-height: 1.5; color: var(--mirk-placeholder-color);
 }
 .hcdl .dg-quiet:hover { color: var(--mirk-fg); }
-.hcdl .dg-busy { opacity: .6; pointer-events: none; }
+.hcdl.dg-busy { opacity: .6; pointer-events: none; }
 @media (prefers-color-scheme: dark) { .hcdl { --mirk-focus-offset: 3px; } .hcdl .dg-panel { box-shadow: 0 20px 52px -26px rgba(0,0,0,.78); } }
 `;
 
 let currentEvent = null;
-let isOpen = false;
 let installed = false;
+let fetchGen = 0;
 
 function ensureStyle() {
   if (document.getElementById(STYLE_ID)) return;
@@ -208,8 +210,8 @@ function wire(root) {
     const btn = e.target.closest('[data-dg]');
     if (!btn) return;
     const action = btn.getAttribute('data-dg');
-    if (action === 'open') { isOpen = true; root.classList.add('is-open'); return; }
-    if (action === 'collapse') { isOpen = false; root.classList.remove('is-open'); return; }
+    if (action === 'open') { root.classList.add('is-open'); return; }
+    if (action === 'collapse') { root.classList.remove('is-open'); return; }
     if (action === 'toggle') { root.querySelector('.dg-panel').classList.toggle('show-changes'); return; }
     if (action === 'restore' || action === 'revert' || action === 'dismiss') {
       if (btn.disabled) return;
@@ -239,6 +241,9 @@ async function resolve(choice, root) {
     if (!res.ok) {
       root.classList.remove('dg-busy');
       if (window.toast) window.toast(data.error || 'Could not resolve', 'error');
+      // Re-sync: an upgrade or a server-side clear skipped while busy is now
+      // reconciled (the backoff re-fetches and upgrades or clears the chip).
+      scheduleRechecks();
       return;
     }
     unmount();
@@ -253,29 +258,78 @@ async function resolve(choice, root) {
   } catch (err) {
     root.classList.remove('dg-busy');
     if (window.toast) window.toast('Could not resolve', 'error');
+    scheduleRechecks();
   }
 }
 
 function unmount() {
   currentEvent = null;
+  // Bump the fetch generation and drop any pending backoff timers so a
+  // just-resolved chip can't be re-mounted by a stale in-flight GET or a
+  // timer that hasn't fired yet.
+  fetchGen++;
+  clearRechecks();
   const existing = document.getElementById(ROOT_ID);
   if (existing) existing.remove();
+}
+
+// Same incident id can arrive more than once (save-saved re-fetch, page-load
+// GET, livesync push) with an evolving payload. Only apply a payload that is at
+// least as fresh: never let an older write, or a pre-backup canRevert:false,
+// replace what's shown. The server bumps lastWriteAt on each firing write but
+// NOT when it later patches the whole-file backup, so the canRevert:false→true
+// upgrade shares a lastWriteAt with the pre-backup event — hence the explicit
+// canRevert tiebreak. Missing lastWriteAt (undefined) compares false, so a
+// payload without one is never wrongly blocked.
+function isStalePayload(event) {
+  if (!currentEvent || currentEvent.id !== event.id) return false;
+  if (event.lastWriteAt < currentEvent.lastWriteAt) return true;
+  if (event.lastWriteAt === currentEvent.lastWriteAt && currentEvent.canRevert && !event.canRevert) return true;
+  return false;
+}
+
+// A re-arriving payload that renders identically (same incident, same write, same
+// recovery affordances) needs no rebuild — skip it so an open panel doesn't lose
+// focus/selection/scroll on every autosave tick. A real upgrade differs in
+// canRevert / restorable / lastWriteAt, so it still rebuilds.
+function rendersSame(event) {
+  return !!currentEvent
+    && currentEvent.id === event.id
+    && currentEvent.lastWriteAt === event.lastWriteAt
+    && !!currentEvent.canRevert === !!event.canRevert
+    && !!currentEvent.restorable === !!event.restorable
+    && !!document.getElementById(ROOT_ID);
 }
 
 function mount(event) {
   if (!event || !event.id) return;
+  if (isStalePayload(event)) return;
+  if (rendersSame(event)) return;
   ensureStyle();
   const existing = document.getElementById(ROOT_ID);
-  const wasOpen = isOpen && existing;
+  // A resolve POST is mid-flight on this chip — leave it be. It's about to
+  // unmount, and rebuilding would drop the `dg-busy` shield and re-open a
+  // double-submit window.
+  if (existing && existing.classList.contains('dg-busy')) return;
+  // Preserve the user's expand + view-changes state across the rebuild by
+  // reading it off the live node — no module globals to leak between incidents.
+  const wasOpen = !!existing && existing.classList.contains('is-open');
+  const wasShowChanges = !!existing && !!existing.querySelector('.dg-panel.show-changes');
   if (existing) existing.remove();
   currentEvent = event;
   const root = buildRoot(event);
-  if (wasOpen) { root.classList.add('is-open'); }
+  if (wasOpen) root.classList.add('is-open');
+  if (wasShowChanges) root.querySelector('.dg-panel').classList.add('show-changes');
   wire(root);
   document.body.appendChild(root);
+  // Fully recoverable now (the whole-file backup has landed) — nothing left to
+  // poll for, so cancel any remaining backoff attempts. Covers the livesync
+  // settled-mount path too, not just fetchAndMount.
+  if (event.canRevert) clearRechecks();
 }
 
 async function fetchAndMount() {
+  const gen = fetchGen;
   try {
     const res = await fetch(`/_/data-loss?file=${encodeURIComponent(getFile())}`, {
       credentials: 'include',
@@ -283,7 +337,18 @@ async function fetchAndMount() {
     });
     if (!res.ok) return;
     const data = await res.json();
-    if (data && data.event) mount(data.event);
+    // A resolve/dismiss between the request and its response bumps fetchGen —
+    // drop the late result so it can't resurrect a chip the user already cleared.
+    if (gen !== fetchGen) return;
+    if (data && data.event) {
+      mount(data.event);
+    } else if (currentEvent) {
+      // Successful GET, no pending event, but we're showing a chip — the loss was
+      // resolved or self-healed elsewhere (e.g. the data was restored by hand and
+      // saved). Clear the stale chip, unless a resolve POST is mid-flight on it.
+      const root = document.getElementById(ROOT_ID);
+      if (!root || !root.classList.contains('dg-busy')) unmount();
+    }
   } catch {}
 }
 
@@ -291,8 +356,11 @@ function onNotification(e) {
   const d = e.detail || {};
   if (d.msgType !== 'data-loss') return;
   if (d.action === 'resolved') {
-    // Resolved elsewhere (this tab or the counterpart environment) — clear.
-    if (!d.data || !currentEvent || d.data.id === currentEvent.id || d.data.id === undefined) {
+    // Resolved elsewhere (this tab or the counterpart environment). Only clear a
+    // chip we actually have, and only when the id matches (or the notice carries
+    // none) — otherwise a stale `resolved` could cancel a fresh incident's
+    // in-flight backoff via unmount()'s fetchGen bump + clearRechecks().
+    if (currentEvent && (!d.data || d.data.id === undefined || d.data.id === currentEvent.id)) {
       unmount();
     }
     return;
@@ -300,6 +368,34 @@ function onNotification(e) {
   if (d.action === 'raised' && d.data) {
     mount(d.data);
   }
+}
+
+let recheckTimers = [];
+function clearRechecks() { recheckTimers.forEach(clearTimeout); recheckTimers = []; }
+
+// Poll /_/data-loss on a short bounded backoff [300, 1200, 3000]ms. The server
+// guard runs in setImmediate AFTER the save response (a row-locked txn, then the
+// whole-file backup persisted in a follow-up txn), so its commit can lag by up to
+// a couple seconds on a large page. Polling races the event's appearance,
+// upgrades a chip first shown before the backup landed (canRevert false→true),
+// and clears one the server has resolved; mount() (on canRevert) and the null
+// branch of fetchAndMount stop it once settled. The page-load GET is the backstop
+// beyond the last attempt.
+function scheduleRechecks() {
+  clearRechecks();
+  for (const ms of [300, 1200, 3000]) {
+    recheckTimers.push(setTimeout(fetchAndMount, ms));
+  }
+}
+
+// A save made by THIS tab can itself be the clobber (a background script, a
+// deliberate big delete, or deleting the `api` island outright). Surface it live
+// with no livesync by re-checking the panel's own endpoint (unconditional: the
+// endpoint is owner-only and returns { event: null } cheaply, so we trust the
+// server rather than infer from the possibly-clobbered DOM). External/cross-device
+// clobbers have no save-saved here and stay on the page-load path.
+function onSaveSaved() {
+  scheduleRechecks();
 }
 
 function init() {
@@ -317,6 +413,7 @@ function init() {
   // chip ships, not only when another module (e.g. option-visibility) subscribes.
   Mutation.ensureObserving();
   document.addEventListener('hyperclay:notification', onNotification);
+  document.addEventListener('hyperclay:save-saved', onSaveSaved);
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', fetchAndMount, { once: true });
   } else {
