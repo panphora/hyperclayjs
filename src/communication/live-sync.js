@@ -26,12 +26,19 @@
  *   │                        (preserves focus, input values)  │
  *   └─────────────────────────────────────────────────────────┘
  *
+ * LANES: edit-mode tabs ride the 'live' lane (steps 1-4: they broadcast
+ * pre-strip snapshots to peers and receive theirs). View-mode tabs ride the
+ * 'saved' lane: receive-only (steps 3-4), fed post-strip on-disk HTML by the
+ * server whenever the file is persisted (browser save, code editor, device
+ * sync, template/restore, local external edits).
+ *
  * INTEGRATES WITH: snapshot.js (receives snapshot-ready events)
  */
 
 import { HyperMorph } from "../vendor/hyper-morph.vendor.js";
 import Mutation from "../utilities/mutation.js";
 import { isSnapshotRemoved } from "../utilities/region-policy.js";
+import { isEditMode } from "../core/isAdminOfCurrentResource.js";
 
 class LiveSync {
   constructor() {
@@ -44,6 +51,11 @@ class LiveSync {
     this.isPaused = false;
     this.isDestroyed = false;
     this.debug = false;
+
+    // Lane on the shared per-file SSE channel. Edit mode: 'live' (owner-gated,
+    // pre-strip peer snapshots + notifications). View mode: 'saved' (receive-
+    // only post-strip on-disk HTML). Overridable per-instance for tests.
+    this.lane = isEditMode ? 'live' : 'saved';
 
     // Store handler reference for cleanup
     this._snapshotHandler = null;
@@ -144,9 +156,13 @@ class LiveSync {
     this.lastHtml = null;
     this.lastSeenSeq = 0;
 
-    console.log('[LiveSync] Starting for:', this.currentFile);
+    console.log(`[LiveSync] Starting for: ${this.currentFile} (lane=${this.lane})`);
     this.connect();
-    this.listenForSnapshots();
+    // View-mode tabs are receive-only: saves are edit-gated upstream, so a
+    // snapshot listener would never fire — skip registering it.
+    if (this.lane === 'live') {
+      this.listenForSnapshots();
+    }
   }
 
   /**
@@ -344,7 +360,7 @@ class LiveSync {
     if (this.isDestroyed) return;
 
     const pageUrl = encodeURIComponent(window.location.href);
-    const url = `/_/live-sync/stream?page-url=${pageUrl}`;
+    const url = `/_/live-sync/stream?page-url=${pageUrl}&lane=${this.lane}`;
     this.sse = new EventSource(url);
 
     this.sse.onopen = () => {

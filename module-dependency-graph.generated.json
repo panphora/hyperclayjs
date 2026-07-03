@@ -1,7 +1,15 @@
 {
   "rawDependencies": {
+    "communication/ai-edit.js": [
+      "core/adminContenteditable.js",
+      "core/isAdminOfCurrentResource.js",
+      "core/savePage.js",
+      "utilities/mutation.js",
+      "vendor/hyper-morph.vendor.js"
+    ],
     "communication/behaviorCollector.js": [],
     "communication/live-sync.js": [
+      "core/isAdminOfCurrentResource.js",
       "utilities/mutation.js",
       "utilities/region-policy.js",
       "vendor/hyper-morph.vendor.js"
@@ -766,7 +774,7 @@
     "hyper-morph": {
       "name": "hyper-morph",
       "category": "vendor",
-      "size": 19,
+      "size": 19.2,
       "isEditModeOnly": true,
       "difficulty": "intermediate",
       "files": [
@@ -978,18 +986,28 @@
     "live-sync": {
       "name": "live-sync",
       "category": "communication",
-      "size": 26.2,
-      "isEditModeOnly": true,
-      "difficulty": "advanced",
+      "size": 27.1,
       "files": [
         "communication/live-sync.js"
       ],
-      "description": "Real-time DOM sync across browsers",
+      "description": "Real-time DOM sync across browsers (edit mode syncs peers; view mode receives saved updates)",
       "exports": {
         "liveSync": [
           "hyperclay"
         ]
       }
+    },
+    "ai-edit": {
+      "name": "ai-edit",
+      "category": "communication",
+      "size": 26.5,
+      "isEditModeOnly": true,
+      "difficulty": "advanced",
+      "files": [
+        "communication/ai-edit.js"
+      ],
+      "description": "Comment-to-edit AI editing over the local bus: hover chip / ⌘K panel per unit, whole-document bubble, streamed morph previews, one-step undo",
+      "exports": {}
     },
     "refetch-on-save": {
       "name": "refetch-on-save",
@@ -1063,6 +1081,7 @@
     "send-message": "./communication/sendMessage.js",
     "file-upload": "./communication/uploadFile.js",
     "live-sync": "./communication/live-sync.js",
+    "ai-edit": "./communication/ai-edit.js",
     "refetch-on-save": "./custom-attributes/refetchOnSave.js",
     "export-to-window": "./core/exportToWindow.js"
   },
@@ -1146,7 +1165,8 @@
       "modules": [
         "send-message",
         "file-upload",
-        "live-sync"
+        "live-sync",
+        "ai-edit"
       ]
     },
     "vendor": {
@@ -1270,6 +1290,7 @@
         "behavior-collector",
         "send-message",
         "file-upload",
+        "live-sync",
         "refetch-on-save",
         "export-to-window",
         "view-mode-excludes-edit-modules"
@@ -1327,6 +1348,7 @@
         "send-message",
         "file-upload",
         "live-sync",
+        "ai-edit",
         "refetch-on-save",
         "export-to-window",
         "view-mode-excludes-edit-modules"

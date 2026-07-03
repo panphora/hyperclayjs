@@ -449,12 +449,18 @@ const MODULE_DEFINITIONS = {
   'communication/live-sync.js': {
     name: 'live-sync',
     moduleId: 'live-sync',
-    description: 'Real-time DOM sync across browsers',
-    isEditModeOnly: true,
-    difficulty: 'advanced',
+    description: 'Real-time DOM sync across browsers (edit mode syncs peers; view mode receives saved updates)',
     exports: {
       liveSync: ['hyperclay']
     }
+  },
+  'communication/ai-edit.js': {
+    name: 'ai-edit',
+    moduleId: 'ai-edit',
+    description: 'Comment-to-edit AI editing over the local bus: hover chip / ⌘K panel per unit, whole-document bubble, streamed morph previews, one-step undo',
+    isEditModeOnly: true,
+    difficulty: 'advanced'
+    // No exports - auto-inits on load, dormant without a /_/bus (hyperclay-local)
   },
   'custom-attributes/refetchOnSave.js': {
     name: 'refetch-on-save',

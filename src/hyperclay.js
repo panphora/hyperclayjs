@@ -76,6 +76,7 @@ const MODULE_PATHS = {
   "send-message": "./communication/sendMessage.js",
   "file-upload": "./communication/uploadFile.js",
   "live-sync": "./communication/live-sync.js",
+  "ai-edit": "./communication/ai-edit.js",
   "refetch-on-save": "./custom-attributes/refetchOnSave.js",
   "export-to-window": "./core/exportToWindow.js"
 };
@@ -180,6 +181,7 @@ const PRESETS = {
       "behavior-collector",
       "send-message",
       "file-upload",
+      "live-sync",
       "refetch-on-save",
       "export-to-window",
       "view-mode-excludes-edit-modules"
@@ -237,6 +239,7 @@ const PRESETS = {
       "send-message",
       "file-upload",
       "live-sync",
+      "ai-edit",
       "refetch-on-save",
       "export-to-window",
       "view-mode-excludes-edit-modules"
@@ -263,7 +266,7 @@ const EDIT_MODE_ONLY = new Set([
   "undo",
   "upgrade",
   "file-upload",
-  "live-sync",
+  "ai-edit",
   "refetch-on-save"
 ]);
 
