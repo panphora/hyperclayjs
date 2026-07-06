@@ -827,13 +827,12 @@
     "richclay": {
       "name": "richclay",
       "category": "vendor",
-      "size": 127.9,
+      "size": 138.1,
       "isEditModeOnly": true,
-      "difficulty": "intermediate",
       "files": [
         "vendor/richclay.vendor.js"
       ],
-      "description": "DOM-first rich text editor for [data-richclay] regions; bundles its own Squire + DOMPurify. Edit-mode-only. window.RichClay / window.hyperclay.RichClay.",
+      "description": "Rich text editing in place: put editable (tokens: single-line, no-toolbar, toolbar-on-select) on any element for a chromeless inline editor with a floating toolbar, or data-richclay for a card editor. Bundles its own Squire + DOMPurify. Edit-mode-only. window.RichClay / window.hyperclay.RichClay.",
       "exports": {
         "RichClay": [
           "window",
@@ -986,7 +985,7 @@
     "live-sync": {
       "name": "live-sync",
       "category": "communication",
-      "size": 27.1,
+      "size": 27.2,
       "files": [
         "communication/live-sync.js"
       ],
@@ -1281,6 +1280,7 @@
         "style-injection",
         "form-data",
         "hypercms",
+        "richclay",
         "undo",
         "data",
         "upgrade",

@@ -622,7 +622,7 @@ class LiveSync {
       liveWeakMap.get(el) ||
       parsedWeakMap.get(el) ||
       (el.getAttribute && el.getAttribute('data-id')) ||
-      el.id ||
+      (el.getAttribute && el.getAttribute('id')) ||
       null;
     const afterNodeMorphed = (oldEl, newEl) => {
       const id = parsedWeakMap.get(newEl);

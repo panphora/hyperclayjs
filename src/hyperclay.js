@@ -172,6 +172,7 @@ const PRESETS = {
       "style-injection",
       "form-data",
       "hypercms",
+      "richclay",
       "undo",
       "data",
       "upgrade",

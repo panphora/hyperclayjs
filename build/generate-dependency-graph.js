@@ -360,9 +360,8 @@ const MODULE_DEFINITIONS = {
   'vendor/richclay.vendor.js': {
     name: 'richclay',
     moduleId: 'richclay',
-    description: 'DOM-first rich text editor for [data-richclay] regions; bundles its own Squire + DOMPurify. Edit-mode-only. window.RichClay / window.hyperclay.RichClay.',
+    description: 'Rich text editing in place: put editable (tokens: single-line, no-toolbar, toolbar-on-select) on any element for a chromeless inline editor with a floating toolbar, or data-richclay for a card editor. Bundles its own Squire + DOMPurify. Edit-mode-only. window.RichClay / window.hyperclay.RichClay.',
     isEditModeOnly: true,
-    difficulty: 'intermediate',
     exports: {
       RichClay: ['window', 'hyperclay']
     }
