@@ -356,6 +356,28 @@ tell("Welcome to Hyperclay!");
 <script editmode:resource>console.log('Admin only');</script>
 ```
 
+### Rich Text Editing (richclay)
+
+Requires the `richclay` module (included in the `smooth-sailing` and `everything` presets). Editors activate only in edit mode; the saved file keeps just the author's markup plus the marker attribute.
+
+```html
+<!-- Inline editor: edits the element in place, matches the page's own styles,
+     floating toolbar appears on focus. Value tokens combine like class names. -->
+<h1 editable="single-line">Page title</h1>
+<div editable>
+  <p>Multi-line rich text with a floating toolbar.</p>
+</div>
+<p editable="single-line no-toolbar">No toolbar, keyboard shortcuts only</p>
+<p editable="toolbar-on-select">Toolbar only while text is selected</p>
+
+<!-- Card editor: bordered editor box with an attached toolbar -->
+<div data-richclay aria-label="Article body">
+  <p>Saved content.</p>
+</div>
+```
+
+Full token reference, options, and custom toolbar buttons: the [richclay README](https://github.com/panphora/richclay#readme). `window.RichClay` / `window.hyperclay.RichClay` expose the class for custom buttons and programmatic use.
+
 ## Module Creation
 
 Each module should be a self-contained ES module:
