@@ -541,7 +541,7 @@ const PRESETS = {
   'cms': {
     name: 'CMS',
     description: 'Visual CMS editing for rules-tag pages: hypercms sidebar, undo, drag-reorder, save',
-    modules: ['save-core', 'snapshot', 'save-system', 'unsaved-warning', 'toast', 'save-toast', 'mutation', 'hypercms', 'sortable', 'undo', 'data-loss-panel', 'export-to-window', 'view-mode-excludes-edit-modules']
+    modules: ['save-core', 'snapshot', 'save-system', 'unsaved-warning', 'toast', 'save-toast', 'mutation', 'hypercms', 'sortable', 'undo', 'quickcrop', 'data-loss-panel', 'export-to-window', 'view-mode-excludes-edit-modules']
   },
   'smooth-sailing': {
     name: 'Smooth Sailing',
