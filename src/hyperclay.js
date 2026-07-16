@@ -130,6 +130,7 @@ const PRESETS = {
       "hypercms",
       "sortable",
       "undo",
+      "quickcrop",
       "data-loss-panel",
       "export-to-window",
       "view-mode-excludes-edit-modules"

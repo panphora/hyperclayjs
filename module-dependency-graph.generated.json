@@ -795,7 +795,7 @@
     "hypercms": {
       "name": "hypercms",
       "category": "vendor",
-      "size": 141.5,
+      "size": 167.1,
       "files": [
         "vendor/hypercms.vendor.js"
       ],
@@ -827,7 +827,7 @@
     "richclay": {
       "name": "richclay",
       "category": "vendor",
-      "size": 138.1,
+      "size": 138.5,
       "isEditModeOnly": true,
       "files": [
         "vendor/richclay.vendor.js"
@@ -1238,6 +1238,7 @@
         "hypercms",
         "sortable",
         "undo",
+        "quickcrop",
         "data-loss-panel",
         "export-to-window",
         "view-mode-excludes-edit-modules"
