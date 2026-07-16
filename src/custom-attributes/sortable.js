@@ -64,9 +64,23 @@ function makeSortable(sortableElem, Sortable) {
         console.error('Error in onsorted execution:', error);
       }
     }
-    // SortableJS fires no native input/change on drop. Tell reactive libs that
-    // listen for input (e.g. Sap re-derives its list order / $index; any other
-    // input-driven library too) that the DOM order changed.
+    // Announce the reorder as a real, self-documenting event carrying what moved.
+    // Reactive libs (e.g. Sap) and author code key off this without us knowing
+    // about them. Fires only in edit mode, since sortable only inits there.
+    sortableElem.dispatchEvent(new CustomEvent('clay:sorted', {
+      bubbles: true,
+      detail: {
+        item: evt.item,
+        from: evt.from,
+        to: evt.to,
+        oldIndex: evt.oldIndex,
+        newIndex: evt.newIndex,
+      },
+    }));
+    // DEPRECATED (remove at next hyperclayjs major): early versions dispatched a
+    // synthetic `input` here so reactive libs would re-derive. It is semantically
+    // off (a container has no value) and now redundant with clay:sorted and
+    // the mutation observers. Kept as a compat shim for apps that wired into it.
     sortableElem.dispatchEvent(new Event('input', { bubbles: true }));
   };
 

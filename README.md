@@ -331,7 +331,7 @@ tell("Welcome to Hyperclay!");
 <!-- Auto-resize textarea -->
 <textarea autosize></textarea>
 
-<!-- Drag-drop sorting -->
+<!-- Drag-drop sorting (dispatches a bubbling `clay:sorted` event on drop) -->
 <ul sortable>
   <li>Item 1</li>
   <li>Item 2</li>
