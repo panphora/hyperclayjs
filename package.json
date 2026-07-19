@@ -88,5 +88,10 @@
     "Firefox >= 88",
     "Safari >= 14",
     "Edge >= 90"
-  ]
+  ],
+  "hyper": {
+    "kind": "lib",
+    "status": "active",
+    "url": "https://hyperclayjs.com"
+  }
 }
