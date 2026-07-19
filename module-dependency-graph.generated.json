@@ -4,12 +4,14 @@
       "core/adminContenteditable.js",
       "core/isAdminOfCurrentResource.js",
       "core/savePage.js",
+      "utilities/merge-tags.js",
       "utilities/mutation.js",
       "vendor/hyper-morph.vendor.js"
     ],
     "communication/behaviorCollector.js": [],
     "communication/live-sync.js": [
       "core/isAdminOfCurrentResource.js",
+      "utilities/merge-tags.js",
       "utilities/mutation.js",
       "utilities/region-policy.js",
       "vendor/hyper-morph.vendor.js"
@@ -210,6 +212,9 @@
     "utilities/debounce.js": [],
     "utilities/extension-noise.js": [],
     "utilities/loadVendorScript.js": [],
+    "utilities/merge-tags.js": [
+      "vendor/hyper-morph.vendor.js"
+    ],
     "utilities/mutation.js": [
       "utilities/extension-noise.js",
       "utilities/region-policy.js",
@@ -774,7 +779,7 @@
     "hyper-morph": {
       "name": "hyper-morph",
       "category": "vendor",
-      "size": 21.7,
+      "size": 30.4,
       "isEditModeOnly": true,
       "difficulty": "intermediate",
       "files": [
@@ -985,7 +990,7 @@
     "live-sync": {
       "name": "live-sync",
       "category": "communication",
-      "size": 27.2,
+      "size": 27.7,
       "files": [
         "communication/live-sync.js"
       ],
@@ -999,7 +1004,7 @@
     "ai-edit": {
       "name": "ai-edit",
       "category": "communication",
-      "size": 26.5,
+      "size": 27,
       "isEditModeOnly": true,
       "difficulty": "advanced",
       "files": [

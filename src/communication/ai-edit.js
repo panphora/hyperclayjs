@@ -36,6 +36,7 @@
  * Bus + plugin:  plans/hyperclay-local/ai-edit-plugin-plan.md
  */
 import { HyperMorph } from "../vendor/hyper-morph.vendor.js";
+import { mergeTagRecognizers } from "../utilities/merge-tags.js";
 import Mutation from "../utilities/mutation.js";
 import { isEditMode } from "../core/isAdminOfCurrentResource.js";
 import { savePage } from "../core/savePage.js";
@@ -153,15 +154,22 @@ function strippedBodyHTML() {
 
 // ---------------------------------------------------------------- morphing
 
-function morphTo(el, content) {
-  return HyperMorph.morph(el, content, { morphStyle: 'outerHTML', restoreFocus: true });
+function morphTo(el, content, scripts) {
+  return HyperMorph.morph(el, content, { morphStyle: 'outerHTML', restoreFocus: true, scripts });
 }
 
 // Session-aware morph. Document mode morphs the whole body but vetoes
 // removal of [save-remove] chrome (the model never saw it, so a plain morph
 // would delete the panel mid-flight). Either way, re-run the hyperclayjs
 // contenteditable pass afterwards: a reply may drop the runtime attribute.
-function sessionMorph(s, content) {
+// Forward morphs three-way merge mergeable script tags ([merge] + rules
+// tags) against the snapshot the model saw, so data the user changed
+// mid-stream survives the reply. Rewinds must restore the snapshot exactly,
+// so they disable merging.
+function sessionMorph(s, content, { rewind = false } = {}) {
+  const scripts = rewind
+    ? { merge: false }
+    : { mergeBase: s.snapshot, mergeTags: mergeTagRecognizers };
   if (s.docMode) {
     if (typeof content === 'string') {
       // Parse to an element ourselves: hyper-morph parses a body string into a
@@ -172,12 +180,13 @@ function sessionMorph(s, content) {
     HyperMorph.morph(document.body, content, {
       morphStyle: 'outerHTML',
       restoreFocus: true,
+      scripts,
       callbacks: {
         beforeNodeRemoved: node => !(node.nodeType === 1 && node.hasAttribute('save-remove'))
       }
     });
   } else {
-    morphTo(s.el, content);
+    morphTo(s.el, content, scripts);
   }
   enableContentEditable();
 }
@@ -375,7 +384,7 @@ function revertSession() {
   session = null;
   clearTimeout(s.watchdog);
   if (s.state === 'streaming' || s.state === 'deciding') {
-    sessionMorph(s, s.snapshot);
+    sessionMorph(s, s.snapshot, { rewind: true });
   }
   if (s.paused) resumeObservers();
   positionChrome();
@@ -385,7 +394,7 @@ function keepSession() {
   const s = session;
   session = null;
   clearTimeout(s.watchdog);
-  sessionMorph(s, s.snapshot);        // rewind while observers are still paused
+  sessionMorph(s, s.snapshot, { rewind: true }); // rewind while observers are still paused
   if (s.paused) resumeObservers();    // boundary drain discards the rewind
   sessionMorph(s, s.finalCandidate);  // recorded: the whole edit = one undo step
   positionChrome();

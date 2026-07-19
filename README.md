@@ -129,9 +129,9 @@ To load a full preset, use the CDN loader with `?preset=standard`:
 
 | Module | Size | Description |
 |--------|------|-------------|
-| ai-edit | 26.5KB | Comment-to-edit AI editing over the local bus: hover chip / ⌘K panel per unit, whole-document bubble, streamed morph previews, one-step undo |
+| ai-edit | 27KB | Comment-to-edit AI editing over the local bus: hover chip / ⌘K panel per unit, whole-document bubble, streamed morph previews, one-step undo |
 | file-upload | 11.3KB | File upload with progress |
-| live-sync | 27.2KB | Real-time DOM sync across browsers (edit mode syncs peers; view mode receives saved updates) |
+| live-sync | 27.7KB | Real-time DOM sync across browsers (edit mode syncs peers; view mode receives saved updates) |
 | send-message | 1.3KB | Message sending utility |
 
 ### Data & Undo (Page data and undo history)
@@ -146,7 +146,7 @@ To load a full preset, use the CDN loader with `?preset=standard`:
 
 | Module | Size | Description |
 |--------|------|-------------|
-| hyper-morph | 21.7KB | DOM morphing with content-based element matching |
+| hyper-morph | 30.4KB | DOM morphing with content-based element matching |
 | hypercms | 167.1KB | Live edit-in-place CMS sidebar driven by a hyper-html-api rules tag. Pairs with [sortable] and [hyper-morph]. |
 | richclay | 138.5KB | Rich text editing in place: put editable (tokens: single-line, no-toolbar, toolbar-on-select) on any element for a chromeless inline editor with a floating toolbar, or data-richclay for a card editor. Bundles its own Squire + DOMPurify. Edit-mode-only. window.RichClay / window.hyperclay.RichClay. |
 | sap | 48.6KB | sapjs reactive runtime — the DOM is the only state store. Structure-first, one write path. window.Sap / window.hyperclay.Sap. |
@@ -168,12 +168,12 @@ Visual CMS editing for rules-tag pages: hypercms sidebar, undo, drag-reorder, sa
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `unsaved-warning`, `toast`, `save-toast`, `mutation`, `hypercms`, `sortable`, `undo`, `quickcrop`, `data-loss-panel`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Smooth Sailing (~600.7KB)
+### Smooth Sailing (~601.2KB)
 Everything, without gotchas
 
 **Modules:** `save-core`, `save-system`, `unsaved-warning`, `save-toast`, `edit-mode-helpers`, `persist`, `snapshot`, `option-visibility`, `edit-mode`, `event-attrs`, `ajax-elements`, `sortable`, `movable`, `dom-helpers`, `input-helpers`, `onaftersave`, `save-freeze`, `dialogs`, `quickcrop`, `toast`, `the-modal`, `data-loss-panel`, `mutation`, `nearest`, `cookie`, `throttle`, `debounce`, `dom-ready`, `window-load`, `all-js`, `style-injection`, `form-data`, `hypercms`, `richclay`, `undo`, `data`, `upgrade`, `slugify`, `copy-to-clipboard`, `query-params`, `behavior-collector`, `send-message`, `file-upload`, `live-sync`, `refetch-on-save`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Everything (~699.8KB)
+### Everything (~709.5KB)
 All available features
 
 Includes all available modules across all categories.
