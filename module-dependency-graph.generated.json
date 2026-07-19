@@ -439,7 +439,7 @@
     "sortable": {
       "name": "sortable",
       "category": "custom-attributes",
-      "size": 3.8,
+      "size": 4.4,
       "isEditModeOnly": true,
       "files": [
         "custom-attributes/sortable.js"
@@ -774,7 +774,7 @@
     "hyper-morph": {
       "name": "hyper-morph",
       "category": "vendor",
-      "size": 19.2,
+      "size": 21.7,
       "isEditModeOnly": true,
       "difficulty": "intermediate",
       "files": [
@@ -811,7 +811,7 @@
     "sap": {
       "name": "sap",
       "category": "vendor",
-      "size": 48.1,
+      "size": 48.6,
       "difficulty": "advanced",
       "files": [
         "vendor/sapjs.vendor.js"

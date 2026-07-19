@@ -2943,6 +2943,26 @@ Both `onsorting` and `onsorted` receive:
 </ul>
 ```
 
+## Events
+
+On every drop, `sortable` dispatches a bubbling `clay:sorted` event on the container. This is the self-documenting signal that the DOM order changed; reactive libraries (e.g. Sap) and your own code listen for it without `sortable` needing to know about them. It fires only in edit mode, since `sortable` only initializes there.
+
+```js
+document.addEventListener('clay:sorted', (evt) => {
+  const { item, from, to, oldIndex, newIndex } = evt.detail;
+});
+```
+
+| `detail` key | Description |
+|-----------|-------------|
+| `item` | The dragged element |
+| `from` | The list the item was dragged from |
+| `to` | The list the item was dropped into (same as `from` for an in-list reorder) |
+| `oldIndex` | The item's index before the move |
+| `newIndex` | The item's index after the move |
+
+> A deprecated synthetic `input` event also fires on the container right after `clay:sorted`, for backward compatibility with older code. Prefer `clay:sorted`; the `input` shim is slated for removal in the next major version.
+
 ---
 
 # tell
