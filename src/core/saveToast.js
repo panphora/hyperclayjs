@@ -5,7 +5,7 @@
  * This is opt-in - only included if you want toast notifications.
  *
  * Events handled:
- * - hyperclay:save-saved   → success toast
+ * - hyperclay:save-saved   → success toast, or warning toast when the server's msgType says so
  * - hyperclay:save-error   → error toast
  * - hyperclay:save-offline → error toast (treated as error for notifications)
  */
@@ -18,7 +18,7 @@ function init() {
 
   document.addEventListener('hyperclay:save-saved', (e) => {
     const msg = e.detail?.msg || 'Saved';
-    toast(msg, 'success');
+    toast(msg, e.detail?.msgType === 'warning' ? 'warning' : 'success');
   });
 
   document.addEventListener('hyperclay:save-error', (e) => {

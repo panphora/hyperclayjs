@@ -256,7 +256,7 @@
     "save-system": {
       "name": "save-system",
       "category": "core",
-      "size": 15.5,
+      "size": 15.7,
       "isEditModeOnly": true,
       "files": [
         "core/savePage.js"
@@ -310,7 +310,7 @@
     "save-toast": {
       "name": "save-toast",
       "category": "core",
-      "size": 0.9,
+      "size": 1,
       "isEditModeOnly": true,
       "files": [
         "core/saveToast.js"
