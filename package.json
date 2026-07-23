@@ -34,9 +34,11 @@
     "build:load-jsdelivr": "node build/generate-load-jsdelivr.js",
     "build:index-url": "node build/update-index-url.js",
     "test": "jest",
+    "test:conformance": "UPDATE_GOLDENS=0 web-test-runner",
+    "conformance:update": "UPDATE_GOLDENS=1 web-test-runner",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "prepublishOnly": "npm run build && npm test",
+    "prepublishOnly": "npm run build && npm test && npm run test:conformance",
     "postpublish": "bash scripts/purge-cdn-cache.sh"
   },
   "repository": {
@@ -63,12 +65,16 @@
   "devDependencies": {
     "@babel/core": "^7.28.5",
     "@babel/preset-env": "^7.28.5",
+    "@esm-bundle/chai": "^4.3.4-fix.0",
     "@jest/globals": "^30.2.0",
     "@rollup/plugin-babel": "^6.0.0",
     "@rollup/plugin-commonjs": "^25.0.0",
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.2.0",
     "@rollup/plugin-terser": "^0.4.0",
+    "@web/test-runner": "^0.20.2",
+    "@web/test-runner-commands": "^0.9.0",
+    "@web/test-runner-playwright": "^0.11.1",
     "babel-jest": "^30.2.0",
     "eslint": "^8.50.0",
     "http-server": "^14.1.1",
@@ -77,6 +83,7 @@
     "jsdom": "^27.2.0",
     "madge": "^8.0.0",
     "open-cli": "^8.0.0",
+    "playwright": "1.56.1",
     "prettier": "^3.0.0",
     "rollup": "^4.0.0"
   },
