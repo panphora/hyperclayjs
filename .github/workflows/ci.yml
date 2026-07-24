@@ -13,8 +13,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
-      - run: npm ci
+      # This repo does not commit package-lock.json (.gitignore), so use `npm install`
+      # (not `npm ci`) and no npm cache. Byte-reproducibility of the goldens is still
+      # guaranteed because `playwright` is exact-pinned in package.json.
+      - run: npm install
       # Pinned Chromium for the byte-exact conformance goldens. The version is
       # locked by playwright in package.json, so CI and local produce the same bytes.
       - name: Install pinned Chromium
