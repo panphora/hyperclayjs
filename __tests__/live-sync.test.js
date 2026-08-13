@@ -359,19 +359,23 @@ describe('LiveSync applyUpdate (rAF-paced queue)', () => {
     document.body.innerHTML = '';
   });
 
-  test('_mintId persists counter to sessionStorage', () => {
-    sessionStorage.setItem('livesync-id-counter', '0');
+  test('_mintId numbers per instance; the clientId prefix is what keeps ids unique', () => {
     const fresh = new LiveSync();
-    fresh._mintId();
-    fresh._mintId();
-    expect(sessionStorage.getItem('livesync-id-counter')).toBe('2');
+    const firstA = fresh._mintId();
+    expect(firstA.endsWith(':1')).toBe(true);
+    expect(fresh._mintId().endsWith(':2')).toBe(true);
     fresh.stop();
 
-    // A new instance reloads the counter and resumes from there.
+    // The counter used to persist to sessionStorage so a later instance resumed
+    // it. sessionStorage is COPIED into a duplicated tab, which is what made two
+    // tabs share one sender id and stop syncing, so nothing about identity lives
+    // in storage now: the counter restarts and the differing clientId prefix is
+    // what keeps minted ids from colliding.
     const reborn = new LiveSync();
-    expect(reborn.idCounter).toBe(2);
-    const id = reborn._mintId();
-    expect(id.endsWith(':3')).toBe(true);
+    expect(reborn.idCounter).toBe(0);
+    const firstB = reborn._mintId();
+    expect(firstB.endsWith(':1')).toBe(true);
+    expect(firstB).not.toBe(firstA);
     reborn.stop();
   });
 

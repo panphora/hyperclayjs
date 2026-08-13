@@ -1090,4 +1090,19 @@ describe('All.js', () => {
       });
     });
   });
+
+  test('an array argument reaches each element whole, not spread across calls', () => {
+    const calls = [];
+    Element.prototype.__probeArgs = function (...args) { calls.push(args); };
+    try {
+      All('.item').__probeArgs([{ k: 1 }, { k: 2 }], 300);
+    } finally {
+      delete Element.prototype.__probeArgs;
+    }
+    expect(calls).toEqual([
+      [[{ k: 1 }, { k: 2 }], 300],
+      [[{ k: 1 }, { k: 2 }], 300],
+      [[{ k: 1 }, { k: 2 }], 300],
+    ]);
+  });
 });

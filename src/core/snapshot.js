@@ -38,6 +38,7 @@
 
 import { stripExtensionNoise } from '../utilities/extension-noise.js';
 import { STRIP_FROM_SAVE, STRIP_FROM_COMPARISON, SNAPSHOT_REMOVE_SELECTOR } from '../utilities/region-policy.js';
+import { TAB_LOCAL_ROOT_ATTRS } from '../utilities/root-attrs.js';
 
 // =============================================================================
 // HOOK REGISTRIES
@@ -269,6 +270,35 @@ export function captureForSave({ emitForSync = true } = {}) {
   }
 
   return prepareCloneForSave(clone);
+}
+
+/**
+ * The bytes a live-sync broadcast carries: the snapshot, minus the root
+ * attributes that belong to this tab alone. A third serialization of the same
+ * clone alongside the snapshot and the document, and the only one that crosses
+ * into another person's browser.
+ *
+ * Takes the clone rather than capturing one, because the caller already has the
+ * snapshot-ready clone and capturing again would run every hook a second time.
+ * (Not to be confused with captureBodyForSync below, which is the older
+ * body-innerHTML helper and unrelated to the live-sync lane.)
+ *
+ * The clone is detached and unobserved, so removing the attributes in place and
+ * putting them back is exact, and far cheaper than cloning the tree again. The
+ * finally is load-bearing: the save path reads this same clone afterwards.
+ */
+export function serializeForSync(clone) {
+  const removed = [];
+  for (const name of TAB_LOCAL_ROOT_ATTRS) {
+    if (!clone.hasAttribute(name)) continue;
+    removed.push([name, clone.getAttribute(name)]);
+    clone.removeAttribute(name);
+  }
+  try {
+    return clone.outerHTML;
+  } finally {
+    for (const [name, value] of removed) clone.setAttribute(name, value);
+  }
 }
 
 /**
