@@ -11,9 +11,11 @@
     "communication/behaviorCollector.js": [],
     "communication/live-sync.js": [
       "core/isAdminOfCurrentResource.js",
+      "core/snapshot.js",
       "utilities/merge-tags.js",
       "utilities/mutation.js",
       "utilities/region-policy.js",
+      "utilities/root-attrs.js",
       "vendor/hyper-morph.vendor.js"
     ],
     "communication/sendMessage.js": [
@@ -103,7 +105,8 @@
     ],
     "core/snapshot.js": [
       "utilities/extension-noise.js",
-      "utilities/region-policy.js"
+      "utilities/region-policy.js",
+      "utilities/root-attrs.js"
     ],
     "core/unsavedWarning.js": [
       "core/isAdminOfCurrentResource.js",
@@ -225,6 +228,7 @@
     "utilities/region-policy.js": [
       "utilities/extension-noise.js"
     ],
+    "utilities/root-attrs.js": [],
     "utilities/throttle.js": [],
     "utilities/user-gesture.js": [],
     "vendor/Sortable.vendor.js": [],
@@ -347,7 +351,7 @@
     "snapshot": {
       "name": "snapshot",
       "category": "core",
-      "size": 12.2,
+      "size": 13.6,
       "isEditModeOnly": true,
       "files": [
         "core/snapshot.js"
@@ -500,7 +504,7 @@
     "save-freeze": {
       "name": "save-freeze",
       "category": "custom-attributes",
-      "size": 3.4,
+      "size": 5.1,
       "isEditModeOnly": true,
       "files": [
         "custom-attributes/saveFreeze.js"
@@ -511,7 +515,7 @@
     "dialogs": {
       "name": "dialogs",
       "category": "ui",
-      "size": 8.9,
+      "size": 6.9,
       "files": [
         "ui/prompts.js"
       ],
@@ -553,7 +557,7 @@
     "toast": {
       "name": "toast",
       "category": "ui",
-      "size": 15.8,
+      "size": 16.2,
       "files": [
         "ui/toast.js"
       ],
@@ -583,7 +587,7 @@
     "the-modal": {
       "name": "the-modal",
       "category": "ui",
-      "size": 25.3,
+      "size": 27.5,
       "files": [
         "ui/theModal.js"
       ],
@@ -624,7 +628,7 @@
     "nearest": {
       "name": "nearest",
       "category": "utilities",
-      "size": 3.4,
+      "size": 3.6,
       "files": [
         "utilities/nearest.js"
       ],
@@ -727,7 +731,7 @@
     "all-js": {
       "name": "all-js",
       "category": "dom-utilities",
-      "size": 14.7,
+      "size": 13.6,
       "files": [
         "dom-utilities/All.js"
       ],
@@ -800,7 +804,7 @@
     "hypercms": {
       "name": "hypercms",
       "category": "vendor",
-      "size": 167.1,
+      "size": 179,
       "files": [
         "vendor/hypercms.vendor.js"
       ],
@@ -816,7 +820,7 @@
     "sap": {
       "name": "sap",
       "category": "vendor",
-      "size": 48.6,
+      "size": 48.7,
       "difficulty": "advanced",
       "files": [
         "vendor/sapjs.vendor.js"
@@ -832,7 +836,7 @@
     "richclay": {
       "name": "richclay",
       "category": "vendor",
-      "size": 138.5,
+      "size": 152.2,
       "isEditModeOnly": true,
       "files": [
         "vendor/richclay.vendor.js"
@@ -990,7 +994,7 @@
     "live-sync": {
       "name": "live-sync",
       "category": "communication",
-      "size": 27.7,
+      "size": 29.9,
       "files": [
         "communication/live-sync.js"
       ],
@@ -1027,7 +1031,7 @@
     "export-to-window": {
       "name": "export-to-window",
       "category": "core",
-      "size": 0.4,
+      "size": 1.5,
       "files": [
         "core/exportToWindow.js"
       ],
