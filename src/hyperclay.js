@@ -337,6 +337,7 @@ if (debug) console.log('HyperclayJS: Loading features:', requested);
 // Separate export-to-window - it must load FIRST to flip the flag
 const shouldExportToWindow = requested.includes(LOAD_BEFORE_ALL);
 const modulesToLoad = requested.filter(f => f !== LOAD_BEFORE_ALL);
+let exportModule = null;
 
 // Load in waves: export-to-window first, then prototype extenders, then everything else
 const first = modulesToLoad.filter(f => LOAD_FIRST.has(f));
@@ -346,13 +347,15 @@ try {
   // Load export-to-window FIRST to flip the flag before other modules load
   if (shouldExportToWindow) {
     if (debug) console.log('HyperclayJS: Enabling window exports...');
-    const exportModule = await import(`${baseUrl}/${MODULE_PATHS[LOAD_BEFORE_ALL]}`);
+    exportModule = await import(`${baseUrl}/${MODULE_PATHS[LOAD_BEFORE_ALL]}`);
     window.hyperclayModules[LOAD_BEFORE_ALL] = exportModule;
   }
 
   if (first.length) await loadModules(first);
   if (rest.length) await loadModules(rest);
+  exportModule?.markReady?.();
 } catch (err) {
+  exportModule?.markFailed?.(err);
   console.error('HyperclayJS: Failed to load modules:', err);
   throw err;
 }
