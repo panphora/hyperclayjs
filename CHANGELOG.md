@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.37.0] - 2026-08-14
+
+### Added
+- Malleable HTML conformance test suite and CI gate
+- Resume-id reconnect recovery to live-sync
+- `kind`, `status`, and `url` declarations in the hyper key
+
+### Changed
+- Server `msgType` threaded through save events to drive toast severity
+- Rebuilt vendor bundles for clay platform lookup and richclay fixes
+- Rebuilt module dependency graph with updated sizes
+- Loader and website snippets stamped to 1.36.0
+- Hyperclay Local link updated to new domain
+
+### Fixed
+- Toast message text now escaped to prevent markup injection
+- `[no-save]` markers stripped after save hooks (snapshot-algorithm step 7)
+- CI now uses `npm install` since `package-lock.json` is gitignored
+
+
+
 ## [1.34.0] - 2026-06-22
 
 ### Added
