@@ -836,7 +836,7 @@
     "richclay": {
       "name": "richclay",
       "category": "vendor",
-      "size": 152.2,
+      "size": 152.5,
       "isEditModeOnly": true,
       "files": [
         "vendor/richclay.vendor.js"
