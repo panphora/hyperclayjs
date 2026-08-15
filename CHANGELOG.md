@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.37.1] - 2026-08-15
+
+### Added
+- richclay support with published preset bundles
+
+### Changed
+- Updated hyperclayjs and refreshed preset bundle size figures
+
+
+
 ## [1.37.0] - 2026-08-14
 
 ### Added
