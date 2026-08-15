@@ -1754,10 +1754,10 @@ hyperclay.replacePageWith('/templates/blog.html');</pre></div>
     </table>
     
     <h4>Example</h4><div class="example"><pre>&lt;!-- Basic setup --&gt;
-&lt;script src=&quot;hyperclay.js?save-system,save-toast&quot;&gt;&lt;/script&gt;
+&lt;script type=&quot;module&quot; src=&quot;hyperclay.js?features=save-system,save-toast&quot;&gt;&lt;/script&gt;
 
 &lt;!-- Full save stack with auto-save and notifications --&gt;
-&lt;script src=&quot;hyperclay.js?save-system,autosave,save-toast&quot;&gt;&lt;/script&gt;</pre></div>
+&lt;script type=&quot;module&quot; src=&quot;hyperclay.js?features=save-system,autosave,save-toast&quot;&gt;&lt;/script&gt;</pre></div>
   </div><div class="function-card" id="fn-unsaved-warning">
     <h3>unsaved-warning</h3>
     <p class="function-description">Warns users before leaving the page if there are unsaved changes. On `beforeunload`, compares current page content to last saved content and shows the browser's native dialog if different.</p>
@@ -1781,10 +1781,10 @@ hyperclay.replacePageWith('/templates/blog.html');</pre></div>
     </table>
     
     <h4>Example</h4><div class="example"><pre>&lt;!-- Basic setup --&gt;
-&lt;script src=&quot;hyperclay.js?save-system,unsaved-warning&quot;&gt;&lt;/script&gt;
+&lt;script type=&quot;module&quot; src=&quot;hyperclay.js?features=save-system,unsaved-warning&quot;&gt;&lt;/script&gt;
 
 &lt;!-- Full save stack --&gt;
-&lt;script src=&quot;hyperclay.js?save-system,autosave,unsaved-warning,save-toast&quot;&gt;&lt;/script&gt;</pre></div>
+&lt;script type=&quot;module&quot; src=&quot;hyperclay.js?features=save-system,autosave,unsaved-warning,save-toast&quot;&gt;&lt;/script&gt;</pre></div>
   </div><div class="function-card" id="fn-autosave">
     <h3>autosave</h3>
     <p class="function-description">Automatically saves the page when DOM changes are detected. Debounces at 3.3s after last change, throttles saves to max once per 1.2s. Only saves if content actually changed.</p>
@@ -1808,13 +1808,13 @@ hyperclay.replacePageWith('/templates/blog.html');</pre></div>
     </table>
     
     <h4>Example</h4><div class="example"><pre>&lt;!-- Basic auto-save --&gt;
-&lt;script src=&quot;hyperclay.js?save-system,autosave&quot;&gt;&lt;/script&gt;
+&lt;script type=&quot;module&quot; src=&quot;hyperclay.js?features=save-system,autosave&quot;&gt;&lt;/script&gt;
 
 &lt;!-- With toast notifications --&gt;
-&lt;script src=&quot;hyperclay.js?save-system,autosave,save-toast&quot;&gt;&lt;/script&gt;
+&lt;script type=&quot;module&quot; src=&quot;hyperclay.js?features=save-system,autosave,save-toast&quot;&gt;&lt;/script&gt;
 
 &lt;!-- Full save stack --&gt;
-&lt;script src=&quot;hyperclay.js?save-system,autosave,unsaved-warning,save-toast&quot;&gt;&lt;/script&gt;</pre></div>
+&lt;script type=&quot;module&quot; src=&quot;hyperclay.js?features=save-system,autosave,unsaved-warning,save-toast&quot;&gt;&lt;/script&gt;</pre></div>
   </div></div><div class="category-section" id="cat-refetchOnSave">
       <h2>Resource Refresh</h2><div class="function-card" id="fn-refetch-on-save">
     <h3>refetch-on-save</h3>

@@ -1,6 +1,18 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# `npm publish --dry-run` still runs the publish/postpublish lifecycle scripts —
+# npm's publish.js guards only the upload with `if (!dryRun)`. Without this guard
+# every release purged jsdelivr twice: once during the pre-publish dry run, when
+# the new version did not exist on the registry yet so the wait loop below could
+# not possibly succeed, and once for real. The dry-run pass purged the @latest
+# alias while it still resolved to the PREVIOUS version, which makes jsdelivr
+# re-fetch and re-cache the old build under @latest.
+if [ "${npm_config_dry_run:-}" = "true" ]; then
+  echo "npm publish --dry-run — skipping CDN purge"
+  exit 0
+fi
+
 PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || true)
 
 if [ -z "$PREV_TAG" ]; then
@@ -24,17 +36,28 @@ echo "$FILES" | sed 's/^/  /'
 echo ""
 
 echo "Waiting for npm registry to serve $CURRENT_VERSION as @latest..."
+LATEST=""
+REGISTRY_READY=0
 for i in $(seq 1 24); do
   LATEST=$(curl -fsS "https://registry.npmjs.org/hyperclayjs/latest" 2>/dev/null | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).version" 2>/dev/null || echo "")
   if [ "$LATEST" = "$CURRENT_VERSION" ]; then
     echo "  npm registry updated after ~$((i * 5))s"
+    REGISTRY_READY=1
     break
-  fi
-  if [ "$i" -eq 24 ]; then
-    echo "  Warning: npm still shows $LATEST after 120s, purging anyway"
   fi
   sleep 5
 done
+
+# Purging while the registry still answers with the old version is worse than
+# not purging: jsdelivr re-resolves @latest, gets the old version back, and
+# caches that fresh. Leaving the existing cache to expire is the safer failure.
+if [ "$REGISTRY_READY" -eq 0 ]; then
+  echo ""
+  echo "WARNING: npm still shows ${LATEST:-unknown} after 120s — NOT purging."
+  echo "Purging now would re-cache the old build under @latest, which production loads."
+  echo "Re-run once the registry has caught up:  bash scripts/purge-cdn-cache.sh"
+  exit 0
+fi
 
 # jsdelivr purge API tolerates ~60 requests/min; purge sequentially at 1/s,
 # back off on 429 (5s, 10s, 20s), log a hard failure and move on after 3 tries.
@@ -82,4 +105,24 @@ if [ "$FAILED" -gt 0 ]; then
   echo ""
   echo "WARNING: $FAILED purge(s) failed — stale files may persist on the CDN for up to 7 days."
   echo "Purge manually: curl https://purge.jsdelivr.net/npm/hyperclayjs@latest/<path>"
+fi
+
+# A 2xx from the purge API only means the request was accepted. Production loads
+# hyperclayjs from the unpinned @latest, so confirm the alias actually moved.
+echo ""
+printf "Verifying jsdelivr @latest now serves %s... " "$CURRENT_VERSION"
+SERVED=""
+for i in $(seq 1 12); do
+  SERVED=$(curl -fsS "https://cdn.jsdelivr.net/npm/hyperclayjs@latest/package.json" 2>/dev/null | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).version" 2>/dev/null || echo "")
+  [ "$SERVED" = "$CURRENT_VERSION" ] && break
+  sleep 5
+done
+
+if [ "$SERVED" = "$CURRENT_VERSION" ]; then
+  echo "✓"
+else
+  echo "✗"
+  echo "WARNING: jsdelivr @latest still serves ${SERVED:-unknown}, expected $CURRENT_VERSION."
+  echo "Production loads hyperclayjs from @latest, so it may still be running the old build."
+  echo "Re-run: bash scripts/purge-cdn-cache.sh"
 fi
