@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.37.2] - 2026-08-15
+
+### Changed
+- CI now runs on Node 26
+
+
+
 ## [1.37.1] - 2026-08-15
 
 ### Added
