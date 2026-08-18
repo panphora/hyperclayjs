@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.37.3] - 2026-08-17
+
+### Added
+- New exports in the rebuilt hyper-morph vendor bundle
+
+### Changed
+- Updated hypercms vendor bundle and module sizes
+- Keyless dirty roots now promote to keyed ancestors in hyper-morph
+
+### Fixed
+- Applied protected-splice review fixes to the hyper-morph vendor bundle
+
+
+
 ## [1.37.2] - 2026-08-15
 
 ### Changed
