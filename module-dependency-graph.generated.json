@@ -783,7 +783,7 @@
     "hyper-morph": {
       "name": "hyper-morph",
       "category": "vendor",
-      "size": 30.4,
+      "size": 36,
       "isEditModeOnly": true,
       "difficulty": "intermediate",
       "files": [
@@ -804,7 +804,7 @@
     "hypercms": {
       "name": "hypercms",
       "category": "vendor",
-      "size": 179,
+      "size": 185,
       "files": [
         "vendor/hypercms.vendor.js"
       ],
