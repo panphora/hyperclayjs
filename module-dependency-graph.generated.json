@@ -804,7 +804,7 @@
     "hypercms": {
       "name": "hypercms",
       "category": "vendor",
-      "size": 185,
+      "size": 189.2,
       "files": [
         "vendor/hypercms.vendor.js"
       ],
