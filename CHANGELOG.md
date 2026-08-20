@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.37.4] - 2026-08-19
+
+### Changed
+- Updated hypercms vendor bundle (185KB → 189.2KB)
+
+
+
 ## [1.37.3] - 2026-08-17
 
 ### Added
