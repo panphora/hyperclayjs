@@ -108,21 +108,54 @@ if [ "$FAILED" -gt 0 ]; then
 fi
 
 # A 2xx from the purge API only means the request was accepted. Production loads
-# hyperclayjs from the unpinned @latest, so confirm the alias actually moved.
+# hyperclayjs from the unpinned @latest, so confirm the alias actually moved —
+# and confirm it for THE FILES THAT CHANGED, not just for package.json.
+#
+# Verifying package.json alone is worth nothing here: the bare `@latest` purge
+# above always refreshes it, so that check passed on every release whether or
+# not a single per-file purge landed. jsdelivr resolves `@latest` per PATH, so a
+# file whose purge failed keeps answering from an older version for up to 7 days
+# while package.json reports the new one.
+#
+# `x-jsd-version` is the resolved version for that exact path, which is the thing
+# in question. Reading it beats diffing bytes: a file that genuinely did not
+# change between the two versions has identical content either way, so a content
+# comparison cannot tell a healed path from a stale one.
+resolved_version() {
+  curl -fsS -o /dev/null -D- "https://cdn.jsdelivr.net/npm/hyperclayjs@latest/$1" 2>/dev/null \
+    | tr -d '\r' | awk 'tolower($1) == "x-jsd-version:" { print $2 }'
+}
+
 echo ""
-printf "Verifying jsdelivr @latest now serves %s... " "$CURRENT_VERSION"
-SERVED=""
-for i in $(seq 1 12); do
-  SERVED=$(curl -fsS "https://cdn.jsdelivr.net/npm/hyperclayjs@latest/package.json" 2>/dev/null | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).version" 2>/dev/null || echo "")
-  [ "$SERVED" = "$CURRENT_VERSION" ] && break
-  sleep 5
+echo "Verifying jsdelivr @latest serves $CURRENT_VERSION for each purged path..."
+
+STALE=""
+for path in "package.json" $FILES; do
+  SERVED=""
+  for i in $(seq 1 12); do
+    SERVED=$(resolved_version "$path")
+    [ "$SERVED" = "$CURRENT_VERSION" ] && break
+    sleep 5
+  done
+  if [ "$SERVED" = "$CURRENT_VERSION" ]; then
+    printf "  ✓ %s\n" "$path"
+  else
+    printf "  ✗ %s (serving %s)\n" "$path" "${SERVED:-unknown}"
+    STALE="$STALE $path"
+  fi
 done
 
-if [ "$SERVED" = "$CURRENT_VERSION" ]; then
-  echo "✓"
-else
-  echo "✗"
-  echo "WARNING: jsdelivr @latest still serves ${SERVED:-unknown}, expected $CURRENT_VERSION."
-  echo "Production loads hyperclayjs from @latest, so it may still be running the old build."
+if [ -n "$STALE" ]; then
+  echo ""
+  echo "WARNING: jsdelivr @latest still serves an older version for:"
+  for path in $STALE; do echo "  $path"; done
+  echo "Production loads hyperclayjs from @latest, so it may still be running old code."
   echo "Re-run: bash scripts/purge-cdn-cache.sh"
+  # Non-zero so a release script can see this rather than reading a warning that
+  # scrolled past. It runs as a postpublish hook, where the publish has already
+  # happened and cannot be undone, so this reports rather than prevents.
+  exit 1
 fi
+
+echo ""
+echo "All purged paths are live on jsdelivr at $CURRENT_VERSION."
