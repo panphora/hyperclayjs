@@ -143,33 +143,25 @@ export function savePage(callback = () => {}) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 12000);
 
-    // Check if running on Hyperclay Local - send JSON with both versions for platform sync
-    const isHyperclayLocal = window.location.hostname === 'localhost' ||
-                             window.location.hostname === '127.0.0.1';
-
     // Read-and-reset the data-guard provenance bit at the ACTUAL send (past the
     // early returns above), so it's never consumed on a save that never ships.
     const userDriven = consumeUserDriven();
 
+    // The body is the document, as text, on every host. Everything else about
+    // the save rides in a header. There used to be a JSON envelope here carrying
+    // an unstripped snapshot alongside the document, sent to any page whose
+    // hostname was localhost; the snapshot's home is the live-sync relay, which
+    // live-sync.js already posts it to.
     const fetchOptions = {
       method: 'POST',
       credentials: 'include',
       signal: controller.signal,
-      headers: { 'Page-URL': window.location.href, 'X-Hyperclay-User-Driven': userDriven ? '1' : '0' }
+      headers: {
+        'Page-URL': window.location.href,
+        'Save-Trigger': userDriven ? 'user' : 'auto'
+      },
+      body: currentContents
     };
-
-    if (isHyperclayLocal && window.__hyperclaySnapshotHtml) {
-      // Send JSON with both stripped content and full snapshot for platform live sync
-      fetchOptions.headers['Content-Type'] = 'application/json';
-      fetchOptions.body = JSON.stringify({
-        content: currentContents,
-        snapshotHtml: window.__hyperclaySnapshotHtml,
-        userDriven
-      });
-    } else {
-      // Platform: send plain text as before
-      fetchOptions.body = currentContents;
-    }
 
     fetch(getSaveEndpoint(), fetchOptions)
       .then(res => {
@@ -182,9 +174,6 @@ export function savePage(callback = () => {}) {
         });
       })
       .then(data => {
-        // Clear the snapshot only once the save actually landed (a failed save
-        // keeps it so a retry still carries the provenance snapshot).
-        window.__hyperclaySnapshotHtml = null;
         const result = { msg: data.msg, msgType: data.msgType || 'success' };
         if (typeof callback === 'function') {
           callback(result);
@@ -268,31 +257,19 @@ export function saveHtml(html, callback = () => {}) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 12000);
 
-    // Check if running on Hyperclay Local - send JSON with both versions for platform sync
-    const isHyperclayLocal = window.location.hostname === 'localhost' ||
-                             window.location.hostname === '127.0.0.1';
-
     const userDriven = consumeUserDriven();
 
+    // The body is the document, as text, on every host. See saveHTML above.
     const fetchOptions = {
       method: 'POST',
       credentials: 'include',
       signal: controller.signal,
-      headers: { 'Page-URL': window.location.href, 'X-Hyperclay-User-Driven': userDriven ? '1' : '0' }
+      headers: {
+        'Page-URL': window.location.href,
+        'Save-Trigger': userDriven ? 'user' : 'auto'
+      },
+      body: html
     };
-
-    if (isHyperclayLocal && window.__hyperclaySnapshotHtml) {
-      // Send JSON with both stripped content and full snapshot for platform live sync
-      fetchOptions.headers['Content-Type'] = 'application/json';
-      fetchOptions.body = JSON.stringify({
-        content: html,
-        snapshotHtml: window.__hyperclaySnapshotHtml,
-        userDriven
-      });
-    } else {
-      // Platform: send plain text as before
-      fetchOptions.body = html;
-    }
 
     fetch(getSaveEndpoint(), fetchOptions)
       .then(res => {
@@ -305,9 +282,6 @@ export function saveHtml(html, callback = () => {}) {
         });
       })
       .then(data => {
-        // Clear the snapshot only once the save actually landed (a failed save
-        // keeps it so a retry still carries the provenance snapshot).
-        window.__hyperclaySnapshotHtml = null;
         if (typeof callback === 'function') {
           callback(null, data);
         }

@@ -1,4 +1,4 @@
-# HyperclayJS
+# HyperclayJS™
 
 A modular JavaScript library for building interactive malleable HTML files with Hyperclay. Load only what you need with automatic dependency resolution.
 
