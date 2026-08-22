@@ -19,7 +19,19 @@ import { undo } from '../src/vendor/hyper-undo.vendor.js'; // sets window.hyperc
 
 const flush = (ms = 0) => new Promise(r => setTimeout(r, ms));
 const IDLE = 20;                        // undo idle-batch window these tests start with
-const settle = () => flush(IDLE + 80);  // wait out the idle window with slack for full-suite load
+
+// Only for asserting that NOTHING was recorded, where there is no condition to wait on and
+// sleeping longer can only make the test more correct.
+const settle = () => flush(IDLE + 80);
+
+// Wait for the expected state instead of assuming the idle batch has drained. A fixed sleep is
+// a wall-clock budget, and 100ms for a 20ms timer is not enough on a contended machine: the
+// batch simply had not landed yet, which read as a product failure. On 2026-08-21 that failed a
+// release. Waiting for the condition turns CPU starvation into "slower", not "broken".
+const waitFor = async (predicate, deadlineMs = 5000) => {
+  const started = Date.now();
+  while (!predicate() && Date.now() - started < deadlineMs) await flush(5);
+};
 
 afterEach(async () => {
   try { undo.stop(); } catch {}
@@ -51,7 +63,7 @@ test('§6.3 morph exclusion end-to-end: pause/morph/resume is not undoable; pre-
   undo.clear();
 
   h.textContent = 'Hello';            // pre-morph local edit
-  await settle();
+  await waitFor(() => undo.history.length >= 1);
   const beforeMorph = undo.history.length;
   expect(beforeMorph).toBe(1);
 
@@ -63,7 +75,7 @@ test('§6.3 morph exclusion end-to-end: pause/morph/resume is not undoable; pre-
   expect(undo.history.length).toBe(beforeMorph);   // the morph left the undo stack untouched
 
   h.textContent = 'After';            // post-morph local edit records normally
-  await settle();
+  await waitFor(() => undo.history.length >= beforeMorph + 1);
   expect(undo.history.length).toBe(beforeMorph + 1);
 
   undo.undo();                        // reverts only the local edit...
@@ -98,7 +110,7 @@ test('§6.1 commit boundary with a live debounce:0 attribute-writing subscriber 
   expect(undo.history.length).toBe(1);    // the commit landed intact as one step
   expect(undo.history[0].label).toBe('Edit');
 
-  await settle();
+  await waitFor(() => t.style.height === '40px');
   expect(t.style.height).toBe('40px');    // the subscriber DID run, just deferred to a microtask
 
   off();
@@ -115,7 +127,7 @@ test('C×D: a [no-undo] region is not recorded even though records flow through 
   expect(undo.history.length).toBe(0);
 
   document.getElementById('h').textContent = 'changed';   // normal region
-  await settle();
+  await waitFor(() => undo.history.length >= 1);
   expect(undo.history.length).toBe(1);
 });
 
@@ -137,7 +149,7 @@ test('§6.6 pin (D3-1): recordValue still works on the shimmed path (record() by
 
   i.value = 'abc';
   undo.recordValue(i, { prop: 'value', oldValue: '', newValue: 'abc' });
-  await settle();
+  await waitFor(() => undo.history.length >= 1);
   expect(undo.history.length).toBe(1);
 
   undo.undo();
@@ -155,7 +167,7 @@ test('§6.6 pin (A2-2): extension marker attribute noise is still filtered throu
   expect(undo.history.length).toBe(0);
 
   d.setAttribute('data-real', '1');            // a real attribute IS recorded
-  await settle();
+  await waitFor(() => undo.history.length >= 1);
   expect(undo.history.length).toBe(1);
 });
 
@@ -170,7 +182,7 @@ test('§6.6 pin (focused-field resync): undo/redo events are still emitted on th
   undo.on('redo', () => events.push('redo'));
 
   h.textContent = 'Hello';
-  await settle();
+  await waitFor(() => undo.history.length >= 1);
   undo.undo();
   undo.redo();
   expect(events).toEqual(['undo', 'redo']);
