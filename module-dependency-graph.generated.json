@@ -10,6 +10,7 @@
     ],
     "communication/behaviorCollector.js": [],
     "communication/live-sync.js": [
+      "core/host-meta.js",
       "core/isAdminOfCurrentResource.js",
       "core/snapshot.js",
       "utilities/merge-tags.js",
@@ -73,6 +74,9 @@
       "vendor/control-serialize.vendor.js"
     ],
     "core/exportToWindow.js": [],
+    "core/host-meta.js": [
+      "utilities/root-attrs.js"
+    ],
     "core/isAdminOfCurrentResource.js": [
       "string-utilities/query.js",
       "utilities/cookie.js"
@@ -994,7 +998,7 @@
     "live-sync": {
       "name": "live-sync",
       "category": "communication",
-      "size": 29.9,
+      "size": 34,
       "files": [
         "communication/live-sync.js"
       ],

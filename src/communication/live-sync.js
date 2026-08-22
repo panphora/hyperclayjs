@@ -10,7 +10,7 @@
  *                              │
  *                              ▼
  *   ┌─────────────────────────────────────────────────────────┐
- *   │  2. SEND               POST html to /_/live-sync/save   │
+ *   │  2. SEND          POST snapshot to the relay address    │
  *   │                        (debounced, skip if unchanged)   │
  *   └─────────────────────────────────────────────────────────┘
  *                              │
@@ -42,6 +42,43 @@ import { isEditMode } from "../core/isAdminOfCurrentResource.js";
 import { mergeTagRecognizers } from "../utilities/merge-tags.js";
 import { serializeForSync } from '../core/snapshot.js';
 import { isTabLocalRootAttr } from '../utilities/root-attrs.js';
+import { hostMeta } from '../core/host-meta.js';
+
+/**
+ * The two live-sync wires, and the rule for choosing between them.
+ *
+ * Spec §10 puts both halves on `/_/sync`. Older htmlclay releases, and any
+ * hyperclay or hyperclay-local an owner has not upgraded, still serve only the
+ * original pair. An installed host moves on its owner's schedule, so the client
+ * is the half that has to know both.
+ *
+ * The choice is DISCOVERED, never guessed. Spec §5 makes `/_/meta` the only way
+ * to learn what a host can do, and probing is a bad instrument here anyway: an
+ * EventSource reports a 404, an auth refusal and an offline browser through one
+ * error path, so a failed connection cannot say which address was wrong.
+ *
+ * One profile is chosen once and used for BOTH directions for the life of the
+ * page. Sending on one wire while receiving on the other works against no host
+ * at all, which is exactly the defect this avoids.
+ */
+const WIRE_PROFILES = {
+  spec: {
+    name: 'spec',
+    relayPath: '/_/sync',
+    documentHeader: 'Document-URL',
+    snapshotKey: 'snapshot',
+    streamPath: (href, lane, resumeId) =>
+      `/_/sync?document-url=${encodeURIComponent(href)}&lane=${lane}&resume-id=${resumeId}`,
+  },
+  legacy: {
+    name: 'legacy',
+    relayPath: '/_/live-sync/save',
+    documentHeader: 'Page-URL',
+    snapshotKey: 'html',
+    streamPath: (href, lane, resumeId) =>
+      `/_/live-sync/stream?page-url=${encodeURIComponent(href)}&lane=${lane}&resume-id=${resumeId}`,
+  },
+};
 
 class LiveSync {
   constructor() {
@@ -62,6 +99,16 @@ class LiveSync {
     this.debounceTimer = null;
     this._sendInFlight = false;
     this._queuedSend = null;
+
+    // The chosen wire, and the in-flight discovery that chooses it. Memoized for
+    // the life of the page: a host does not change capabilities under a loaded
+    // document, and hostMeta() memoizes the request itself.
+    this._profile = null;
+    this._profilePromise = null;
+    this._ready = null;
+    // Bumped by every start(), so a discovery that resolves after a stop/restart
+    // cannot open a stream for a run that has already been torn down.
+    this._startGen = 0;
     this.isPaused = false;
     this.isDestroyed = false;
     this.debug = false;
@@ -175,7 +222,14 @@ class LiveSync {
     this.resumeId = this.generateResumeId();
 
     console.log(`[LiveSync] Starting for: ${this.currentFile} (lane=${this.lane})`);
-    this.connect();
+    // One discovery request stands between here and the stream. It is memoized and
+    // bounded, and it does not gate ordinary saves: /_/save is a separate lane that
+    // never moved. Snapshots produced during the window are queued, not dropped.
+    const gen = ++this._startGen;
+    this._ready = this._resolveProfile().then(() => {
+      if (this.isDestroyed || this._startGen !== gen) return;
+      this.connect();
+    });
     // View-mode tabs are receive-only: saves are edit-gated upstream, so a
     // snapshot listener would never fire — skip registering it.
     if (this.lane === 'live') {
@@ -359,8 +413,10 @@ class LiveSync {
   connect() {
     if (this.isDestroyed) return;
 
-    const pageUrl = encodeURIComponent(window.location.href);
-    const url = `/_/live-sync/stream?page-url=${pageUrl}&lane=${this.lane}&resume-id=${this.resumeId}`;
+    // Whichever wire discovery selected. start() does not call connect() until the
+    // profile is known, so this is never null on the normal path.
+    const profile = this._profile || WIRE_PROFILES.legacy;
+    const url = profile.streamPath(window.location.href, this.lane, this.resumeId);
     this.sse = new EventSource(url);
 
     this.sse.onopen = () => {
@@ -479,12 +535,51 @@ class LiveSync {
     }, this.debounceMs);
   }
 
+  /**
+   * Choose the wire profile from what the host advertises.
+   *
+   * Absence of `sync` selects the legacy wire rather than disabling live sync.
+   * Every host this library has ever run on served live sync long before any of
+   * them advertised it, so refusing to sync with a silent host would be a
+   * regression against every published version. A malformed answer, a 404 or a
+   * timeout all land here too, and all mean legacy.
+   */
+  _resolveProfile() {
+    if (!this._profilePromise) {
+      this._profilePromise = hostMeta()
+        .then((meta) => (meta?.extensions?.includes('sync') ? WIRE_PROFILES.spec : WIRE_PROFILES.legacy))
+        .catch(() => WIRE_PROFILES.legacy)
+        .then((profile) => {
+          this._profile = profile;
+          this._log(`Wire profile: ${profile.name}`);
+          return profile;
+        });
+    }
+    return this._profilePromise;
+  }
+
   _enqueueSend(html, identityMap) {
+    // Same one-deep queue the in-flight case uses, for the same reason: peers only
+    // ever need the newest state, so a fresher snapshot replaces the waiting one.
+    // Sending before the profile is known would have to guess an address.
+    if (!this._profile) {
+      this._queuedSend = { html, identityMap };
+      this._resolveProfile().then(() => this._flushQueuedSend());
+      return;
+    }
     if (this._sendInFlight) {
       this._queuedSend = { html, identityMap };
       return;
     }
     this._postUpdate(html, identityMap);
+  }
+
+  _flushQueuedSend() {
+    if (this.isDestroyed || this._sendInFlight) return;
+    const queued = this._queuedSend;
+    if (!queued) return;
+    this._queuedSend = null;
+    this._postUpdate(queued.html, queued.identityMap);
   }
 
   _postUpdate(html, identityMap) {
@@ -498,11 +593,15 @@ class LiveSync {
 
     this._sendInFlight = true;
 
-    fetch('/_/live-sync/save', {
+    const profile = this._profile || WIRE_PROFILES.legacy;
+    fetch(profile.relayPath, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Page-URL': window.location.href },
+      headers: {
+        'Content-Type': 'application/json',
+        [profile.documentHeader]: window.location.href,
+      },
       body: JSON.stringify({
-        html: html,
+        [profile.snapshotKey]: html,
         sender: this.clientId,
         identityMap: identityMap
       })
@@ -787,5 +886,5 @@ if (typeof window !== 'undefined') {
 // Export for hyperclayjs module system. The class itself is exported so
 // tests can create fresh instances without driving the singleton's
 // EventSource/snapshot wiring.
-export { liveSync, LiveSync };
+export { liveSync, LiveSync, WIRE_PROFILES };
 export default liveSync;

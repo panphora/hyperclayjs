@@ -131,7 +131,7 @@ To load a full preset, use the CDN loader with `?preset=standard`:
 |--------|------|-------------|
 | ai-edit | 27KB | Comment-to-edit AI editing over the local bus: hover chip / ⌘K panel per unit, whole-document bubble, streamed morph previews, one-step undo |
 | file-upload | 11.3KB | File upload with progress |
-| live-sync | 29.9KB | Real-time DOM sync across browsers (edit mode syncs peers; view mode receives saved updates) |
+| live-sync | 34KB | Real-time DOM sync across browsers (edit mode syncs peers; view mode receives saved updates) |
 | send-message | 1.3KB | Message sending utility |
 
 ### Data & Undo (Page data and undo history)
@@ -168,12 +168,12 @@ Visual CMS editing for rules-tag pages: hypercms sidebar, undo, drag-reorder, sa
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `unsaved-warning`, `toast`, `save-toast`, `mutation`, `hypercms`, `sortable`, `undo`, `quickcrop`, `data-loss-panel`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Smooth Sailing (~642.1KB)
+### Smooth Sailing (~646.2KB)
 Everything, without gotchas
 
 **Modules:** `save-core`, `save-system`, `unsaved-warning`, `save-toast`, `edit-mode-helpers`, `persist`, `snapshot`, `option-visibility`, `edit-mode`, `event-attrs`, `ajax-elements`, `sortable`, `movable`, `dom-helpers`, `input-helpers`, `onaftersave`, `save-freeze`, `dialogs`, `quickcrop`, `toast`, `the-modal`, `data-loss-panel`, `mutation`, `nearest`, `cookie`, `throttle`, `debounce`, `dom-ready`, `window-load`, `all-js`, `style-injection`, `form-data`, `hypercms`, `richclay`, `undo`, `data`, `upgrade`, `slugify`, `copy-to-clipboard`, `query-params`, `behavior-collector`, `send-message`, `file-upload`, `live-sync`, `refetch-on-save`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Everything (~756.1KB)
+### Everything (~760.2KB)
 All available features
 
 Includes all available modules across all categories.

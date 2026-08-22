@@ -59,6 +59,12 @@ describe('LiveSync sender identity + send ordering', () => {
     );
 
     const sync = new LiveSync();
+    // Discovery is a precondition of sending, not the thing under test: the client
+    // must know which wire it is on before it can address a relay. This mock host
+    // answers /_/meta with something unparseable, which is the legacy verdict.
+    await sync._resolveProfile();
+    expect(sync._profile.name).toBe('legacy');
+    global.fetch.mockClear();
 
     sync._enqueueSend('<html>A</html>', null);
     expect(global.fetch).toHaveBeenCalledTimes(1);

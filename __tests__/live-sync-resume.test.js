@@ -52,10 +52,11 @@ describe('LiveSync resume-id + notification seq', () => {
   const resumeIdOf = (url) =>
     new URL(url, 'http://localhost').searchParams.get('resume-id');
 
-  test('stream URL carries a bounded, per-start resume-id distinct from clientId', () => {
+  test('stream URL carries a bounded, per-start resume-id distinct from clientId', async () => {
     const sync = new LiveSync();
     sync.lane = 'saved';
     sync.start('index.html');
+    await sync._ready;
 
     expect(eventSourceUrls).toHaveLength(1);
     const resumeId = resumeIdOf(eventSourceUrls[0]);
@@ -70,15 +71,18 @@ describe('LiveSync resume-id + notification seq', () => {
     sync.stop();
   });
 
-  test('an explicit stop/start replaces the resume-id', () => {
+  test('an explicit stop/start replaces the resume-id', async () => {
     const sync = new LiveSync();
     sync.lane = 'saved';
 
     sync.start('index.html');
+
+    await sync._ready;
     const first = resumeIdOf(eventSourceUrls[0]);
 
     sync.stop();
     sync.start('index.html');
+    await sync._ready;
     const second = resumeIdOf(eventSourceUrls[1]);
 
     expect(first).toBeTruthy();
@@ -88,10 +92,11 @@ describe('LiveSync resume-id + notification seq', () => {
     sync.stop();
   });
 
-  test('replayed notification with a stale seq is deduped: no second toast, no older snapshot', () => {
+  test('replayed notification with a stale seq is deduped: no second toast, no older snapshot', async () => {
     const sync = new LiveSync();
     sync.lane = 'live';
     sync.start('index.html');
+    await sync._ready;
 
     const applySpy = jest.spyOn(sync, 'applyUpdate').mockImplementation(() => {});
     const toast = jest.fn();

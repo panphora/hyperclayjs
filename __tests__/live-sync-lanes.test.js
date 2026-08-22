@@ -43,15 +43,16 @@ describe('LiveSync lanes', () => {
     delete window.EventSource;
   });
 
-  test('defaults to the saved lane outside edit mode (jsdom has no admin cookie)', () => {
+  test('defaults to the saved lane outside edit mode (jsdom has no admin cookie)', async () => {
     const sync = new LiveSync();
     expect(sync.lane).toBe('saved');
   });
 
-  test('saved lane connects with lane=saved and registers no snapshot listener', () => {
+  test('saved lane connects with lane=saved and registers no snapshot listener', async () => {
     const sync = new LiveSync();
     sync.lane = 'saved';
     sync.start('index.html');
+    await sync._ready;
 
     expect(eventSourceUrls).toHaveLength(1);
     expect(eventSourceUrls[0]).toContain('/_/live-sync/stream?page-url=');
@@ -65,10 +66,11 @@ describe('LiveSync lanes', () => {
     sync.stop();
   });
 
-  test('live lane connects with lane=live and listens for snapshots', () => {
+  test('live lane connects with lane=live and listens for snapshots', async () => {
     const sync = new LiveSync();
     sync.lane = 'live';
     sync.start('index.html');
+    await sync._ready;
 
     expect(eventSourceUrls).toHaveLength(1);
     expect(eventSourceUrls[0]).toContain('&lane=live');
