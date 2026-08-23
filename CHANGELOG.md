@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.37.5] - 2026-08-23
+
+### Changed
+- Updated hyperclayjs dependency
+- Bumped quickcrop to v1.1.0
+- Relicensed quickcrop under MIT-0
+
+### Fixed
+- Release test gate no longer fails on a loaded machine
+
+
+
 ## [1.37.4] - 2026-08-19
 
 ### Changed
