@@ -20,7 +20,12 @@ if [ -z "$PREV_TAG" ]; then
   exit 0
 fi
 
-FILES=$(git diff --name-only "$PREV_TAG" HEAD -- 'src/**/*.js' 'src/*.js')
+# --diff-filter=d drops DELETIONS. jsdelivr resolves @latest per path to the newest
+# version that CONTAINS that path, so a file removed in this release keeps answering
+# with the last version that had it — correctly, and forever. Verifying one is a
+# guaranteed failure on every release whose range still contains the deletion, and
+# this script's exit 1 turns that into a rolled-back release.
+FILES=$(git diff --name-only --diff-filter=d "$PREV_TAG" HEAD -- 'src/**/*.js' 'src/*.js')
 FILE_COUNT=$(echo "$FILES" | grep -c . || true)
 
 if [ "$FILE_COUNT" -eq 0 ]; then
@@ -109,13 +114,22 @@ fi
 
 # A 2xx from the purge API only means the request was accepted. Production loads
 # hyperclayjs from the unpinned @latest, so confirm the alias actually moved —
-# and confirm it for THE FILES THAT CHANGED, not just for package.json.
+# and confirm it for THE FILES THAT CHANGED.
 #
-# Verifying package.json alone is worth nothing here: the bare `@latest` purge
-# above always refreshes it, so that check passed on every release whether or
-# not a single per-file purge landed. jsdelivr resolves `@latest` per PATH, so a
-# file whose purge failed keeps answering from an older version for up to 7 days
-# while package.json reports the new one.
+# package.json is NOT verified here, and the claim that used to sit in this
+# comment — that the bare `@latest` purge always refreshes it — is false. That
+# bare URL is the package's default file, the `main` entry (`src/hyperclay.js`),
+# a different cache object entirely; it has never touched package.json on any
+# release. Worse, verifying package.json actively caused the failure it reported:
+# a purge does not fetch, the NEXT request does, so on 2026-08-23 the first probe
+# of that never-purged path resolved against jsdelivr metadata that had not caught
+# up, answered 1.37.4, and PINNED it for s-maxage (12 hours). The following 11
+# retries were edge hits on the object the first retry had just created. Nothing
+# loads package.json from the CDN, so the whole check was cost with no signal.
+#
+# The rule that generalizes: never GET a `@latest` path you did not just purge,
+# and re-purge before re-reading, because a bare retry can only re-read whatever
+# the first one froze.
 #
 # `x-jsd-version` is the resolved version for that exact path, which is the thing
 # in question. Reading it beats diffing bytes: a file that genuinely did not
@@ -130,11 +144,16 @@ echo ""
 echo "Verifying jsdelivr @latest serves $CURRENT_VERSION for each purged path..."
 
 STALE=""
-for path in "package.json" $FILES; do
+for path in $FILES; do
   SERVED=""
   for i in $(seq 1 12); do
     SERVED=$(resolved_version "$path")
     [ "$SERVED" = "$CURRENT_VERSION" ] && break
+    # Re-purge before re-reading. A stale answer means the edge is now holding a
+    # resolution made against metadata that had not caught up, and re-GETting only
+    # returns that same frozen object — the retry loop cannot heal what it pinned.
+    # Purging first drops the object so the next read resolves again.
+    curl -sS -o /dev/null "https://purge.jsdelivr.net/npm/hyperclayjs@latest/$path" 2>/dev/null || true
     sleep 5
   done
   if [ "$SERVED" = "$CURRENT_VERSION" ]; then
