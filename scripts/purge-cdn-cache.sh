@@ -147,14 +147,25 @@ STALE=""
 for path in $FILES; do
   SERVED=""
   for i in $(seq 1 12); do
-    SERVED=$(resolved_version "$path")
+    # `|| true` is load-bearing. `resolved_version` is a pipeline starting with
+    # `curl -f`, so under `set -euo pipefail` a bare assignment from it KILLS the
+    # script on any 404, 5xx, connection reset or DNS blip: no retry, no per-file
+    # report, and the hook exits with curl's code (22) instead of a diagnosis.
+    SERVED=$(resolved_version "$path" || true)
     [ "$SERVED" = "$CURRENT_VERSION" ] && break
     # Re-purge before re-reading. A stale answer means the edge is now holding a
     # resolution made against metadata that had not caught up, and re-GETting only
     # returns that same frozen object — the retry loop cannot heal what it pinned.
-    # Purging first drops the object so the next read resolves again.
-    curl -sS -o /dev/null "https://purge.jsdelivr.net/npm/hyperclayjs@latest/$path" 2>/dev/null || true
-    sleep 5
+    # Purging first drops the object so the next read resolves again. Routed
+    # through purge_url for its 429 backoff: a purge that was rate-limited was
+    # never accepted, so the next read hits the same frozen object and the loop
+    # reports "jsdelivr did not move" about a purge that never happened. Skipped
+    # after the last read, where nothing would observe it.
+    if [ "$i" -lt 12 ]; then
+      printf "  re-purging %s... " "$path"
+      purge_url "https://purge.jsdelivr.net/npm/hyperclayjs@latest/$path"
+      sleep 5
+    fi
   done
   if [ "$SERVED" = "$CURRENT_VERSION" ]; then
     printf "  ✓ %s\n" "$path"
