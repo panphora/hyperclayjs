@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.37.6] - 2026-08-25
+
+### Fixed
+- A transient CDN error no longer aborts the purge verification loop
+
+
+
 ## [1.37.5] - 2026-08-23
 
 ### Changed
