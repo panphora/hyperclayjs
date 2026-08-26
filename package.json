@@ -43,7 +43,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hyperclay/hyperclayjs.git"
+    "url": "git+https://github.com/panphora/hyperclayjs.git"
   },
   "keywords": [
     "hyperclay",
@@ -59,9 +59,9 @@
   "author": "Hyperclay",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/hyperclay/hyperclayjs/issues"
+    "url": "https://github.com/panphora/hyperclayjs/issues"
   },
-  "homepage": "https://github.com/hyperclay/hyperclayjs#readme",
+  "homepage": "https://github.com/panphora/hyperclayjs#readme",
   "devDependencies": {
     "@babel/core": "^7.28.5",
     "@babel/preset-env": "^7.28.5",

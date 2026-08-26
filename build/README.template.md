@@ -323,4 +323,4 @@ This project includes the following open-source libraries:
 - [Documentation](https://hyperclay.com/docs)
 - [Examples](https://hyperclay.com/examples)
 - [Configurator](https://hyperclay.com/configurator)
-- [GitHub Issues](https://github.com/hyperclay/hyperclayjs/issues)
+- [GitHub Issues](https://github.com/panphora/hyperclayjs/issues)
