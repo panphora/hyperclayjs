@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.37.7] - 2026-08-26
+
+### Changed
+- Updated GitHub organization references from hyperclay to panphora
+
+
+
 ## [1.37.6] - 2026-08-25
 
 ### Fixed
