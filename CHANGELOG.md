@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.37.8] - 2026-08-27
+
+### Changed
+- Update richclay vendor build (152.8KB)
+
+
+
 ## [1.37.7] - 2026-08-26
 
 ### Changed
