@@ -135,7 +135,7 @@ export function showPopover(info, deps = {}) {
     setStatus('Upgrading…', 'busy')
     try {
       const result = await runUpgrade()
-      const { err, data } = await save(result.html)
+      const { err, data } = await save(result.html, undefined, { replacesDocument: true })
       if (err) throw err
       if (data && data.msgType === 'skipped') throw new Error(data.msg || 'Save was skipped')
       setStatus('Upgraded. Reloading…', 'busy')

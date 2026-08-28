@@ -15,7 +15,7 @@
  * cost a person their save, so this never throws and never rejects.
  */
 
-import { HOST_TOKEN_ATTRS } from "../utilities/root-attrs.js";
+import { saveToken } from "./host-attrs.js";
 
 const META_PATH = "/_/meta";
 const META_TIMEOUT_MS = 6000;
@@ -23,15 +23,6 @@ const META_TIMEOUT_MS = 6000;
 // The bare-core-host answer, which is also every failure's answer.
 function bareHost() {
   return { spec: null, extensions: [], document: null };
-}
-
-function saveToken() {
-  if (typeof document === "undefined") return null;
-  for (const attr of HOST_TOKEN_ATTRS) {
-    const value = document.documentElement.getAttribute(attr);
-    if (value) return value;
-  }
-  return null;
 }
 
 let inFlight = null;

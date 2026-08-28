@@ -377,8 +377,8 @@ document.addEventListener('click', async (event) => {
 });
 
 // ES module exports - allows destructuring from import()
-export const savePage = window.hyperclayModules['save-core']?.savePage ?? window.hyperclayModules['save-core']?.default;
-export const beforeSave = window.hyperclayModules['save-system']?.beforeSave ?? window.hyperclayModules['save-system']?.default;
+export const savePage = window.hyperclayModules['save-system']?.savePage ?? window.hyperclayModules['save-system']?.default ?? window.hyperclayModules['save-core']?.savePage ?? window.hyperclayModules['save-core']?.default;
+export const beforeSave = window.hyperclayModules['save-system']?.beforeSave ?? window.hyperclayModules['save-system']?.default ?? window.hyperclayModules['snapshot']?.beforeSave ?? window.hyperclayModules['snapshot']?.default;
 export const savePageForce = window.hyperclayModules['save-system']?.savePageForce ?? window.hyperclayModules['save-system']?.default;
 export const savePageThrottled = window.hyperclayModules['save-system']?.savePageThrottled ?? window.hyperclayModules['save-system']?.default;
 export const replacePageWith = window.hyperclayModules['save-system']?.replacePageWith ?? window.hyperclayModules['save-system']?.default;

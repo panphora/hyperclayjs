@@ -8,6 +8,7 @@
  */
 
 import { isEditMode } from "./isAdminOfCurrentResource.js";
+import { saveToken } from "./host-attrs.js";
 import { consumeUserDriven, markUserDriven } from "../utilities/user-gesture.js";
 import {
   captureForSave,
@@ -24,7 +25,47 @@ import {
 // =============================================================================
 
 let saveInProgress = false;
+let saveIdlePromise = Promise.resolve({});
+let resolveSaveIdle = null;
+let laneClaim = {};
 const saveEndpoint = '/_/save';
+
+// `claim` describes the write, not the caller. The only field that matters so far
+// is replacesDocument: these bytes did not come from the live page, and whoever
+// sent them reloads next. A coalesced follow-up must not capture the live DOM
+// across one of those, or it posts the pre-replacement page over the new one.
+function startSave(claim = {}) {
+  saveInProgress = true;
+  laneClaim = claim;
+  saveIdlePromise = new Promise(resolve => {
+    resolveSaveIdle = resolve;
+  });
+}
+
+function finishSave() {
+  saveInProgress = false;
+  const claim = laneClaim;
+  laneClaim = {};
+  if (resolveSaveIdle) {
+    resolveSaveIdle(claim);
+    resolveSaveIdle = null;
+  }
+}
+
+/**
+ * Hand a result to a caller's callback without letting their exception become
+ * this save's problem. A page's [onaftersave] code is arbitrary and can throw;
+ * that is their bug to see in the console, not a reason to report a save that
+ * landed as failed or to leave this promise unsettled.
+ */
+function runCallback(callback, ...args) {
+  if (typeof callback !== 'function') return;
+  try {
+    callback(...args);
+  } catch (err) {
+    console.error('save: completion callback threw', err);
+  }
+}
 
 /**
  * Check if a save is currently in progress.
@@ -35,19 +76,43 @@ export function isSaveInProgress() {
 }
 
 /**
- * Resolve the save endpoint for the current host.
+ * Resolve when the current save lane becomes idle, with the finished write's
+ * claim (see startSave). Resolves immediately when nothing is in flight.
  *
- * htmlclay (the local Go app for .htmlclay files) authenticates each save with
- * a per-file token injected as the `htmlclaytoken` attribute on <html>, and
- * carries it in the URL path so the same token works for fetch and EventSource.
- * When that attribute is present, save to `/_/save/{token}`; otherwise use the
- * bare `/_/save` (platform and Hyperclay Local, which authenticate by cookie).
- *
- * @returns {string} The endpoint URL for the current save.
+ * @returns {Promise<{replacesDocument?: boolean}>}
  */
-function getSaveEndpoint() {
-  const htmlclayToken = document.documentElement.getAttribute('htmlclaytoken');
-  return htmlclayToken ? `${saveEndpoint}/${htmlclayToken}` : saveEndpoint;
+export function whenSaveIdle() {
+  return saveIdlePromise;
+}
+
+/**
+ * Where this save goes, and what identity it carries. One decision, because the
+ * two answers have to agree.
+ *
+ * A host that sandboxes its documents cannot authenticate them by cookie, so it
+ * mints a per-file token and carries it in the URL path, where the same token
+ * works for fetch and EventSource. Spec §9 names that attribute `savetoken`;
+ * `htmlclaytoken` is the original spelling, still read because a saved document
+ * is a frozen client that keeps sending what it was written with.
+ *
+ * On such a host the document's origin is opaque, so the save is cross-origin,
+ * and a credentialed cross-origin request needs `Access-Control-Allow-Credentials`
+ * back. A token-minting host must never send that header, because `Origin: null`
+ * is forgeable and must not buy ambient authority. Asking for cookies there gets
+ * the response blocked after the save has already landed, reporting a failure
+ * that did not happen. So a token save sends no cookie: the token is the identity.
+ *
+ * Without a token the host authenticates by cookie (the platform, Hyperclay
+ * Local), and the request is same-origin, where `same-origin` and the `include`
+ * this used to send behave identically.
+ *
+ * @returns {{url: string, credentials: string}}
+ */
+function saveTarget() {
+  const token = saveToken();
+  return token
+    ? { url: `${saveEndpoint}/${token}`, credentials: 'omit' }
+    : { url: saveEndpoint, credentials: 'same-origin' };
 }
 
 // =============================================================================
@@ -124,12 +189,23 @@ export function savePage(callback = () => {}) {
       callback(result);
       return resolve(result);
     }
-    saveInProgress = true;
+
+    // The capture above dispatches hyperclay:snapshot-ready synchronously, so a
+    // page listener can start its own save and take the lane in that window.
+    // Claiming it unconditionally here would put two requests on the wire at once
+    // and hand the second one's release to whichever finished first.
+    if (saveInProgress) {
+      const skipped = { msg: 'Save already in progress', msgType: 'skipped' };
+      callback(skipped);
+      return resolve(skipped);
+    }
+
+    startSave();
 
     // Test mode: skip network request, return mock success
     if (window.hyperclay?.testMode) {
       setTimeout(() => {
-        saveInProgress = false;
+        finishSave();
         const result = { msg: "Test mode: save skipped", msgType: "success" };
         if (typeof callback === 'function') {
           callback(result);
@@ -152,9 +228,10 @@ export function savePage(callback = () => {}) {
     // an unstripped snapshot alongside the document, sent to any page whose
     // hostname was localhost; the snapshot's home is the live-sync relay, which
     // live-sync.js already posts it to.
+    const target = saveTarget();
     const fetchOptions = {
       method: 'POST',
-      credentials: 'include',
+      credentials: target.credentials,
       signal: controller.signal,
       headers: {
         'Page-URL': window.location.href,
@@ -163,7 +240,7 @@ export function savePage(callback = () => {}) {
       body: currentContents
     };
 
-    fetch(getSaveEndpoint(), fetchOptions)
+    fetch(target.url, fetchOptions)
       .then(res => {
         clearTimeout(timeoutId);
         return res.json().then(data => {
@@ -173,34 +250,37 @@ export function savePage(callback = () => {}) {
           return data;
         });
       })
-      .then(data => {
-        const result = { msg: data.msg, msgType: data.msgType || 'success' };
-        if (typeof callback === 'function') {
-          callback(result);
+      // Two handlers on ONE .then, not .then().catch(). A throw inside the success
+      // handler must not reach the failure handler: the request landed, and treating
+      // the caller's own crash as a failed save reported a save that worked as
+      // broken, called the caller a second time, and re-armed the user-driven bit so
+      // the NEXT background save reached the server claiming a human made it.
+      .then(
+        data => {
+          const result = { msg: data.msg, msgType: data.msgType || 'success' };
+          runCallback(callback, result);
+          resolve(result);
+        },
+        err => {
+          clearTimeout(timeoutId);
+          console.error('Failed to save page:', err);
+
+          // The save never landed: re-arm the user-driven bit so the next (retry)
+          // save still reports the human gesture instead of reading as background.
+          if (userDriven) markUserDriven();
+
+          const msg = err.name === 'AbortError'
+            ? 'Server not responding'
+            : 'Save failed';
+
+          const result = { msg, msgType: "error" };
+          runCallback(callback, result);
+          resolve(result);
         }
-        resolve(result);
-      })
-      .catch(err => {
-        clearTimeout(timeoutId);
-        console.error('Failed to save page:', err);
-
-        // The save never landed: re-arm the user-driven bit so the next (retry)
-        // save still reports the human gesture instead of reading as background.
-        if (userDriven) markUserDriven();
-
-        const msg = err.name === 'AbortError'
-          ? 'Server not responding'
-          : 'Save failed';
-
-        const result = { msg, msgType: "error" };
-        if (typeof callback === 'function') {
-          callback(result);
-        }
-        resolve(result);
-      })
+      )
       .finally(() => {
         clearTimeout(timeoutId);
-        saveInProgress = false;
+        finishSave();
       });
   });
 }
@@ -227,7 +307,7 @@ export function savePage(callback = () => {}) {
  * const {err, data} = await saveHtml(myHtml);
  * if (err) console.error('Save failed:', err);
  */
-export function saveHtml(html, callback = () => {}) {
+export function saveHtml(html, callback = () => {}, { replacesDocument = false } = {}) {
   return new Promise((resolve) => {
     if (!isEditMode || saveInProgress) {
       const data = {
@@ -238,12 +318,12 @@ export function saveHtml(html, callback = () => {}) {
       return resolve({ err: null, data });
     }
 
-    saveInProgress = true;
+    startSave({ replacesDocument });
 
     // Test mode: skip network request, return mock success
     if (window.hyperclay?.testMode) {
       setTimeout(() => {
-        saveInProgress = false;
+        finishSave();
         const data = { msg: "Test mode: save skipped", msgType: "success" };
         if (typeof callback === 'function') {
           callback(null, data);
@@ -260,9 +340,10 @@ export function saveHtml(html, callback = () => {}) {
     const userDriven = consumeUserDriven();
 
     // The body is the document, as text, on every host. See saveHTML above.
+    const target = saveTarget();
     const fetchOptions = {
       method: 'POST',
-      credentials: 'include',
+      credentials: target.credentials,
       signal: controller.signal,
       headers: {
         'Page-URL': window.location.href,
@@ -271,7 +352,7 @@ export function saveHtml(html, callback = () => {}) {
       body: html
     };
 
-    fetch(getSaveEndpoint(), fetchOptions)
+    fetch(target.url, fetchOptions)
       .then(res => {
         clearTimeout(timeoutId);
         return res.json().then(data => {
@@ -281,33 +362,32 @@ export function saveHtml(html, callback = () => {}) {
           return data;
         });
       })
-      .then(data => {
-        if (typeof callback === 'function') {
-          callback(null, data);
+      // Two handlers on one .then; see savePage above for why not .then().catch().
+      .then(
+        data => {
+          runCallback(callback, null, data);
+          resolve({ err: null, data });
+        },
+        err => {
+          clearTimeout(timeoutId);
+          console.error('Failed to save page:', err);
+
+          // The save never landed: re-arm the user-driven bit so the next (retry)
+          // save still reports the human gesture instead of reading as background.
+          if (userDriven) markUserDriven();
+
+          // Normalize timeout errors
+          const error = err.name === 'AbortError'
+            ? new Error('Server not responding')
+            : err;
+
+          runCallback(callback, error);
+          resolve({ err: error, data: null });
         }
-        resolve({ err: null, data });
-      })
-      .catch(err => {
-        clearTimeout(timeoutId);
-        console.error('Failed to save page:', err);
-
-        // The save never landed: re-arm the user-driven bit so the next (retry)
-        // save still reports the human gesture instead of reading as background.
-        if (userDriven) markUserDriven();
-
-        // Normalize timeout errors
-        const error = err.name === 'AbortError'
-          ? new Error('Server not responding')
-          : err;
-
-        if (typeof callback === 'function') {
-          callback(error);
-        }
-        resolve({ err: error, data: null });
-      })
+      )
       .finally(() => {
         clearTimeout(timeoutId);
-        saveInProgress = false;
+        finishSave();
       });
   });
 }
@@ -348,12 +428,14 @@ export function replacePageWith(url, callback = () => {}) {
     fetch(url)
       .then(res => res.text())
       .then(html => {
+        // The template supersedes the live DOM and this call's callers reload, so
+        // a save coalesced across it must be dropped rather than captured.
         saveHtml(html, (err, data) => {
           if (typeof callback === 'function') {
             callback(err, data);
           }
           resolve({ err: err || null, data: data || null });
-        });
+        }, { replacesDocument: true });
       })
       .catch(err => {
         console.error('Failed to fetch template:', err);

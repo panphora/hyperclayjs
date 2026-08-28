@@ -18,7 +18,8 @@ import {
   getPageContents,
   replacePageWith as replacePageWithCore,
   beforeSave,
-  isSaveInProgress
+  isSaveInProgress,
+  whenSaveIdle
 } from "./savePageCore.js";
 import { captureForComparison, captureForSaveAndComparison } from "./snapshot.js";
 import { logSaveCheck, logBaseline } from "../utilities/autosaveDebug.js";
@@ -33,6 +34,47 @@ beforeSave(clone => {
 // ============================================
 
 let savingTimeout = null;
+
+// A busy lane needs one follow-up, captured after the current request settles.
+// That single capture contains the latest DOM after any number of queued calls.
+// Force is sticky because weakening a queued force request to a dirty-checked
+// save would discard the caller's reason for bypassing the check.
+let pendingSave = null;
+let pendingDrainScheduled = false;
+
+function queuePendingSave(mode) {
+  if (mode === 'force' || pendingSave === null) {
+    pendingSave = mode;
+  }
+
+  if (pendingDrainScheduled) return;
+  pendingDrainScheduled = true;
+  whenSaveIdle().then((claim) => {
+    pendingDrainScheduled = false;
+    // The write that just landed replaced the document with bytes that did not
+    // come from this page, and its caller reloads next: upgrade.js and
+    // replacePageWith both do exactly that. Capturing the live DOM now would post
+    // the pre-replacement page over the new one and silently undo it. Dropping
+    // the follow-up instead leaves the baseline untouched, so the page stays
+    // dirty, the close warning stays armed, and the next mutation saves normally.
+    if (claim?.replacesDocument) {
+      pendingSave = null;
+      return;
+    }
+    drainPendingSave();
+  });
+}
+
+function drainPendingSave() {
+  const mode = pendingSave;
+  pendingSave = null;
+
+  if (mode === 'force') {
+    savePageForce();
+  } else if (mode === 'normal') {
+    savePage();
+  }
+}
 
 /**
  * Sets the save status on <html> and dispatches an event.
@@ -73,9 +115,24 @@ function setOfflineStateQuiet() {
  * This prevents UI flicker on fast saves.
  */
 function setSavingState() {
+  // A nested save can arm this while an outer one is mid-capture. Overwriting the
+  // handle would strand the earlier timer, which then flips the page to 'saving'
+  // with no request left to answer it.
+  if (savingTimeout) clearTimeout(savingTimeout);
   savingTimeout = setTimeout(() => {
     setSaveState('saving');
   }, 500);
+}
+
+/**
+ * Disarm the debounced 'saving' state for a save that was armed and then never
+ * reached the wire. With no request in flight to answer it, the timer would flip
+ * the page to 'saving' and leave it there.
+ */
+function cancelSavingState() {
+  if (!savingTimeout) return;
+  clearTimeout(savingTimeout);
+  savingTimeout = null;
 }
 
 // ============================================
@@ -92,28 +149,57 @@ window.addEventListener('online', () => {
   }
 });
 
-// ============================================
-// POST-SAVE BASELINE RECAPTURE
-// ============================================
-// After a successful save, onaftersave handlers may modify the live DOM
-// (e.g., cacheBust updates ?v= query params). We recapture the baseline
-// after these sync handlers complete to prevent false "unsaved changes" warnings.
-
-document.addEventListener('hyperclay:save-saved', () => {
-  // Use setTimeout(0) to run after all sync onaftersave handlers complete
-  setTimeout(() => {
-    // Store stripped version so comparisons are direct (no parsing needed)
-    const contents = captureForComparison();
-    lastSavedContents = contents;
-    logBaseline('recaptured after onaftersave', `${contents.length} chars`);
-  }, 0);
-});
-
 // Re-export from core for backward compatibility
 export { beforeSave, getPageContents };
 
 let unsavedChanges = false;
 let lastSavedContents = '';
+
+/**
+ * Record one landed save: adopt its bytes as the baseline, announce it, then
+ * absorb whatever the synchronous onaftersave handlers did to the live page.
+ *
+ * ORDER MATTERS, all three steps. setSaveState dispatches hyperclay:save-saved,
+ * and dispatchEvent runs every listener before it returns — including the
+ * [onaftersave] broadcaster, which calls each inline handler synchronously. So the
+ * moment it returns, the churn those handlers make (cacheBust rewriting ?v= query
+ * params) is in the DOM and is the ONLY difference from the bytes we sent. Reading
+ * the live page right there absorbs exactly that and nothing else, which is what
+ * stops a false "unsaved changes" warning.
+ *
+ * The absorb is allowed only when the page still matched the sent bytes BEFORE
+ * those handlers ran. If it had already moved on, a person typed while the request
+ * was on the wire. That edit is genuinely unsaved, and adopting it would record
+ * bytes that never left the browser as stored, leaving both autosave and the close
+ * warning in unsavedWarning.js silent about it.
+ *
+ * This used to run on a setTimeout(0) after the event instead, which let anything
+ * the browser scheduled in between be absorbed the same way: a microtask queued by
+ * another save-saved listener, or a keystroke.
+ */
+function commitSavedBaseline(forComparison, data, label) {
+  let liveMatchedSent = false;
+  try {
+    liveMatchedSent = captureForComparison() === forComparison;
+  } catch (err) {
+    console.error('savePage: post-save comparison failed', err);
+  }
+
+  lastSavedContents = forComparison;
+  unsavedChanges = !liveMatchedSent;
+
+  setSaveState('saved', data?.msg || 'Saved', data?.msgType);
+
+  if (liveMatchedSent) {
+    try {
+      lastSavedContents = captureForComparison();
+    } catch (err) {
+      console.error('savePage: post-save recapture failed', err);
+    }
+  }
+
+  logBaseline(label, `${lastSavedContents.length} chars`);
+}
 
 // State accessors for autosave module
 export function getUnsavedChanges() { return unsavedChanges; }
@@ -141,6 +227,7 @@ export function savePage(callback = () => {}) {
 
     // Don't start a new save if one is already in progress
     if (isSaveInProgress()) {
+      queuePendingSave('normal');
       const skipped = { msg: 'Save already in progress', msgType: 'skipped' };
       callback(skipped);
       return resolve(skipped);
@@ -185,19 +272,30 @@ export function savePage(callback = () => {}) {
 
     // Use saveHtml directly with our pre-captured content (avoids double capture)
     saveHtml(forSave, (err, data) => {
-      if (!err) {
+      // saveHtml answers a refusal as (null, {msgType:'skipped'}): a beforeSave
+      // hook or a hyperclay:snapshot-ready listener saved on its own and took the
+      // lane between the check above and this send. Those bytes never reached the
+      // wire, so the baseline must not advance and no 'saved' may be announced —
+      // recording unsent content as stored is the defect this file exists to fix,
+      // one layer down.
+      const landed = !err && data?.msgType !== 'skipped';
+      if (landed) {
         // SUCCESS - store stripped version for future comparisons
-        lastSavedContents = forComparison;
-        unsavedChanges = false;
-        setSaveState('saved', data?.msg || 'Saved', data?.msgType);
-        logBaseline('updated after save', `${lastSavedContents.length} chars`);
-      } else {
+        commitSavedBaseline(forComparison, data, 'updated after save');
+      } else if (err) {
         // FAILED - determine if it's offline or server error
         if (!navigator.onLine) {
           setSaveState('offline', err.message);
         } else {
           setSaveState('error', err.message);
         }
+      } else {
+        // Refused, not failed. The bytes we captured are still unsaved, so park a
+        // follow-up exactly as a busy lane at entry does. Without this the request
+        // is dropped, which is the defect this file exists to fix, reached through
+        // the one door the entry check cannot cover.
+        queuePendingSave('normal');
+        cancelSavingState();
       }
 
       // Call user callback if provided (preserve server's msgType)
@@ -228,6 +326,7 @@ export function savePageForce(callback = () => {}) {
     }
 
     if (isSaveInProgress()) {
+      queuePendingSave('force');
       const skipped = { msg: 'Save already in progress', msgType: 'skipped' };
       callback(skipped);
       return resolve(skipped);
@@ -254,17 +353,21 @@ export function savePageForce(callback = () => {}) {
     setSavingState();
 
     saveHtml(forSave, (err, data) => {
-      if (!err) {
-        lastSavedContents = forComparison;
-        unsavedChanges = false;
-        setSaveState('saved', data?.msg || 'Saved', data?.msgType);
-        logBaseline('updated after force save', `${lastSavedContents.length} chars`);
-      } else {
+      // A refusal comes back as (null, {msgType:'skipped'}); see savePage above.
+      const landed = !err && data?.msgType !== 'skipped';
+      if (landed) {
+        commitSavedBaseline(forComparison, data, 'updated after force save');
+      } else if (err) {
         if (!navigator.onLine) {
           setSaveState('offline', err.message);
         } else {
           setSaveState('error', err.message);
         }
+      } else {
+        // Refused; see savePage above. Parked as a force, so the follow-up still
+        // skips the dirty check this call asked it to skip.
+        queuePendingSave('force');
+        cancelSavingState();
       }
 
       const result = {

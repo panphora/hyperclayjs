@@ -33,6 +33,7 @@ jest.mock('../src/core/savePageCore.js', () => ({
   replacePageWith: jest.fn(),
   beforeSave: jest.fn(),
   isSaveInProgress: jest.fn(() => false),
+  whenSaveIdle: jest.fn(() => Promise.resolve()),
 }));
 
 jest.mock('../src/core/snapshot.js', () => ({

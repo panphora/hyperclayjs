@@ -74,8 +74,11 @@
       "vendor/control-serialize.vendor.js"
     ],
     "core/exportToWindow.js": [],
-    "core/host-meta.js": [
+    "core/host-attrs.js": [
       "utilities/root-attrs.js"
+    ],
+    "core/host-meta.js": [
+      "core/host-attrs.js"
     ],
     "core/isAdminOfCurrentResource.js": [
       "string-utilities/query.js",
@@ -94,6 +97,7 @@
       "utilities/throttle.js"
     ],
     "core/savePageCore.js": [
+      "core/host-attrs.js",
       "core/isAdminOfCurrentResource.js",
       "core/snapshot.js",
       "utilities/user-gesture.js"
@@ -249,7 +253,7 @@
     "save-core": {
       "name": "save-core",
       "category": "core",
-      "size": 12,
+      "size": 15.4,
       "isEditModeOnly": true,
       "files": [
         "core/savePageCore.js"
@@ -264,7 +268,7 @@
     "save-system": {
       "name": "save-system",
       "category": "core",
-      "size": 15.7,
+      "size": 19.8,
       "isEditModeOnly": true,
       "files": [
         "core/savePage.js"
@@ -890,7 +894,7 @@
     "upgrade": {
       "name": "upgrade",
       "category": "other",
-      "size": 5.6,
+      "size": 5.7,
       "isEditModeOnly": true,
       "files": [
         "upgrade.js"

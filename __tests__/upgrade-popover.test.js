@@ -105,7 +105,12 @@ describe('the Upgrade button', () => {
     await flush();
 
     expect(mockRun).toHaveBeenCalledTimes(1);
-    expect(mockSaveHtml).toHaveBeenCalledWith('<!DOCTYPE html>\n<html>new</html>');
+    // Marked as a document replacement: the upgraded bytes did not come from the
+    // live DOM, so a save coalesced across this write must be dropped rather than
+    // captured, or it posts the pre-upgrade page over the new one.
+    expect(mockSaveHtml).toHaveBeenCalledWith('<!DOCTYPE html>\n<html>new</html>', undefined, {
+      replacesDocument: true,
+    });
     expect(reload).toHaveBeenCalledTimes(1);
   });
 
