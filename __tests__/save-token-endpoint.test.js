@@ -27,7 +27,7 @@ jest.mock('../src/core/snapshot.js', () => ({
 }));
 
 import { savePage, saveHtml } from '../src/core/savePageCore.js';
-import { SAVE_TOKEN_ATTRS, HOST_TOKEN_ATTRS } from '../src/utilities/root-attrs.js';
+import { SAVE_TOKEN_ATTRS, HOST_TOKEN_ATTRS, HOST_IDENTITY_ATTRS, isTabLocalRootAttr } from '../src/utilities/root-attrs.js';
 
 const pathOf = (url) => new URL(url, 'http://localhost').pathname;
 
@@ -150,16 +150,33 @@ describe('save credentials follow the endpoint', () => {
 });
 
 describe('the token list holds nothing but tokens', () => {
-  // This is the mistake clayjs made and is still carrying: its one list serves both
-  // the token-resolution job and the morph-protection job, so `htmlclayid` was
-  // appended for the second and silently became a credential for the first. Any
-  // name in SAVE_TOKEN_ATTRS is returned by saveToken() and put straight into the
-  // save URL, so a durable per-file identity in here would be posted as if it were
-  // a credential. Keep the guard structural rather than a comment: clayjs has the
-  // comment.
+  // Any name in SAVE_TOKEN_ATTRS is returned by saveToken() and put straight into
+  // the save URL, so a durable per-file identity in here would be posted as if it
+  // were a credential. clayjs hit exactly that: one list served both the
+  // token-resolution job and the morph-protection job, `htmlclayid` was appended
+  // for the second, and it silently became a credential for the first. Both
+  // libraries now keep two lists. Keep the guard structural rather than a comment.
   test('SAVE_TOKEN_ATTRS carries no durable identity attribute', () => {
     expect(SAVE_TOKEN_ATTRS).not.toContain('htmlclayid');
     expect(SAVE_TOKEN_ATTRS).not.toContain('documentid');
+  });
+
+  // The identity still needs the morph protection, under both spellings. htmlclay
+  // serves `documentid` and reads either, and every file saved before that rename
+  // holds `htmlclayid` on disk forever, so a list that knows one name leaves the
+  // other unprotected: an incoming frame strips this tab's copy.
+  test('both identity spellings are protected from a peer morph', () => {
+    for (const name of ['documentid', 'htmlclayid']) {
+      expect(HOST_IDENTITY_ATTRS).toContain(name);
+      expect(HOST_TOKEN_ATTRS).toContain(name);
+      expect(isTabLocalRootAttr(name, document.documentElement)).toBe(true);
+    }
+  });
+
+  // The order is the contract for any reader taking the first name it finds: a
+  // document carrying both must resolve to the current one.
+  test('the current identity spelling is read first', () => {
+    expect(HOST_IDENTITY_ATTRS[0]).toBe('documentid');
   });
 
   test('a durable identity in the DOM is never mistaken for a token', async () => {

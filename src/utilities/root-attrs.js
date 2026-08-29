@@ -25,10 +25,20 @@ export const SAVE_TOKEN_ATTRS = ["savetoken", "htmlclaytoken"];
 // But §9 bounds only the save path, and §10 fans a snapshot out to other editors'
 // browsers, which is the hole this module closes.
 //
+// The durable per-file identity, in the spec's spelling and the pre-spec one, in
+// the order a reader tries them. Host-injected but NOT a credential, which is why
+// it lives here and not in SAVE_TOKEN_ATTRS: putting it there would make this
+// library POST to /_/save/{id} whenever a host minted no token of its own.
+//
+// Both spellings are permanent. htmlclay serves `documentid` and reads either, but
+// every .htmlclay file saved before that rename holds `htmlclayid` on disk forever,
+// and this list is what a morph consults.
+export const HOST_IDENTITY_ATTRS = ["documentid", "htmlclayid"];
+
 // Derived from SAVE_TOKEN_ATTRS so the two lists can never disagree about the
 // token spellings, and kept separate so a durable identity attribute can join the
 // morph protection without also becoming a save credential.
-export const HOST_TOKEN_ATTRS = [...SAVE_TOKEN_ATTRS];
+export const HOST_TOKEN_ATTRS = [...SAVE_TOKEN_ATTRS, ...HOST_IDENTITY_ATTRS];
 
 // This library's own root state, and this tab's UI truth.
 export const ROOT_LIBRARY_ATTRS = ["savestatus", "editmode", "pageowner"];
