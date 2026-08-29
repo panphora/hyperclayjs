@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.37.9] - 2026-08-28
+
+### Changed
+- Update hypercms vendor library to 192.1KB
+- Update hyperclayjs
+
+### Fixed
+- Pin save URLs to real origin, preventing base href redirection
+- Stop the sync serializer reordering the root element's attributes
+
+
+
 ## [1.37.8] - 2026-08-27
 
 ### Changed
