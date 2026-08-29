@@ -24,15 +24,15 @@ In every preset: `minimal`, `standard`, `smooth-sailing`, and `everything`. The 
 
 ```
 1. CLONE      document.documentElement.cloneNode(true)
-2. SNAPSHOT   onSnapshot hooks + [onbeforesnapshot] + [snapshot-remove] + extension-noise strip
+2. SNAPSHOT   onSnapshot hooks + [onbeforesnapshot] + [no-snapshot] + extension-noise strip
               ├─ used by SAVE and LIVE-SYNC
               └─ emits hyperclay:snapshot-ready
-3. PREPARE    [onbeforesave] + [no-save] + onPrepareForSave hooks
+3. PREPARE    [onbeforesave] + onPrepareForSave hooks + [no-save]
               └─ used by SAVE only (live-sync stops at step 2)
 4. SERIALIZE  "<!DOCTYPE html>" + clone.outerHTML  →  sent to server
 ```
 
-`captureForComparison` and the compare half of `captureForSaveAndComparison` additionally strip every region whose autosave-trigger is off (`[no-trigger-autosave]`, plus `[no-save]`, `[freeze]`, and `[no-watch]`) so runtime-only elements do not trip dirty-checking. See [region attributes](./region-attributes.md); the legacy `save-*` / `mutations-ignore` markers are recognized as aliases.
+`captureForComparison` and the compare half of `captureForSaveAndComparison` additionally strip every region whose autosave-trigger is off (`[no-trigger-autosave]`, plus `[no-save]`, `[freeze]`, and `[no-watch]`) so runtime-only elements do not trip dirty-checking. See [region attributes](./region-attributes.md); the legacy `save-*`, `mutations-ignore`, and `snapshot-remove` markers are recognized as aliases.
 
 ## Hooks
 
@@ -48,7 +48,7 @@ Each callback receives the cloned `<html>` element (`HTMLElement`) and mutates i
 
 | Function | Returns | Description |
 |----------|---------|-------------|
-| `captureSnapshot()` | `HTMLElement` | Clones `<html>`, runs `onSnapshot` hooks, `[onbeforesnapshot]`, `[snapshot-remove]`, and strips extension noise. Nothing save-specific stripped yet |
+| `captureSnapshot()` | `HTMLElement` | Clones `<html>`, runs `onSnapshot` hooks, `[onbeforesnapshot]`, `[no-snapshot]`, and strips extension noise. Nothing save-specific stripped yet |
 | `captureForSave({ emitForSync = true })` | `string` | Full save pipeline. Emits `hyperclay:snapshot-ready`, then runs prepare phase. Returns `"<!DOCTYPE html>" + outerHTML` |
 | `captureForComparison()` | `string` | Like the save path but also strips every region whose autosave-trigger is off (`[no-trigger-autosave]` and friends). For comparing current state against a baseline. Does not emit `snapshot-ready` |
 | `captureForSaveAndComparison({ emitForSync = true })` | `{ forSave, forComparison }` | Single clone, then forks into a save string and a comparison string. Cheaper than calling both separately |
@@ -70,7 +70,7 @@ These markup hooks are processed during capture. Inline attribute handlers run v
 | Attribute | Phase | Effect |
 |-----------|-------|--------|
 | `onbeforesnapshot` | snapshot (save + sync) | Inline JS runs on the cloned element before any stripping |
-| `snapshot-remove` | snapshot (save + sync) | Element is removed from every snapshot, so it never reaches a save, a comparison, or a live-sync broadcast |
+| `no-snapshot` | snapshot (save + sync) | Element is removed from every snapshot, so it never reaches a save, a comparison, or a live-sync broadcast (legacy alias: `snapshot-remove`) |
 | `onbeforesave` | prepare (save + compare) | Inline JS runs on the cloned element before save-specific stripping |
 | `no-save` | prepare (save + compare) | Element is removed from the saved HTML entirely (legacy alias: `save-remove`) |
 | `no-trigger-autosave` | comparison only | Element is excluded from dirty-checking but still saved as-is (legacy alias: `save-ignore`) |
@@ -89,7 +89,7 @@ When `isCodeMirrorPage()` is true, the capture functions bypass the DOM snapshot
 
 ## Hyperclay Local
 
-On `localhost` / `127.0.0.1`, `captureForSaveAndComparison` stores the full unstripped snapshot HTML on `window.__hyperclaySnapshotHtml`. The save system sends both the stripped content and this full snapshot as JSON so the desktop platform can mirror the page exactly. The value is cleared after each send.
+Saving uses the same two requests on every host. The save system sends the stripped document as text to `/_/save`. When live-sync is loaded, it separately sends the prepared snapshot root as JSON to `/_/sync`, or to the discovered legacy relay on an older host.
 
 ## Undo Flush
 
@@ -117,7 +117,7 @@ const html = captureForSave({ emitForSync: false });
 ```html
 <!-- Markup-level hooks -->
 <div onbeforesnapshot="this.dataset.snappedAt = Date.now()">...</div>
-<div snapshot-remove>Never appears in any snapshot</div>
+<div no-snapshot>Never appears in any snapshot</div>
 <button no-save>Hidden from the saved file</button>
 <div no-trigger-autosave>Saved as-is but skipped by dirty-checking</div>
 ```

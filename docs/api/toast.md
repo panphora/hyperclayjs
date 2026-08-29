@@ -35,7 +35,7 @@ toast('Uploaded successfully');
 ## Notes
 
 - `message` is inserted as HTML (`innerHTML`), so do not pass untrusted user input.
-- A toast auto-dismisses after ~6.6s and is also click-to-dismiss. Its container and styles carry `save-remove`/`snapshot-remove`, so they never reach a saved file.
+- A toast auto-dismisses after ~6.6s and is also click-to-dismiss. Its container and styles use the legacy `save-remove` and `snapshot-remove` aliases for `no-save` and `no-snapshot`, so they never reach a saved file.
 
 ## toastPersistent
 

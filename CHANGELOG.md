@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.38.0] - 2026-08-29
+
+### Breaking Changes
+- **The save token is read under one name, `savetoken`.** `htmlclaytoken`, the pre-rename spelling, is no longer accepted as a credential. This breaks documents served by HTML Clay 1.8.0 or earlier, which inject only the old name: the page stays editable, because that host also sets the edit-mode cookie, and every save posts to the bare `/_/save`, which that host does not route. Upgrade HTML Clay to 1.9.0 or newer, which serves both names. The library says so in the console when it finds the old name. The old name is still stripped from every save and kept out of an incoming morph, because what a host injects must be removed whether or not this library reads it.
+
+### Changed
+- Saves send `Document-URL`, the header spec §3 names, alongside the older `Page-URL`. Both Hyperclay hosts read the new name first and fall back to the old one, so nothing changes against them; a third-party host implementing only the specification would have refused every save this library sent.
+
+### Fixed
+- A document's durable file identity is no longer read as a save token. `documentid` and `htmlclayid` shared one list with the token spellings, so a document carrying an identity but no token posted to `/_/save/{id}` with credentials omitted and opened in edit mode for every visitor. Identities have their own list now: still stripped before a save, still kept out of an incoming morph, never read as a credential.
+
 ## [1.37.9] - 2026-08-28
 
 ### Changed

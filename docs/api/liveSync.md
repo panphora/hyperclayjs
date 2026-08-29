@@ -1,6 +1,6 @@
 # live-sync
 
-Real-time DOM sync across browsers via SSE. When one user saves, all connected browsers see the changes instantly via HyperMorph. Works with Hyperclay Local app.
+Real-time DOM sync across browsers via SSE. Edit-mode tabs exchange working snapshots on the live lane as changes are captured. View-mode tabs receive durable documents on the saved lane after the host persists them. HyperMorph applies both in place. Works with Hyperclay Local app.
 
 ## Access
 
@@ -17,7 +17,7 @@ Real-time DOM sync across browsers via SSE. When one user saves, all connected b
 
 | Name | Type | Default | Description |
 |------|------|---------|-------------|
-| file | string | — | Optional. A presence guard and log label only; it does **not** select the sync channel. The channel is keyed off the page URL (`window.location.href` / the `Page-URL` header). Auto-detected from the pathname when omitted |
+| file | string | — | Optional. A presence guard and log label only; it does **not** select the sync channel. The current page URL selects the channel, sent as `Document-URL` on the spec POST and `document-url` on the spec GET. Older hosts use the discovered legacy wire. Auto-detected from the pathname when omitted |
 
 ## Example
 

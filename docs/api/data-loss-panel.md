@@ -14,7 +14,7 @@ In `standard`, `cms`, `smooth-sailing`, and `everything`. Not in `minimal`. It a
 - External / cross-device clobbers (another device, a CLI tool, a raw disk edit) produce no `save-saved` here, so on non-livesync presets they surface on the next reload (the page-load `GET`). Hyperclay Local's sync watcher reloads the page on external change, which re-runs that check.
 - A user choice POSTs to `POST /_/data-loss/<id>` with `{ choice, file }`. Restore and revert reload the page (~350ms) after success.
 - On init it also calls `initUserGesture()` (so save provenance is correct even in presets without autosave) and `Mutation.ensureObserving()`.
-- The chip's root carries `no-save` and `snapshot-remove`, so it never reaches a saved file. Feedback uses `window.toast`.
+- The chip's root carries `no-save` and `snapshot-remove`, the legacy alias for `no-snapshot`, so it never reaches a saved file. Feedback uses `window.toast`.
 
 ## Requirements
 

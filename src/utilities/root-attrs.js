@@ -8,17 +8,28 @@
  * peer's copy of them must never be applied.
  */
 
-// The two spellings of the save token, in the order a reader tries them. Neither
-// name ever goes away: `savetoken` is the spec's and `htmlclaytoken` the original,
-// and a saved document is a frozen client hardcoding whichever library version
-// wrote it, so hosts keep serving the old name to documents written years ago.
+// One name, deliberately. §9 names exactly one save-token attribute.
 //
-// Save tokens ONLY. host-attrs.js returns the first of these it finds and puts it
-// in the save URL, so any name added here becomes a credential in a path. A
-// durable per-file identity (the spec's `documentid`, htmlclay's `htmlclayid`) is
-// host-injected and wants the morph protection below, but it is not a credential
-// and it does reach disk: add such a name to HOST_TOKEN_ATTRS, never here.
-export const SAVE_TOKEN_ATTRS = ["savetoken", "htmlclaytoken"];
+// Save tokens ONLY. host-attrs.js returns the first of these it finds and puts it in
+// the save URL, so any name added here becomes a credential in a path. A durable
+// per-file identity (the spec's `documentid`, htmlclay's `htmlclayid`) is host-injected
+// and wants the morph protection below, but it is not a credential and it does reach
+// disk: add such a name to HOST_TOKEN_ATTRS, never here.
+//
+// Dropping the pre-rename spelling is a knowing break, not an oversight. htmlclay is
+// the only host that mints a save token at all, it serves both spellings only from
+// 1.9.0, and this library loads from a rolling CDN URL, so it updates itself inside
+// documents whose host has not moved. Taken now because the cost only grows, and the
+// alternative is a second credential name in the save path permanently.
+//
+// ⚠️ RELEASE ORDER: htmlclay 1.9.0, which injects both names, must publish BEFORE this.
+export const SAVE_TOKEN_ATTRS = ["savetoken"];
+
+// The pre-rename spelling. Never read as a credential, and never removed from
+// HOST_TOKEN_ATTRS below, which is a different job: a name a host may inject has to go
+// on being stripped before a save and kept out of a peer's morph, or a live token gets
+// written into a document or handed to another tab.
+export const LEGACY_SAVE_TOKEN_ATTRS = ["htmlclaytoken"];
 
 // Injected by the host at serve time. Spec §9 bounds a save token to per-file and
 // per-tab and makes the host strip it before writing, so it never reaches disk.
@@ -35,10 +46,15 @@ export const SAVE_TOKEN_ATTRS = ["savetoken", "htmlclaytoken"];
 // and this list is what a morph consults.
 export const HOST_IDENTITY_ATTRS = ["documentid", "htmlclayid"];
 
-// Derived from SAVE_TOKEN_ATTRS so the two lists can never disagree about the
-// token spellings, and kept separate so a durable identity attribute can join the
-// morph protection without also becoming a save credential.
-export const HOST_TOKEN_ATTRS = [...SAVE_TOKEN_ATTRS, ...HOST_IDENTITY_ATTRS];
+// Derived from the lists above so they can never disagree about the token
+// spellings, and kept separate so a name can join the morph protection without also
+// becoming a save credential. What a host may inject is what must be stripped,
+// whether or not this library still reads it.
+export const HOST_TOKEN_ATTRS = [
+  ...SAVE_TOKEN_ATTRS,
+  ...LEGACY_SAVE_TOKEN_ATTRS,
+  ...HOST_IDENTITY_ATTRS,
+];
 
 // This library's own root state, and this tab's UI truth.
 export const ROOT_LIBRARY_ATTRS = ["savestatus", "editmode", "pageowner"];

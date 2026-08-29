@@ -260,6 +260,12 @@ export function savePage(callback = () => {}) {
       credentials: target.credentials,
       signal: controller.signal,
       headers: {
+        // Spec §3's name for the header that says which document this save is for.
+        'Document-URL': window.location.href,
+        // The older spelling of the same header. Stored customer documents hardcode it
+        // and both Hyperclay hosts read Document-URL first and fall back to this one,
+        // so sending both is what lets a spec-conforming third-party host accept a
+        // save from this library without breaking the documents already out there.
         'Page-URL': window.location.href,
         'Save-Trigger': userDriven ? 'user' : 'auto'
       },
@@ -372,6 +378,12 @@ export function saveHtml(html, callback = () => {}, { replacesDocument = false }
       credentials: target.credentials,
       signal: controller.signal,
       headers: {
+        // Spec §3's name for the header that says which document this save is for.
+        'Document-URL': window.location.href,
+        // The older spelling of the same header. Stored customer documents hardcode it
+        // and both Hyperclay hosts read Document-URL first and fall back to this one,
+        // so sending both is what lets a spec-conforming third-party host accept a
+        // save from this library without breaking the documents already out there.
         'Page-URL': window.location.href,
         'Save-Trigger': userDriven ? 'user' : 'auto'
       },

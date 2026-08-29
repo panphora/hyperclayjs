@@ -34,17 +34,19 @@ describe('savePage — htmlclay endpoint routing', () => {
         json: () => Promise.resolve({ msg: 'Saved', msgType: 'success' }),
       })
     );
+    document.documentElement.removeAttribute('savetoken');
     document.documentElement.removeAttribute('htmlclaytoken');
     delete window.__hyperclaySnapshotHtml;
   });
 
   afterEach(() => {
     jest.clearAllMocks();
+    document.documentElement.removeAttribute('savetoken');
     document.documentElement.removeAttribute('htmlclaytoken');
   });
 
-  test('posts to /_/save/{token} with a plain-text body when htmlclaytoken is present', async () => {
-    document.documentElement.setAttribute('htmlclaytoken', 'TOK123');
+  test('posts to /_/save/{token} with a plain-text body when savetoken is present', async () => {
+    document.documentElement.setAttribute('savetoken', 'TOK123');
 
     const result = await savePage();
 
@@ -56,7 +58,7 @@ describe('savePage — htmlclay endpoint routing', () => {
     expect(result).toEqual({ msg: 'Saved', msgType: 'success' });
   });
 
-  test('posts to bare /_/save when htmlclaytoken is absent', async () => {
+  test('posts to bare /_/save when savetoken is absent', async () => {
     await savePage();
 
     expect(global.fetch).toHaveBeenCalledTimes(1);

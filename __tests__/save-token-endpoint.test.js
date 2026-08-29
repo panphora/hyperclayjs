@@ -1,15 +1,15 @@
 /**
  * @jest-environment jsdom
  *
- * The save lane resolves the host's per-file token under BOTH of its spellings,
- * and pairs the endpoint with the right credential mode.
+ * The save lane resolves the host's per-file token, and pairs the endpoint with the
+ * right credential mode.
  *
- * Spec §9 names the attribute `savetoken`; `htmlclaytoken` is the original name.
- * The save lane used to read only the old one while host-meta.js read both, so a
- * host serving the spec's spelling got a save posted to the bare `/_/save` with no
- * identity on it. Neither name may ever be dropped: a saved document is a frozen
- * client that keeps sending whatever library version wrote it, so a host still
- * serves the old name to documents written years ago.
+ * Spec §9 names one attribute, `savetoken`, and that is now the only name read as a
+ * credential. `htmlclaytoken` is the original spelling and is still STRIPPED before
+ * every save and kept out of a peer's morph, because a host goes on injecting it
+ * forever: a saved document is a frozen client that keeps reading whatever name the
+ * library that wrote it read. Stripping it and accepting it are separate decisions,
+ * and only the second one was reversed.
  */
 
 jest.mock('../src/core/isAdminOfCurrentResource.js', () => ({
@@ -61,15 +61,21 @@ describe('save token resolution', () => {
     expect(pathOf(global.fetch.mock.calls[0][0])).toBe('/_/save/SPEC123');
   });
 
-  test('still posts to /_/save/{token} under the original htmlclaytoken name', async () => {
+  // The pre-rename name is no longer a credential. A deliberate break: a document served by an
+  // htmlclay at or below 1.8.0, which injects only the old name, posts to the bare route and gets a
+  // 404 from a host that registers only POST /_/save/{token}. Taken knowingly while htmlclay is
+  // days old, rather than carrying a second credential name in the save path forever, and
+  // host-attrs.js warns in the console so the failure names its own cause.
+  // ⚠️ htmlclay 1.9.0, which injects both names, must publish before this does.
+  test('does not post to /_/save/{token} under the pre-rename name', async () => {
     document.documentElement.setAttribute('htmlclaytoken', 'OLD123');
 
     await savePage();
 
-    expect(pathOf(global.fetch.mock.calls[0][0])).toBe('/_/save/OLD123');
+    expect(pathOf(global.fetch.mock.calls[0][0])).toBe('/_/save');
   });
 
-  test('prefers savetoken when a host serves both spellings', async () => {
+  test('reads savetoken when a host still serves both spellings', async () => {
     document.documentElement.setAttribute('savetoken', 'SPEC123');
     document.documentElement.setAttribute('htmlclaytoken', 'OLD123');
 
@@ -78,13 +84,16 @@ describe('save token resolution', () => {
     expect(pathOf(global.fetch.mock.calls[0][0])).toBe('/_/save/SPEC123');
   });
 
-  test('falls through an empty savetoken to the older spelling', async () => {
+  // An empty token is a host that minted none, and there is no second name to fall through to. The
+  // bare route is right: it is the cookie-authenticated lane, so a host that meant to mint a token
+  // and failed gets an honest refusal rather than a save posted under a stale credential.
+  test('an empty savetoken means no token, with nothing to fall through to', async () => {
     document.documentElement.setAttribute('savetoken', '');
     document.documentElement.setAttribute('htmlclaytoken', 'OLD123');
 
     await savePage();
 
-    expect(pathOf(global.fetch.mock.calls[0][0])).toBe('/_/save/OLD123');
+    expect(pathOf(global.fetch.mock.calls[0][0])).toBe('/_/save');
   });
 
   test('posts to the bare /_/save when the host minted no token', async () => {
@@ -141,7 +150,7 @@ describe('save credentials follow the endpoint', () => {
   });
 
   test('saveHtml pairs credentials with the endpoint too', async () => {
-    document.documentElement.setAttribute('htmlclaytoken', 'OLD123');
+    document.documentElement.setAttribute('savetoken', 'OLD123');
 
     await saveHtml('<html>direct</html>');
 
