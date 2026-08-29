@@ -67,10 +67,10 @@ To load a full preset, use the CDN loader with `?preset=standard`:
 | edit-mode-helpers | 6.8KB | Admin-only functionality: [viewmode:disabled], [editmode:resource], [editmode:onclick] |
 | option-visibility | 9.2KB | Dynamic show/hide based on ancestor state with option:attribute="value" |
 | persist | 5KB | Persist input/select/textarea values to the DOM with [persist] attribute |
-| save-core | 15.4KB | Basic save function only - hyperclay.savePage() |
+| save-core | 16.6KB | Basic save function only - hyperclay.savePage() |
 | save-system | 19.8KB | CMD+S, [trigger-save] button, savestatus attribute |
 | save-toast | 1KB | Toast notifications for save events |
-| snapshot | 13.3KB | Source of truth for page state - captures DOM snapshots for save and sync |
+| snapshot | 14.3KB | Source of truth for page state - captures DOM snapshots for save and sync |
 | unsaved-warning | 1.3KB | Warn before leaving page with unsaved changes |
 
 ### Custom Attributes (HTML enhancements)
@@ -153,27 +153,27 @@ To load a full preset, use the CDN loader with `?preset=standard`:
 
 ## Presets
 
-### Minimal (~74KB)
+### Minimal (~76.2KB)
 Essential features for basic editing
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `edit-mode-helpers`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Standard (~123KB)
+### Standard (~125.2KB)
 Standard feature set for most use cases
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `unsaved-warning`, `edit-mode-helpers`, `persist`, `option-visibility`, `event-attrs`, `dom-helpers`, `data`, `data-loss-panel`, `toast`, `save-toast`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### CMS (~326.7KB)
+### CMS (~328.9KB)
 Visual CMS editing for rules-tag pages: hypercms sidebar, undo, drag-reorder, save
 
 **Modules:** `save-core`, `snapshot`, `save-system`, `unsaved-warning`, `toast`, `save-toast`, `mutation`, `hypercms`, `sortable`, `undo`, `quickcrop`, `data-loss-panel`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Smooth Sailing (~654.1KB)
+### Smooth Sailing (~656.3KB)
 Everything, without gotchas
 
 **Modules:** `save-core`, `save-system`, `unsaved-warning`, `save-toast`, `edit-mode-helpers`, `persist`, `snapshot`, `option-visibility`, `edit-mode`, `event-attrs`, `ajax-elements`, `sortable`, `movable`, `dom-helpers`, `input-helpers`, `onaftersave`, `save-freeze`, `dialogs`, `quickcrop`, `toast`, `the-modal`, `data-loss-panel`, `mutation`, `nearest`, `cookie`, `throttle`, `debounce`, `dom-ready`, `window-load`, `all-js`, `style-injection`, `form-data`, `hypercms`, `richclay`, `undo`, `data`, `upgrade`, `slugify`, `copy-to-clipboard`, `query-params`, `behavior-collector`, `send-message`, `file-upload`, `live-sync`, `refetch-on-save`, `export-to-window`, `view-mode-excludes-edit-modules`
 
-### Everything (~768.1KB)
+### Everything (~770.3KB)
 All available features
 
 Includes all available modules across all categories.

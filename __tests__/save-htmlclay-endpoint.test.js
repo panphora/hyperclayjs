@@ -24,6 +24,8 @@ jest.mock('../src/core/snapshot.js', () => ({
 
 import { savePage } from '../src/core/savePageCore.js';
 
+const pathOf = (url) => new URL(url, 'http://localhost').pathname;
+
 describe('savePage — htmlclay endpoint routing', () => {
   beforeEach(() => {
     global.fetch = jest.fn(() =>
@@ -48,7 +50,7 @@ describe('savePage — htmlclay endpoint routing', () => {
 
     expect(global.fetch).toHaveBeenCalledTimes(1);
     const [url, opts] = global.fetch.mock.calls[0];
-    expect(url).toBe('/_/save/TOK123');
+    expect(pathOf(url)).toBe('/_/save/TOK123');
     expect(opts.body).toBe('<html>captured</html>');
     expect(opts.headers['Content-Type']).toBeUndefined();
     expect(result).toEqual({ msg: 'Saved', msgType: 'success' });
@@ -58,6 +60,6 @@ describe('savePage — htmlclay endpoint routing', () => {
     await savePage();
 
     expect(global.fetch).toHaveBeenCalledTimes(1);
-    expect(global.fetch.mock.calls[0][0]).toBe('/_/save');
+    expect(pathOf(global.fetch.mock.calls[0][0])).toBe('/_/save');
   });
 });

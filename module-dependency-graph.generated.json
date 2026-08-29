@@ -253,7 +253,7 @@
     "save-core": {
       "name": "save-core",
       "category": "core",
-      "size": 15.4,
+      "size": 16.6,
       "isEditModeOnly": true,
       "files": [
         "core/savePageCore.js"
@@ -359,7 +359,7 @@
     "snapshot": {
       "name": "snapshot",
       "category": "core",
-      "size": 13.3,
+      "size": 14.3,
       "isEditModeOnly": true,
       "files": [
         "core/snapshot.js"

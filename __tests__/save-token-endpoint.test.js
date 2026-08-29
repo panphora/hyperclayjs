@@ -29,6 +29,8 @@ jest.mock('../src/core/snapshot.js', () => ({
 import { savePage, saveHtml } from '../src/core/savePageCore.js';
 import { SAVE_TOKEN_ATTRS, HOST_TOKEN_ATTRS } from '../src/utilities/root-attrs.js';
 
+const pathOf = (url) => new URL(url, 'http://localhost').pathname;
+
 const ALL_NAMES = ['savetoken', 'htmlclaytoken', 'htmlclayid'];
 
 function clearTokens() {
@@ -56,7 +58,7 @@ describe('save token resolution', () => {
 
     await savePage();
 
-    expect(global.fetch.mock.calls[0][0]).toBe('/_/save/SPEC123');
+    expect(pathOf(global.fetch.mock.calls[0][0])).toBe('/_/save/SPEC123');
   });
 
   test('still posts to /_/save/{token} under the original htmlclaytoken name', async () => {
@@ -64,7 +66,7 @@ describe('save token resolution', () => {
 
     await savePage();
 
-    expect(global.fetch.mock.calls[0][0]).toBe('/_/save/OLD123');
+    expect(pathOf(global.fetch.mock.calls[0][0])).toBe('/_/save/OLD123');
   });
 
   test('prefers savetoken when a host serves both spellings', async () => {
@@ -73,7 +75,7 @@ describe('save token resolution', () => {
 
     await savePage();
 
-    expect(global.fetch.mock.calls[0][0]).toBe('/_/save/SPEC123');
+    expect(pathOf(global.fetch.mock.calls[0][0])).toBe('/_/save/SPEC123');
   });
 
   test('falls through an empty savetoken to the older spelling', async () => {
@@ -82,13 +84,13 @@ describe('save token resolution', () => {
 
     await savePage();
 
-    expect(global.fetch.mock.calls[0][0]).toBe('/_/save/OLD123');
+    expect(pathOf(global.fetch.mock.calls[0][0])).toBe('/_/save/OLD123');
   });
 
   test('posts to the bare /_/save when the host minted no token', async () => {
     await savePage();
 
-    expect(global.fetch.mock.calls[0][0]).toBe('/_/save');
+    expect(pathOf(global.fetch.mock.calls[0][0])).toBe('/_/save');
   });
 
   // saveHtml is the other entry point onto the same lane. The two used to call one
@@ -99,7 +101,7 @@ describe('save token resolution', () => {
 
     await saveHtml('<html>direct</html>');
 
-    expect(global.fetch.mock.calls[0][0]).toBe('/_/save/SPEC123');
+    expect(pathOf(global.fetch.mock.calls[0][0])).toBe('/_/save/SPEC123');
   });
 });
 
@@ -165,7 +167,7 @@ describe('the token list holds nothing but tokens', () => {
 
     await savePage();
 
-    expect(global.fetch.mock.calls[0][0]).toBe('/_/save');
+    expect(pathOf(global.fetch.mock.calls[0][0])).toBe('/_/save');
   });
 
   // The morph-protection list may grow past the token list, but the two must never

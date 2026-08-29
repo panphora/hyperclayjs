@@ -111,8 +111,34 @@ export function whenSaveIdle() {
 function saveTarget() {
   const token = saveToken();
   return token
-    ? { url: `${saveEndpoint}/${token}`, credentials: 'omit' }
-    : { url: saveEndpoint, credentials: 'same-origin' };
+    ? { url: resolveSaveUrl(`${saveEndpoint}/${token}`), credentials: 'omit' }
+    : { url: resolveSaveUrl(saveEndpoint), credentials: 'same-origin' };
+}
+
+/**
+ * The absolute URL a save goes to.
+ *
+ * A relative path is resolved by fetch against the DOCUMENT's base URL, which
+ * `<base href>` sets and the author of a malleable document controls. Left
+ * relative, a `<base href="https://elsewhere.example/">` sends the document and
+ * the per-document token in the path to an origin the document picked. Pinning to
+ * the real origin is the whole fix.
+ *
+ * The guard is not defensive noise. `window.location.origin` is the STRING "null"
+ * on a file:// document, and `new URL(path, "null")` throws a TypeError, which
+ * would escape synchronously into a save whose promise is contracted never to
+ * reject. Documents opened from disk are a first-class case (an exported app is
+ * just a file), and there is no origin to pin to and no host to save to there
+ * anyway, so the relative path is both the honest answer and the one that cannot
+ * throw.
+ *
+ * @param {string} path - Root-relative save path
+ * @returns {string}
+ */
+function resolveSaveUrl(path) {
+  const origin = window.location.origin;
+  if (!origin || origin === 'null') return path;
+  return new URL(path, origin).href;
 }
 
 // =============================================================================
