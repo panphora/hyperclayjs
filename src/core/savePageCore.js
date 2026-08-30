@@ -275,7 +275,21 @@ export function savePage(callback = () => {}) {
     fetch(target.url, fetchOptions)
       .then(res => {
         clearTimeout(timeoutId);
-        return res.json().then(data => {
+        // The body is read as text and parsed defensively BEFORE the status is
+        // consulted, which is what clayjs already does. Calling res.json() first made a
+        // 200 with an empty body report a failure over a save that had landed, and
+        // turned an intermediary's HTML error page into "Unexpected token '<'" instead
+        // of the status that actually came back. The status is what is authoritative;
+        // the body may not even be the host's.
+        return res.text().then(text => {
+          let data = {};
+          if (text) {
+            try {
+              data = JSON.parse(text);
+            } catch (err) {
+              if (res.ok) throw new Error('Server sent a response that was not JSON');
+            }
+          }
           if (!res.ok) {
             throw new Error(data.msg || data.error || `HTTP ${res.status}: ${res.statusText}`);
           }
@@ -393,7 +407,21 @@ export function saveHtml(html, callback = () => {}, { replacesDocument = false }
     fetch(target.url, fetchOptions)
       .then(res => {
         clearTimeout(timeoutId);
-        return res.json().then(data => {
+        // The body is read as text and parsed defensively BEFORE the status is
+        // consulted, which is what clayjs already does. Calling res.json() first made a
+        // 200 with an empty body report a failure over a save that had landed, and
+        // turned an intermediary's HTML error page into "Unexpected token '<'" instead
+        // of the status that actually came back. The status is what is authoritative;
+        // the body may not even be the host's.
+        return res.text().then(text => {
+          let data = {};
+          if (text) {
+            try {
+              data = JSON.parse(text);
+            } catch (err) {
+              if (res.ok) throw new Error('Server sent a response that was not JSON');
+            }
+          }
           if (!res.ok) {
             throw new Error(data.msg || data.error || `HTTP ${res.status}: ${res.statusText}`);
           }

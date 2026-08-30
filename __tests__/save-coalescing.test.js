@@ -42,6 +42,7 @@ function response() {
     status: 200,
     statusText: 'OK',
     json: async () => ({ msg: 'Saved' }),
+    text: async () => JSON.stringify({ msg: 'Saved' }),
   };
 }
 

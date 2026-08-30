@@ -32,6 +32,7 @@ describe('savePage — htmlclay endpoint routing', () => {
       Promise.resolve({
         ok: true,
         json: () => Promise.resolve({ msg: 'Saved', msgType: 'success' }),
+        text: () => Promise.resolve(JSON.stringify({ msg: 'Saved', msgType: 'success' })),
       })
     );
     document.documentElement.removeAttribute('savetoken');

@@ -56,3 +56,21 @@ export function saveToken() {
   warnAboutLegacyToken();
   return null;
 }
+
+/**
+ * True when this response carries ONLY the pre-rename save token.
+ *
+ * That combination means the host is older than the rename and cannot be saved to by
+ * this library: it sends the old name, which is no longer read, and it sets the owner
+ * cookie, so nothing else on the page would notice. Edit mode consults this so the page
+ * does not offer editing it cannot keep.
+ *
+ * @returns {boolean}
+ */
+export function servedStaleToken() {
+  if (typeof document === "undefined") return false;
+  if (saveToken() !== null) return false;
+  return LEGACY_SAVE_TOKEN_ATTRS.some(
+    (attr) => document.documentElement.getAttribute(attr)
+  );
+}
