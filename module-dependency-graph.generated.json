@@ -81,6 +81,7 @@
       "core/host-attrs.js"
     ],
     "core/isAdminOfCurrentResource.js": [
+      "core/host-attrs.js",
       "string-utilities/query.js",
       "utilities/cookie.js"
     ],
@@ -253,7 +254,7 @@
     "save-core": {
       "name": "save-core",
       "category": "core",
-      "size": 16.6,
+      "size": 18.9,
       "isEditModeOnly": true,
       "files": [
         "core/savePageCore.js"
@@ -359,7 +360,7 @@
     "snapshot": {
       "name": "snapshot",
       "category": "core",
-      "size": 14.3,
+      "size": 14.7,
       "isEditModeOnly": true,
       "files": [
         "core/snapshot.js"
