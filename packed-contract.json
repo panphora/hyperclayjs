@@ -1,0 +1,17 @@
+{
+  "load": [
+    "hyperclayjs",
+    "hyperclayjs/core/adminContenteditable",
+    "hyperclayjs/custom-attributes/ajaxElements",
+    "hyperclayjs/ui/data-loss-panel",
+    "hyperclayjs/utilities/autosaveDebug",
+    "hyperclayjs/dom-utilities/All",
+    "hyperclayjs/string-utilities/copy-to-clipboard",
+    "hyperclayjs/communication/ai-edit",
+    "hyperclayjs/vendor/control-serialize.vendor"
+  ],
+  "families": [
+    "./core/*", "./custom-attributes/*", "./ui/*", "./utilities/*",
+    "./dom-utilities/*", "./string-utilities/*", "./communication/*", "./vendor/*"
+  ]
+}
