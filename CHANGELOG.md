@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.39.0] - 2026-09-20
+
+### Added
+- Packed contract manifest
+
+### Changed
+- Re-vendored and rebuilt hyperclayjs bundle for release
+- Include packed contract in published package files
+- Updated bundled hyperclayjs
+
+
+
 ## [1.38.0] - 2026-08-29
 
 ### Breaking Changes
