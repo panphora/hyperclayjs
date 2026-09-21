@@ -792,7 +792,7 @@
     "hyper-morph": {
       "name": "hyper-morph",
       "category": "vendor",
-      "size": 36,
+      "size": 38.4,
       "isEditModeOnly": true,
       "difficulty": "intermediate",
       "files": [
@@ -813,7 +813,7 @@
     "hypercms": {
       "name": "hypercms",
       "category": "vendor",
-      "size": 192.1,
+      "size": 258.8,
       "files": [
         "vendor/hypercms.vendor.js"
       ],
@@ -845,7 +845,7 @@
     "richclay": {
       "name": "richclay",
       "category": "vendor",
-      "size": 152.8,
+      "size": 160.3,
       "isEditModeOnly": true,
       "files": [
         "vendor/richclay.vendor.js"
