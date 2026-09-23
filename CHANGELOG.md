@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.39.1] - 2026-09-23
+
+### Fixed
+- Duplicated content when morphing inside the modal (re-vendored hyper-morph 0.5.4)
+
+
+
 ## [1.39.0] - 2026-09-20
 
 ### Added
