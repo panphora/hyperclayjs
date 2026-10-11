@@ -1,6 +1,6 @@
 # HyperclayJS
 
-> HyperclayJS is a modular JavaScript library for building malleable HTML files on [Hyperclay](https://hyperclay.com) — self-contained HTML files that use the DOM as their database, can modify themselves, and save changes back to the server.
+> HyperclayJS is a modular JavaScript library for building malleable documents on [Hyperclay](https://hyperclay.com) — self-contained HTML files that use the DOM as their database, can modify themselves, and save changes back to the server.
 
 ## How It Works
 
