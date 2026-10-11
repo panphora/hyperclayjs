@@ -1,5 +1,7 @@
 # HyperclayJS™
 
+> **Deprecated.** HyperclayJS has been replaced by ClayJS and only receives maintenance fixes. New projects should use [ClayJS](https://clayjs.com) (`@panphora/clayjs` on npm). Existing documents that load HyperclayJS keep working.
+
 A modular JavaScript library for building interactive malleable documents with Hyperclay. Load only what you need with automatic dependency resolution.
 
 ## Features
