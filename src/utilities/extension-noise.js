@@ -55,12 +55,19 @@ export function stripExtensionNoise(root) {
     // querySelectorAll('*') never returns the root itself, so an extension stamp on
     // <html> used to ride into every saved file. The root is the one element an
     // extension can mark on a page with no other match.
-    for (const el of [root, ...root.querySelectorAll('*')]) {
-      if (!el.attributes) continue
-      for (const attr of [...el.attributes]) {
-        if (EXTENSION_ATTR_PATTERN.test(attr.name.toLowerCase())) el.removeAttribute(attr.name)
+    // The attribute list is only copied when a marker is found on it.
+    const strip = (el) => {
+      const attrs = el.attributes
+      if (!attrs) return
+      let found = null
+      for (let i = 0; i < attrs.length; i++) {
+        const name = attrs[i].name
+        if (EXTENSION_ATTR_PATTERN.test(name.toLowerCase())) (found || (found = [])).push(name)
       }
+      if (found) for (const name of found) el.removeAttribute(name)
     }
+    strip(root)
+    for (const el of root.querySelectorAll('*')) strip(el)
   } catch (e) {
     if (typeof console !== 'undefined') console.warn('[hyperclay] stripExtensionNoise skipped:', e)
   }
